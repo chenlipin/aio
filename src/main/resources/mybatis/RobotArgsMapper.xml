@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.suilian.aio.dao.RobotArgsMapper">
+    <resultMap id="BaseResultMap" type="top.suilian.aio.model.RobotArgs">
+        <id column="robot_args_id" jdbcType="INTEGER" property="robotArgsId"/>
+        <result column="robot_id" jdbcType="INTEGER" property="robotId"/>
+        <result column="variable" jdbcType="VARCHAR" property="variable"/>
+        <result column="describe" jdbcType="VARCHAR" property="describe"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="value" jdbcType="VARCHAR" property="value"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from robot_args
+    where robot_args_id = #{robotArgsId,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="top.suilian.aio.model.RobotArgs">
+    insert into robot_args (robot_args_id, robot_id, variable, 
+      describe, remark, value
+      )
+    values (#{robotArgsId,jdbcType=INTEGER}, #{robotId,jdbcType=INTEGER}, #{variable,jdbcType=VARCHAR}, 
+      #{describe,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}
+      )
+  </insert>
+    <update id="update">
+    update robot_args set value = #{value} where robot_id = #{robotId} and variable = #{variable}
+  </update>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select  * from robot_args
+    where robot_id = #{robotId,jdbcType=INTEGER}
+  </select>
+    <select id="findOne" resultType="top.suilian.aio.model.RobotArgs">
+        select robot_id robotId,remark remark, variable variable, value value from robot_args where robot_id = #{robotId} and variable = #{variable}
+    </select>
+</mapper>

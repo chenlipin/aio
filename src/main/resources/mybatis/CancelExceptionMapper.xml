@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="top.suilian.aio.dao.CancelExceptionMapper" >
+  <resultMap id="BaseResultMap" type="top.suilian.aio.model.CancelException" >
+    <id column="cancel_exception_id" property="cancelExceptionId" jdbcType="INTEGER" />
+    <result column="cancel_order_id" property="cancelOrderId" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from cancel_exception
+    where cancel_exception_id = #{cancelExceptionId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="top.suilian.aio.model.CancelException" >
+    insert into cancel_exception (cancel_exception_id, cancel_order_id, 
+      created_at, remark)
+    values (#{cancelExceptionId,jdbcType=INTEGER}, #{cancelOrderId,jdbcType=INTEGER}, 
+      sysdate(), #{remark,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="top.suilian.aio.model.CancelException" >
+    update cancel_exception
+    set cancel_order_id = #{cancelOrderId,jdbcType=INTEGER},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=LONGVARCHAR}
+    where cancel_exception_id = #{cancelExceptionId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select cancel_exception_id, cancel_order_id, created_at, remark
+    from cancel_exception
+    where cancel_exception_id = #{cancelExceptionId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select cancel_exception_id, cancel_order_id, created_at, remark
+    from cancel_exception
+  </select>
+</mapper>

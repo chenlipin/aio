@@ -1,0 +1,55 @@
+<!--start.sh-->
+
+#!/bin/bash
+echo "++++++start.shell 开始++++++port:"$1"+++++++++++++"
+echo "删除老的jar包 ..."
+#echo "$USER"
+if [ ! -f "/d/work_space/"$1"/aio-"$1".jar" ]
+then
+        echo "文件不存在,若不是第一次部署请检查上次部署情况"
+else
+        rm /d/work_space/"$1"/aio-"$1".jar
+fi
+echo "老包删除完成"
+cp /var/lib/jenkins/workspace/aio-7-"$1"/target/aio-8801.jar /d/work_space/"$1"
+echo "复制到工作区完成"
+mv /d/work_space/"$1"/aio-8801.jar  /d/work_space/"$1"/aio-"$1".jar
+echo "修改包名完成"
+chmod 777 /d/work_space/"$1"/aio-"$1".jar
+echo "sleep============>2s"
+sleep 1s
+echo "跑新的jar包...."
+java -jar /d/work_space/"$1"/aio-"$1".jar --server.port="$1" &
+echo "++++++++++++++++++++++++++start.sh 完成+++++++++++++++++++++++++"
+
+<!--stop.sh-->
+#!/bin/bash
+echo "+++++stop.shell 开始++++port:"$1"+++++"
+cd /d/work_space/"$1"/
+echo " 停止老的项目...."
+pid=`ps -ef | grep aio-"$1".jar | grep -v grep | awk '{print $2}'`
+if ["$pid" == ""]
+then
+        echo "7-"$1"为第一次部署&&上次部署失败!"
+else
+        echo "kill -9 的pid:"+$pid
+        kill -9 $pid
+fi
+echo "+++++++++++++++++++++stop.shell 完成++++++++++++++"
+
+
+<!--jenkinsshell.sh-->
+#!/bin/bash
+ip=161.117.195.209 #服务器ip
+port=8828 #服务器端口
+cd /d/work_space/"$port"/
+echo " stop.sh shell 开始 por===>"$port" ..."
+sh /d/jenkins_shell/stop.sh "$port"
+echo " stop.sh shell 完成"
+chmod 777 /d/jenkins_shell/startup.sh
+BUILD_ID=dontiKillMe
+nohup /d/jenkins_shell/startup.sh "$port" &
+sleep 10
+java -Dip="$ip" -Dport="$port" -jar /d/jenkins_shell/jenkins.jar
+
+
