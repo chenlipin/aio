@@ -289,7 +289,7 @@ public class EuexReferDepthToBibox extends EuexReferBiboxParentService {
         logger.info("--------------------------------------------结束---------------------------------------------");
         try {
             setBalanceRedis();
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         clearLog();

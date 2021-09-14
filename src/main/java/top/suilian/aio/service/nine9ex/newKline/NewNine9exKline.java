@@ -246,7 +246,7 @@ public class NewNine9exKline extends Nine9ExParentService {
 
 
                 }
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId" + id + "----" + exceptionMessage);
@@ -293,7 +293,7 @@ public class NewNine9exKline extends Nine9ExParentService {
         }
         try {
             setBalanceRedis();
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         clearLog();
@@ -356,7 +356,7 @@ public class NewNine9exKline extends Nine9ExParentService {
                                     sellOrderId = jsonObject.getString("client_oid");
                                 }
 
-                            } catch (UnsupportedEncodingException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }

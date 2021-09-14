@@ -595,7 +595,7 @@ public class LoexKline extends LoexParentService {
 
 
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             exceptionMessage = collectExceptionStackMsg(e);
             setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
             e.printStackTrace();

@@ -246,7 +246,7 @@ public class NewPickcoinKline extends PickcoinParentService {
 
 
                 }
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId" + id + "----" + exceptionMessage);
@@ -293,7 +293,7 @@ public class NewPickcoinKline extends PickcoinParentService {
         }
         try {
             setBalanceRedis();
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         clearLog();
@@ -356,7 +356,7 @@ public class NewPickcoinKline extends PickcoinParentService {
                                     sellOrderId = jsonObject.getString("client_oid");
                                 }
 
-                            } catch (UnsupportedEncodingException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -386,7 +386,7 @@ public class NewPickcoinKline extends PickcoinParentService {
                                 if (jsonObject != null && "true".equals(jsonObject.get("result"))) {
                                     buyOrderId = jsonObject.getString("client_oid");
                                 }
-                            } catch (UnsupportedEncodingException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }

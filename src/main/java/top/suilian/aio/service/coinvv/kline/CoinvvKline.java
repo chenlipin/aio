@@ -208,7 +208,7 @@ public class CoinvvKline extends CoinvvParentService {
 
 
                 }
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId" + id + "----" + exceptionMessage);
@@ -252,7 +252,7 @@ public class CoinvvKline extends CoinvvParentService {
         }
         try {
             setBalanceRedis();
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         clearLog();
@@ -313,7 +313,7 @@ public class CoinvvKline extends CoinvvParentService {
                             JSONObject data1 = jsonObject.getJSONObject("data");
                             sellOrderId = data1.getString("en_id");
                         }
-                    } catch (UnsupportedEncodingException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -334,7 +334,7 @@ public class CoinvvKline extends CoinvvParentService {
                             JSONObject data2 = jsonObject.getJSONObject("data");
                             buyOrderId = data2.getString("en_id");
                         }
-                    } catch (UnsupportedEncodingException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

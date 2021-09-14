@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="top.suilian.aio.dao.CancelOrderMapper" >
+  <resultMap id="BaseResultMap" type="top.suilian.aio.model.CancelOrder" >
+    <id column="cancel_order_id" property="cancelOrderId" jdbcType="INTEGER" />
+    <result column="robot_id" property="robotId" jdbcType="INTEGER" />
+    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+    <result column="exchange" property="exchange" jdbcType="INTEGER" />
+    <result column="cancel_num" property="cancelNum" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="BIT" />
+    <result column="is_mobile" property="isMobile" jdbcType="BIT" />
+    <result column="status" property="status" jdbcType="BIT" />
+    <result column="created_at" property="createdAt" jdbcType="VARCHAR" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from cancel_order
+    where cancel_order_id = #{cancelOrderId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="top.suilian.aio.model.CancelOrder"  useGeneratedKeys="true" keyProperty="cancelOrderId">
+    insert into cancel_order (cancel_order_id, robot_id, order_id, 
+      exchange, cancel_num, type, 
+      is_mobile, status, created_at, 
+      updated_at)
+    values (#{cancelOrderId,jdbcType=INTEGER}, #{robotId,jdbcType=INTEGER}, #{orderId,jdbcType=VARCHAR}, 
+      #{exchange,jdbcType=INTEGER}, #{cancelNum,jdbcType=INTEGER}, #{type,jdbcType=BIT}, 
+      #{isMobile,jdbcType=BIT}, #{status,jdbcType=BIT}, sysdate(),
+      sysdate())
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="top.suilian.aio.model.CancelOrder" >
+    update cancel_order
+    set robot_id = #{robotId,jdbcType=INTEGER},
+      order_id = #{orderId,jdbcType=VARCHAR},
+      exchange = #{exchange,jdbcType=INTEGER},
+      cancel_num = #{cancelNum,jdbcType=INTEGER},
+      type = #{type,jdbcType=BIT},
+      is_mobile = #{isMobile,jdbcType=BIT},
+      status = #{status,jdbcType=BIT},
+      created_at = #{createdAt,jdbcType=VARCHAR},
+      updated_at = sysdate()
+    where cancel_order_id = #{cancelOrderId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select cancel_order_id, robot_id, order_id, exchange, cancel_num, type, is_mobile, 
+    status, created_at, updated_at
+    from cancel_order
+    where cancel_order_id = #{cancelOrderId,jdbcType=INTEGER}
+  </select>
+  <select id="findByOrderId" resultMap="BaseResultMap" >
+    select cancel_order_id, robot_id, order_id, exchange, cancel_num, type, is_mobile,
+    status, created_at, updated_at
+    from cancel_order
+    where robot_id = #{robotId,jdbcType=INTEGER} and order_id = #{orderId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select cancel_order_id, robot_id, order_id, exchange, cancel_num, type, is_mobile, 
+    status, created_at, updated_at
+    from cancel_order
+  </select>
+
+
+  <select id="findByAll" resultMap="BaseResultMap" >
+    select cancel_order_id, robot_id, order_id, exchange, cancel_num, type, is_mobile,
+    status, created_at, updated_at
+    from cancel_order where exchange = #{exchange} and robot_id = #{robotId} and status = #{status}
+  </select>
+
+</mapper>

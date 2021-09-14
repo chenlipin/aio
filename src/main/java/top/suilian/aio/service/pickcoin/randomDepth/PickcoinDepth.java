@@ -86,7 +86,7 @@ public class PickcoinDepth extends PickcoinParentService {
                     sleep( 10000, Integer.parseInt(exchange.get("isMobileSwitch")));
                 }
 
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId:" + id + exceptionMessage);
@@ -104,7 +104,7 @@ public class PickcoinDepth extends PickcoinParentService {
                     sleep( 10000, Integer.parseInt(exchange.get("isMobileSwitch")));
                 }
 
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId:" + id + exceptionMessage);
@@ -120,7 +120,7 @@ public class PickcoinDepth extends PickcoinParentService {
 
         try {
             setBalanceRedis();
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         logger.info("\r\n------------------------------{" + id + "} 结束------------------------------\r\n");

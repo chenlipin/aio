@@ -139,7 +139,7 @@ public class PcasKline extends PcasParentService {
 
 
                         }
-                    } catch (UnsupportedEncodingException e) {
+                    } catch (Exception e) {
                         exceptionMessage = collectExceptionStackMsg(e);
                         setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                         e.printStackTrace();
@@ -264,7 +264,7 @@ public class PcasKline extends PcasParentService {
 
 
                 }
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId" + id + "----" + exceptionMessage);
@@ -308,7 +308,7 @@ public class PcasKline extends PcasParentService {
         }
         try {
             setBalanceRedis();
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         clearLog();
@@ -378,7 +378,7 @@ public class PcasKline extends PcasParentService {
                     submitTrade(1, buyPri, buyAmount);
                     setTradeLog(id, "堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]", 0);
                     logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }else if (buyAmount.compareTo(new BigDecimal(exchange.get("buyMinLimitAmount"))) < 1 && maxEatOrder > eatOrder) {
@@ -392,7 +392,7 @@ public class PcasKline extends PcasParentService {
 
                     setTradeLog(id, "堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]", 0);
                     logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -407,7 +407,7 @@ public class PcasKline extends PcasParentService {
                     submitTrade(0, sellPri, sellAmount);
                     setTradeLog(id, "堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]", 0);
                     logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }else if (sellAmount.compareTo(new BigDecimal(exchange.get("sellMinLimitAmount"))) < 1 && maxEatOrder > eatOrder) {
@@ -421,7 +421,7 @@ public class PcasKline extends PcasParentService {
 
                     setTradeLog(id, "堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]", 0);
                     logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -588,7 +588,7 @@ public class PcasKline extends PcasParentService {
                 intervalAmount = intervalAmount.add(buyAmount);
                 setTradeLog(id, "已使用刷开区间币量:" + intervalAmount, 0, "000000");
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             exceptionMessage = collectExceptionStackMsg(e);
             setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
         }

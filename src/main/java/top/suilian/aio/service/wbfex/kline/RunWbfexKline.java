@@ -92,7 +92,7 @@ public class RunWbfexKline {
     public boolean killWork(int id) {
         for (Work work : works) {
             if (work.getName() == id) {
-                Thread thread = commonUtil.getThreadByName(Constant.KEY_THREAD_KLINE + id);
+                Thread thread = CommonUtil.getThreadByName(Constant.KEY_THREAD_KLINE + id);
                 if (thread == null) {
                     return true;
                 } else {

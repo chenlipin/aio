@@ -141,7 +141,7 @@ public class EuexReferBiboxKline extends EuexReferBiboxParentService {
 
 
                         }
-                    } catch (UnsupportedEncodingException e) {
+                    } catch (Exception e) {
                         exceptionMessage = collectExceptionStackMsg(e);
                         setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                         e.printStackTrace();
@@ -268,7 +268,7 @@ public class EuexReferBiboxKline extends EuexReferBiboxParentService {
 
 
                 }
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId" + id + "----" + exceptionMessage);
@@ -312,7 +312,7 @@ public class EuexReferBiboxKline extends EuexReferBiboxParentService {
         }
         try {
             setBalanceRedis();
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         clearLog();
@@ -385,7 +385,7 @@ public class EuexReferBiboxKline extends EuexReferBiboxParentService {
 
                     setTradeLog(id, "堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]", 0);
                     logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if (buyAmount.compareTo(new BigDecimal(exchange.get("buyMinLimitAmount"))) < 1 && maxEatOrder > eatOrder) {
@@ -399,7 +399,7 @@ public class EuexReferBiboxKline extends EuexReferBiboxParentService {
 
                     setTradeLog(id, "堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]", 0);
                     logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -414,7 +414,7 @@ public class EuexReferBiboxKline extends EuexReferBiboxParentService {
 
                     setTradeLog(id, "堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]", 0);
                     logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if (sellAmount.compareTo(new BigDecimal(exchange.get("sellMinLimitAmount"))) < 1 && maxEatOrder > eatOrder) {
@@ -428,7 +428,7 @@ public class EuexReferBiboxKline extends EuexReferBiboxParentService {
 
                     setTradeLog(id, "堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]", 0);
                     logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

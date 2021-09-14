@@ -48,9 +48,14 @@ public class TestController extends BaseController {
     public void inset() {
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("apikey", "82c55df624868b7e4ac3c312e154a124");
+
+        String res = null;
         try {
-            String res = httpUtil.post("https://api.bihuex.com/api-web/api/user/getAllBanlance", param);
-            JSONObject obj = JSONObject.fromObject(res);
+            res = HttpUtil.post("https://api.bihuex.com/api-web/api/user/getAllBanlance", param);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        JSONObject obj = JSONObject.fromObject(res);
             JSONObject data = obj.getJSONObject("data");
             JSONObject dylcInfo = data.getJSONObject("dylc");
             String dylc = dylcInfo.getString("xnb");
@@ -59,9 +64,7 @@ public class TestController extends BaseController {
             String eth = usdtInfo.getString("xnb");
             System.out.println(dylc);
             System.out.println(eth);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+
     }
 
     @RequestMapping("/getFChainBalance")

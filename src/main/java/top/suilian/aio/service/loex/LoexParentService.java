@@ -4,14 +4,16 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import top.suilian.aio.Util.Constant;
+import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.service.BaseService;
+import top.suilian.aio.service.RobotAction;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class  LoexParentService extends BaseService {
+public class LoexParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://open.loex.io";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
@@ -23,7 +25,7 @@ public class  LoexParentService extends BaseService {
     public String[] transactionArr = new String[24];
 
     //设置交易量百分比
-    public void setTransactionRatio(){
+    public void setTransactionRatio() {
         String transactionRatio = exchange.get("transactionRatio");
         if (transactionRatio != null) {
             String str[] = transactionRatio.split(",");
@@ -48,8 +50,6 @@ public class  LoexParentService extends BaseService {
             }
         }
     }
-
-
 
 
     /**
@@ -162,7 +162,8 @@ public class  LoexParentService extends BaseService {
     /**
      * 下单
      */
-    protected String submitOrder(int type, BigDecimal price, BigDecimal amount) throws UnsupportedEncodingException {
+    @Override
+    public String submitOrder(int type, BigDecimal price, BigDecimal amount) {
 
         String timestamp = getSecondTimestamp(new Date());
 
@@ -184,7 +185,12 @@ public class  LoexParentService extends BaseService {
         String sign = DigestUtils.md5Hex(toSign);
         params.put("sign", sign);
 
-        String trade = httpUtil.post(baseUrl + "/open/api/create_order", params);
+        String trade = null;
+        try {
+            trade = HttpUtil.post(baseUrl + "/open/api/create_order", params);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price + ": 数量" + amount + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
 
@@ -201,7 +207,8 @@ public class  LoexParentService extends BaseService {
      */
 
 
-    public String selectOrder(String orderId) throws UnsupportedEncodingException {
+    @Override
+    public String selectOrder(String orderId) {
 
         String timestamp = getSecondTimestamp(new Date());
 
@@ -219,22 +226,22 @@ public class  LoexParentService extends BaseService {
     }
 
 
-   public String getTradeOrders(){
-       String timestamp = getSecondTimestamp(new Date());
+    public String getTradeOrders() {
+        String timestamp = getSecondTimestamp(new Date());
 
-       Map<String, Object> params = new TreeMap<String, Object>();
-       params.put("symbol", exchange.get("market"));
-       params.put("page", 1);
-       params.put("pageSize",100);
-       params.put("api_key", exchange.get("apikey"));
-       params.put("time", timestamp);
-       String toSign = toSort(params) + exchange.get("tpass");
-       String sign = DigestUtils.md5Hex(toSign);
-       params.put("sign", sign);
-       String url = splicingMap(baseUrl + "/open/api/v2/all_order", params);
-       String trade = httpUtil.get(url);
-       return trade;
-   }
+        Map<String, Object> params = new TreeMap<String, Object>();
+        params.put("symbol", exchange.get("market"));
+        params.put("page", 1);
+        params.put("pageSize", 100);
+        params.put("api_key", exchange.get("apikey"));
+        params.put("time", timestamp);
+        String toSign = toSort(params) + exchange.get("tpass");
+        String sign = DigestUtils.md5Hex(toSign);
+        params.put("sign", sign);
+        String url = splicingMap(baseUrl + "/open/api/v2/all_order", params);
+        String trade = httpUtil.get(url);
+        return trade;
+    }
 
 
     /**
@@ -269,7 +276,8 @@ public class  LoexParentService extends BaseService {
      * @return
      * @throws UnsupportedEncodingException
      */
-    public String cancelTrade(String orderId) throws UnsupportedEncodingException {
+    @Override
+    public String cancelTrade(String orderId) {
 
         String timestamp = getSecondTimestamp(new Date());
 
@@ -284,8 +292,12 @@ public class  LoexParentService extends BaseService {
         String sign = DigestUtils.md5Hex(toSign);
         params.put("sign", sign);
 
-
-        String res = httpUtil.post(baseUrl + "/open/api/cancel_order", params);
+        String res = null;
+        try {
+            res = HttpUtil.post(baseUrl + "/open/api/cancel_order", params);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         return res;
     }
@@ -360,7 +372,7 @@ public class  LoexParentService extends BaseService {
      */
     public boolean setPrecision() {
         boolean falg = false;
-        String symbol=exchange.get("market");
+        String symbol = exchange.get("market");
         String rt = httpUtil.get(baseUrl + "/open/api/common/symbols");
 
         JSONObject rtObj = judgeRes(rt, "symbol", "setPrecision");
@@ -372,7 +384,7 @@ public class  LoexParentService extends BaseService {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                 if (symbol.equals(jsonObject.getString("symbol"))) {
-                    logger.info("交易对交易规则："+jsonObject);
+                    logger.info("交易对交易规则：" + jsonObject);
                     String amountPrecision = String.valueOf(jsonObject.getInt("amount_precision"));
 
                     String pricePrecision = String.valueOf(jsonObject.getInt("price_precision"));
@@ -425,18 +437,20 @@ public class  LoexParentService extends BaseService {
         }
         return url;
     }
+
     /**
      * 获取精确到秒的时间戳
+     *
      * @return
      */
-    public String getSecondTimestamp(Date date){
+    public String getSecondTimestamp(Date date) {
         if (null == date) {
             return "";
         }
         String timestamp = String.valueOf(date.getTime());
         int length = timestamp.length();
         if (length > 3) {
-            return String.valueOf(timestamp.substring(0,length-3));
+            return String.valueOf(timestamp.substring(0, length - 3));
         } else {
             return "";
         }

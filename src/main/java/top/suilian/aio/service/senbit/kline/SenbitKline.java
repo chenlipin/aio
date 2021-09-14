@@ -216,7 +216,7 @@ public class SenbitKline extends SenbitParentService {
                     }
 
                 }
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId" + id + "----" + exceptionMessage);
@@ -260,7 +260,7 @@ public class SenbitKline extends SenbitParentService {
         }
         try {
             setBalanceRedis();
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         clearLog();
@@ -323,7 +323,7 @@ public class SenbitKline extends SenbitParentService {
                             sellOrderId = jsonObject.getString("orderid");
                         }
                         return price;
-                    } catch (UnsupportedEncodingException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -345,7 +345,7 @@ public class SenbitKline extends SenbitParentService {
                             buyOrderId = jsonObject.getString("orderid");
                         }
                         return price;
-                    } catch (UnsupportedEncodingException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -478,7 +478,7 @@ public class SenbitKline extends SenbitParentService {
                     logger.info("查询订单异常："+jsonObject);
                 }
 
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             exceptionMessage = collectExceptionStackMsg(e);
             setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
             e.printStackTrace();

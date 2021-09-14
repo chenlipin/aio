@@ -295,7 +295,7 @@ public class Main {
 
         try {
             trade = httpUtil.post(baseUrl + "/open/api/cancel_order",param);
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -356,7 +356,7 @@ public class Main {
 
         try {
             trade = httpUtil.post(baseUrl + "/open/api/create_order?",param);
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("下单结果：" + trade);

@@ -213,7 +213,7 @@ public class AsproexKline extends AsproexParentService {
 
 
                 }
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId" + id + "----" + exceptionMessage);
@@ -357,7 +357,7 @@ public class AsproexKline extends AsproexParentService {
                     }
                     return price;
 
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if (sellAmount.compareTo(new BigDecimal(exchange.get("sellMinLimitAmount"))) < 1 && maxEatOrder > eatOrder) {
@@ -375,7 +375,7 @@ public class AsproexKline extends AsproexParentService {
                     }
                     return price;
 
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -543,7 +543,7 @@ public class AsproexKline extends AsproexParentService {
                 intervalAmount = intervalAmount.add(buyAmount);
                 setTradeLog(id, "已使用刷开区间币量:" + intervalAmount, 0, "000000");
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             exceptionMessage = collectExceptionStackMsg(e);
             setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
         }
@@ -580,7 +580,7 @@ public class AsproexKline extends AsproexParentService {
 
 
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             exceptionMessage = collectExceptionStackMsg(e);
             setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
             logger.info("robotId" + id + "----" + exceptionMessage);

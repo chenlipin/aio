@@ -4,14 +4,16 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import top.suilian.aio.Util.Constant;
+import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.service.BaseService;
+import top.suilian.aio.service.RobotAction;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class WbfexParentService extends BaseService {
+public class WbfexParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://openapi.wbf.info";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
@@ -108,7 +110,7 @@ public class WbfexParentService extends BaseService {
 
                     logger.info("robotId" + id + "----" + "挂单参数：" + params);
 
-                    trade = httpUtil.post(baseUrl + "/open/api/create_order", params);
+                    trade = HttpUtil.post(baseUrl + "/open/api/create_order", params);
 
                     setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                     logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
@@ -139,7 +141,7 @@ public class WbfexParentService extends BaseService {
 
                 logger.info("robotId" + id + "----" + "挂单参数：" + params);
 
-                trade = httpUtil.post(baseUrl + "/open/api/create_order", params);
+                trade = HttpUtil.post(baseUrl + "/open/api/create_order", params);
 
 
                 setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
@@ -161,7 +163,8 @@ public class WbfexParentService extends BaseService {
     /**
      * 下单
      */
-    protected String submitOrder(int type, BigDecimal price, BigDecimal amount) throws UnsupportedEncodingException {
+    @Override
+    public String submitOrder(int type, BigDecimal price, BigDecimal amount) {
 
         String timestamp = String.valueOf(new Date().getTime());
 
@@ -190,7 +193,13 @@ public class WbfexParentService extends BaseService {
 
         logger.info("robotId" + id + "----" + "挂单参数：" + params);
 
-        String trade = httpUtil.post(baseUrl + "/open/api/create_order", params);
+        String trade = null;
+        try {
+            trade = HttpUtil.post(baseUrl + "/open/api/create_order", params);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
 
         setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price + ": 数量" + amount + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
@@ -208,7 +217,8 @@ public class WbfexParentService extends BaseService {
      */
 
 
-    public String selectOrder(String orderId) throws UnsupportedEncodingException {
+    @Override
+    public String selectOrder(String orderId)   {
 
         String timestamp = String.valueOf(new Date().getTime());
 
@@ -267,11 +277,9 @@ public class WbfexParentService extends BaseService {
     /**
      * 撤单
      *
-     * @param orderId
-     * @return
-     * @throws UnsupportedEncodingException
      */
-    public String cancelTrade(String orderId) throws UnsupportedEncodingException {
+    @Override
+    public String cancelTrade(String orderId)  {
 
         String timestamp = String.valueOf(new Date().getTime());
 
@@ -287,7 +295,12 @@ public class WbfexParentService extends BaseService {
         params.put("sign", sign);
 
 
-        String res = httpUtil.post(baseUrl + "/open/api/cancel_order", params);
+        String res = null;
+        try {
+            res = HttpUtil.post(baseUrl + "/open/api/cancel_order", params);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         return res;
     }

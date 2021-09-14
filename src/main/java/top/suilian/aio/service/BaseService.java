@@ -3,6 +3,8 @@ package top.suilian.aio.service;
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
 import org.apache.log4j.*;
+import org.springframework.beans.BeanUtils;
+import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.ChuangLanSmsUtil;
 import top.suilian.aio.Util.CommonUtil;
 import top.suilian.aio.Util.Constant;
@@ -22,20 +24,20 @@ import java.util.*;
 
 public class BaseService {
     //region    Service
-    public CancelExceptionService cancelExceptionService;
-    public CancelOrderService cancelOrderService;
-    public ExceptionMessageService exceptionMessageService;
-    public RobotArgsService robotArgsService;
-    public RobotLogService robotLogService;
-    public RobotService robotService;
-    public TradeLogService tradeLogService;
+    public CancelExceptionService cancelExceptionService= BeanContext.getBean(CancelExceptionService.class);
+    public CancelOrderService cancelOrderService= BeanContext.getBean(CancelOrderService.class);
+    public ExceptionMessageService exceptionMessageService= BeanContext.getBean(ExceptionMessageService.class);
+    public RobotArgsService robotArgsService= BeanContext.getBean(RobotArgsService.class);
+    public RobotLogService robotLogService= BeanContext.getBean(RobotLogService.class);
+    public RobotService robotService= BeanContext.getBean(RobotService.class);
+    public TradeLogService tradeLogService= BeanContext.getBean(TradeLogService.class);
     //endregion
 
     //region    Utils
-    public CommonUtil commonUtil;
-    public HttpUtil httpUtil;
+    public CommonUtil commonUtil= BeanContext.getBean(CommonUtil.class);
+    public HttpUtil httpUtil= BeanContext.getBean(HttpUtil.class);
     public Logger logger;
-    public RedisHelper redisHelper;
+    public RedisHelper redisHelper= BeanContext.getBean(RedisHelper.class);
     //endregion
 
     //region    参数

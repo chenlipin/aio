@@ -247,7 +247,7 @@ public class NewFchainKline extends FChainParentService {
 
 
                 }
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId" + id + "----" + exceptionMessage);
@@ -294,7 +294,7 @@ public class NewFchainKline extends FChainParentService {
         }
         try {
             setBalanceRedis();
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         clearLog();
@@ -367,7 +367,7 @@ public class NewFchainKline extends FChainParentService {
                                 }
                                 return price;
 
-                            } catch (UnsupportedEncodingException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -397,7 +397,7 @@ public class NewFchainKline extends FChainParentService {
                                     buyOrderId = jsonObject.getString("orderId");
                                 }
                                 return price;
-                            } catch (UnsupportedEncodingException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -577,7 +577,7 @@ public class NewFchainKline extends FChainParentService {
                 intervalAmount = intervalAmount.add(buyAmount);
                 setTradeLog(id, "已使用刷开区间币量:" + intervalAmount, 0, "000000");
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             exceptionMessage = collectExceptionStackMsg(e);
             setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
         }
@@ -614,7 +614,7 @@ public class NewFchainKline extends FChainParentService {
 
 
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             exceptionMessage = collectExceptionStackMsg(e);
             setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
             logger.info("robotId" + id + "----" + exceptionMessage);

@@ -1,8 +1,10 @@
 package top.suilian.aio.dao;
 
 import java.util.List;
-import top.suilian.aio.model.Robot;
 
+import org.springframework.stereotype.Repository;
+import top.suilian.aio.model.Robot;
+@Repository
 public interface RobotMapper {
     int deleteByPrimaryKey(Integer robotId);
 

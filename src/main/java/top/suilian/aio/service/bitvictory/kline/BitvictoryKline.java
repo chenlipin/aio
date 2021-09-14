@@ -214,7 +214,7 @@ public class BitvictoryKline extends BitvictoryParentService {
 
 
                 }
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId" + id + "----" + exceptionMessage);
@@ -258,7 +258,7 @@ public class BitvictoryKline extends BitvictoryParentService {
         }
         try {
             setBalanceRedis();
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         clearLog();
@@ -323,7 +323,7 @@ public class BitvictoryKline extends BitvictoryParentService {
 
                         }
                         return price;
-                    } catch (UnsupportedEncodingException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -346,7 +346,7 @@ public class BitvictoryKline extends BitvictoryParentService {
 
                         }
                         return price;
-                    } catch (UnsupportedEncodingException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -479,7 +479,7 @@ public class BitvictoryKline extends BitvictoryParentService {
                 }
 
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             exceptionMessage = collectExceptionStackMsg(e);
             setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
             e.printStackTrace();
