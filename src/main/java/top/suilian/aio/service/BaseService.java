@@ -24,20 +24,20 @@ import java.util.*;
 
 public class BaseService {
     //region    Service
-    public CancelExceptionService cancelExceptionService= BeanContext.getBean(CancelExceptionService.class);
-    public CancelOrderService cancelOrderService= BeanContext.getBean(CancelOrderService.class);
-    public ExceptionMessageService exceptionMessageService= BeanContext.getBean(ExceptionMessageService.class);
-    public RobotArgsService robotArgsService= BeanContext.getBean(RobotArgsService.class);
-    public RobotLogService robotLogService= BeanContext.getBean(RobotLogService.class);
-    public RobotService robotService= BeanContext.getBean(RobotService.class);
-    public TradeLogService tradeLogService= BeanContext.getBean(TradeLogService.class);
+    public CancelExceptionService cancelExceptionService = BeanContext.getBean(CancelExceptionService.class);
+    public CancelOrderService cancelOrderService = BeanContext.getBean(CancelOrderService.class);
+    public ExceptionMessageService exceptionMessageService = BeanContext.getBean(ExceptionMessageService.class);
+    public RobotArgsService robotArgsService = BeanContext.getBean(RobotArgsService.class);
+    public RobotLogService robotLogService = BeanContext.getBean(RobotLogService.class);
+    public RobotService robotService = BeanContext.getBean(RobotService.class);
+    public TradeLogService tradeLogService = BeanContext.getBean(TradeLogService.class);
     //endregion
 
     //region    Utils
-    public CommonUtil commonUtil= BeanContext.getBean(CommonUtil.class);
-    public HttpUtil httpUtil= BeanContext.getBean(HttpUtil.class);
+    public CommonUtil commonUtil = BeanContext.getBean(CommonUtil.class);
+    public HttpUtil httpUtil = BeanContext.getBean(HttpUtil.class);
     public Logger logger;
-    public RedisHelper redisHelper= BeanContext.getBean(RedisHelper.class);
+    public RedisHelper redisHelper = BeanContext.getBean(RedisHelper.class);
     //endregion
 
     //region    参数
@@ -63,6 +63,13 @@ public class BaseService {
         for (RobotArgs robotArgs : robotArgsList) {
             exchange.put(String.valueOf(robotArgs.getVariable()), robotArgs.getValue());
         }
+    }
+
+
+    public Map<String, String> getParam() {
+
+        return exchange;
+
     }
 
 
@@ -173,7 +180,7 @@ public class BaseService {
             cancelOrder.setIsMobile(isMobile);
             cancelOrder.setStatus(status);
             cancelOrderService.insert(cancelOrder);
-        }else{
+        } else {
             cancelOrder.setStatus(status);
             cancelOrderService.update(cancelOrder);
         }
@@ -256,7 +263,7 @@ public class BaseService {
         return insertCancelException(cancelOrderId, remark);
     }
 
-    public void delCancaled(){
+    public void delCancaled() {
 
     }
 
@@ -265,9 +272,9 @@ public class BaseService {
      * 保留固定小数位
      */
     public BigDecimal nN(BigDecimal doubleValue, int newScale) {
-        if(newScale==0){
+        if (newScale == 0) {
             return new BigDecimal(Integer.valueOf(doubleValue.intValue()));
-        }else {
+        } else {
             String pattern = "#.";
             for (int i = 0; i < newScale; i++) {
                 pattern += "0";
@@ -371,7 +378,7 @@ public class BaseService {
         if (!"".equals(res) && res != null && isjson(res)) {
             JSONObject resJson = JSONObject.fromObject(res);
 
-              System.out.println(res.indexOf(code));
+            System.out.println(res.indexOf(code));
             if (res.indexOf(code) != -1) {
                 removeSmsRedis(Constant.KEY_SMS_INTERFACE_ERROR);
                 return resJson;
@@ -420,10 +427,10 @@ public class BaseService {
                     if (redisHelper.getParam(key) == null) {
                         redisHelper.setParam(key, String.valueOf(System.currentTimeMillis()));
                     } else {
-                        if ( System.currentTimeMillis() -Long.valueOf(redisHelper.getParam(key)) > Constant.KEY_SNS_SMALL_INTERVAL_TIME) {
+                        if (System.currentTimeMillis() - Long.valueOf(redisHelper.getParam(key)) > Constant.KEY_SNS_SMALL_INTERVAL_TIME) {
                             redisHelper.setParam(key + "_true", "true");
                             sendSms(message, mobile);
-                            logger.info("---------------发送短信："+message);
+                            logger.info("---------------发送短信：" + message);
                             removeSmsRedis(type);
                         }
                     }
@@ -440,10 +447,10 @@ public class BaseService {
                     if (redisHelper.getParam(key) == null) {
                         redisHelper.setParam(key, String.valueOf(System.currentTimeMillis()));
                     } else {
-                        if ( System.currentTimeMillis()-Long.valueOf(redisHelper.getParam(key))  > Constant.KEY_SNS_INTERFACE_ERROR_TIME) {
+                        if (System.currentTimeMillis() - Long.valueOf(redisHelper.getParam(key)) > Constant.KEY_SNS_INTERFACE_ERROR_TIME) {
                             redisHelper.setParam(key + "_true", "true");
                             sendSms(message);
-                            logger.info("---------------发送短信："+message);
+                            logger.info("---------------发送短信：" + message);
                             removeSmsRedis(type);
                         }
                     }

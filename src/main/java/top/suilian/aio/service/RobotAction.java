@@ -8,6 +8,8 @@
 package top.suilian.aio.service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author wandong
@@ -42,4 +44,8 @@ public interface RobotAction {
 
 
     public void setParam(Integer id);
+
+
+
+    public Map<String, String> getParam();
 }

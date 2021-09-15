@@ -8,11 +8,13 @@
 package top.suilian.aio.service.aatradeRobitService;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import top.suilian.aio.Util.Constant;
+import top.suilian.aio.Util.RandomUtilsme;
 import top.suilian.aio.dao.RobotMapper;
 import top.suilian.aio.model.Robot;
 import top.suilian.aio.service.RobotAction;
@@ -24,6 +26,7 @@ import top.suilian.aio.vo.TradeReq;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -58,6 +61,7 @@ public class TradeRobotService {
 
     /**
      * 一键挂单
+     *
      * @param req
      * @return
      */
@@ -66,7 +70,7 @@ public class TradeRobotService {
         FastTradeM fastTradeM = new FastTradeM(req, robotAction);
         Future<JSONObject> submit = executor.submit(fastTradeM);
         try {
-            JSONObject jsonObject = submit.get();
+            submit.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -115,6 +119,46 @@ public class TradeRobotService {
 
         @Override
         public JSONObject call() throws Exception {
+            //获取机器人参数
+            Map<String, String> param = robotAction.getParam();
+            //当前已经挂买单个数
+            int newBuyOrder = 0;
+            //当前已经挂卖单个数
+            int newSellOrder = 0;
+            int timeChange = fastTradeReq.getMaxTime() - fastTradeReq.getMinTime();
+            while ((newBuyOrder + newSellOrder) < (fastTradeReq.getBuyOrdermun() + fastTradeReq.getSellOrdermun())) {
+                //计算挂单数量
+                Double amountPrecision = RandomUtilsme.getRandom(fastTradeReq.getMaxAmount() - fastTradeReq.getMinAmount(), Integer.parseInt(param.get("amountPrecision")));
+                BigDecimal amount = new BigDecimal(fastTradeReq.getMinAmount() + amountPrecision);
+
+                //决定是挂买单还是卖单
+                boolean type = RandomUtils.nextBoolean();
+                BigDecimal price = BigDecimal.ZERO;
+                if (type && newBuyOrder < fastTradeReq.getBuyOrdermun()) {
+                    //挂买单
+                    newBuyOrder++;
+                    //当基础买价为null就去拿盘口价格
+                    BigDecimal baseBuyPrice = fastTradeReq.getSellorderBasePrice() != null ? new BigDecimal(fastTradeReq.getBuyorderBasePrice()) : BigDecimal.ZERO;
+                    //计算买价
+                    Double pricePrecision = RandomUtilsme.getRandom(fastTradeReq.getBuyorderRangePrice(), Integer.parseInt(param.get("pricePrecision")));
+                    price = new BigDecimal(fastTradeReq.getBuyorderBasePrice() - pricePrecision);
+
+
+                } else {
+                    //挂卖单
+                    newSellOrder++;
+                    //当基础卖价为null就去拿盘口价格
+                    BigDecimal baseSellPrice = fastTradeReq.getSellorderBasePrice() != null ? new BigDecimal(fastTradeReq.getSellorderBasePrice()) : BigDecimal.ZERO;
+                    //计算卖价
+                    Double pricePrecision = RandomUtilsme.getRandom(fastTradeReq.getSellorderRangePrice(), Integer.parseInt(param.get("pricePrecision")));
+                    price = new BigDecimal(fastTradeReq.getSellorderBasePrice() + pricePrecision);
+                }
+                String orderStr = robotAction.submitOrderStr(type ? 1 : 2, price, amount);
+                //挂单间隔时间
+                int randomTime = fastTradeReq.getMinTime() + RandomUtils.nextInt(timeChange);
+                Thread.sleep(randomTime);
+            }
+
             return null;
         }
     }

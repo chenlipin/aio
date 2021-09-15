@@ -38,27 +38,27 @@ public class FastTradeReq {
 
     /**数量范围最小值 */
     @NotNull(message = "minAmount不能为空")
-    private Integer minAmount;
+    private Double minAmount;
 
     /**数量范围最大值 */
     @NotNull(message = "maxAmount不能为空")
-    private Integer maxAmount;
+    private Double maxAmount;
 
-    /**买单基础价格  当使用最新成交价作为基准时候传-1 */
-    @NotNull(message = "buyorderBasePrice不能为空")
-    private String buyorderBasePrice;
+    /**买单基础价格  当使用最新成交价作为基准时候传null */
 
-    /**卖单基础价格  当使用最新成交价作为基准时候传-1 */
-    @NotNull(message = "sellorderBasePrice不能为空")
-    private String sellorderBasePrice;
+    private Double buyorderBasePrice;
+
+    /**卖单基础价格  当使用最新成交价作为基准时候传null */
+
+    private Double sellorderBasePrice;
 
     /**买单比基准价低的范围 */
     @NotNull(message = "buyorderRangePrice不能为空")
-    private String buyorderRangePrice;
+    private Double buyorderRangePrice;
 
     /**卖单比基准价高的范围 */
     @NotNull(message = "sellorderRangePrice不能为空")
-    private String sellorderRangePrice;
+    private Double sellorderRangePrice;
 
     /**机器人id*/
     @NotNull(message = "robotId不能为空")
