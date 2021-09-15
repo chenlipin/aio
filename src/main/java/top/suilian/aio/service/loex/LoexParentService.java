@@ -162,7 +162,7 @@ public class LoexParentService extends BaseService implements RobotAction {
     /**
      * 下单
      */
-    @Override
+
     public String submitOrder(int type, BigDecimal price, BigDecimal amount) {
 
         String timestamp = getSecondTimestamp(new Date());
@@ -197,6 +197,21 @@ public class LoexParentService extends BaseService implements RobotAction {
         return trade;
     }
 
+    @Override
+    public String submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
+        String order = submitOrder(type, price, amount);
+        return null;
+    }
+
+    @Override
+    public String selectOrderStr(String orderId) {
+        return null;
+    }
+
+    @Override
+    public String cancelTradeStr(String orderId) {
+        return null;
+    }
 
     /**
      * 查询订单详情
@@ -207,7 +222,7 @@ public class LoexParentService extends BaseService implements RobotAction {
      */
 
 
-    @Override
+
     public String selectOrder(String orderId) {
 
         String timestamp = getSecondTimestamp(new Date());
@@ -276,7 +291,7 @@ public class LoexParentService extends BaseService implements RobotAction {
      * @return
      * @throws UnsupportedEncodingException
      */
-    @Override
+
     public String cancelTrade(String orderId) {
 
         String timestamp = getSecondTimestamp(new Date());

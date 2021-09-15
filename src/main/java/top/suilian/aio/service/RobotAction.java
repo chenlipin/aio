@@ -22,7 +22,7 @@ public interface RobotAction {
      * @param amount 数量
      * @return 单号
      */
-    String submitOrder(int type, BigDecimal price, BigDecimal amount);
+    String submitOrderStr(int type, BigDecimal price, BigDecimal amount);
 
 
     /**
@@ -30,7 +30,7 @@ public interface RobotAction {
      * @param orderId
      * @return
      */
-    String selectOrder(String orderId);
+    String selectOrderStr(String orderId);
 
 
     /**
@@ -38,7 +38,7 @@ public interface RobotAction {
      * @param orderId
      * @return
      */
-    String cancelTrade(String orderId);
+    String cancelTradeStr(String orderId);
 
 
     public void setParam(Integer id);

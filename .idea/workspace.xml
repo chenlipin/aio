@@ -5,38 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91c6167b-67c5-4fab-8024-448c6d6d8b6f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_projectlombok_lombok_1_18_8.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aio.iml" beforeDir="false" afterPath="$PROJECT_DIR$/aio.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/TestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/TestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/dao/RobotMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/dao/RobotMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/BaseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/BaseService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/asproex/kline/AsproexKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/asproex/kline/AsproexKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bbkx/kline/BbkxKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bbkx/kline/BbkxKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitvictory/kline/BitvictoryKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitvictory/kline/BitvictoryKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinvv/kline/CoinvvKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinvv/kline/CoinvvKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/euexReferbibox/depthReferToBibox/EuexReferDepthToBibox.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/euexReferbibox/depthReferToBibox/EuexReferDepthToBibox.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/euexReferbibox/kline/EuexReferBiboxKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/euexReferbibox/kline/EuexReferBiboxKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fchain/newKline/NewFchainKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fchain/newKline/NewFchainKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/laex/depthReferToZg/DepthToZg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/laex/depthReferToZg/DepthToZg.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/laex/kline/LaexKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/laex/kline/LaexKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/RobotController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/RobotController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/RobotAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/RobotAction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/LoexParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/LoexParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/kline/LoexKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/kline/LoexKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/newKline/NewLoexKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/newKline/NewLoexKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nine9ex/newKline/NewNine9exKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nine9ex/newKline/NewNine9exKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nine9ex/randomDepth/Nine9exDepth.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nine9ex/randomDepth/Nine9exDepth.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/pcas/kline/PcasKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/pcas/kline/PcasKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/pickcoin/newKline/NewPickcoinKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/pickcoin/newKline/NewPickcoinKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/pickcoin/randomDepth/PickcoinDepth.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/pickcoin/randomDepth/PickcoinDepth.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/senbit/kline/SenbitKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/senbit/kline/SenbitKline.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/wbfex/WbfexParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/wbfex/WbfexParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/wbfex/kline/RunWbfexKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/wbfex/kline/RunWbfexKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/wbfex/kline/WbfexKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/wbfex/kline/WbfexKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/wbfex/newKline/NewWbfexKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/wbfex/newKline/NewWbfexKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/vo/FastTradeReq.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/vo/FastTradeReq.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/controller/RobotController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/top/suilian/aio/controller/RobotController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/RobotAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/RobotAction.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/aatradeRobitService/TradeRobotService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/aatradeRobitService/TradeRobotService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/loex/LoexParentService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/loex/LoexParentService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/wbfex/WbfexParentService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/wbfex/depthReferToLoex/DepthToLoex.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/wbfex/kline/WbfexKline.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/wbfex/klineReferToLoex/KlineToLoex.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/wbfex/newKline/NewWbfexKline.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/wbfex/randomDepth/WbfexRandomDepth.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -259,8 +244,8 @@
       <recent name="top.suilian.aio" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="" />
       <recent name="top.suilian.aio.Util" />
+      <recent name="" />
       <recent name="top.suilian.aio.vo" />
     </key>
   </component>
@@ -352,7 +337,7 @@
       <workItem from="1630055397736" duration="11925000" />
       <workItem from="1630483956732" duration="2110000" />
       <workItem from="1630567941003" duration="21000" />
-      <workItem from="1631582227225" duration="12975000" />
+      <workItem from="1631582227225" duration="16514000" />
     </task>
     <servers />
   </component>
@@ -473,12 +458,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java</url>
-          <line>42</line>
+          <line>48</line>
           <option name="timeStamp" value="20" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/LoexParentService.java</url>
-          <line>281</line>
+          <line>296</line>
           <option name="timeStamp" value="21" />
         </line-breakpoint>
       </breakpoints>

@@ -163,7 +163,7 @@ public class WbfexParentService extends BaseService implements RobotAction {
     /**
      * 下单
      */
-    @Override
+
     public String submitOrder(int type, BigDecimal price, BigDecimal amount) {
 
         String timestamp = String.valueOf(new Date().getTime());
@@ -217,7 +217,7 @@ public class WbfexParentService extends BaseService implements RobotAction {
      */
 
 
-    @Override
+
     public String selectOrder(String orderId)   {
 
         String timestamp = String.valueOf(new Date().getTime());
@@ -278,7 +278,7 @@ public class WbfexParentService extends BaseService implements RobotAction {
      * 撤单
      *
      */
-    @Override
+
     public String cancelTrade(String orderId)  {
 
         String timestamp = String.valueOf(new Date().getTime());
@@ -442,5 +442,20 @@ public class WbfexParentService extends BaseService implements RobotAction {
             }
         }
         return url;
+    }
+
+    @Override
+    public String submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
+        return null;
+    }
+
+    @Override
+    public String selectOrderStr(String orderId) {
+        return null;
+    }
+
+    @Override
+    public String cancelTradeStr(String orderId) {
+        return null;
     }
 }

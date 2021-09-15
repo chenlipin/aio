@@ -61,7 +61,7 @@ public class RobotController {
     @PostMapping(value = "/fastTrade")
     @ResponseBody
     public ResponseEntity fastTrade(@Valid @RequestBody FastTradeReq req) {
-
+        ResponseEntity responseEntity = tradeRobotService.fastTrade(req);
         return ResponseEntity.success();
 
     }
