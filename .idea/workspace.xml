@@ -6,12 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="91c6167b-67c5-4fab-8024-448c6d6d8b6f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/BaseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/BaseService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/RobotAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/RobotAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/vo/FastTradeReq.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/vo/FastTradeReq.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/aatradeRobitService/TradeRobotService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/aatradeRobitService/TradeRobotService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/vo/FastTradeReq.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/top/suilian/aio/vo/FastTradeReq.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -209,6 +203,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="DatabaseDriversLRU" value="mysql" />
     <property name="RequestMappingsPanelOrder0" value="0" />
     <property name="RequestMappingsPanelOrder1" value="1" />
     <property name="RequestMappingsPanelWidth0" value="75" />
@@ -252,7 +247,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.RandomUtilsme">
+  <component name="RunManager" selected="Spring Boot.AioApplication">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="top.suilian.aio.controller.Main" />
       <module name="aio" />
@@ -279,13 +274,15 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="class" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -302,9 +299,9 @@
     </configuration>
     <list>
       <item itemvalue="Application.Main" />
-      <item itemvalue="Spring Boot.AioApplication" />
-      <item itemvalue="HTTP Request.generated-requests#15" />
       <item itemvalue="Application.RandomUtilsme" />
+      <item itemvalue="HTTP Request.generated-requests#15" />
+      <item itemvalue="Spring Boot.AioApplication" />
     </list>
     <recent_temporary>
       <list>
@@ -342,7 +339,8 @@
       <workItem from="1630055397736" duration="11925000" />
       <workItem from="1630483956732" duration="2110000" />
       <workItem from="1630567941003" duration="21000" />
-      <workItem from="1631582227225" duration="27285000" />
+      <workItem from="1631582227225" duration="28223000" />
+      <workItem from="1631752412472" duration="682000" />
     </task>
     <servers />
   </component>
