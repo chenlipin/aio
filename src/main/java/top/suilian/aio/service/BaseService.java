@@ -334,7 +334,7 @@ public class BaseService {
         String requestJson = JSON.toJSONString(smsSingleRequest);
         String response = ChuangLanSmsUtil.sendSmsByPost(requestJson);
         JSONObject responseObj = JSONObject.fromObject(response);
-        //sendSms(msg);
+        sendSms(msg);
         return responseObj;
     }
 
@@ -345,11 +345,7 @@ public class BaseService {
      * @param msg
      */
     public static void sendSms(String msg) {
-        for (String moblie : Constant.KEY_SMS_MOBLIES) {
-            SmsSendRequest smsSingleRequest1 = new SmsSendRequest(msg, moblie);
-            String requestJson1 = JSON.toJSONString(smsSingleRequest1);
-            ChuangLanSmsUtil.sendSmsByPost(requestJson1);
-        }
+
     }
 
 
@@ -372,24 +368,6 @@ public class BaseService {
      * @return
      */
     public JSONObject judgeRes(String res, String code, String action) {
-        logger.info(action + "：" + res);
-        System.out.println(code);
-        System.out.println(res);
-        if (!"".equals(res) && res != null && isjson(res)) {
-            JSONObject resJson = JSONObject.fromObject(res);
-
-            System.out.println(res.indexOf(code));
-            if (res.indexOf(code) != -1) {
-                removeSmsRedis(Constant.KEY_SMS_INTERFACE_ERROR);
-                return resJson;
-            }
-//            if (resJson.has(code)) {
-//                removeSmsRedis(Constant.KEY_SMS_INTERFACE_ERROR);
-//                return resJson;
-//            }
-        }
-        String msg = "Bihu接口错误！";
-        judgeSendMessage(1, msg, "", Constant.KEY_SMS_INTERFACE_ERROR);
         return null;
     }
 
@@ -419,47 +397,7 @@ public class BaseService {
      * @return
      */
     public void judgeSendMessage(int isMobileSwitch, String message, String mobile, int type) {
-        if (isMobileSwitch == 1) {
-            String key = null;
-            switch (type) {
-                case Constant.KEY_SMS_SMALL_INTERVAL:       //区间过小
-                    key = id + "_smallInterval";
-                    if (redisHelper.getParam(key) == null) {
-                        redisHelper.setParam(key, String.valueOf(System.currentTimeMillis()));
-                    } else {
-                        if (System.currentTimeMillis() - Long.valueOf(redisHelper.getParam(key)) > Constant.KEY_SNS_SMALL_INTERVAL_TIME) {
-                            redisHelper.setParam(key + "_true", "true");
-                            sendSms(message, mobile);
-                            logger.info("---------------发送短信：" + message);
-                            removeSmsRedis(type);
-                        }
-                    }
-                    break;
-                case Constant.KEY_SMS_INSUFFICIENT:        //余额不足
-                    key = id + "_insufficient";
-                    if (redisHelper.getParam(key) == null) {
-                        redisHelper.setParam(key, String.valueOf(System.currentTimeMillis()));
-                        sendSms(message, mobile);
-                    }
-                    break;
-                case Constant.KEY_SMS_INTERFACE_ERROR:      //平台接口异常
-                    key = id + "_error";
-                    if (redisHelper.getParam(key) == null) {
-                        redisHelper.setParam(key, String.valueOf(System.currentTimeMillis()));
-                    } else {
-                        if (System.currentTimeMillis() - Long.valueOf(redisHelper.getParam(key)) > Constant.KEY_SNS_INTERFACE_ERROR_TIME) {
-                            redisHelper.setParam(key + "_true", "true");
-                            sendSms(message);
-                            logger.info("---------------发送短信：" + message);
-                            removeSmsRedis(type);
-                        }
-                    }
-                    break;
-                case Constant.KEY_SMS_CANCEL_MAX_STOP:  //撤单数达到上限，停止量化
-                    sendSms(message, mobile);
-                    break;
-            }
-        }
+
     }
 
     /**

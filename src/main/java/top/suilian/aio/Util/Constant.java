@@ -496,8 +496,6 @@ public class Constant {
     public static final int KEY_SMS_INTERFACE_ERROR = 3;                     //平台接口异常
     public static final int KEY_SMS_CANCEL_MAX_STOP = 4;                     //撤单达到上限，停止机器人
     public static final List<String> KEY_SMS_MOBLIES = Arrays.asList(        //我们自己手机号
-
-            "13027177263","15172455168","15827462216"
     );
     //endregion
 

@@ -123,7 +123,7 @@ public class RunLoexRandomDepth {
         @Override
         public void dowork() {
             Robot robot = redisHelper.getRobot(name);
-            if (robot != null && redisHelper.getRobot(name).getStatus() == Constant.KEY_ROBOT_STATUS_RUN) {
+//            if (robot != null && redisHelper.getRobot(name).getStatus() == Constant.KEY_ROBOT_STATUS_RUN) {
                 String key = "_exception";
                 try {
                     randomDepth.init();
@@ -144,9 +144,9 @@ public class RunLoexRandomDepth {
                         redisHelper.removeParent(randomDepth.id+key);
                     }
                 }
-            } else {
-                killWork(randomDepth.id);
-            }
+//            } else {
+//                killWork(randomDepth.id);
+//            }
         }
     }
 }

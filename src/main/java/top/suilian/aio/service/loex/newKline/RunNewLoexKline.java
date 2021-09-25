@@ -9,6 +9,7 @@ import top.suilian.aio.model.Robot;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.runnable.StopableTask;
 import top.suilian.aio.service.*;
+import top.suilian.aio.service.loex.RandomDepth.RunLoexRandomDepth;
 import top.suilian.aio.service.loex.kline.LoexKline;
 import top.suilian.aio.service.loex.kline.RunLoexKline;
 
@@ -34,6 +35,8 @@ public class RunNewLoexKline {
     RobotService robotService;
     @Autowired
     TradeLogService tradeLogService;
+    @Autowired
+    RunLoexRandomDepth runLoexRandomDepth;
     //endregion
 
 
@@ -104,6 +107,7 @@ public class RunNewLoexKline {
                     robotService.stopRobot(id);
                     redisHelper.removeParent(String.valueOf(id));
                     redisHelper.remove(Constant.KEY_ROBOT + id);
+                    runLoexRandomDepth.killWork(2);
                     return true;
                 }
             }

@@ -1,5 +1,6 @@
 package top.suilian.aio.service.loex.RandomDepth;
 
+import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
@@ -45,18 +46,28 @@ public class LoexRandomDepth extends LoexParentService {
 
 
     public void init() {
-        logger.info("\r\n------------------------------{" + id + "} 开始------------------------------\r\n");
+        logger.info("\r\n-------------ss-----------------{" + id + "} 开始------------------------------\r\n");
         if (start) {
-            logger.info("设置机器人参数开始");
             setParam();
-            logger.info("设置机器人参数结束");
-
-            logger.info("设置机器人交易规则开始");
-
-            setPrecision();
-
-            logger.info("设置机器人交易规则结束");
-            start = false;
+            logger.info("机器人2参数"+JSON.toJSONString(exchange));
+            try {
+                for (;;){
+                    Thread.sleep(1000);
+                    logger.info("机器人2运行中");
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return;
+//            setParam();
+//            logger.info("设置机器人参数结束");
+//
+//            logger.info("设置机器人交易规则开始");
+//
+//            setPrecision();
+//
+//            logger.info("设置机器人交易规则结束");
+//            start = false;
         }
         if (Integer.parseInt(exchange.get("depthCancelNum")) >= depthCancelOrderNum) {
             //获取深度

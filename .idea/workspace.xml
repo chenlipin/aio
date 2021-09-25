@@ -5,7 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91c6167b-67c5-4fab-8024-448c6d6d8b6f" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/all.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/all.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/ChuangLanSmsUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/ChuangLanSmsUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/filter/UrlFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/filter/UrlFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/BaseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/BaseService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/RandomDepth/LoexRandomDepth.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/RandomDepth/LoexRandomDepth.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/RandomDepth/RunLoexRandomDepth.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/RandomDepth/RunLoexRandomDepth.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/newKline/NewLoexKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/newKline/NewLoexKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/newKline/RunNewLoexKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/newKline/RunNewLoexKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/generator/ApitradeLogDao.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/Util/Constant.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/top/suilian/aio/Util/Constant.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/loex/RandomDepth/RunLoexRandomDepth$Work.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/loex/RandomDepth/RunLoexRandomDepth$Work.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/loex/newKline/RunNewLoexKline$Work.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/loex/newKline/RunNewLoexKline$Work.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/loex/newKline/RunNewLoexKline.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/loex/newKline/RunNewLoexKline.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,6 +50,7 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/EgParentService.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/RandomDepth/RunLoexRandomDepth.java" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fubt/kline/FubtKline.java" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/klineReferToZg/EgKlineToZg.java" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/depthReferToZg/EgDepthToZg.java" root0="SKIP_INSPECTION" />
@@ -212,7 +228,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1590216529706" />
-    <property name="last_opened_file_path" value="D:/workspace/official-wechat" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/resources/mybatis" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -223,12 +239,15 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\wandong\Desktop\java\aio\src\main\resources\mybatis" />
       <recent name="C:\Users\XiaoWan\Desktop\slkj\java\aio\src\main\java\top\suilian\aio\service\playcoin" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="top.suilian.aio" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="top.suilian.aio.dao" />
+      <recent name="top.suilian.aio.model" />
       <recent name="top.suilian.aio.Util" />
       <recent name="" />
       <recent name="top.suilian.aio.vo" />
@@ -274,15 +293,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -340,7 +357,8 @@
       <workItem from="1630483956732" duration="2110000" />
       <workItem from="1630567941003" duration="21000" />
       <workItem from="1631582227225" duration="28223000" />
-      <workItem from="1631752412472" duration="682000" />
+      <workItem from="1631752412472" duration="5222000" />
+      <workItem from="1632356817189" duration="24293000" />
     </task>
     <servers />
   </component>
@@ -463,6 +481,21 @@
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/LoexParentService.java</url>
           <line>296</line>
           <option name="timeStamp" value="21" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/RandomDepth/RunLoexRandomDepth.java</url>
+          <line>125</line>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/RandomDepth/RunLoexRandomDepth.java</url>
+          <line>94</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/newKline/RunNewLoexKline.java</url>
+          <line>97</line>
+          <option name="timeStamp" value="30" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
