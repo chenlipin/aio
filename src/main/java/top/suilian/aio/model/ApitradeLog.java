@@ -74,7 +74,7 @@ public class ApitradeLog implements Serializable {
     /**
      * 更新时间
      */
-    private String updatedAt;
+    private Date updatedAt;
 
     private static final long serialVersionUID = 1L;
 }

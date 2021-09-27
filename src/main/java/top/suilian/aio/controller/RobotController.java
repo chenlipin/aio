@@ -112,8 +112,8 @@ public class RobotController {
      */
     @RequestMapping(value = "/cancalAllOrder")
     @ResponseBody
-    public ResponseEntity cancalAllOrder(@Valid @RequestBody CancalOrderReq req) {
-
+    public ResponseEntity cancalAllOrder(@Valid @RequestBody CancalAllOrder req) {
+        tradeRobotService.cancalAllOrder(req);
         return ResponseEntity.success();
 
     }

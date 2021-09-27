@@ -8,7 +8,6 @@
 package top.suilian.aio.service.aatradeRobitService;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,17 +24,11 @@ import top.suilian.aio.service.loex.LoexParentService;
 import top.suilian.aio.service.wbfex.WbfexParentService;
 import top.suilian.aio.vo.*;
 
-import javax.xml.crypto.Data;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.Callable;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 /**
  * <B>Description:</B>  <br>
@@ -111,21 +104,34 @@ public class TradeRobotService {
     }
 
     public void cancalfastTrade(CancalAllOrder req) {
-        if (!"运行中".equals(map.get(Integer.parseInt(req.getRobotId())))) {
+        if (!"运行中".equals(map.get(req.getRobotId()))) {
             throw new RuntimeException("有一个任务正在运行中");
         }
-        map.remove(Integer.parseInt(req.getRobotId()));
+        map.remove(req.getRobotId());
     }
 
     public String fastTradestatus(CancalAllOrder req) {
-        if (map.get(Integer.parseInt(req.getRobotId())) == null) {
+        if (map.get(req.getRobotId()) == null) {
             return "停止中";
         }
         return "运行中";
     }
 
     public List<getAllOrderPonse> getAllOrder(CancalAllOrder req) {
-        return apitradeLogMapper.selectByRobotId(Integer.parseInt(req.getRobotId()));
+        return apitradeLogMapper.selectByRobotId(req.getRobotId());
+
+    }
+
+    /**
+     * 一键撤单
+     *
+     * @param req
+     */
+    public ResponseEntity cancalAllOrder(CancalAllOrder req) {
+        RobotAction robotAction = getRobotAction(req.getRobotId());
+        FastCancalTradeM fastCancalTradeM = new FastCancalTradeM( robotAction,req);
+        executor.execute(fastCancalTradeM);
+        return ResponseEntity.success();
 
     }
 
@@ -210,6 +216,34 @@ public class TradeRobotService {
                 }
             }
             map.remove(fastTradeReq.getRobotId());
+        }
+    }
+
+
+    /**
+     * 一键撤单核心逻辑
+     */
+    class FastCancalTradeM implements Runnable {
+        RobotAction robotAction;
+        CancalAllOrder cancalAllOrder;
+
+        public FastCancalTradeM(RobotAction robotAction, CancalAllOrder cancalAllOrder) {
+            this.robotAction = robotAction;
+            this.cancalAllOrder = cancalAllOrder;
+        }
+
+        @Override
+        public void run() {
+            //获取机器人挂的单而且没成交的单子
+            List<ApitradeLog> apitradeLogs = apitradeLogMapper.selectByRobotIdNOTrade(cancalAllOrder.getRobotId());
+            //单号集合
+            apitradeLogs.forEach(apitradeLog -> {
+//                String result = robotAction.cancelTradeStr(apitradeLog.getOrderId());
+                apitradeLog.setStatus(-1);
+                apitradeLog.setUpdatedAt(new Date());
+                apitradeLogMapper.updateByPrimaryKeySelective(apitradeLog);
+            });
+
         }
     }
 

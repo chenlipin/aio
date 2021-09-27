@@ -22,4 +22,6 @@ public interface ApitradeLogMapper {
     int updateByPrimaryKey(ApitradeLog record);
 
     List<getAllOrderPonse> selectByRobotId(Integer robotId);
+
+    List<ApitradeLog> selectByRobotIdNOTrade(Integer robotId);
 }

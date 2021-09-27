@@ -6,6 +6,7 @@
     <result column="robot_id" jdbcType="INTEGER" property="robotId" />
     <result column="order_id" jdbcType="VARCHAR" property="orderId" />
     <result column="member_id" jdbcType="INTEGER" property="memberId" />
+    <result column="trade_type" jdbcType="INTEGER" property="tradeType" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="price" jdbcType="DECIMAL" property="price" />
     <result column="amount" jdbcType="DECIMAL" property="amount" />
@@ -15,7 +16,7 @@
     <result column="updated_at" jdbcType="VARCHAR" property="updatedAt" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, robot_id, order_id, member_id, `type`, price, amount, `status`, memo, created_at, 
+    id, robot_id, order_id, member_id, `type`,trade_type, price, amount, `status`, memo, created_at,
     updated_at
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -163,6 +164,13 @@
     where robot_id = #{robotId} and trade_type=2 order by created_at desc limit 10
   </select>
 
+
+  <select id="selectByRobotIdNOTrade" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from apitrade_log
+    where robot_id = #{robotId} and trade_type=1 and status in (0,1) order by created_at desc
+  </select>
 
 
 </mapper>
