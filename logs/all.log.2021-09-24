@@ -1,0 +1,500 @@
+2021-09-24 16:17:30,708  INFO AioApplication:17 - Start Success
+2021-09-24 16:20:14,994  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 16:20:15,702  WARN StopableTask:41 - {1} 开始
+2021-09-24 16:20:15,710  INFO 1:73 - 机器人1设置机器人参数开始
+2021-09-24 16:20:15,723  WARN StopableTask:41 - {2} 开始
+2021-09-24 16:21:22,638  INFO AioApplication:17 - Start Success
+2021-09-24 16:25:09,476  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 16:25:10,124  WARN StopableTask:41 - {1} 开始
+2021-09-24 16:25:12,178  INFO 1:73 - 机器人1设置机器人参数开始
+2021-09-24 16:25:21,976  WARN StopableTask:41 - {2} 开始
+2021-09-24 16:26:21,142  INFO AioApplication:17 - Start Success
+2021-09-24 16:27:28,602  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 16:27:29,065  WARN StopableTask:41 - {1} 开始
+2021-09-24 16:27:31,043  INFO 1:73 - 机器人1设置机器人参数开始
+2021-09-24 16:28:14,378  WARN StopableTask:41 - {2} 开始
+2021-09-24 16:28:51,877  INFO AioApplication:17 - Start Success
+2021-09-24 16:29:08,015  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 16:29:08,403  WARN StopableTask:41 - {1} 开始
+2021-09-24 16:29:10,826  INFO 1:73 - 机器人1设置机器人参数开始
+2021-09-24 16:29:15,566  WARN StopableTask:41 - {2} 开始
+2021-09-24 16:30:21,504  INFO AioApplication:17 - Start Success
+2021-09-24 16:30:26,176  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 16:30:26,562  WARN StopableTask:41 - {1} 开始
+2021-09-24 16:30:26,571  INFO 1:73 - 机器人1设置机器人参数开始
+2021-09-24 16:30:26,578  WARN StopableTask:41 - {2} 开始
+2021-09-24 16:31:12,956  INFO AioApplication:17 - Start Success
+2021-09-24 16:31:24,909  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 16:31:25,303  WARN StopableTask:41 - {1} 开始
+2021-09-24 16:31:28,907  INFO 1:73 - 机器人1设置机器人参数开始
+2021-09-24 16:31:32,131  WARN StopableTask:41 - {2} 开始
+2021-09-24 16:31:54,642  INFO AioApplication:17 - Start Success
+2021-09-24 16:32:02,119  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 16:32:02,465  WARN StopableTask:41 - {1} 开始
+2021-09-24 16:32:02,474  INFO 1:73 - 机器人1设置机器人参数开始
+2021-09-24 16:32:02,492  WARN StopableTask:41 - {2} 开始
+2021-09-24 16:36:41,069  INFO AioApplication:17 - Start Success
+2021-09-24 16:38:57,958  INFO AioApplication:17 - Start Success
+2021-09-24 16:41:38,721  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 16:41:39,122  WARN StopableTask:41 - {1} 开始
+2021-09-24 16:41:42,354  INFO 1:73 - 机器人1设置机器人参数开始
+2021-09-24 16:41:44,459  WARN StopableTask:41 - {2} 开始
+2021-09-24 16:49:22,786  INFO AioApplication:17 - Start Success
+2021-09-24 16:49:46,860  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 16:49:47,260  WARN StopableTask:41 - {1} 开始
+2021-09-24 16:49:52,978  INFO 1:73 - 机器人1设置机器人参数开始
+2021-09-24 16:50:03,219  WARN StopableTask:41 - {2} 开始
+2021-09-24 16:52:40,001  INFO 1:73 - 机器人1设置机器人参数开始
+2021-09-24 16:52:40,009  WARN StopableTask:41 - {2} 开始
+2021-09-24 16:52:46,498  INFO AioApplication:17 - Start Success
+2021-09-24 16:52:52,547  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 16:52:52,920  WARN StopableTask:41 - {1} 开始
+2021-09-24 16:52:52,929  INFO 1:73 - 机器人1设置机器人参数开始
+2021-09-24 16:52:52,940  WARN StopableTask:41 - {2} 开始
+2021-09-24 16:53:04,880  INFO AioApplication:17 - Start Success
+2021-09-24 16:53:23,064  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 16:56:34,610  INFO AioApplication:17 - Start Success
+2021-09-24 16:56:51,670  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 16:56:52,058  WARN StopableTask:41 - {1} 开始
+2021-09-24 16:56:52,066  INFO 1:73 - 机器人1设置机器人参数开始
+2021-09-24 16:56:52,074  WARN StopableTask:41 - {2} 开始
+2021-09-24 16:56:52,075  INFO 2:48 - 
+-------------ss-----------------{2} 开始------------------------------
+
+2021-09-24 16:56:52,075  INFO 2:50 - 守护线程------------------设置机器人参数开始
+2021-09-24 17:03:31,323  INFO AioApplication:17 - Start Success
+2021-09-24 17:03:55,246  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:03:55,659  WARN StopableTask:41 - {1} 开始
+2021-09-24 17:03:55,667  INFO 1:74 - 机器人1设置机器人参数开始
+2021-09-24 17:03:55,672  INFO 1:76 - 机器人1参数{"buyMinLimitAmount":"0.001","suspendLowerLimit":"5","timeSlot":"300","tradeRatio":"0.5","isSuspendTrade":"0","orderSum":"10","openIntervalFromPrice":"0.001","isBuyMinLimitAmount":"1","amountPrecision":"6","isMobileSwitch":"0","minTradeLimit":"1","openIntervalPrice":"0.002","numMinThreshold":"0.1","tpass":"xxx","sellMinLimitAmount":"0.001","startTime":"1","orderOperation":"0","pricePrecision":"6","isOpenIntervalSwitch":"1","apikey":"xxx","mobile":"11","sheetForm":"1","isTradeCheck":"1","orderSumSwitch":"1","maxEatOrder":"10","isSellMinLimitAmount":"0","market":"btc_usdt","numThreshold":"2","openIntervalAllAmount":"10","endTime":"10","isdeepRobot":"1","priceRange":"10","suspendTopLimit":"10"}
+2021-09-24 17:03:55,676  WARN StopableTask:41 - {2} 开始
+2021-09-24 17:03:55,692  INFO 2:49 - 
+-------------ss-----------------{2} 开始------------------------------
+
+2021-09-24 17:03:55,694  INFO 2:52 - 机器人2参数{"market":"btc_usdt","pricePrecision":"6","intervalTopLimit":"10","depthCancelNum":"10","mobile":"11","depthOrderRange":"2_5","intervalLowerLimit":"5","isMobileSwitch":"0","amountPrecision":"6"}
+2021-09-24 17:03:56,687  INFO 1:110 - 机器人1运行中
+2021-09-24 17:03:56,702  INFO 2:56 - 机器人2运行中
+2021-09-24 17:03:57,698  INFO 1:110 - 机器人1运行中
+2021-09-24 17:03:57,714  INFO 2:56 - 机器人2运行中
+2021-09-24 17:03:58,713  INFO 1:110 - 机器人1运行中
+2021-09-24 17:03:58,729  INFO 2:56 - 机器人2运行中
+2021-09-24 17:03:59,728  INFO 1:110 - 机器人1运行中
+2021-09-24 17:03:59,744  INFO 2:56 - 机器人2运行中
+2021-09-24 17:04:00,729  INFO 1:110 - 机器人1运行中
+2021-09-24 17:04:00,760  INFO 2:56 - 机器人2运行中
+2021-09-24 17:04:01,730  INFO 1:110 - 机器人1运行中
+2021-09-24 17:04:01,761  INFO 2:56 - 机器人2运行中
+2021-09-24 17:04:02,743  INFO 1:110 - 机器人1运行中
+2021-09-24 17:04:02,774  INFO 2:56 - 机器人2运行中
+2021-09-24 17:04:03,744  INFO 1:110 - 机器人1运行中
+2021-09-24 17:04:03,776  INFO 2:56 - 机器人2运行中
+2021-09-24 17:04:04,755  INFO 1:110 - 机器人1运行中
+2021-09-24 17:04:04,786  INFO 2:56 - 机器人2运行中
+2021-09-24 17:04:05,770  INFO 1:110 - 机器人1运行中
+2021-09-24 17:04:05,801  INFO 2:56 - 机器人2运行中
+2021-09-24 17:04:05,903  INFO ServiceController:367 - 强杀机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:04:06,801  INFO 2:56 - 机器人2运行中
+2021-09-24 17:04:07,811  INFO 2:56 - 机器人2运行中
+2021-09-24 17:04:08,823  INFO 2:56 - 机器人2运行中
+2021-09-24 17:04:09,837  INFO 2:56 - 机器人2运行中
+2021-09-24 17:04:10,848  INFO 2:56 - 机器人2运行中
+2021-09-24 17:04:11,862  INFO 2:56 - 机器人2运行中
+2021-09-24 17:04:12,865  INFO 2:56 - 机器人2运行中
+2021-09-24 17:04:13,877  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:11,812  INFO AioApplication:17 - Start Success
+2021-09-24 17:10:34,591  INFO ServiceController:367 - 强杀机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:10:42,275  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:10:42,294  WARN StopableTask:41 - {1} 开始
+2021-09-24 17:10:42,302  INFO 1:74 - 机器人1设置机器人参数开始
+2021-09-24 17:10:42,306  INFO 1:76 - 机器人1参数{"buyMinLimitAmount":"0.001","suspendLowerLimit":"5","timeSlot":"300","tradeRatio":"0.5","isSuspendTrade":"0","orderSum":"10","openIntervalFromPrice":"0.001","isBuyMinLimitAmount":"1","amountPrecision":"6","isMobileSwitch":"0","minTradeLimit":"1","openIntervalPrice":"0.002","numMinThreshold":"0.1","tpass":"xxx","sellMinLimitAmount":"0.001","startTime":"1","orderOperation":"0","pricePrecision":"6","isOpenIntervalSwitch":"1","apikey":"xxx","mobile":"11","sheetForm":"1","isTradeCheck":"1","orderSumSwitch":"1","maxEatOrder":"10","isSellMinLimitAmount":"0","market":"btc_usdt","numThreshold":"2","openIntervalAllAmount":"10","endTime":"10","isdeepRobot":"1","priceRange":"10","suspendTopLimit":"10"}
+2021-09-24 17:10:42,309  WARN StopableTask:41 - {2} 开始
+2021-09-24 17:10:42,310  INFO 2:49 - 
+-------------ss-----------------{2} 开始------------------------------
+
+2021-09-24 17:10:42,312  INFO 2:52 - 机器人2参数{"market":"btc_usdt","pricePrecision":"6","intervalTopLimit":"10","depthCancelNum":"10","mobile":"11","depthOrderRange":"2_5","intervalLowerLimit":"5","isMobileSwitch":"0","amountPrecision":"6"}
+2021-09-24 17:10:43,323  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:43,323  INFO 1:110 - 机器人1运行中
+2021-09-24 17:10:44,337  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:44,337  INFO 1:110 - 机器人1运行中
+2021-09-24 17:10:45,353  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:45,353  INFO 1:110 - 机器人1运行中
+2021-09-24 17:10:46,360  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:46,360  INFO 1:110 - 机器人1运行中
+2021-09-24 17:10:47,375  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:47,375  INFO 1:110 - 机器人1运行中
+2021-09-24 17:10:48,388  INFO 1:110 - 机器人1运行中
+2021-09-24 17:10:48,388  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:49,402  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:49,402  INFO 1:110 - 机器人1运行中
+2021-09-24 17:10:50,145  INFO ServiceController:367 - 强杀机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:10:50,402  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:51,413  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:52,425  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:53,440  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:54,442  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:55,455  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:56,468  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:57,483  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:58,496  INFO 2:56 - 机器人2运行中
+2021-09-24 17:10:59,497  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:00,499  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:01,513  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:02,517  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:03,532  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:04,545  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:05,557  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:06,559  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:07,570  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:08,584  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:09,586  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:10,586  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:11,596  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:12,603  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:13,606  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:14,618  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:15,632  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:16,641  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:17,651  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:18,652  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:19,662  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:20,678  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:21,691  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:22,706  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:23,718  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:24,724  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:25,739  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:26,739  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:27,753  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:28,768  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:29,780  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:30,795  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:31,809  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:32,824  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:33,836  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:34,847  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:35,858  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:36,859  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:37,873  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:38,887  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:39,901  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:40,912  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:41,927  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:42,938  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:43,949  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:44,962  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:45,972  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:46,981  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:47,982  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:48,992  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:50,006  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:51,017  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:52,032  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:53,042  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:54,052  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:55,056  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:56,071  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:57,073  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:58,086  INFO 2:56 - 机器人2运行中
+2021-09-24 17:11:59,100  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:00,113  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:01,114  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:02,124  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:03,136  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:04,147  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:05,161  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:06,163  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:07,177  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:08,192  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:09,203  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:10,217  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:11,232  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:12,244  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:13,251  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:14,266  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:15,281  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:16,294  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:17,296  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:18,307  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:19,318  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:20,320  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:21,334  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:22,336  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:23,348  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:24,361  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:25,372  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:26,383  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:27,383  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:28,398  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:29,411  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:30,417  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:31,427  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:32,432  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:33,444  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:34,458  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:35,469  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:36,483  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:37,493  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:38,506  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:39,507  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:40,509  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:41,518  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:42,530  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:43,541  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:44,553  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:45,564  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:46,577  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:47,591  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:48,603  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:49,604  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:50,617  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:51,628  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:52,643  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:53,655  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:54,665  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:55,679  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:56,692  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:57,692  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:58,693  INFO 2:56 - 机器人2运行中
+2021-09-24 17:12:59,696  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:00,699  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:01,713  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:02,728  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:03,743  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:04,756  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:05,772  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:06,784  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:07,786  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:08,791  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:09,801  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:10,813  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:11,828  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:12,830  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:13,831  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:14,833  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:15,838  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:16,840  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:17,854  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:18,861  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:19,864  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:20,879  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:21,893  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:22,894  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:23,906  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:24,921  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:25,935  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:26,937  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:27,953  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:28,956  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:29,957  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:30,960  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:31,962  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:32,966  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:33,981  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:34,992  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:36,007  INFO 2:56 - 机器人2运行中
+2021-09-24 17:13:37,018  INFO 2:56 - 机器人2运行中
+2021-09-24 17:15:45,528  INFO AioApplication:17 - Start Success
+2021-09-24 17:16:06,871  INFO ServiceController:367 - 强杀机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:16:15,055  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:16:15,074  WARN StopableTask:41 - {1} 开始
+2021-09-24 17:16:15,081  INFO 1:74 - 机器人1设置机器人参数开始
+2021-09-24 17:16:15,085  INFO 1:76 - 机器人1参数{"buyMinLimitAmount":"0.001","suspendLowerLimit":"5","timeSlot":"300","tradeRatio":"0.5","isSuspendTrade":"0","orderSum":"10","openIntervalFromPrice":"0.001","isBuyMinLimitAmount":"1","amountPrecision":"6","isMobileSwitch":"0","minTradeLimit":"1","openIntervalPrice":"0.002","numMinThreshold":"0.1","tpass":"xxx","sellMinLimitAmount":"0.001","startTime":"1","orderOperation":"0","pricePrecision":"6","isOpenIntervalSwitch":"1","apikey":"xxx","mobile":"11","sheetForm":"1","isTradeCheck":"1","orderSumSwitch":"1","maxEatOrder":"10","isSellMinLimitAmount":"0","market":"btc_usdt","numThreshold":"2","openIntervalAllAmount":"10","endTime":"10","isdeepRobot":"1","priceRange":"10","suspendTopLimit":"10"}
+2021-09-24 17:16:15,102  WARN StopableTask:41 - {2} 开始
+2021-09-24 17:16:15,104  INFO 2:49 - 
+-------------ss-----------------{2} 开始------------------------------
+
+2021-09-24 17:16:15,106  INFO 2:52 - 机器人2参数{"market":"btc_usdt","pricePrecision":"6","intervalTopLimit":"10","depthCancelNum":"10","mobile":"11","depthOrderRange":"2_5","intervalLowerLimit":"5","isMobileSwitch":"0","amountPrecision":"6"}
+2021-09-24 17:16:16,115  INFO 1:110 - 机器人1运行中
+2021-09-24 17:16:16,115  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:17,124  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:17,124  INFO 1:110 - 机器人1运行中
+2021-09-24 17:16:18,127  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:18,127  INFO 1:110 - 机器人1运行中
+2021-09-24 17:16:19,127  INFO 1:110 - 机器人1运行中
+2021-09-24 17:16:19,127  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:20,139  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:20,139  INFO 1:110 - 机器人1运行中
+2021-09-24 17:16:21,152  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:21,152  INFO 1:110 - 机器人1运行中
+2021-09-24 17:16:22,165  INFO 1:110 - 机器人1运行中
+2021-09-24 17:16:22,165  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:23,176  INFO 1:110 - 机器人1运行中
+2021-09-24 17:16:23,176  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:24,190  INFO 1:110 - 机器人1运行中
+2021-09-24 17:16:24,190  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:25,200  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:25,200  INFO 1:110 - 机器人1运行中
+2021-09-24 17:16:26,201  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:26,201  INFO 1:110 - 机器人1运行中
+2021-09-24 17:16:27,215  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:27,215  INFO 1:110 - 机器人1运行中
+2021-09-24 17:16:28,224  INFO 1:110 - 机器人1运行中
+2021-09-24 17:16:28,224  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:28,951  INFO ServiceController:367 - 强杀机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:16:29,235  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:30,245  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:31,246  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:32,247  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:33,262  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:34,275  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:35,285  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:36,300  INFO 2:56 - 机器人2运行中
+2021-09-24 17:16:37,315  INFO 2:56 - 机器人2运行中
+2021-09-24 17:17:27,460  INFO AioApplication:17 - Start Success
+2021-09-24 17:17:48,898  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:17:53,869  WARN StopableTask:41 - {1} 开始
+2021-09-24 17:17:56,672  INFO 1:74 - 机器人1设置机器人参数开始
+2021-09-24 17:17:56,679  INFO 1:76 - 机器人1参数{"buyMinLimitAmount":"0.001","suspendLowerLimit":"5","timeSlot":"300","tradeRatio":"0.5","isSuspendTrade":"0","orderSum":"10","openIntervalFromPrice":"0.001","isBuyMinLimitAmount":"1","amountPrecision":"6","isMobileSwitch":"0","minTradeLimit":"1","openIntervalPrice":"0.002","numMinThreshold":"0.1","tpass":"xxx","sellMinLimitAmount":"0.001","startTime":"1","orderOperation":"0","pricePrecision":"6","isOpenIntervalSwitch":"1","apikey":"xxx","mobile":"11","sheetForm":"1","isTradeCheck":"1","orderSumSwitch":"1","maxEatOrder":"10","isSellMinLimitAmount":"0","market":"btc_usdt","numThreshold":"2","openIntervalAllAmount":"10","endTime":"10","isdeepRobot":"1","priceRange":"10","suspendTopLimit":"10"}
+2021-09-24 17:17:56,688  WARN StopableTask:41 - {2} 开始
+2021-09-24 17:17:59,209  INFO 1:110 - 机器人1运行中
+2021-09-24 17:17:59,209  INFO 2:49 - 
+-------------ss-----------------{2} 开始------------------------------
+
+2021-09-24 17:17:59,212  INFO 2:52 - 机器人2参数{"market":"btc_usdt","pricePrecision":"6","intervalTopLimit":"10","depthCancelNum":"10","mobile":"11","depthOrderRange":"2_5","intervalLowerLimit":"5","isMobileSwitch":"0","amountPrecision":"6"}
+2021-09-24 17:18:00,217  INFO 1:110 - 机器人1运行中
+2021-09-24 17:18:00,217  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:01,230  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:01,230  INFO 1:110 - 机器人1运行中
+2021-09-24 17:18:02,241  INFO 1:110 - 机器人1运行中
+2021-09-24 17:18:02,241  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:03,253  INFO 1:110 - 机器人1运行中
+2021-09-24 17:18:03,253  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:04,261  INFO 1:110 - 机器人1运行中
+2021-09-24 17:18:04,261  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:05,263  INFO 1:110 - 机器人1运行中
+2021-09-24 17:18:05,263  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:06,277  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:06,277  INFO 1:110 - 机器人1运行中
+2021-09-24 17:18:07,291  INFO 1:110 - 机器人1运行中
+2021-09-24 17:18:07,291  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:08,301  INFO 1:110 - 机器人1运行中
+2021-09-24 17:18:08,301  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:09,313  INFO 1:110 - 机器人1运行中
+2021-09-24 17:18:09,313  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:10,317  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:10,317  INFO 1:110 - 机器人1运行中
+2021-09-24 17:18:11,317  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:11,317  INFO 1:110 - 机器人1运行中
+2021-09-24 17:18:12,333  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:12,333  INFO 1:110 - 机器人1运行中
+2021-09-24 17:18:13,340  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:13,340  INFO 1:110 - 机器人1运行中
+2021-09-24 17:18:13,648  INFO ServiceController:367 - 强杀机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:18:14,355  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:15,368  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:16,380  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:17,390  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:18,404  INFO 2:56 - 机器人2运行中
+2021-09-24 17:18:19,404  INFO 2:56 - 机器人2运行中
+2021-09-24 17:19:16,551  INFO AioApplication:17 - Start Success
+2021-09-24 17:19:35,828  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:19:36,161  WARN StopableTask:41 - {1} 开始
+2021-09-24 17:19:36,169  INFO 1:74 - 机器人1设置机器人参数开始
+2021-09-24 17:19:36,173  INFO 1:76 - 机器人1参数{"buyMinLimitAmount":"0.001","suspendLowerLimit":"5","timeSlot":"300","tradeRatio":"0.5","isSuspendTrade":"0","orderSum":"10","openIntervalFromPrice":"0.001","isBuyMinLimitAmount":"1","amountPrecision":"6","isMobileSwitch":"0","minTradeLimit":"1","openIntervalPrice":"0.002","numMinThreshold":"0.1","tpass":"xxx","sellMinLimitAmount":"0.001","startTime":"1","orderOperation":"0","pricePrecision":"6","isOpenIntervalSwitch":"1","apikey":"xxx","mobile":"11","sheetForm":"1","isTradeCheck":"1","orderSumSwitch":"1","maxEatOrder":"10","isSellMinLimitAmount":"0","market":"btc_usdt","numThreshold":"2","openIntervalAllAmount":"10","endTime":"10","isdeepRobot":"1","priceRange":"10","suspendTopLimit":"10"}
+2021-09-24 17:19:36,177  WARN StopableTask:41 - {2} 开始
+2021-09-24 17:19:36,178  INFO 2:49 - 
+-------------ss-----------------{2} 开始------------------------------
+
+2021-09-24 17:19:36,180  INFO 2:52 - 机器人2参数{"market":"btc_usdt","pricePrecision":"6","intervalTopLimit":"10","depthCancelNum":"10","mobile":"11","depthOrderRange":"2_5","intervalLowerLimit":"5","isMobileSwitch":"0","amountPrecision":"6"}
+2021-09-24 17:19:37,180  INFO 2:56 - 机器人2运行中
+2021-09-24 17:19:37,180  INFO 1:110 - 机器人1运行中
+2021-09-24 17:19:38,185  INFO 1:110 - 机器人1运行中
+2021-09-24 17:19:38,185  INFO 2:56 - 机器人2运行中
+2021-09-24 17:19:39,187  INFO 1:110 - 机器人1运行中
+2021-09-24 17:19:39,187  INFO 2:56 - 机器人2运行中
+2021-09-24 17:19:40,201  INFO 2:56 - 机器人2运行中
+2021-09-24 17:19:40,201  INFO 1:110 - 机器人1运行中
+2021-09-24 17:19:41,216  INFO 2:56 - 机器人2运行中
+2021-09-24 17:19:41,216  INFO 1:110 - 机器人1运行中
+2021-09-24 17:19:42,228  INFO 1:110 - 机器人1运行中
+2021-09-24 17:19:42,228  INFO 2:56 - 机器人2运行中
+2021-09-24 17:19:42,720  INFO ServiceController:367 - 强杀机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:19:43,242  INFO 2:56 - 机器人2运行中
+2021-09-24 17:19:44,243  INFO 2:56 - 机器人2运行中
+2021-09-24 17:19:50,438  INFO AioApplication:17 - Start Success
+2021-09-24 17:20:04,588  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:20:05,013  WARN StopableTask:41 - {1} 开始
+2021-09-24 17:20:05,024  INFO 1:74 - 机器人1设置机器人参数开始
+2021-09-24 17:20:05,029  INFO 1:76 - 机器人1参数{"buyMinLimitAmount":"0.001","suspendLowerLimit":"5","timeSlot":"300","tradeRatio":"0.5","isSuspendTrade":"0","orderSum":"10","openIntervalFromPrice":"0.001","isBuyMinLimitAmount":"1","amountPrecision":"6","isMobileSwitch":"0","minTradeLimit":"1","openIntervalPrice":"0.002","numMinThreshold":"0.1","tpass":"xxx","sellMinLimitAmount":"0.001","startTime":"1","orderOperation":"0","pricePrecision":"6","isOpenIntervalSwitch":"1","apikey":"xxx","mobile":"11","sheetForm":"1","isTradeCheck":"1","orderSumSwitch":"1","maxEatOrder":"10","isSellMinLimitAmount":"0","market":"btc_usdt","numThreshold":"2","openIntervalAllAmount":"10","endTime":"10","isdeepRobot":"1","priceRange":"10","suspendTopLimit":"10"}
+2021-09-24 17:20:05,035  WARN StopableTask:41 - {2} 开始
+2021-09-24 17:20:05,036  INFO 2:49 - 
+-------------ss-----------------{2} 开始------------------------------
+
+2021-09-24 17:20:05,038  INFO 2:52 - 机器人2参数{"market":"btc_usdt","pricePrecision":"6","intervalTopLimit":"10","depthCancelNum":"10","mobile":"11","depthOrderRange":"2_5","intervalLowerLimit":"5","isMobileSwitch":"0","amountPrecision":"6"}
+2021-09-24 17:20:06,039  INFO 2:56 - 机器人2运行中
+2021-09-24 17:20:06,039  INFO 1:110 - 机器人1运行中
+2021-09-24 17:20:07,050  INFO 1:110 - 机器人1运行中
+2021-09-24 17:20:07,050  INFO 2:56 - 机器人2运行中
+2021-09-24 17:20:08,062  INFO 2:56 - 机器人2运行中
+2021-09-24 17:20:08,062  INFO 1:110 - 机器人1运行中
+2021-09-24 17:20:09,074  INFO 1:110 - 机器人1运行中
+2021-09-24 17:20:09,074  INFO 2:56 - 机器人2运行中
+2021-09-24 17:20:10,087  INFO 2:56 - 机器人2运行中
+2021-09-24 17:20:10,087  INFO 1:110 - 机器人1运行中
+2021-09-24 17:20:11,087  INFO 2:56 - 机器人2运行中
+2021-09-24 17:20:11,087  INFO 1:110 - 机器人1运行中
+2021-09-24 17:20:12,088  INFO 1:110 - 机器人1运行中
+2021-09-24 17:20:12,088  INFO 2:56 - 机器人2运行中
+2021-09-24 17:20:13,103  INFO 1:110 - 机器人1运行中
+2021-09-24 17:20:13,103  INFO 2:56 - 机器人2运行中
+2021-09-24 17:20:14,071  INFO ServiceController:367 - 强杀机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:20:20,650  INFO 1:110 - 机器人1运行中
+2021-09-24 17:20:20,650  INFO 2:56 - 机器人2运行中
+2021-09-24 17:20:21,675  INFO 1:110 - 机器人1运行中
+2021-09-24 17:20:23,387  INFO 2:56 - 机器人2运行中
+2021-09-24 17:20:26,307  INFO 2:56 - 机器人2运行中
+2021-09-24 17:20:46,925  INFO 2:56 - 机器人2运行中
+2021-09-24 17:20:56,429  INFO 2:56 - 机器人2运行中
+2021-09-24 17:21:05,526  INFO AioApplication:17 - Start Success
+2021-09-24 17:21:32,913  INFO AioApplication:17 - Start Success
+2021-09-24 17:21:47,940  INFO AioApplication:17 - Start Success
+2021-09-24 17:21:57,280  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:21:57,643  WARN StopableTask:41 - {1} 开始
+2021-09-24 17:21:57,651  INFO 1:74 - 机器人1设置机器人参数开始
+2021-09-24 17:21:57,656  INFO 1:76 - 机器人1参数{"buyMinLimitAmount":"0.001","suspendLowerLimit":"5","timeSlot":"300","tradeRatio":"0.5","isSuspendTrade":"0","orderSum":"10","openIntervalFromPrice":"0.001","isBuyMinLimitAmount":"1","amountPrecision":"6","isMobileSwitch":"0","minTradeLimit":"1","openIntervalPrice":"0.002","numMinThreshold":"0.1","tpass":"xxx","sellMinLimitAmount":"0.001","startTime":"1","orderOperation":"0","pricePrecision":"6","isOpenIntervalSwitch":"1","apikey":"xxx","mobile":"11","sheetForm":"1","isTradeCheck":"1","orderSumSwitch":"1","maxEatOrder":"10","isSellMinLimitAmount":"0","market":"btc_usdt","numThreshold":"2","openIntervalAllAmount":"10","endTime":"10","isdeepRobot":"1","priceRange":"10","suspendTopLimit":"10"}
+2021-09-24 17:21:57,660  WARN StopableTask:41 - {2} 开始
+2021-09-24 17:21:57,675  INFO 2:49 - 
+-------------ss-----------------{2} 开始------------------------------
+
+2021-09-24 17:21:57,677  INFO 2:52 - 机器人2参数{"market":"btc_usdt","pricePrecision":"6","intervalTopLimit":"10","depthCancelNum":"10","mobile":"11","depthOrderRange":"2_5","intervalLowerLimit":"5","isMobileSwitch":"0","amountPrecision":"6"}
+2021-09-24 17:21:58,663  INFO 1:110 - 机器人1运行中
+2021-09-24 17:21:58,679  INFO 2:56 - 机器人2运行中
+2021-09-24 17:21:59,667  INFO 1:110 - 机器人1运行中
+2021-09-24 17:21:59,683  INFO 2:56 - 机器人2运行中
+2021-09-24 17:22:00,678  INFO 1:110 - 机器人1运行中
+2021-09-24 17:22:00,694  INFO 2:56 - 机器人2运行中
+2021-09-24 17:22:01,690  INFO 1:110 - 机器人1运行中
+2021-09-24 17:22:01,705  INFO 2:56 - 机器人2运行中
+2021-09-24 17:22:02,701  INFO 1:110 - 机器人1运行中
+2021-09-24 17:22:02,716  INFO 2:56 - 机器人2运行中
+2021-09-24 17:22:03,715  INFO 1:110 - 机器人1运行中
+2021-09-24 17:22:03,730  INFO 2:56 - 机器人2运行中
+2021-09-24 17:22:04,729  INFO 1:110 - 机器人1运行中
+2021-09-24 17:22:04,745  INFO 2:56 - 机器人2运行中
+2021-09-24 17:22:05,744  INFO 1:110 - 机器人1运行中
+2021-09-24 17:22:05,759  INFO 2:56 - 机器人2运行中
+2021-09-24 17:22:06,082  INFO ServiceController:367 - 强杀机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:29:25,272  INFO AioApplication:17 - Start Success
+2021-09-24 17:29:31,147  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=20, type=7, category=0}
+2021-09-24 17:29:31,475  WARN StopableTask:41 - {1} 开始
+2021-09-24 17:29:31,482  INFO 1:74 - 机器人1设置机器人参数开始
+2021-09-24 17:29:31,487  INFO 1:76 - 机器人1参数{"buyMinLimitAmount":"0.001","suspendLowerLimit":"5","timeSlot":"300","tradeRatio":"0.5","isSuspendTrade":"0","orderSum":"10","openIntervalFromPrice":"0.001","isBuyMinLimitAmount":"1","amountPrecision":"6","isMobileSwitch":"0","minTradeLimit":"1","openIntervalPrice":"0.002","numMinThreshold":"0.1","tpass":"xxx","sellMinLimitAmount":"0.001","startTime":"1","orderOperation":"0","pricePrecision":"6","isOpenIntervalSwitch":"1","apikey":"xxx","mobile":"11","sheetForm":"1","isTradeCheck":"1","orderSumSwitch":"1","maxEatOrder":"10","isSellMinLimitAmount":"0","market":"btc_usdt","numThreshold":"2","openIntervalAllAmount":"10","endTime":"10","isdeepRobot":"0","priceRange":"10","suspendTopLimit":"10"}
+2021-09-24 17:29:32,496  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:33,508  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:34,508  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:35,523  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:36,524  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:37,527  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:38,541  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:39,554  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:40,566  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:41,568  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:42,582  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:43,588  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:44,599  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:45,612  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:46,624  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:47,638  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:48,651  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:49,655  INFO 1:110 - 机器人1运行中
+2021-09-24 17:29:50,351  INFO ServiceController:367 - 强杀机器人===>OperationRequest{id=1, coin=20, type=7, category=0}

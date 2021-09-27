@@ -9,18 +9,13 @@ package top.suilian.aio.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import top.suilian.aio.service.aatradeRobitService.TradeRobotService;
-import top.suilian.aio.vo.CancalOrderReq;
-import top.suilian.aio.vo.FastTradeReq;
-import top.suilian.aio.vo.ResponseEntity;
-import top.suilian.aio.vo.TradeReq;
+import top.suilian.aio.vo.*;
 
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 /**
  * <B>Description:</B> 机器人操作接口 <br>
@@ -66,6 +61,34 @@ public class RobotController {
 
     }
 
+    /**
+     * 取消一键挂单
+     *
+     * @param req
+     * @return
+     */
+    @PostMapping(value = "/cancalfastTrade")
+    @ResponseBody
+    public ResponseEntity cancalfastTrade(@Valid @RequestBody CancalAllOrder req) {
+         tradeRobotService.cancalfastTrade(req);
+        return ResponseEntity.success();
+
+    }
+
+    /**
+     * 一键挂单机器人状态
+     *
+     * @param req
+     * @return
+     */
+    @PostMapping(value = "/fastTradestatus")
+    @ResponseBody
+    public ResponseEntity fastTradestatus(@Valid @RequestBody  CancalAllOrder req) {
+        String str=tradeRobotService.fastTradestatus(req);
+        return  ResponseEntity.success(str);
+
+    }
+
 
     /**
      * 根据订单号撤单
@@ -103,11 +126,20 @@ public class RobotController {
      */
     @RequestMapping(value = "/getAllOrder")
     @ResponseBody
-    public ResponseEntity getAllOrder(@Valid @RequestBody CancalOrderReq req) {
-
-        return ResponseEntity.success();
+    public ResponseEntity getAllOrder(@Valid @RequestBody CancalAllOrder req) {
+        List<getAllOrderPonse> orders=tradeRobotService.getAllOrder(req);
+        return ResponseEntity.success(orders);
 
     }
 
+
+
+
+    @RequestMapping(value = "/test")
+    @ResponseBody
+    public ResponseEntity trade()   {
+        return ResponseEntity.success(new FastTradeReq());
+
+    }
 
 }

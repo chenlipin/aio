@@ -1,3 +1,13 @@
+GET http://localhost:8848/robot/test
+
+<> 2021-09-27T092341.200.json
+
+###
+
+GET http://robot/test
+
+###
+
 GET http://localhost:8848/robot/trade
 
 <> 2021-09-14T111105.200.json
