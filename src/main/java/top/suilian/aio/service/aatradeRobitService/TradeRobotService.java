@@ -18,6 +18,7 @@ import top.suilian.aio.Util.RandomUtilsme;
 import top.suilian.aio.dao.RobotMapper;
 import top.suilian.aio.model.Robot;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.service.hotcoin.HotCoinParentService;
 import top.suilian.aio.service.loex.LoexParentService;
 import top.suilian.aio.service.wbfex.WbfexParentService;
 import top.suilian.aio.vo.FastTradeReq;
@@ -97,6 +98,9 @@ public class TradeRobotService {
             //BHEX
             case Constant.KEY_EXCHANGE_BHEX:
                 robotAction = new WbfexParentService();
+                break;
+            case Constant.KEY_EXCHANGE_HOTCOIN:
+                robotAction = new HotCoinParentService();
                 break;
             default:
                 return null;

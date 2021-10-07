@@ -2,11 +2,11 @@ package top.suilian.aio.service.hotcoin;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.commons.codec.digest.DigestUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.service.BaseService;
+import top.suilian.aio.service.RobotAction;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -16,9 +16,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class HotCoinParentService extends BaseService {
-    public String baseUrl = "https://hkapi.hotcoin.top";
-    public String host = "hkapi.hotcoin.top";
+public class HotCoinParentService extends BaseService implements RobotAction {
+    public String baseUrl = "https://api.hotcoinfin.com";
+    public String host = "api.hotcoinfin.com";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
@@ -429,4 +429,18 @@ public class HotCoinParentService extends BaseService {
         return httpParams.toString();
     }
 
+    @Override
+    public String submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
+        return null;
+    }
+
+    @Override
+    public String selectOrderStr(String orderId) {
+        return null;
+    }
+
+    @Override
+    public String cancelTradeStr(String orderId) {
+        return null;
+    }
 }
