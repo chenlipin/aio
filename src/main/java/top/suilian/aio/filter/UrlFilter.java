@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-@WebFilter(filterName = "aio", urlPatterns = "/service/*")
+//@WebFilter(filterName = "aio", urlPatterns = "/service/*")
 public class UrlFilter implements Filter {
     private static Logger logger = Logger.getLogger(UrlFilter.class);
     @Autowired

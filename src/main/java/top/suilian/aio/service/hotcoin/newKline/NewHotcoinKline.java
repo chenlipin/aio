@@ -72,6 +72,14 @@ public class NewHotcoinKline extends HotCoinParentService {
             logger.info("设置机器人交易规则开始");
             setPrecision();
             logger.info("设置机器人交易规则结束");
+
+            setBalanceRedis();
+            System.out.println("******");
+            try {
+                Thread.sleep(10000000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本

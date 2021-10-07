@@ -1,15 +1,3 @@
-2021-10-07 20:55:59,417  INFO AioApplication:17 - Start Success
-2021-10-07 21:00:09,896  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=18, type=7, category=1}
-2021-10-07 21:00:18,311  WARN StopableTask:41 - {1} 开始
-2021-10-07 21:01:48,381  INFO AioApplication:17 - Start Success
-2021-10-07 21:01:52,762  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=18, type=7, category=1}
-2021-10-07 21:02:06,407  WARN StopableTask:41 - {1} 开始
-2021-10-07 21:03:11,384  INFO AioApplication:17 - Start Success
-2021-10-07 21:03:12,299  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=18, type=7, category=1}
-2021-10-07 21:03:28,196  WARN StopableTask:41 - {1} 开始
-2021-10-07 21:04:34,664  INFO AioApplication:17 - Start Success
-2021-10-07 21:04:35,609  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=18, type=7, category=1}
-2021-10-07 21:04:47,073  WARN StopableTask:41 - {1} 开始
 2021-10-07 21:04:47,117  INFO 1:63 - 设置机器人参数开始
 2021-10-07 21:04:47,132  INFO 1:70 - 设置机器人参数结束
 2021-10-07 21:04:47,143  INFO 1:72 - 设置机器人交易规则开始
@@ -26,9 +14,6 @@
 	"totalCount":0,
 	"totalPages":0
 }
-2021-10-07 21:06:00,533  INFO AioApplication:17 - Start Success
-2021-10-07 21:06:08,331  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=18, type=7, category=1}
-2021-10-07 21:06:13,885  WARN StopableTask:41 - {1} 开始
 2021-10-07 21:06:25,994  INFO 1:63 - 设置机器人参数开始
 2021-10-07 21:06:26,056  INFO 1:70 - 设置机器人参数结束
 2021-10-07 21:06:26,056  INFO 1:72 - 设置机器人交易规则开始
@@ -42,16 +27,10 @@
 	"msg":"馀额不足！",
 	"time":1633611990110
 }
-2021-10-07 21:10:17,809  INFO AioApplication:17 - Start Success
-2021-10-07 21:10:23,396  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=18, type=7, category=1}
-2021-10-07 21:10:27,466  WARN StopableTask:41 - {1} 开始
 2021-10-07 21:10:32,700  INFO 1:63 - 设置机器人参数开始
 2021-10-07 21:10:32,716  INFO 1:70 - 设置机器人参数结束
 2021-10-07 21:10:32,716  INFO 1:72 - 设置机器人交易规则开始
 2021-10-07 21:10:32,731  INFO 1:74 - 设置机器人交易规则结束
-2021-10-07 21:11:48,027  INFO AioApplication:17 - Start Success
-2021-10-07 21:11:57,860  INFO ServiceController:29 - 启动机器人===>OperationRequest{id=1, coin=18, type=7, category=1}
-2021-10-07 21:12:02,794  WARN StopableTask:41 - {1} 开始
 2021-10-07 21:12:04,849  INFO 1:63 - 设置机器人参数开始
 2021-10-07 21:12:04,881  INFO 1:70 - 设置机器人参数结束
 2021-10-07 21:12:04,882  INFO 1:72 - 设置机器人交易规则开始

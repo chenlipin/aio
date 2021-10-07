@@ -165,24 +165,19 @@ public class HotCoinParentService extends BaseService implements RobotAction {
     public String submitOrder(int type, BigDecimal price, BigDecimal amount){
         String timestamp = String.valueOf(new Date().getTime());
         String typeStr = type == 0 ? "买" : "卖";
-
         logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
-
         // 输出字符串
-
         String trade = null;
-
-
-        BigDecimal price1 = nN(price, Integer.valueOf(precision.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.valueOf(precision.get("amountPrecision").toString()));
+        BigDecimal price1 = nN(price, 6);
+        BigDecimal num = nN(amount, 6);
         String uri = "/v1/order/place";
         String httpMethod = "GET";
         Map<String, Object> params = new TreeMap<>();
-        params.put("AccessKeyId", exchange.get("apikey"));
+        params.put("AccessKeyId", "3b51ac4a05f04ab994291ae9c40db073");
         params.put("SignatureVersion", 2);
         params.put("SignatureMethod", "HmacSHA256");
         params.put("Timestamp", new Date().getTime());
-        params.put("symbol", exchange.get("market"));
+        params.put("symbol", "ccpt_usdt");
         if (type == 1) {
             params.put("type", "buy");
         } else {
@@ -190,7 +185,7 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         }
         params.put("tradeAmount", num);
         params.put("tradePrice", price1);
-        String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
+        String Signature = getSignature("C61B8A9DC20103A9784A8ABAB5B8B4B0", host, uri, httpMethod, params);
         params.put("Signature", Signature);
         String httpParams = null;
         try {
@@ -206,7 +201,7 @@ public class HotCoinParentService extends BaseService implements RobotAction {
 
         setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
-
+        System.out.println("robotId" + id + "----" + "挂单成功结束：" + trade);
         return trade;
     }
 
@@ -371,7 +366,6 @@ public class HotCoinParentService extends BaseService implements RobotAction {
      * 交易规则获取
      */
     public void setPrecision() {
-
         precision.put("amountPrecision", exchange.get("amountPrecision"));
         precision.put("pricePrecision", exchange.get("pricePrecision"));
         precision.put("minTradeLimit", exchange.get("minTradeLimit"));
