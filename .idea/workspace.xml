@@ -7,11 +7,14 @@
     <list default="true" id="91c6167b-67c5-4fab-8024-448c6d6d8b6f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/all.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/all.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/filter/UrlFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/filter/UrlFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/HotCoinParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/HotCoinParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/NewHotcoinKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/NewHotcoinKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/hotcoin/HotCoinParentService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/hotcoin/HotCoinParentService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/RobotController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/RobotController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/dao/ApitradeLogMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/dao/ApitradeLogMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/model/ApitradeLog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/model/ApitradeLog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/vo/CancalAllOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/vo/CancalAllOrder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mybatis/ApitradeLogMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mybatis/ApitradeLogMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/controller/RobotController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/top/suilian/aio/controller/RobotController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/aatradeRobitService/TradeRobotService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/top/suilian/aio/service/aatradeRobitService/TradeRobotService.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,11 +43,12 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fubt/kline/FubtKline.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/playcoin/kline/PlayCoinKline.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/depthReferToZg/EgDepthToZg.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/klineReferToZg/EgKlineToZg.java" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/EgParentService.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/RandomDepth/RunLoexRandomDepth.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fubt/kline/FubtKline.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/klineReferToZg/EgKlineToZg.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/depthReferToZg/EgDepthToZg.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/playcoin/kline/PlayCoinKline.java" root0="SKIP_INSPECTION" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -214,28 +218,30 @@
     <property name="RequestMappingsPanelOrder1" value="1" />
     <property name="RequestMappingsPanelWidth0" value="75" />
     <property name="RequestMappingsPanelWidth1" value="75" />
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1590216529706" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../workspace/official-wechat" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/resources/mybatis" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="rest.client.default.execution.environment" value="dev" />
   </component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\wandong\Desktop\java\aio\src\main\resources\mybatis" />
       <recent name="C:\Users\XiaoWan\Desktop\slkj\java\aio\src\main\java\top\suilian\aio\service\playcoin" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="top.suilian.aio" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="top.suilian.aio.dao" />
+      <recent name="top.suilian.aio.model" />
       <recent name="top.suilian.aio.Util" />
       <recent name="" />
       <recent name="top.suilian.aio.vo" />
@@ -246,6 +252,13 @@
       <list>
         <RestClientRequest>
           <option name="httpMethod" value="GET" />
+          <option name="urlBase" value="http://localhost:8848/robot/test" />
+          <option name="urlPath" value="" />
+          <option name="textToSend" value="" />
+          <option name="filesToSend" value="" />
+        </RestClientRequest>
+        <RestClientRequest>
+          <option name="httpMethod" value="GET" />
           <option name="urlBase" value="http://localhost:8848/robot/trade" />
           <option name="urlPath" value="" />
           <option name="textToSend" value="" />
@@ -254,29 +267,77 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
+  <component name="RunManager" selected="Spring Boot.AioApplication">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="top.suilian.aio.controller.Main" />
+      <module name="aio" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="top.suilian.aio.controller.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RandomUtilsme" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="top.suilian.aio.Util.RandomUtilsme" />
+      <module name="aio" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="top.suilian.aio.Util.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
+    </configuration>
+    <configuration name="generated-requests#15" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" index="15" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="generated-requests#24" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" index="24" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="generated-requests#25" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" index="25" runType="Run single request">
+      <method v="2" />
     </configuration>
     <configuration name="AioApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="aio" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="top.suilian.aio.AioApplication" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="SHORTEN_COMMAND_LINE" value="NONE" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Application.Main" />
+      <item itemvalue="Application.RandomUtilsme" />
+      <item itemvalue="HTTP Request.generated-requests#15" />
+      <item itemvalue="Spring Boot.AioApplication" />
+      <item itemvalue="HTTP Request.generated-requests#25" />
+      <item itemvalue="HTTP Request.generated-requests#24" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="HTTP Request.generated-requests#24" />
+        <item itemvalue="HTTP Request.generated-requests#25" />
+        <item itemvalue="Application.RandomUtilsme" />
+        <item itemvalue="HTTP Request.generated-requests#15" />
+        <item itemvalue="Application.Main" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
@@ -307,9 +368,8 @@
       <workItem from="1630483956732" duration="2110000" />
       <workItem from="1630567941003" duration="21000" />
       <workItem from="1631582227225" duration="28223000" />
-      <workItem from="1631752412472" duration="682000" />
-      <workItem from="1632877987978" duration="788000" />
-      <workItem from="1633609062644" duration="3214000" />
+      <workItem from="1631752412472" duration="5222000" />
+      <workItem from="1632356817189" duration="44091000" />
     </task>
     <servers />
   </component>
@@ -434,14 +494,29 @@
           <option name="timeStamp" value="21" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/NewHotcoinKline.java</url>
-          <line>62</line>
-          <option name="timeStamp" value="23" />
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/RandomDepth/RunLoexRandomDepth.java</url>
+          <line>125</line>
+          <option name="timeStamp" value="27" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/NewHotcoinKline.java</url>
-          <line>76</line>
-          <option name="timeStamp" value="24" />
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/RandomDepth/RunLoexRandomDepth.java</url>
+          <line>94</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/newKline/RunNewLoexKline.java</url>
+          <line>97</line>
+          <option name="timeStamp" value="30" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java</url>
+          <line>151</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java</url>
+          <line>237</line>
+          <option name="timeStamp" value="33" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

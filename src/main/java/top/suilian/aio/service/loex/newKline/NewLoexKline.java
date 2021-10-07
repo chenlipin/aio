@@ -1,11 +1,15 @@
 package top.suilian.aio.service.loex.newKline;
 
+import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
 import top.suilian.aio.service.loex.LoexParentService;
+import top.suilian.aio.service.loex.RandomDepth.RunLoexRandomDepth;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -42,6 +46,8 @@ public class NewLoexKline extends LoexParentService {
         super.logger = getLogger(Constant.KEY_LOG_PATH_LOEX_KLINE, id);
     }
 
+    @Autowired
+    RunLoexRandomDepth runLoexRandomDepth= BeanContext.getBean(RunLoexRandomDepth.class);
     private BigDecimal intervalAmount = BigDecimal.ZERO;
     private BigDecimal buyPrice = BigDecimal.ZERO;
     private BigDecimal sellPrice = BigDecimal.ZERO;
@@ -64,31 +70,49 @@ public class NewLoexKline extends LoexParentService {
     public void init() {
 
         if (start) {
-            logger.info("设置机器人参数开始");
+
+            logger.info("机器人1设置机器人参数开始");
             setParam();
-            setTransactionRatio();
-            if (exchange.get("tradeRatio") != null || !"0".equals(exchange.get("tradeRatio"))) {
-                Double ratio = 10 * (1 / (1 + Double.valueOf(exchange.get("tradeRatio"))));
-                tradeRatio = new BigDecimal(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
-            }
-            logger.info("设置机器人参数结束");
-
-            logger.info("设置机器人交易规则开始");
-            if (!setPrecision()) {
-                return;
-            }
-            logger.info("设置机器人交易规则结束");
-            //判断走K线的方式
-            if ("1".equals(exchange.get("sheetForm"))) {
-                //新版本
-                while (randomNum == 1 || randomNum == Integer.parseInt(exchange.get("priceRange"))) {
-                    randomNum = (int) Math.ceil(Math.random() * Integer.parseInt(exchange.get("priceRange")));
-                }
-                timeSlot = Integer.parseInt(exchange.get("timeSlot"));
+            logger.info("机器人1参数"+ JSON.toJSONString(exchange));
+//            setTransactionRatio();
+            /**
+             * 深度机器人
+             */
+            if(exchange.get("isdeepRobot").equals("1")){
+                runLoexRandomDepth.init(2);
             }
 
-            maxEatOrder = Integer.parseInt(exchange.get("maxEatOrder"));//吃单成交上限数
-            start = false;
+//            if (exchange.get("tradeRatio") != null || !"0".equals(exchange.get("tradeRatio"))) {
+//                Double ratio = 10 * (1 / (1 + Double.valueOf(exchange.get("tradeRatio"))));
+//                tradeRatio = new BigDecimal(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
+//            }
+//            logger.info("设置机器人参数结束");
+//
+//            logger.info("设置机器人交易规则开始");
+//            if (!setPrecision()) {
+//                return;
+//            }
+//            logger.info("设置机器人交易规则结束");
+//            //判断走K线的方式
+//            if ("1".equals(exchange.get("sheetForm"))) {
+//                //新版本
+//                while (randomNum == 1 || randomNum == Integer.parseInt(exchange.get("priceRange"))) {
+//                    randomNum = (int) Math.ceil(Math.random() * Integer.parseInt(exchange.get("priceRange")));
+//                }
+//                timeSlot = Integer.parseInt(exchange.get("timeSlot"));
+//            }
+//
+//            maxEatOrder = Integer.parseInt(exchange.get("maxEatOrder"));//吃单成交上限数
+//            start = false;
+            try {
+              for (;;){
+                  Thread.sleep(1000);
+                  logger.info("机器人1运行中");
+              }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return;
         }
 
 
@@ -208,7 +232,7 @@ public class NewLoexKline extends LoexParentService {
             }
 
             Double numThreshold1 = Double.valueOf(exchange.get("numThreshold"));
-            Double minNum = Double.valueOf(exchange.get("numMinThreshold"));
+                Double minNum = Double.valueOf(exchange.get("numMinThreshold"));
             long max = (long) (numThreshold1 * Math.pow(10, Double.valueOf(String.valueOf(precision.get("amountPrecision")))));
             long min = (long) (minNum * Math.pow(10, Double.valueOf(String.valueOf(precision.get("amountPrecision")))));
             long randNumber = min + (((long) (new Random().nextDouble() * (max - min))));

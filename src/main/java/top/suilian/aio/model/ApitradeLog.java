@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * apitrade_log
@@ -37,6 +38,12 @@ public class ApitradeLog implements Serializable {
     private Integer type;
 
     /**
+     * 1:一键挂单机器人挂单
+     * 2：手动挂单
+     */
+    private Integer tradeType;
+
+    /**
      * 价格
      */
     private BigDecimal price;
@@ -62,12 +69,12 @@ public class ApitradeLog implements Serializable {
     /**
      * 创建时间
      */
-    private String createdAt;
+    private Date createdAt;
 
     /**
      * 更新时间
      */
-    private String updatedAt;
+    private Date updatedAt;
 
     private static final long serialVersionUID = 1L;
 }
