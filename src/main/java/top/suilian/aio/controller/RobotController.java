@@ -70,7 +70,7 @@ public class RobotController {
     @PostMapping(value = "/cancalfastTrade")
     @ResponseBody
     public ResponseEntity cancalfastTrade(@Valid @RequestBody CancalAllOrder req) {
-         tradeRobotService.cancalfastTrade(req);
+        tradeRobotService.cancalfastTrade(req);
         return ResponseEntity.success();
 
     }
@@ -83,9 +83,9 @@ public class RobotController {
      */
     @PostMapping(value = "/fastTradestatus")
     @ResponseBody
-    public ResponseEntity fastTradestatus(@Valid @RequestBody  CancalAllOrder req) {
-        String str=tradeRobotService.fastTradestatus(req);
-        return  ResponseEntity.success(str);
+    public ResponseEntity fastTradestatus(@Valid @RequestBody CancalAllOrder req) {
+        String str = tradeRobotService.fastTradestatus(req);
+        return ResponseEntity.success(str);
 
     }
 
@@ -99,7 +99,7 @@ public class RobotController {
     @RequestMapping(value = "/cancalOrder")
     @ResponseBody
     public ResponseEntity cancalOrder(@Valid @RequestBody CancalOrderReq req) {
-
+        tradeRobotService.cancalByOrderId(req);
         return ResponseEntity.success();
 
     }
@@ -127,18 +127,16 @@ public class RobotController {
     @RequestMapping(value = "/getAllOrder")
     @ResponseBody
     public ResponseEntity getAllOrder(@Valid @RequestBody CancalAllOrder req) {
-        List<getAllOrderPonse> orders=tradeRobotService.getAllOrder(req);
+        List<getAllOrderPonse> orders = tradeRobotService.getAllOrder(req);
         return ResponseEntity.success(orders);
 
     }
 
 
-
-
     @RequestMapping(value = "/test")
     @ResponseBody
-    public ResponseEntity trade()   {
-        return ResponseEntity.success(new FastTradeReq());
+    public ResponseEntity trade() {
+        return ResponseEntity.success();
 
     }
 

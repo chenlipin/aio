@@ -1,4 +1,5 @@
 package top.suilian.aio.dao;
+import org.apache.ibatis.annotations.Param;
 
 
 import org.springframework.stereotype.Repository;
@@ -24,4 +25,6 @@ public interface ApitradeLogMapper {
     List<getAllOrderPonse> selectByRobotId(Integer robotId);
 
     List<ApitradeLog> selectByRobotIdNOTrade(Integer robotId);
+
+   ApitradeLog selectByRobotIdAndOrderId(@Param("robotId") Integer robotId, @Param("orderId") String orderId);
 }
