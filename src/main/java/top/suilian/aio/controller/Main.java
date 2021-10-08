@@ -58,6 +58,34 @@ public class Main {
         test();
     }
 
+    public static void mpSort(int[] arr) {
+        //标志位
+        boolean flag = true;
+        for (int i = 0, j; i < arr.length / 2 && flag; i++) {
+            flag = false;
+            //正向冒泡
+            for (j = i; j < arr.length - 1 - i; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    //翻转位置
+                    int num = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = num;
+                    flag = true;
+                }
+            }
+            //反向冒泡
+            for (--j; j > i; j--) {
+                if (arr[j] < arr[j - 1]) {
+                    //翻转位置
+                    int num = arr[j];
+                    arr[j] = arr[j - 1];
+                    arr[j - 1] = num;
+                    flag = true;
+                }
+            }
+        }
+    }
+
     public static void test(){
         String timestamp = String.valueOf(new Date().getTime());
         int length = timestamp.length();

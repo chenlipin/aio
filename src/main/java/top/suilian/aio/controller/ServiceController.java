@@ -83,7 +83,7 @@ public class ServiceController extends BaseController {
                     case Constant.KEY_EXCHANGE_9CCEX:                //9CCEX
                         biLianService.start(operationRequest.getId(), operationRequest.getType());
                         break;
-                    case Constant.KEY_EXCHANGE_HOTCOIN:                //xoxoex
+                    case Constant.KEY_EXCHANGE_HOTCOIN:                //hotcoin
                         hotCoinService.start(operationRequest.getId(), operationRequest.getType());
                         break;
                     case Constant.KEY_EXCHANGE_WBFEX:                //wbfex
