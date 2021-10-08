@@ -450,7 +450,7 @@ public class WbfexParentService extends BaseService implements RobotAction {
     }
 
     @Override
-    public String selectOrderStr(String orderId) {
+    public Map<String,Integer> selectOrderStr(String orderId) {
         return null;
     }
 

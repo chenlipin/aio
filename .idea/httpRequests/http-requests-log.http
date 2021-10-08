@@ -1,3 +1,21 @@
+GET https://api.doctorxiong.club/v1/fund?code=519674,161721
+
+<> 2021-09-28T173252.200.json
+
+###
+
+GET https://api.doctorxiong.club/v1/fund?code=519674,161721
+
+<> 2021-09-28T105222.200.json
+
+###
+
+GET https://api.doctorxiong.club/v1/fund?code=519674,161721
+
+<> 2021-09-28T083938.200.json
+
+###
+
 GET http://localhost:8848/robot/test
 
 <> 2021-09-27T092341.200.json

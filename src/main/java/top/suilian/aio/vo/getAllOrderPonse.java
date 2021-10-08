@@ -19,6 +19,7 @@ public class getAllOrderPonse implements Serializable {
     private String price;
     private String amount;
     private Integer status;
+    private String  orderId;
 
     private String createdAt;
 }

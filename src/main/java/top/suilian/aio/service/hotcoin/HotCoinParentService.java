@@ -2,11 +2,17 @@ package top.suilian.aio.service.hotcoin;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
+import top.suilian.aio.dao.ApitradeLogMapper;
 import top.suilian.aio.model.RobotArgs;
+import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.service.loex.LoexParentService;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -15,7 +21,9 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
+@Service
 public class HotCoinParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://api.hotcoinfin.com";
     public String host = "api.hotcoinfin.com";
@@ -29,7 +37,7 @@ public class HotCoinParentService extends BaseService implements RobotAction {
     public String[] transactionArr = new String[24];
 
     //设置交易量百分比
-    public void setTransactionRatio(){
+    public void setTransactionRatio() {
         String transactionRatio = exchange.get("transactionRatio");
         if (transactionRatio != null) {
             String str[] = transactionRatio.split(",");
@@ -162,22 +170,24 @@ public class HotCoinParentService extends BaseService implements RobotAction {
     }
 
     //对标下单
-    public String submitOrder(int type, BigDecimal price, BigDecimal amount){
+    public String submitOrder(int type, BigDecimal price, BigDecimal amount) {
         String timestamp = String.valueOf(new Date().getTime());
         String typeStr = type == 0 ? "买" : "卖";
+
         logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
+
         // 输出字符串
         String trade = null;
-        BigDecimal price1 = nN(price, 6);
-        BigDecimal num = nN(amount, 6);
+        BigDecimal price1 = nN(price, Integer.valueOf(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.valueOf(exchange.get("amountPrecision").toString()));
         String uri = "/v1/order/place";
         String httpMethod = "GET";
         Map<String, Object> params = new TreeMap<>();
-        params.put("AccessKeyId", "3b51ac4a05f04ab994291ae9c40db073");
+        params.put("AccessKeyId", exchange.get("apikey"));
         params.put("SignatureVersion", 2);
         params.put("SignatureMethod", "HmacSHA256");
         params.put("Timestamp", new Date().getTime());
-        params.put("symbol", "ccpt_usdt");
+        params.put("symbol", exchange.get("market"));
         if (type == 1) {
             params.put("type", "buy");
         } else {
@@ -185,39 +195,6 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         }
         params.put("tradeAmount", num);
         params.put("tradePrice", price1);
-        String Signature = getSignature("C61B8A9DC20103A9784A8ABAB5B8B4B0", host, uri, httpMethod, params);
-        params.put("Signature", Signature);
-        String httpParams = null;
-        try {
-            httpParams = splicing(params);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        logger.info("挂单参数" + httpParams);
-
-
-        trade = httpUtil.get("https://" + host + uri + "?" + httpParams);
-
-        setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
-        logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
-        System.out.println("robotId" + id + "----" + "挂单成功结束：" + trade);
-        return trade;
-    }
-
-    //获取委托单
-    public String getTradeOrders(int type){
-        String trade=null;
-        String uri = "/v1/order/entrust";
-        String httpMethod = "GET";
-        Map<String, Object> params = new TreeMap<>();
-        params.put("AccessKeyId", exchange.get("apikey"));
-        params.put("SignatureVersion", 2);
-        params.put("SignatureMethod", "HmacSHA256");
-        params.put("Timestamp", new Date().getTime());
-        params.put("symbol",exchange.get("market"));
-        params.put("type",type);
-        params.put("count",100);
         String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
         params.put("Signature", Signature);
         String httpParams = null;
@@ -226,7 +203,33 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        String trades = httpUtil.get("https://"+host + uri + "?" + httpParams);
+        trade = httpUtil.get("https://" + host + uri + "?" + httpParams);
+        setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+        return trade;
+    }
+
+    //获取委托单
+    public String getTradeOrders(int type) {
+        String trade = null;
+        String uri = "/v1/order/entrust";
+        String httpMethod = "GET";
+        Map<String, Object> params = new TreeMap<>();
+        params.put("AccessKeyId", exchange.get("apikey"));
+        params.put("SignatureVersion", 2);
+        params.put("SignatureMethod", "HmacSHA256");
+        params.put("Timestamp", new Date().getTime());
+        params.put("symbol", exchange.get("market"));
+        params.put("type", type);
+        params.put("count", 100);
+        String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
+        params.put("Signature", Signature);
+        String httpParams = null;
+        try {
+            httpParams = splicing(params);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String trades = httpUtil.get("https://" + host + uri + "?" + httpParams);
         return trades;
 
     }
@@ -251,11 +254,12 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         params.put("SignatureVersion", 2);
         params.put("SignatureMethod", "HmacSHA256");
         params.put("Timestamp", new Date().getTime());
-        params.put("id",orderId);
+        params.put("id", orderId);
         String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
         params.put("Signature", Signature);
         String httpParams = splicing(params);
-        String trades = httpUtil.get("https://"+host + uri + "?" + httpParams);
+        String trades = httpUtil.get("https://" + host + uri + "?" + httpParams);
+        logger.info("查询订单："+orderId+"  结果"+trades);
         return trades;
     }
 
@@ -285,6 +289,40 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         HttpUtil httpUtil = new HttpUtil();
         String res = httpUtil.get("https://" + host + uri + "?" + httpParams);
 
+        return res;
+    }
+
+
+    /**
+     * 获取所有尾单
+     *
+     * @return
+     */
+    public String getTrade() {
+
+        String uri = "/v1/order/entrust";
+        String httpMethod = "GET";
+        Map<String, Object> params = new TreeMap<>();
+        params.put("AccessKeyId", exchange.get("apikey"));
+        params.put("SignatureVersion", 2);
+        params.put("SignatureMethod", "HmacSHA256");
+        params.put("Timestamp", new Date().getTime());
+        params.put("symbol", exchange.get("market"));
+        params.put("type", 0);
+        params.put("page", 1);
+        params.put("count", 500);
+        String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
+        params.put("Signature", Signature);
+        String httpParams = null;
+        try {
+            httpParams = splicing(params);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        HttpUtil httpUtil = new HttpUtil();
+        String res = httpUtil.get("https://" + host + uri + "?" + httpParams);
+        System.out.println(res);
         return res;
     }
 
@@ -366,6 +404,7 @@ public class HotCoinParentService extends BaseService implements RobotAction {
      * 交易规则获取
      */
     public void setPrecision() {
+
         precision.put("amountPrecision", exchange.get("amountPrecision"));
         precision.put("pricePrecision", exchange.get("pricePrecision"));
         precision.put("minTradeLimit", exchange.get("minTradeLimit"));
@@ -423,18 +462,95 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         return httpParams.toString();
     }
 
+
     @Override
     public String submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
-        return null;
+        String orderId = "";
+        String submitOrder = submitOrder(type, price, amount);
+        if (StringUtils.isNotEmpty(submitOrder)) {
+            com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
+            if ("200".equals(jsonObject.getString("code"))) {
+                orderId = jsonObject.getJSONObject("data").getString("ID");
+            }
+        }
+        return orderId;
     }
 
     @Override
-    public String selectOrderStr(String orderId) {
-        return null;
+    //TradeEnum   1 未成交 2 部分成交 3 完全成交 4 撤单处理中 5 已撤销
+    public Map<String, Integer> selectOrderStr(String orderId) {
+        String trade = getTrade();
+        com.alibaba.fastjson.JSONObject jsonObject1 = com.alibaba.fastjson.JSONObject.parseObject(trade);
+        com.alibaba.fastjson.JSONArray entrutsHis = jsonObject1.getJSONObject("data").getJSONArray("entrutsHis");
+        HashMap<String, Integer> map = new HashMap<>();
+        for (Object entrutsHi : entrutsHis) {
+            com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(entrutsHi.toString());
+            map.put(jsonObject.getString("id"), jsonObject.getInteger("statusCode"));
+        }
+
+        List<String> orders = Arrays.asList(orderId.split(","));
+        HashMap<String, Integer> hashMap = new HashMap<>();
+
+        for (String order : orders) {
+            Integer integer = map.get(order);
+            if (integer != null) {
+                hashMap.put(order, getTradeEnum(integer).getStatus());
+            } else {
+                String result = "";
+                try {
+                    result = selectOrder(order);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(result);
+                if ("200".equals(jsonObject.getString("code"))) {
+                    Integer statusCode = jsonObject.getJSONObject("data").getInteger("statusCode");
+                    hashMap.put(order, getTradeEnum(statusCode).getStatus());
+                }
+
+            }
+        }
+        return hashMap;
     }
 
     @Override
     public String cancelTradeStr(String orderId) {
-        return null;
+        String cancelTrade = "";
+        try {
+            cancelTrade = cancelTrade(orderId);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        if (StringUtils.isNotEmpty(cancelTrade)) {
+            com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(cancelTrade);
+            if ("200".equals(jsonObject.getString("code"))||"300".equals(jsonObject.getString("code"))) {
+                return "true";
+            }
+        }
+        return "false";
+    }
+
+
+    public TradeEnum getTradeEnum(Integer integer) {
+        switch (integer) {
+            case 1:
+                return TradeEnum.NOTRADE;
+
+            case 2:
+                return TradeEnum.TRADEING;
+
+            case 3:
+                return TradeEnum.NOTRADED;
+
+            case 4:
+                return TradeEnum.CANCEL;
+
+            case 5:
+                return TradeEnum.CANCEL;
+
+            default:
+                return TradeEnum.CANCEL;
+
+        }
     }
 }

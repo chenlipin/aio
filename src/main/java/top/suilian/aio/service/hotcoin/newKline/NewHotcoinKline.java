@@ -73,10 +73,11 @@ public class NewHotcoinKline extends HotCoinParentService {
             setPrecision();
             logger.info("设置机器人交易规则结束");
 
-            setBalanceRedis();
-            System.out.println("******");
+          setBalanceRedis();
+            System.out.println("-------------");
+
             try {
-                Thread.sleep(10000000);
+                Thread.sleep(100000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

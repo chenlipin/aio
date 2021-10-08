@@ -32,7 +32,7 @@ public interface RobotAction {
      * @param orderId
      * @return
      */
-    String selectOrderStr(String orderId);
+    Map<String,Integer> selectOrderStr(String orderId);
 
 
     /**

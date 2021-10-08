@@ -5,7 +5,7 @@
  *
  * 版权归本公司所有，不得私自使用、拷贝、修改、删除，否则视为侵权
  */
-package top.suilian.aio.vo;
+package top.suilian.aio.model.response;
 
 
 /**
@@ -16,7 +16,7 @@ package top.suilian.aio.vo;
 public enum ResultCode {
 
     /**
-     * 状态码 200-299 操作成功
+     *
      */
     SUCCESS("0", "操作成功"),
     ERROR("1001", "操作失败"),

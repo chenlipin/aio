@@ -3,7 +3,8 @@ package top.suilian.aio.service;
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
 import org.apache.log4j.*;
-import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.ChuangLanSmsUtil;
 import top.suilian.aio.Util.CommonUtil;
@@ -20,8 +21,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+@Service
 public class BaseService {
     //region    Service
     public CancelExceptionService cancelExceptionService = BeanContext.getBean(CancelExceptionService.class);
@@ -31,12 +36,12 @@ public class BaseService {
     public RobotLogService robotLogService = BeanContext.getBean(RobotLogService.class);
     public RobotService robotService = BeanContext.getBean(RobotService.class);
     public TradeLogService tradeLogService = BeanContext.getBean(TradeLogService.class);
-    //endregion
+    //endregion org.apache.log4j.Logger
 
     //region    Utils
     public CommonUtil commonUtil = BeanContext.getBean(CommonUtil.class);
     public HttpUtil httpUtil = BeanContext.getBean(HttpUtil.class);
-    public Logger logger;
+    public Logger logger=Logger.getLogger(BaseService.class);
     public RedisHelper redisHelper = BeanContext.getBean(RedisHelper.class);
     //endregion
 
