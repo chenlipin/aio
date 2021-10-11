@@ -56,9 +56,17 @@ public class FastTradeReq {
     @NotNull(message = "buyorderRangePrice不能为空")
     private Double buyorderRangePrice;
 
+    /**买单比基准价低的范围 */
+    @NotNull(message = "buyorderRangePrice1不能为空")
+    private Double buyorderRangePrice1;
+
     /**卖单比基准价高的范围 */
     @NotNull(message = "sellorderRangePrice不能为空")
     private Double sellorderRangePrice;
+
+    /**卖单比基准价高的范围 */
+    @NotNull(message = "sellorderRangePrice1不能为空")
+    private Double sellorderRangePrice1;
 
     /**机器人id*/
     @NotNull(message = "robotId不能为空")
@@ -67,6 +75,9 @@ public class FastTradeReq {
     @NotNull(message = "userId不能为空")
     private Integer userId;
     /**签名*/
-//    @NotNull(message = "signature不能为空")
+    @NotNull(message = "signature不能为空")
     private String signature;
+
+    @NotNull(message = "token不能为空")
+    private String token;
 }

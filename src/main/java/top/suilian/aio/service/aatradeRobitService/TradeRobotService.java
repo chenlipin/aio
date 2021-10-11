@@ -8,6 +8,7 @@
 package top.suilian.aio.service.aatradeRobitService;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,8 +19,10 @@ import top.suilian.aio.Util.RandomUtilsme;
 import top.suilian.aio.dao.ApitradeLogMapper;
 import top.suilian.aio.dao.RobotMapper;
 import top.suilian.aio.model.ApitradeLog;
+import top.suilian.aio.model.Member;
 import top.suilian.aio.model.Robot;
 import top.suilian.aio.model.TradeEnum;
+import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.hotcoin.HotCoinParentService;
 import top.suilian.aio.service.loex.LoexParentService;
@@ -28,6 +31,8 @@ import top.suilian.aio.vo.*;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -50,6 +55,8 @@ public class TradeRobotService {
     private ApitradeLogMapper apitradeLogMapper;
     @Autowired
     HotCoinParentService hotCoinParentService;
+    @Autowired
+    RedisHelper redisHelper;
 
     Map<Integer, String> map = new ConcurrentHashMap<>();
 
@@ -57,17 +64,25 @@ public class TradeRobotService {
     /**
      * 挂单接口
      *
-     * @param tradeReq
+     * @param req
      */
-    public ResponseEntity trade(TradeReq tradeReq) throws UnsupportedEncodingException {
-        RobotAction robotAction = getRobotAction(tradeReq.getRobotId());
-        String orderId = robotAction.submitOrderStr(tradeReq.getType(), new BigDecimal(tradeReq.getPrice()), new BigDecimal(tradeReq.getAmount()));
+    public ResponseEntity trade(TradeReq req) throws UnsupportedEncodingException {
+        Member user = redisHelper.getUser(req.getToken());
+        if(user==null){
+            throw new RuntimeException("鉴权失败");
+        }
+        boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
+        if (!checkSignature){
+            throw new RuntimeException("Signature失败");
+        }
+        RobotAction robotAction = getRobotAction(req.getRobotId());
+        String orderId = robotAction.submitOrderStr(req.getType(), new BigDecimal(req.getPrice()), new BigDecimal(req.getAmount()));
         ApitradeLog apitradeLog = new ApitradeLog();
-        apitradeLog.setAmount(new BigDecimal(tradeReq.getAmount()));
-        apitradeLog.setPrice(new BigDecimal(tradeReq.getPrice()));
-        apitradeLog.setRobotId(tradeReq.getRobotId());
-        apitradeLog.setMemberId(tradeReq.getUserId());
-        apitradeLog.setType(tradeReq.getType());
+        apitradeLog.setAmount(new BigDecimal(req.getAmount()));
+        apitradeLog.setPrice(new BigDecimal(req.getPrice()));
+        apitradeLog.setRobotId(req.getRobotId());
+        apitradeLog.setMemberId(req.getUserId());
+        apitradeLog.setType(req.getType());
         apitradeLog.setTradeType(2);
         apitradeLog.setStatus(0);
         apitradeLog.setOrderId(orderId);
@@ -84,6 +99,14 @@ public class TradeRobotService {
      * @return
      */
     public ResponseEntity fastTrade(FastTradeReq req) {
+        Member user = redisHelper.getUser(req.getToken());
+        if(user==null){
+            throw new RuntimeException("鉴权失败");
+        }
+        boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
+        if (!checkSignature){
+            throw new RuntimeException("Signature失败");
+        }
         RobotAction robotAction = getRobotAction(req.getRobotId());
         FastTradeM fastTradeM = new FastTradeM(req, robotAction);
         executor.execute(fastTradeM);
@@ -115,9 +138,6 @@ public class TradeRobotService {
             case Constant.KEY_EXCHANGE_BHEX:
                 robotAction = new WbfexParentService();
                 break;
-            case Constant.KEY_EXCHANGE_HOTCOIN:
-                robotAction = new HotCoinParentService();
-                break;
             default:
                 return null;
         }
@@ -126,6 +146,15 @@ public class TradeRobotService {
     }
 
     public void cancalfastTrade(CancalAllOrder req) {
+        Member user = redisHelper.getUser(req.getToken());
+        if(user==null){
+            throw new RuntimeException("鉴权失败");
+        }
+        boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
+        if (!checkSignature){
+            throw new RuntimeException("Signature失败");
+        }
+
         if (!"运行中".equals(map.get(req.getRobotId()))) {
             throw new RuntimeException("有一个任务正在运行中");
         }
@@ -146,6 +175,14 @@ public class TradeRobotService {
      * @return
      */
     public List<getAllOrderPonse> getAllOrder(CancalAllOrder req) {
+        Member user = redisHelper.getUser(req.getToken());
+        if(user==null){
+            throw new RuntimeException("鉴权失败");
+        }
+        boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
+        if (!checkSignature){
+            throw new RuntimeException("Signature失败");
+        }
         RobotAction robotAction = getRobotAction(req.getRobotId());
         List<getAllOrderPonse> list = apitradeLogMapper.selectByRobotId(req.getRobotId());
         Map<String, Integer> map = robotAction.selectOrderStr(list.stream().filter(e -> e.getStatus().equals(0) || e.getStatus().equals(1)).map(getAllOrderPonse::getOrderId).collect(Collectors.joining(",", "", "")));
@@ -182,6 +219,15 @@ public class TradeRobotService {
      * @param req
      */
     public ResponseEntity cancalAllOrder(CancalAllOrder req) {
+        Member user = redisHelper.getUser(req.getToken());
+        if(user==null){
+            throw new RuntimeException("鉴权失败");
+        }
+
+        boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
+        if (!checkSignature){
+            throw new RuntimeException("Signature失败");
+        }
         RobotAction robotAction = getRobotAction(req.getRobotId());
         FastCancalTradeM fastCancalTradeM = new FastCancalTradeM(robotAction, req);
         executor.execute(fastCancalTradeM);
@@ -197,6 +243,14 @@ public class TradeRobotService {
      * @return
      */
     public void cancalByOrderId(CancalOrderReq req) {
+        Member user = redisHelper.getUser(req.getToken());
+        if(user==null){
+            throw new RuntimeException("鉴权失败");
+        }
+        boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
+        if (!checkSignature){
+            throw new RuntimeException("Signature失败");
+        }
         RobotAction robotAction = getRobotAction(req.getRobotId());
         ApitradeLog apitradeLog = apitradeLogMapper.selectByRobotIdAndOrderId(req.getRobotId(), req.getOrderId());
         if (!apitradeLog.getStatus().equals(TradeEnum.CANCEL.getStatus())) {
@@ -252,20 +306,21 @@ public class TradeRobotService {
                     //当基础买价为null就去拿盘口价格
                     BigDecimal baseBuyPrice = fastTradeReq.getSellorderBasePrice() != null ? BigDecimal.valueOf(fastTradeReq.getBuyorderBasePrice()) : BigDecimal.ZERO;
                     //计算买价
-                    Double pricePrecision = RandomUtilsme.getRandom(fastTradeReq.getBuyorderRangePrice(), Integer.parseInt(param.get("pricePrecision")));
-                    price = new BigDecimal(fastTradeReq.getBuyorderBasePrice() - pricePrecision).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
-
-
+                    Double pricePrecision = RandomUtilsme.getRandom(fastTradeReq.getBuyorderRangePrice1() - fastTradeReq.getBuyorderRangePrice(), Integer.parseInt(param.get("pricePrecision")));
+                    Double pricePrecision1 = (fastTradeReq.getBuyorderRangePrice() + pricePrecision);
+                    price = new BigDecimal(fastTradeReq.getBuyorderBasePrice() - pricePrecision1).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
                 } else {
                     //挂卖单
                     newSellOrder++;
                     //当基础卖价为null就去拿盘口价格
                     BigDecimal baseSellPrice = fastTradeReq.getSellorderBasePrice() != null ? BigDecimal.valueOf(fastTradeReq.getSellorderBasePrice()) : BigDecimal.ZERO;
                     //计算卖价
-                    Double pricePrecision = RandomUtilsme.getRandom(fastTradeReq.getSellorderRangePrice(), Integer.parseInt(param.get("pricePrecision")));
-                    price = new BigDecimal(fastTradeReq.getSellorderBasePrice() + pricePrecision).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
+                    Double pricePrecision = RandomUtilsme.getRandom(fastTradeReq.getSellorderRangePrice1() - fastTradeReq.getSellorderRangePrice(), Integer.parseInt(param.get("pricePrecision")));
+                    Double pricePrecision1 = (fastTradeReq.getSellorderRangePrice() + pricePrecision);
+
+                    price = new BigDecimal(fastTradeReq.getSellorderBasePrice() + pricePrecision1).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
                 }
-                String orderStr = robotAction.submitOrderStr(type ? 1 : 2, price, amount);
+                // String orderStr = robotAction.submitOrderStr(type ? 1 : 2, price, amount);
                 System.out.println("换单··数量：" + amount + "**价格：" + price + "**方向：" + (type ? "买" : "卖"));
                 ApitradeLog apitradeLog = new ApitradeLog();
                 apitradeLog.setAmount(amount);
@@ -276,7 +331,7 @@ public class TradeRobotService {
                 apitradeLog.setTradeType(1);
                 apitradeLog.setStatus(0);
                 apitradeLog.setMemo(uuid);
-                apitradeLog.setOrderId(orderStr);
+                apitradeLog.setOrderId(uuid);
                 apitradeLog.setCreatedAt(new Date());
                 if (first) {
                     apitradeLog.setMemo(uuid + "_" + JSON.toJSONString(fastTradeReq));
@@ -284,7 +339,7 @@ public class TradeRobotService {
                 }
                 apitradeLogMapper.insert(apitradeLog);
                 //挂单间隔时间
-                int randomTime = fastTradeReq.getMinTime() + RandomUtils.nextInt(timeChange);
+                int randomTime = fastTradeReq.getMinTime() + RandomUtils.nextInt(timeChange == 0 ? 1 : timeChange);
                 try {
                     Thread.sleep(randomTime * 1000L);
                 } catch (InterruptedException e) {
@@ -322,6 +377,45 @@ public class TradeRobotService {
                 }
             });
 
+        }
+    }
+
+
+    public boolean checkSignature(JSONObject jsonObject,String signature){
+        TreeMap treeMap = JSONObject.toJavaObject(jsonObject, TreeMap.class);
+        String toString = keySortToString(treeMap);
+        String md5String = getMD5String(toString + "_mimicat1278hdbCsLuf");
+        if(!md5String.equals(signature)){
+            return false;
+        }
+        return true;
+    }
+
+    public String keySortToString(TreeMap<String, String> params) {
+        String str = "";
+        Iterator<Map.Entry<String, String>> it = params.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, String> entry = it.next();
+            str += entry.getKey() + "=" + entry.getValue() + "&";
+        }
+        return str.substring(0, str.length() - 1);
+    }
+    /**
+     * MD5加密
+     */
+    public String getMD5String(String str) {
+        try {
+            // 生成一个MD5加密计算摘要
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            // 计算md5函数
+            md.update(str.getBytes());
+            // digest()最后确定返回md5 hash值，返回值为8位字符串。因为md5 hash值是16位的hex值，实际上就是8位的字符
+            // BigInteger函数则将8位的字符串转换成16位hex值，用字符串来表示；得到字符串形式的hash值
+            //一个byte是八位二进制，也就是2位十六进制字符（2的8次方等于16的2次方）
+            return new BigInteger(1, md.digest()).toString(16);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

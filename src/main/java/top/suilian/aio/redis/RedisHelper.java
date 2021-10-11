@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import top.suilian.aio.Util.Constant;
+import top.suilian.aio.model.Member;
 import top.suilian.aio.model.Robot;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.service.RobotArgsService;
@@ -120,6 +121,15 @@ public class RedisHelper {
         JSONObject obj = JSON.parseObject(str);
         String value = obj.get("extObject").toString();
         return value;
+    }
+
+    public Member getUser(String token) {
+        String str = redisStringExecutor.get(token);
+        if (StringUtils.isEmpty(str)) {
+            return null;
+        }
+        Member user = JSON.parseObject(str, Member.class);
+        return user;
     }
 
 
