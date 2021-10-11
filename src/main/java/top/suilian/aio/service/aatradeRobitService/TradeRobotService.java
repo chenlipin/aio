@@ -68,11 +68,11 @@ public class TradeRobotService {
      */
     public ResponseEntity trade(TradeReq req) throws UnsupportedEncodingException {
         Member user = redisHelper.getUser(req.getToken());
-        if(user==null){
+        if (user == null || !user.getMemberId().equals(req.getUserId())) {
             throw new RuntimeException("鉴权失败");
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
-        if (!checkSignature){
+        if (!checkSignature) {
             throw new RuntimeException("Signature失败");
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
@@ -100,11 +100,11 @@ public class TradeRobotService {
      */
     public ResponseEntity fastTrade(FastTradeReq req) {
         Member user = redisHelper.getUser(req.getToken());
-        if(user==null){
+        if (user == null || !user.getMemberId().equals(req.getUserId())) {
             throw new RuntimeException("鉴权失败");
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
-        if (!checkSignature){
+        if (!checkSignature) {
             throw new RuntimeException("Signature失败");
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
@@ -147,11 +147,11 @@ public class TradeRobotService {
 
     public void cancalfastTrade(CancalAllOrder req) {
         Member user = redisHelper.getUser(req.getToken());
-        if(user==null){
+        if (user == null || !user.getMemberId().equals(req.getUserId())) {
             throw new RuntimeException("鉴权失败");
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
-        if (!checkSignature){
+        if (!checkSignature) {
             throw new RuntimeException("Signature失败");
         }
 
@@ -176,11 +176,11 @@ public class TradeRobotService {
      */
     public List<getAllOrderPonse> getAllOrder(CancalAllOrder req) {
         Member user = redisHelper.getUser(req.getToken());
-        if(user==null){
+        if (user == null || !user.getMemberId().equals(req.getUserId())) {
             throw new RuntimeException("鉴权失败");
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
-        if (!checkSignature){
+        if (!checkSignature) {
             throw new RuntimeException("Signature失败");
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
@@ -220,12 +220,12 @@ public class TradeRobotService {
      */
     public ResponseEntity cancalAllOrder(CancalAllOrder req) {
         Member user = redisHelper.getUser(req.getToken());
-        if(user==null){
+        if (user == null || !user.getMemberId().equals(req.getUserId())) {
             throw new RuntimeException("鉴权失败");
         }
 
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
-        if (!checkSignature){
+        if (!checkSignature) {
             throw new RuntimeException("Signature失败");
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
@@ -244,11 +244,11 @@ public class TradeRobotService {
      */
     public void cancalByOrderId(CancalOrderReq req) {
         Member user = redisHelper.getUser(req.getToken());
-        if(user==null){
+        if (user == null || !user.getMemberId().equals(req.getUserId())) {
             throw new RuntimeException("鉴权失败");
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
-        if (!checkSignature){
+        if (!checkSignature) {
             throw new RuntimeException("Signature失败");
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
@@ -381,11 +381,11 @@ public class TradeRobotService {
     }
 
 
-    public boolean checkSignature(JSONObject jsonObject,String signature){
+    public boolean checkSignature(JSONObject jsonObject, String signature) {
         TreeMap treeMap = JSONObject.toJavaObject(jsonObject, TreeMap.class);
         String toString = keySortToString(treeMap);
         String md5String = getMD5String(toString + "_mimicat1278hdbCsLuf");
-        if(!md5String.equals(signature)){
+        if (!md5String.equals(signature)) {
             return false;
         }
         return true;
@@ -400,6 +400,7 @@ public class TradeRobotService {
         }
         return str.substring(0, str.length() - 1);
     }
+
     /**
      * MD5加密
      */
