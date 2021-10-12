@@ -73,7 +73,7 @@ public class TradeRobotService {
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
         if (!checkSignature) {
-            throw new RuntimeException("Signature失败");
+//            throw new RuntimeException("Signature失败");
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
         String orderId = robotAction.submitOrderStr(req.getType(), new BigDecimal(req.getPrice()), new BigDecimal(req.getAmount()));
@@ -105,7 +105,7 @@ public class TradeRobotService {
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
         if (!checkSignature) {
-            throw new RuntimeException("Signature失败");
+//            throw new RuntimeException("Signature失败");
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
         FastTradeM fastTradeM = new FastTradeM(req, robotAction);
@@ -152,12 +152,9 @@ public class TradeRobotService {
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
         if (!checkSignature) {
-            throw new RuntimeException("Signature失败");
+//            throw new RuntimeException("Signature失败");
         }
 
-        if (!"运行中".equals(map.get(req.getRobotId()))) {
-            throw new RuntimeException("有一个任务正在运行中");
-        }
         map.remove(req.getRobotId());
     }
 
@@ -181,7 +178,7 @@ public class TradeRobotService {
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
         if (!checkSignature) {
-            throw new RuntimeException("Signature失败");
+//            throw new RuntimeException("Signature失败");
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
         List<getAllOrderPonse> list = apitradeLogMapper.selectByRobotId(req.getRobotId());
@@ -226,7 +223,7 @@ public class TradeRobotService {
 
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
         if (!checkSignature) {
-            throw new RuntimeException("Signature失败");
+//            throw new RuntimeException("Signature失败");
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
         FastCancalTradeM fastCancalTradeM = new FastCancalTradeM(robotAction, req);
@@ -249,7 +246,7 @@ public class TradeRobotService {
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
         if (!checkSignature) {
-            throw new RuntimeException("Signature失败");
+//            throw new RuntimeException("Signature失败");
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
         ApitradeLog apitradeLog = apitradeLogMapper.selectByRobotIdAndOrderId(req.getRobotId(), req.getOrderId());
@@ -382,8 +379,10 @@ public class TradeRobotService {
 
 
     public boolean checkSignature(JSONObject jsonObject, String signature) {
-        TreeMap treeMap = JSONObject.toJavaObject(jsonObject, TreeMap.class);
-        String toString = keySortToString(treeMap);
+        Map treeMap = JSONObject.toJavaObject(jsonObject, Map.class);
+        TreeMap<String, Object> treeMap1 = new TreeMap<>(treeMap);
+        treeMap1.remove("signature");
+        String toString = keySortToString(treeMap1);
         String md5String = getMD5String(toString + "_mimicat1278hdbCsLuf");
         if (!md5String.equals(signature)) {
             return false;
@@ -391,11 +390,11 @@ public class TradeRobotService {
         return true;
     }
 
-    public String keySortToString(TreeMap<String, String> params) {
+    public String keySortToString(TreeMap<String, Object> params) {
         String str = "";
-        Iterator<Map.Entry<String, String>> it = params.entrySet().iterator();
+        Iterator<Map.Entry<String, Object>> it = params.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<String, String> entry = it.next();
+            Map.Entry<String, Object> entry = it.next();
             str += entry.getKey() + "=" + entry.getValue() + "&";
         }
         return str.substring(0, str.length() - 1);
