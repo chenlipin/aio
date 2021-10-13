@@ -115,9 +115,6 @@ public class TradeRobotService {
             case Constant.KEY_EXCHANGE_BHEX:
                 robotAction = new WbfexParentService();
                 break;
-            case Constant.KEY_EXCHANGE_HOTCOIN:
-                robotAction = new HotCoinParentService();
-                break;
             default:
                 return null;
         }

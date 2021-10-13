@@ -319,7 +319,6 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
         HttpUtil httpUtil = new HttpUtil();
         String res = httpUtil.get("https://" + host + uri + "?" + httpParams);
         System.out.println(res);
