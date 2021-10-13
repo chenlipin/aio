@@ -2,6 +2,7 @@ package top.suilian.aio.service;
 
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -373,9 +374,13 @@ public class BaseService {
      * @return
      */
     public JSONObject judgeRes(String res, String code, String action) {
+        logger.info( "log解析：" + res);
+       if(StringUtils.isNotEmpty(res)){
+           JSONObject resJson = JSONObject.fromObject(res);
+           return resJson;
+       }
         return null;
     }
-
     /**
      * 判断字符串是否是json string
      *

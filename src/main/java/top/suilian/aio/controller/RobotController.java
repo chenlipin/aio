@@ -26,7 +26,7 @@ import java.util.List;
  * @author dong.wan
  * @version 1.0
  */
-
+@CrossOrigin
 @Controller
 @RequestMapping("/robot")
 @Log4j2

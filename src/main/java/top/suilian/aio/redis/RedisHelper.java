@@ -96,6 +96,13 @@ public class RedisHelper {
         return value;
     }
 
+    public String get(String key) {
+        String str = redisStringExecutor.get( key);
+        if (StringUtils.isEmpty(str)) {
+            return null;
+        }
+        return str;
+    }
 
     public void setBalanceParam(String key, String value) {
         RedisObject arg = new RedisObject();

@@ -9,6 +9,7 @@ package top.suilian.aio.service.aatradeRobitService;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -290,6 +291,21 @@ public class TradeRobotService {
             String uuid = UUID.randomUUID().toString().substring(0, 8);
             boolean first = true;
             while ((newBuyOrder + newSellOrder) < (fastTradeReq.getBuyOrdermun() + fastTradeReq.getSellOrdermun()) && "运行中".equals(map.get(fastTradeReq.getRobotId()))) {
+                if (fastTradeReq.getBuyorderBasePrice() == null || fastTradeReq.getBuyorderBasePrice() <= 0 ||
+                        fastTradeReq.getSellorderBasePrice() == null || fastTradeReq.getSellorderBasePrice() <= 0) {
+                    String sellPriceStr = redisHelper.get("kile_sell_" + fastTradeReq.getRobotId());
+
+                    String buyPriceStr = redisHelper.get("kile_buy_" + fastTradeReq.getRobotId());
+
+                    if (StringUtils.isEmpty(buyPriceStr)) {
+                        Double sellPrice = Double.valueOf(sellPriceStr);
+                        fastTradeReq.setSellorderBasePrice(sellPrice);
+                    }
+                    if (StringUtils.isEmpty(buyPriceStr)) {
+                        Double buyPrice = Double.valueOf(buyPriceStr);
+                        fastTradeReq.setBuyorderBasePrice(buyPrice);
+                    }
+                }
                 //计算挂单数量
                 Double amountPrecision = RandomUtilsme.getRandom(fastTradeReq.getMaxAmount() - fastTradeReq.getMinAmount(), Integer.parseInt(param.get("amountPrecision")));
                 BigDecimal amount = new BigDecimal(fastTradeReq.getMinAmount() + amountPrecision).setScale(Integer.parseInt(param.get("amountPrecision")), BigDecimal.ROUND_HALF_UP);
@@ -317,7 +333,7 @@ public class TradeRobotService {
 
                     price = new BigDecimal(fastTradeReq.getSellorderBasePrice() + pricePrecision1).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
                 }
-                // String orderStr = robotAction.submitOrderStr(type ? 1 : 2, price, amount);
+                 String orderStr = robotAction.submitOrderStr(type ? 1 : 2, price, amount);
                 System.out.println("换单··数量：" + amount + "**价格：" + price + "**方向：" + (type ? "买" : "卖"));
                 ApitradeLog apitradeLog = new ApitradeLog();
                 apitradeLog.setAmount(amount);
@@ -328,7 +344,7 @@ public class TradeRobotService {
                 apitradeLog.setTradeType(1);
                 apitradeLog.setStatus(0);
                 apitradeLog.setMemo(uuid);
-                apitradeLog.setOrderId(uuid);
+                apitradeLog.setOrderId(orderStr);
                 apitradeLog.setCreatedAt(new Date());
                 if (first) {
                     apitradeLog.setMemo(uuid + "_" + JSON.toJSONString(fastTradeReq));

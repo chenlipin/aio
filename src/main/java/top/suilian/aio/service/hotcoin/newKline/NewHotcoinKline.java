@@ -73,14 +73,7 @@ public class NewHotcoinKline extends HotCoinParentService {
             setPrecision();
             logger.info("设置机器人交易规则结束");
 
-          setBalanceRedis();
-            System.out.println("-------------");
 
-            try {
-                Thread.sleep(100000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本
@@ -449,8 +442,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                     setTradeLog(id, "刷开区间的数量已达到最大值,停止刷开区间", 0, "000000");
                 } else {
                     //刷开区间
-                    String msg = "您的" + getRobotName(this.id) + "刷开量化机器人已开启!";
-                    sendSms(msg, exchange.get("mobile"));
+
                     openInterval(sellPri, buyPrices, new BigDecimal(exchange.get("openIntervalPrice")));
                 }
             }
@@ -640,5 +632,11 @@ public class NewHotcoinKline extends HotCoinParentService {
             setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        Double ratio =10*(1/(1+Double.valueOf(0.5)));
+        BigDecimal bigDecimal = new BigDecimal(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
+        System.out.println(bigDecimal);
     }
 }
