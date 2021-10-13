@@ -161,7 +161,7 @@
     select
       order_id orderId, price,amount,status,DATE_FORMAT(created_at,'%Y-%m-%d %H:%i:%s')  createdAt,type
     from apitrade_log
-    where robot_id = #{robotId} and trade_type=2 order by created_at desc limit 10
+    where robot_id = #{robotId} and trade_type=2 order by created_at desc limit 20
   </select>
 
 

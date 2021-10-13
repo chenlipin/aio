@@ -7,6 +7,8 @@
  */
 package top.suilian.aio.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/robot")
+@Log4j2
 public class RobotController {
 
     @Autowired
@@ -42,6 +45,7 @@ public class RobotController {
     @RequestMapping(value = "/trade")
     @ResponseBody
     public ResponseEntity trade(@Valid @RequestBody TradeReq tradeReq) throws UnsupportedEncodingException {
+        log.info("挂单接口"+ JSONObject.toJSONString(tradeReq));
         ResponseEntity responseEntity = tradeRobotService.trade(tradeReq);
         return ResponseEntity.success();
 
@@ -56,6 +60,7 @@ public class RobotController {
     @PostMapping(value = "/fastTrade")
     @ResponseBody
     public ResponseEntity fastTrade(@Valid @RequestBody FastTradeReq req) {
+        log.info("一键挂单"+ JSONObject.toJSONString(req));
         ResponseEntity responseEntity = tradeRobotService.fastTrade(req);
         return ResponseEntity.success();
 
@@ -70,6 +75,7 @@ public class RobotController {
     @PostMapping(value = "/cancalfastTrade")
     @ResponseBody
     public ResponseEntity cancalfastTrade(@Valid @RequestBody CancalAllOrder req) {
+        log.info("取消一键挂单"+ JSONObject.toJSONString(req));
         tradeRobotService.cancalfastTrade(req);
         return ResponseEntity.success();
 
@@ -84,6 +90,7 @@ public class RobotController {
     @PostMapping(value = "/fastTradestatus")
     @ResponseBody
     public ResponseEntity fastTradestatus(@Valid @RequestBody CancalAllOrder req) {
+        log.info("一键挂单机器人状态"+ JSONObject.toJSONString(req));
         String str = tradeRobotService.fastTradestatus(req);
         return ResponseEntity.success(str);
 
@@ -99,6 +106,7 @@ public class RobotController {
     @RequestMapping(value = "/cancalOrder")
     @ResponseBody
     public ResponseEntity cancalOrder(@Valid @RequestBody CancalOrderReq req) {
+        log.info("根据订单号撤单"+ JSONObject.toJSONString(req));
         tradeRobotService.cancalByOrderId(req);
         return ResponseEntity.success();
 
@@ -113,6 +121,7 @@ public class RobotController {
     @RequestMapping(value = "/cancalAllOrder")
     @ResponseBody
     public ResponseEntity cancalAllOrder(@Valid @RequestBody CancalAllOrder req) {
+        log.info("一键撤单"+ JSONObject.toJSONString(req));
         tradeRobotService.cancalAllOrder(req);
         return ResponseEntity.success();
 
@@ -127,6 +136,7 @@ public class RobotController {
     @RequestMapping(value = "/getAllOrder")
     @ResponseBody
     public ResponseEntity getAllOrder(@Valid @RequestBody CancalAllOrder req) {
+        log.info("获取所有手动挂单 买卖单前10条"+ JSONObject.toJSONString(req));
         List<getAllOrderPonse> orders = tradeRobotService.getAllOrder(req);
         return ResponseEntity.success(orders);
 
@@ -139,5 +149,8 @@ public class RobotController {
         return ResponseEntity.success();
 
     }
+
+
+
 
 }

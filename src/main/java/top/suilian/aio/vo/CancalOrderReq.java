@@ -36,4 +36,7 @@ public class CancalOrderReq {
     @NotNull(message = "signature不能为空")
     private String signature;
 
+    @NotNull(message = "token不能为空")
+    private String token;
+
 }
