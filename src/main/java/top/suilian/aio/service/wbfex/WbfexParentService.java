@@ -445,7 +445,7 @@ public class WbfexParentService extends BaseService implements RobotAction {
     }
 
     @Override
-    public String submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
+    public  Map<String,String> submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
         return null;
     }
 

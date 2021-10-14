@@ -24,7 +24,7 @@ public interface RobotAction {
      * @param amount 数量
      * @return 单号
      */
-    String submitOrderStr(int type, BigDecimal price, BigDecimal amount);
+    Map<String,String>  submitOrderStr(int type, BigDecimal price, BigDecimal amount);
 
 
     /**

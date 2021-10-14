@@ -77,7 +77,10 @@ public class TradeRobotService {
 //            throw new RuntimeException("Signature失败");
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
-        String orderId = robotAction.submitOrderStr(req.getType(), new BigDecimal(req.getPrice()), new BigDecimal(req.getAmount()));
+        Map<String, String> stringStringMap = robotAction.submitOrderStr(req.getType(), new BigDecimal(req.getPrice()), new BigDecimal(req.getAmount()));
+        if (!"true".equals(stringStringMap.get("res"))){
+            throw new RuntimeException("挂单失败_"+stringStringMap.get("orderId"));
+        }
         ApitradeLog apitradeLog = new ApitradeLog();
         apitradeLog.setAmount(new BigDecimal(req.getAmount()));
         apitradeLog.setPrice(new BigDecimal(req.getPrice()));
@@ -86,7 +89,7 @@ public class TradeRobotService {
         apitradeLog.setType(req.getType());
         apitradeLog.setTradeType(2);
         apitradeLog.setStatus(0);
-        apitradeLog.setOrderId(orderId);
+        apitradeLog.setOrderId(stringStringMap.get("orderId"));
         apitradeLog.setCreatedAt(new Date());
         apitradeLogMapper.insert(apitradeLog);
         return ResponseEntity.success();
@@ -333,8 +336,7 @@ public class TradeRobotService {
 
                     price = new BigDecimal(fastTradeReq.getSellorderBasePrice() + pricePrecision1).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
                 }
-                 String orderStr = robotAction.submitOrderStr(type ? 1 : 2, price, amount);
-                System.out.println("换单··数量：" + amount + "**价格：" + price + "**方向：" + (type ? "买" : "卖"));
+                Map<String, String> stringStringMap = robotAction.submitOrderStr(type ? 1 : 2, price, amount);
                 ApitradeLog apitradeLog = new ApitradeLog();
                 apitradeLog.setAmount(amount);
                 apitradeLog.setPrice(price);
@@ -344,7 +346,7 @@ public class TradeRobotService {
                 apitradeLog.setTradeType(1);
                 apitradeLog.setStatus(0);
                 apitradeLog.setMemo(uuid);
-                apitradeLog.setOrderId(orderStr);
+                apitradeLog.setOrderId(stringStringMap.get("orderId"));
                 apitradeLog.setCreatedAt(new Date());
                 if (first) {
                     apitradeLog.setMemo(uuid + "_" + JSON.toJSONString(fastTradeReq));

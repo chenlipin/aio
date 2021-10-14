@@ -463,16 +463,23 @@ public class HotCoinParentService extends BaseService implements RobotAction {
 
 
     @Override
-    public String submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
+    public Map<String,String> submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
         String orderId = "";
+        HashMap<String, String> hashMap = new HashMap<>();
         String submitOrder = submitOrder(type, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
             if ("200".equals(jsonObject.getString("code"))) {
                 orderId = jsonObject.getJSONObject("data").getString("ID");
+                hashMap.put("res","true");
+                hashMap.put("orderId",orderId);
+            }else {
+                String msg = jsonObject.getString("msg");
+                hashMap.put("res","false");
+                hashMap.put("orderId",msg);
             }
         }
-        return orderId;
+        return hashMap;
     }
 
     @Override
