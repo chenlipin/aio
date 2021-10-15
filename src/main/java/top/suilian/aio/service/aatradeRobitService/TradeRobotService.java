@@ -70,7 +70,7 @@ public class TradeRobotService {
     public ResponseEntity trade(TradeReq req) throws UnsupportedEncodingException {
         Member user = redisHelper.getUser(req.getToken());
         if (user == null || !user.getMemberId().equals(req.getUserId())) {
-            throw new RuntimeException("鉴权失败");
+            throw new RuntimeException("用户身份校验失败");
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
         if (!checkSignature) {
@@ -105,7 +105,7 @@ public class TradeRobotService {
     public ResponseEntity fastTrade(FastTradeReq req) {
         Member user = redisHelper.getUser(req.getToken());
         if (user == null || !user.getMemberId().equals(req.getUserId())) {
-            throw new RuntimeException("鉴权失败");
+            throw new RuntimeException("用户身份校验失败");
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
         if (!checkSignature) {
@@ -152,7 +152,7 @@ public class TradeRobotService {
     public void cancalfastTrade(CancalAllOrder req) {
         Member user = redisHelper.getUser(req.getToken());
         if (user == null || !user.getMemberId().equals(req.getUserId())) {
-            throw new RuntimeException("鉴权失败");
+            throw new RuntimeException("用户身份校验失败");
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
         if (!checkSignature) {
@@ -178,7 +178,7 @@ public class TradeRobotService {
     public List<getAllOrderPonse> getAllOrder(CancalAllOrder req) {
         Member user = redisHelper.getUser(req.getToken());
         if (user == null || !user.getMemberId().equals(req.getUserId())) {
-            throw new RuntimeException("鉴权失败");
+            throw new RuntimeException("用户身份校验失败");
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
         if (!checkSignature) {
@@ -222,7 +222,7 @@ public class TradeRobotService {
     public ResponseEntity cancalAllOrder(CancalAllOrder req) {
         Member user = redisHelper.getUser(req.getToken());
         if (user == null || !user.getMemberId().equals(req.getUserId())) {
-            throw new RuntimeException("鉴权失败");
+            throw new RuntimeException("用户身份校验失败");
         }
 
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
@@ -246,7 +246,7 @@ public class TradeRobotService {
     public void cancalByOrderId(CancalOrderReq req) {
         Member user = redisHelper.getUser(req.getToken());
         if (user == null || !user.getMemberId().equals(req.getUserId())) {
-            throw new RuntimeException("鉴权失败");
+            throw new RuntimeException("用户身份校验失败");
         }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
         if (!checkSignature) {

@@ -446,11 +446,27 @@ public class WbfexParentService extends BaseService implements RobotAction {
 
     @Override
     public  Map<String,String> submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
-        return null;
+        HashMap<String, String> map = new HashMap<>();
+        String submitOrder = submitOrder(type, price, amount);
+        JSONObject jsonObject = JSONObject.fromObject(submitOrder);
+        if("0".equals(jsonObject.getString("code"))){
+            JSONObject data = jsonObject.getJSONObject("data");
+            String tradeId = data.getString("order_id");
+            map.put("res","true");
+            map.put("orderId",tradeId);
+        }else {
+            map.put("res","false");
+            map.put("orderId",jsonObject.getString("msg"));
+
+        }
+        return map;
     }
 
+    //TradeEnum   1 未成交 2 部分成交 3 完全成交 4 撤单处理中 5 已撤销
     @Override
     public Map<String,Integer> selectOrderStr(String orderId) {
+        List<String> orders = Arrays.asList(orderId.split(","));
+        HashMap<String, Integer> hashMap = new HashMap<>();
         return null;
     }
 
