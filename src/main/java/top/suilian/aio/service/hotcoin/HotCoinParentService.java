@@ -361,6 +361,7 @@ public class HotCoinParentService extends BaseService implements RobotAction {
             String trades = httpUtil.get(baseUrl + uri + "?" + httpParams);
             JSONObject tradesJson = JSONObject.fromObject(trades);
             JSONObject data = tradesJson.getJSONObject("data");
+            logger.info("获取余额"+trades);
             JSONArray wallet = data.getJSONArray("wallet");
 
             String firstBalance = null;

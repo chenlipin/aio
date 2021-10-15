@@ -1,5 +1,6 @@
 package top.suilian.aio.service.hotcoin.newKline;
 
+import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
@@ -115,14 +116,14 @@ public class NewHotcoinKline extends HotCoinParentService {
 
 
             //获取深度 判断平台撮合是否成功
-            JSONObject tradesObj = judgeRes(trades, "bids", "getRandomPrice");
+            com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-            if (tradesObj != null && tradesObj.getInt("code") == 200) {
+            if (tradesObj != null && tradesObj.getInteger("code") == 200) {
 
 
-                JSONObject data = tradesObj.getJSONObject("data");
+                com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
 
-                JSONObject tick = data.getJSONObject("depth");
+                com.alibaba.fastjson.JSONObject tick = data.getJSONObject("depth");
                 List<List<String>> buyPrices = (List<List<String>>) tick.get("bids");
 
                 List<List<String>> sellPrices = (List<List<String>>) tick.get("asks");

@@ -374,7 +374,7 @@ public class BaseService {
      * @return
      */
     public JSONObject judgeRes(String res, String code, String action) {
-        logger.info( "log解析：" + res);
+        logger.info( "log解析：" + res.replace("\t","").replace("\n",""));
        if(StringUtils.isNotEmpty(res)){
            JSONObject resJson = JSONObject.fromObject(res);
            return resJson;
