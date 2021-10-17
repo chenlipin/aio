@@ -78,8 +78,8 @@ public class TradeRobotService {
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
         Map<String, String> stringStringMap = robotAction.submitOrderStr(req.getType(), new BigDecimal(req.getPrice()), new BigDecimal(req.getAmount()));
-        if (!"true".equals(stringStringMap.get("res"))){
-            throw new RuntimeException("挂单失败_"+stringStringMap.get("orderId"));
+        if (!"true".equals(stringStringMap.get("res"))) {
+            throw new RuntimeException("挂单失败_" + stringStringMap.get("orderId"));
         }
         ApitradeLog apitradeLog = new ApitradeLog();
         apitradeLog.setAmount(new BigDecimal(req.getAmount()));
@@ -139,7 +139,7 @@ public class TradeRobotService {
                 robotAction = hotCoinParentService;
                 break;
             //BHEX
-            case Constant.KEY_EXCHANGE_BHEX:
+            case Constant.KEY_EXCHANGE_WBFEX:
                 robotAction = new WbfexParentService();
                 break;
             default:
@@ -294,6 +294,7 @@ public class TradeRobotService {
             String uuid = UUID.randomUUID().toString().substring(0, 8);
             boolean first = true;
             while ((newBuyOrder + newSellOrder) < (fastTradeReq.getBuyOrdermun() + fastTradeReq.getSellOrdermun()) && "运行中".equals(map.get(fastTradeReq.getRobotId()))) {
+                //当基础买卖价为null就去拿盘口价格
                 if (fastTradeReq.getBuyorderBasePrice() == null || fastTradeReq.getBuyorderBasePrice() <= 0 ||
                         fastTradeReq.getSellorderBasePrice() == null || fastTradeReq.getSellorderBasePrice() <= 0) {
                     String sellPriceStr = redisHelper.get("kile_sell_" + fastTradeReq.getRobotId());
@@ -313,30 +314,44 @@ public class TradeRobotService {
                 Double amountPrecision = RandomUtilsme.getRandom(fastTradeReq.getMaxAmount() - fastTradeReq.getMinAmount(), Integer.parseInt(param.get("amountPrecision")));
                 BigDecimal amount = new BigDecimal(fastTradeReq.getMinAmount() + amountPrecision).setScale(Integer.parseInt(param.get("amountPrecision")), BigDecimal.ROUND_HALF_UP);
 
+                /**
+                 * 买单区间差价
+                 */
+                double buyRange = fastTradeReq.getBuyorderRangePrice1() - fastTradeReq.getBuyorderRangePrice();
+                /**
+                 * 买单一个区间差价
+                 */
+                double buyOneRange = buyRange / fastTradeReq.getBuyOrdermun();
+                /**
+                 * 卖单区间差价
+                 */
+                double sellRange = fastTradeReq.getSellorderRangePrice1() - fastTradeReq.getSellorderRangePrice();
+                /**
+                 * 卖单一个区间差价
+                 */
+                double sellOneRange = buyRange / fastTradeReq.getBuyOrdermun();
+
                 //决定是挂买单还是卖单
-                boolean type = RandomUtils.nextBoolean();
+                boolean type = true;
+                boolean typeTrade=true;
                 BigDecimal price = BigDecimal.ZERO;
                 if (type && newBuyOrder < fastTradeReq.getBuyOrdermun()) {
+                    //计算买价
+                    Double pricePrecision = RandomUtilsme.getRandom(buyOneRange, Integer.parseInt(param.get("pricePrecision")));
+                    Double pricePrecision1 = (fastTradeReq.getBuyorderRangePrice() + pricePrecision + buyOneRange * newBuyOrder);
+                    price = new BigDecimal(fastTradeReq.getBuyorderBasePrice() - pricePrecision1).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
                     //挂买单
                     newBuyOrder++;
-                    //当基础买价为null就去拿盘口价格
-                    BigDecimal baseBuyPrice = fastTradeReq.getSellorderBasePrice() != null ? BigDecimal.valueOf(fastTradeReq.getBuyorderBasePrice()) : BigDecimal.ZERO;
-                    //计算买价
-                    Double pricePrecision = RandomUtilsme.getRandom(fastTradeReq.getBuyorderRangePrice1() - fastTradeReq.getBuyorderRangePrice(), Integer.parseInt(param.get("pricePrecision")));
-                    Double pricePrecision1 = (fastTradeReq.getBuyorderRangePrice() + pricePrecision);
-                    price = new BigDecimal(fastTradeReq.getBuyorderBasePrice() - pricePrecision1).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
                 } else {
-                    //挂卖单
-                    newSellOrder++;
-                    //当基础卖价为null就去拿盘口价格
-                    BigDecimal baseSellPrice = fastTradeReq.getSellorderBasePrice() != null ? BigDecimal.valueOf(fastTradeReq.getSellorderBasePrice()) : BigDecimal.ZERO;
                     //计算卖价
-                    Double pricePrecision = RandomUtilsme.getRandom(fastTradeReq.getSellorderRangePrice1() - fastTradeReq.getSellorderRangePrice(), Integer.parseInt(param.get("pricePrecision")));
-                    Double pricePrecision1 = (fastTradeReq.getSellorderRangePrice() + pricePrecision);
-
+                    Double pricePrecision = RandomUtilsme.getRandom(sellOneRange, Integer.parseInt(param.get("pricePrecision")));
+                    Double pricePrecision1 = (fastTradeReq.getSellorderRangePrice() + pricePrecision + sellOneRange * newSellOrder);
                     price = new BigDecimal(fastTradeReq.getSellorderBasePrice() + pricePrecision1).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
+                    //挂卖单
+                    typeTrade=false;
+                    newSellOrder++;
                 }
-                Map<String, String> stringStringMap = robotAction.submitOrderStr(type ? 1 : 2, price, amount);
+                Map<String, String> stringStringMap = robotAction.submitOrderStr(typeTrade ? 1 : 2, price, amount);
                 ApitradeLog apitradeLog = new ApitradeLog();
                 apitradeLog.setAmount(amount);
                 apitradeLog.setPrice(price);

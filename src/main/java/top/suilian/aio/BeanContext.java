@@ -10,6 +10,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 /**
  * <B>Description:</B>  <br>
@@ -19,13 +21,16 @@ import org.springframework.context.annotation.Configuration;
  * @version 1.0
  */
 
-@Configuration
+@Order(value = 1)
+@Component
+//@Configuration
 public class BeanContext implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext = null;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+
         BeanContext.applicationContext = applicationContext;
     }
 

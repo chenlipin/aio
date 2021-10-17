@@ -3,6 +3,7 @@ package top.suilian.aio.service.loex.newKline;
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
@@ -20,6 +21,7 @@ import java.util.Random;
 
 import static java.math.BigDecimal.ROUND_DOWN;
 
+@DependsOn("beanContext")
 public class NewLoexKline extends LoexParentService {
     public NewLoexKline(
             CancelExceptionService cancelExceptionService,
@@ -74,7 +76,7 @@ public class NewLoexKline extends LoexParentService {
             logger.info("机器人1设置机器人参数开始");
             setParam();
             logger.info("机器人1参数"+ JSON.toJSONString(exchange));
-//            setTransactionRatio();
+            setTransactionRatio();
             /**
              * 深度机器人
              */
@@ -82,37 +84,28 @@ public class NewLoexKline extends LoexParentService {
                 runLoexRandomDepth.init(2);
             }
 
-//            if (exchange.get("tradeRatio") != null || !"0".equals(exchange.get("tradeRatio"))) {
-//                Double ratio = 10 * (1 / (1 + Double.valueOf(exchange.get("tradeRatio"))));
-//                tradeRatio = new BigDecimal(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
-//            }
-//            logger.info("设置机器人参数结束");
-//
-//            logger.info("设置机器人交易规则开始");
-//            if (!setPrecision()) {
-//                return;
-//            }
-//            logger.info("设置机器人交易规则结束");
-//            //判断走K线的方式
-//            if ("1".equals(exchange.get("sheetForm"))) {
-//                //新版本
-//                while (randomNum == 1 || randomNum == Integer.parseInt(exchange.get("priceRange"))) {
-//                    randomNum = (int) Math.ceil(Math.random() * Integer.parseInt(exchange.get("priceRange")));
-//                }
-//                timeSlot = Integer.parseInt(exchange.get("timeSlot"));
-//            }
-//
-//            maxEatOrder = Integer.parseInt(exchange.get("maxEatOrder"));//吃单成交上限数
-//            start = false;
-            try {
-              for (;;){
-                  Thread.sleep(1000);
-                  logger.info("机器人1运行中");
-              }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (exchange.get("tradeRatio") != null || !"0".equals(exchange.get("tradeRatio"))) {
+                Double ratio = 10 * (1 / (1 + Double.valueOf(exchange.get("tradeRatio"))));
+                tradeRatio = new BigDecimal(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
             }
-            return;
+            logger.info("设置机器人参数结束");
+
+            logger.info("设置机器人交易规则开始");
+            if (!setPrecision()) {
+                return;
+            }
+            logger.info("设置机器人交易规则结束");
+            //判断走K线的方式
+            if ("1".equals(exchange.get("sheetForm"))) {
+                //新版本
+                while (randomNum == 1 || randomNum == Integer.parseInt(exchange.get("priceRange"))) {
+                    randomNum = (int) Math.ceil(Math.random() * Integer.parseInt(exchange.get("priceRange")));
+                }
+                timeSlot = Integer.parseInt(exchange.get("timeSlot"));
+            }
+
+            maxEatOrder = Integer.parseInt(exchange.get("maxEatOrder"));//吃单成交上限数
+            start = false;
         }
 
 
