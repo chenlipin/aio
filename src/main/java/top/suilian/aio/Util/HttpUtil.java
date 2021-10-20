@@ -7,6 +7,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
@@ -927,6 +928,51 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
         } finally {
             try {
                 httpClient.close();
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public String doPostMart(String url, String json,Map<String,String> map) {
+        SkipHttpsUtil  skipHttpsUtil=new SkipHttpsUtil();
+        HttpClient httpclient = (CloseableHttpClient)skipHttpsUtil.wrapClient();
+        RequestConfig config = RequestConfig.custom().setConnectTimeout(35000) //连接超时时间
+                .setConnectionRequestTimeout(35000) //从连接池中取的连接的最长时间
+                .setSocketTimeout(60000) //数据传输的超时时间
+                .build();
+        HttpPost post = new HttpPost(url);
+        post.setConfig(config);
+        String result = null;
+        CloseableHttpResponse response = null;
+        try {
+            StringEntity s = new StringEntity(json, "utf-8");
+            s.setContentEncoding("UTF-8");
+            post.setHeader("Content-type", "application/json");
+            post.addHeader("X-BM-TIMESTAMP", map.get("X-BM-TIMESTAMP"));
+            post.addHeader("X-BM-KEY", map.get("X-BM-KEY"));
+            post.addHeader("X-BM-SIGN", map.get("X-BM-SIGN"));
+            post.setEntity(s);
+            response = (CloseableHttpResponse) httpclient.execute(post);
+            if (response != null && response.getStatusLine().getStatusCode() == 200) {
+                result = EntityUtils.toString(response.getEntity());// 返回json格式：
+            } else {
+                result = EntityUtils.toString(response.getEntity());
+            }
+            return result;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+
                 if (response != null) {
                     response.close();
                 }

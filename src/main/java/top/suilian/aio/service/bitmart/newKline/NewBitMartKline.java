@@ -68,19 +68,25 @@ public class NewBitMartKline extends BitMartParentService {
 
         if (start) {
             logger.info("设置机器人参数开始");
-            setParam();
-            setTransactionRatio();
-            if(exchange.get("tradeRatio")!=null||!"0".equals(exchange.get("tradeRatio"))){
-                Double ratio =10*(1/(1+Double.valueOf(exchange.get("tradeRatio"))));
-                tradeRatio=new BigDecimal(ratio).setScale(2,BigDecimal.ROUND_HALF_UP);
-            }
+//            setParam();
+//            setTransactionRatio();
+//            if(exchange.get("tradeRatio")!=null||!"0".equals(exchange.get("tradeRatio"))){
+//                Double ratio =10*(1/(1+Double.valueOf(exchange.get("tradeRatio"))));
+//                tradeRatio=new BigDecimal(ratio).setScale(2,BigDecimal.ROUND_HALF_UP);
+//            }
             logger.info("设置机器人参数结束");
 
-            logger.info("设置机器人交易规则开始");
-            setPrecision();
-            logger.info("设置机器人交易规则结束");
+//            logger.info("设置机器人交易规则开始");
+//            setPrecision();
+//            logger.info("设置机器人交易规则结束");
 
-            runBitMartRandomDepth.init(id+1);
+            String s = submitOrder(1, new BigDecimal("1.720007"), new BigDecimal("0.5"));
+            System.out.println("------"+s);
+            try {
+                Thread.sleep(100000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
