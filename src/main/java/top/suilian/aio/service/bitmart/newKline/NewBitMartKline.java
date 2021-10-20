@@ -1,12 +1,15 @@
-package top.suilian.aio.service.hotcoin.newKline;
+package top.suilian.aio.service.bitmart.newKline;
 
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
+import org.springframework.context.annotation.DependsOn;
+import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.hotcoin.HotCoinParentService;
+import top.suilian.aio.service.bitmart.BitMartParentService;
+import top.suilian.aio.service.bitmart.RandomDepth.RunBitMartRandomDepth;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -14,8 +17,9 @@ import java.util.*;
 
 import static java.math.BigDecimal.ROUND_DOWN;
 
-public class NewHotcoinKline extends HotCoinParentService {
-    public NewHotcoinKline(
+@DependsOn("beanContext")
+public class NewBitMartKline extends BitMartParentService {
+    public NewBitMartKline(
             CancelExceptionService cancelExceptionService,
             CancelOrderService cancelOrderService,
             ExceptionMessageService exceptionMessageService,
@@ -37,7 +41,7 @@ public class NewHotcoinKline extends HotCoinParentService {
         super.httpUtil = httpUtil;
         super.redisHelper = redisHelper;
         super.id = id;
-        super.logger = getLogger(Constant.KEY_LOG_PATH_HOTCOIN_KLINE, id);
+        super.logger = getLogger(Constant.KEY_LOG_PATH_BITMART_KLINE, id);
     }
 
     private BigDecimal intervalAmount = BigDecimal.ZERO;
@@ -58,6 +62,8 @@ public class NewHotcoinKline extends HotCoinParentService {
     private int timeSlot = 1;
     private BigDecimal tradeRatio=new BigDecimal(5);
 
+    public RunBitMartRandomDepth runBitMartRandomDepth = BeanContext.getBean(RunBitMartRandomDepth.class);
+
     public void init() throws UnsupportedEncodingException {
 
         if (start) {
@@ -74,6 +80,7 @@ public class NewHotcoinKline extends HotCoinParentService {
             setPrecision();
             logger.info("设置机器人交易规则结束");
 
+            runBitMartRandomDepth.init(id+1);
 
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {

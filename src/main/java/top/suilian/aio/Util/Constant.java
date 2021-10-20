@@ -84,6 +84,8 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_GWET=51;   //GWET
 
+    public static final int KEY_EXCHANGE_BITMART=52;   //BITMART
+
     //endregion
 
 
@@ -438,6 +440,16 @@ public class Constant {
      * happycoin日志路径
      */
     public static final String KEY_LOG_PATH_BTXEX_KLINE = "bthex/kline";           //playcoin日志路径 Kline 日志路径
+
+
+
+    /**
+     * hotcoin 日志路径
+     */
+    public static final String KEY_LOG_PATH_BITMART_KLINE = "bitmart/newkline";           //HOTCOIN Kline 日志路径
+    public static final String KEY_LOG_PATH_BITMART_REFER_DEPTH = "bitmart/referDepth";           //HOTCOIN 对标深度日志路径
+    public static final String KEY_LOG_PATH_BITMART_REFER_KLINE = "bitmart/referKline";         //HOTCOIN 对标k线日志路径
+    public static final String KEY_LOG_PATH_BITMART_DEPTH="bitmart/depth";
 
 
     //region    redis
