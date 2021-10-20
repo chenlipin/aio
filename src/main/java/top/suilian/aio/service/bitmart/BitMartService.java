@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.service.bitmart.RandomDepth.RunBitMartRandomDepth;
-import top.suilian.aio.service.bitmart.depthReferToZg.RunDepthHotcoinReferToZg;
-import top.suilian.aio.service.bitmart.kline.RunHotCoinKline;
-import top.suilian.aio.service.bitmart.klineReferToZg.RunKlineHotcoinReferToZg;
+
 import top.suilian.aio.service.bitmart.newKline.RunNewBitMartKline;
 
 @Component
