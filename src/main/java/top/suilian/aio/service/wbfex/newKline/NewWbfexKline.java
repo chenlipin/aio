@@ -112,7 +112,7 @@ public class NewWbfexKline extends WbfexParentService {
 
 
             //获取深度 判断平台撮合是否成功
-            String trades = httpUtil.get("https://openapi.wbf.info/open/api/market_dept?symbol=" + exchange.get("market") + "&type=step0");
+            String trades = httpUtil.get(baseUrl+"/open/api/market_dept?symbol=" + exchange.get("market") + "&type=step0");
             JSONObject tradesObj = judgeRes(trades, "bids", "getRandomPrice");
 
             if (!"".equals(trades) && trades != null && !trades.isEmpty() && tradesObj != null) {
@@ -277,24 +277,24 @@ public class NewWbfexKline extends WbfexParentService {
             Integer value = string.get((int) Math.round(Math.random() * (string.size() - 1)));
             switch (value) {
                 case 0:
-                    setTradeLog(id, "当前随机值（" + value + ":横盘）", 1);
+//                    setTradeLog(id, "当前随机值（" + value + ":横盘）", 1);
                     break;
                 case 1:
                     if (Integer.parseInt(exchange.get("priceRange")) >= (randomNum + 2)) {
                         randomNum += 1;
-                        setTradeLog(id, "当前随机值（" + value + ":涨幅）", 1);
+//                        setTradeLog(id, "当前随机值（" + value + ":涨幅）", 1);
                     } else {
                         randomNum -= 1;
-                        setTradeLog(id, "当前随机值（" + value + ":跌幅）", 1);
+//                        setTradeLog(id, "当前随机值（" + value + ":跌幅）", 1);
                     }
                     break;
                 case 2:
                     if (2 <= (randomNum - 1)) {
                         randomNum -= 1;
-                        setTradeLog(id, "当前随机值（" + value + ":跌幅）", 1);
+//                        setTradeLog(id, "当前随机值（" + value + ":跌幅）", 1);
                     } else {
                         randomNum += 1;
-                        setTradeLog(id, "当前随机值（" + value + ":涨幅）", 1);
+//                        setTradeLog(id, "当前随机值（" + value + ":涨幅）", 1);
                     }
                     break;
             }
@@ -316,7 +316,7 @@ public class NewWbfexKline extends WbfexParentService {
      */
     public BigDecimal getRandomPrice() {
         BigDecimal price = null;
-        String trades = httpUtil.get("https://openapi.wbf.info/open/api/market_dept?symbol=" + exchange.get("market") + "&type=step0");
+        String trades = httpUtil.get(baseUrl+"/open/api/market_dept?symbol=" + exchange.get("market") + "&type=step0");
         JSONObject tradesObj = judgeRes(trades, "bids", "getRandomPrice");
 
         if (!"".equals(trades) && trades != null && !trades.isEmpty() && tradesObj != null) {
@@ -439,7 +439,7 @@ public class NewWbfexKline extends WbfexParentService {
                 sellPrice = sellPri;
             }
 
-            setTradeLog(id, "区间值-------------------------->" + randomNum, 1);
+//            setTradeLog(id, "区间值-------------------------->" + randomNum, 1);
 
             BigDecimal disparity = sellPrice.subtract(buyPrice);
             logger.info("robotId" + id + "----" + "上次买一：" + buyPrice + "，上次卖一：" + sellPrice);
@@ -453,7 +453,7 @@ public class NewWbfexKline extends WbfexParentService {
             BigDecimal interval = nN(disparity.divide(new BigDecimal(exchange.get("priceRange")), newScale, ROUND_DOWN), newScale);
 
 
-            setTradeLog(id, "区间差值-------------------------->" + interval, 1);
+//            setTradeLog(id, "区间差值-------------------------->" + interval, 1);
             logger.info("robotId" + id + "----" + "区间值：" + interval);
 
             if ("0".equals(exchange.get("sheetForm"))) {
@@ -468,7 +468,7 @@ public class NewWbfexKline extends WbfexParentService {
                 logger.info("robotId" + id + "----" + "小数位未处理的新价格------->" + oldPrice);
                 logger.info("robotId" + id + "----" + "小数位已处理的新价格------->" + price);
                 if (price.compareTo(sellPri) < 0 && price.compareTo(buyPri) > 0) {
-                    setTradeLog(id, "旧版本------------------->卖1[" + sellPri + "]买1[" + buyPri + "]新[" + price + "]", 1);
+//                    setTradeLog(id, "旧版本------------------->卖1[" + sellPri + "]买1[" + buyPri + "]新[" + price + "]", 1);
                     logger.info("robotId" + id + "----" + "旧版本结束");
                     buyPrice = BigDecimal.ZERO;
                     sellPrice = BigDecimal.ZERO;
@@ -487,10 +487,10 @@ public class NewWbfexKline extends WbfexParentService {
                 }
             } else {
                 logger.info("robotId" + id + "----" + "新版本开始");
-                setTradeLog(id, "随机区间值------------------------->" + randomNum, 1);
+//                setTradeLog(id, "随机区间值------------------------->" + randomNum, 1);
                 BigDecimal minPrice = buyPrice.add(interval.multiply(BigDecimal.valueOf(randomNum - 1)));
                 BigDecimal maxPrice = buyPrice.add(interval.multiply(BigDecimal.valueOf(randomNum)));
-                setTradeLog(id, "区间最小价格[" + minPrice + "]区间最大价格[" + maxPrice + "]", 1);
+//                setTradeLog(id, "区间最小价格[" + minPrice + "]区间最大价格[" + maxPrice + "]", 1);
                 logger.info("robotId" + id + "----" + "minPrice(区间最小价格)：" + minPrice + "，maxPrice(区间最大价格)：" + maxPrice);
                 BigDecimal diff = maxPrice.subtract(minPrice);
                 BigDecimal random = diff.subtract(diff.multiply(BigDecimal.valueOf(Math.random())));
@@ -500,7 +500,7 @@ public class NewWbfexKline extends WbfexParentService {
                 logger.info("robotId" + id + "----" + "price(新价格)：" + price);
 
                 if (price.compareTo(buyPri) > 0 && price.compareTo(sellPri) < 0) {
-                    setTradeLog(id, "新版本------------------->卖1[" + sellPri + "]买1[" + buyPri + "]新[" + price + "]", 1);
+//                    setTradeLog(id, "新版本------------------->卖1[" + sellPri + "]买1[" + buyPri + "]新[" + price + "]", 1);
                     logger.info("robotId" + id + "----" + "新版本结束");
                 } else {
                     buyPrice = BigDecimal.ZERO;
@@ -554,7 +554,7 @@ public class NewWbfexKline extends WbfexParentService {
             if (resultJson != null && jsonObject.getInt("code") == 0) {
                 JSONObject data = jsonObject.getJSONObject("data");
                 String tradeId = data.getString("order_id");
-                setTradeLog(id, "买一卖一区间过小，刷开区间-------------->卖单[" + buyPri + "]数量[" + buyAmount + "]", 0);
+//                setTradeLog(id, "买一卖一区间过小，刷开区间-------------->卖单[" + buyPri + "]数量[" + buyAmount + "]", 0);
                 //查看订单详情
                 sleep(200, Integer.parseInt(exchange.get("isMobileSwitch")));
 
@@ -568,23 +568,23 @@ public class NewWbfexKline extends WbfexParentService {
                     if (orderInfo != null) {
                         String status = orderInfo.getString("status_msg");
                         if (status.equals("完全成交")) {
-                            setTradeLog(id, "刷开区间订单id：" + tradeId + "完全成交", 0, "000000");
+                            setTradeLog(id, "刷开区间订单id：" + tradeId + "完全成交", 0, "#67c23a");
                         } else if (status.equals("已撤单")) {
-                            setTradeLog(id, "刷开区间订单id：" + tradeId + "已撤单", 0, "000000");
+                            setTradeLog(id, "刷开区间订单id：" + tradeId + "已撤单", 0, "#67c23a");
                         } else {
                             String res = cancelTrade(tradeId);
                             JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                             setCancelOrder(cancelRes, res, tradeId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
-                            setTradeLog(id, "刷开区间撤单id：[" + tradeId + "]=>" + res, 0, "000000");
+                            setTradeLog(id, "刷开区间撤单id：[" + tradeId + "]=>" + res, 0, "#67c23a");
 
                         }
                     }
                 } else {
-                    setTradeLog(id, "刷开区间查询订单失败" + str, 0, "000000");
+                    setTradeLog(id, "刷开区间查询订单失败" + str, 0, "#67c23a");
                 }
 
                 intervalAmount = intervalAmount.add(buyAmount);
-                setTradeLog(id, "已使用刷开区间币量:" + intervalAmount, 0, "000000");
+                setTradeLog(id, "已使用刷开区间币量:" + intervalAmount, 0, "#67c23a");
             }
         } catch (UnsupportedEncodingException e) {
             exceptionMessage = collectExceptionStackMsg(e);
@@ -605,21 +605,21 @@ public class NewWbfexKline extends WbfexParentService {
                 if (orderInfo != null) {
                     String status = orderInfo.getString("status_msg");
                     if (status.equals("完全成交")) {
-                        setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "000000");
+                        setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                     } else if (status.equals("已撤单")) {
-                        setTradeLog(id, "订单id：" + orderId + "已撤单", 0, "000000");
+                        setTradeLog(id, "订单id：" + orderId + "已撤单", 0, "#67c23a");
                     } else {
                         String res = cancelTrade(orderId);
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
-                        setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "000000");
+                        setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");
                         if (Integer.valueOf(exchange.get("orderSumSwitch")) == 1 && type == 1) {    //防褥羊毛开关
                             orderNum++;
                         }
                     }
 
                 } else {
-                    setTradeLog(id, "订单id：" + orderIdOne + "已撤单", 0, "000000");
+                    setTradeLog(id, "订单id：" + orderIdOne + "已撤单", 0, "#67c23a");
 
                 }
 

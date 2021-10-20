@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 public class WbfexParentService extends BaseService implements RobotAction {
-    public String baseUrl = "https://openapi.wbf.info";
+    public String baseUrl = "https://openapi.wbfex.biz";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;

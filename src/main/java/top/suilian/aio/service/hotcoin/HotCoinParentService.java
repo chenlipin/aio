@@ -2,12 +2,11 @@ package top.suilian.aio.service.hotcoin;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
-import top.suilian.aio.dao.ApitradeLogMapper;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
@@ -24,6 +23,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@DependsOn("beanContext")
 public class HotCoinParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://api.hotcoinfin.com";
     public String host = "api.hotcoinfin.com";

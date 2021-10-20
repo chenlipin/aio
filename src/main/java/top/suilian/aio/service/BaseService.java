@@ -5,6 +5,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.ChuangLanSmsUtil;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@DependsOn("beanContext")
 public class BaseService {
     //region    Service
     public CancelExceptionService cancelExceptionService = BeanContext.getBean(CancelExceptionService.class);
