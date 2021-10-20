@@ -183,7 +183,9 @@ public class ServiceController extends BaseController {
                         bthexService.start(operationRequest.getId(), operationRequest.getType());
                     case Constant.KEY_EXCHANGE_GWET:                //playcoin
                         GwetService.start(operationRequest.getId(), operationRequest.getType());
-
+                        break;
+                    case Constant.KEY_EXCHANGE_BITMART:                 //playcoin
+                        bitMartService.start(operationRequest.getId(), operationRequest.getType());
                         break;
                 }
                 if (operationRequest.getCategory() == 1) {
@@ -350,6 +352,9 @@ public class ServiceController extends BaseController {
                 case Constant.KEY_EXCHANGE_BTHEX:                //bthex
                     bthexService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
+                case Constant.KEY_EXCHANGE_BITMART:                //bitmart
+                    bitMartService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
             }
         } else {
             robotService.stopRobot(operationRequest.getId());
@@ -513,6 +518,9 @@ public class ServiceController extends BaseController {
                     bgoService.kill(operationRequest.getId(), operationRequest.getType());
                 case Constant.KEY_EXCHANGE_BTHEX:                //bthex
                     bthexService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_BITMART:                //bitmart
+                    bitMartService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {
