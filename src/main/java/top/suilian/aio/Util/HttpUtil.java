@@ -232,12 +232,15 @@ public class HttpUtil {
             X509TrustManager x509mgr = new X509TrustManager() {
 
                 //　　该方法检查客户端的证书，若不信任该证书则抛出异常
+                @Override
                 public void checkClientTrusted(X509Certificate[] xcs, String string) {
                 }
                 // 　　该方法检查服务端的证书，若不信任该证书则抛出异常
+                @Override
                 public void checkServerTrusted(X509Certificate[] xcs, String string) {
                 }
                 // 　返回受信任的X509证书数组。
+                @Override
                 public X509Certificate[] getAcceptedIssuers() {
                     return null;
                 }
@@ -903,7 +906,6 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
         // UrlEncodedFormEntity entityParam = new UrlEncodedFormEntity(list, "UTF-8");
         post.setEntity(body);
         post.addHeader("Content-Type", "application/json");
-        // post.addHeader("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.6)");
         boolean contentType = true;
         for (String key : headers.keySet()) {
             if ("Content-Type".equals(key)) {
@@ -914,7 +916,7 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
         CloseableHttpResponse response = null;
         try {
             response = httpClient.execute(post);
-            if (response != null && response.getStatusLine().getStatusCode() == 200) {
+            if (response != null && response.getStatusLine().getStatusCode() != 2000) {
                 HttpEntity entity = response.getEntity();
                 result = entityToString(entity);
             }
@@ -939,8 +941,7 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
     }
 
     public String doPostMart(String url, String json,Map<String,String> map) {
-        SkipHttpsUtil  skipHttpsUtil=new SkipHttpsUtil();
-        HttpClient httpclient = (CloseableHttpClient)skipHttpsUtil.wrapClient();
+        CloseableHttpClient httpclient = HttpClientBuilder.create().build();
         RequestConfig config = RequestConfig.custom().setConnectTimeout(35000) //连接超时时间
                 .setConnectionRequestTimeout(35000) //从连接池中取的连接的最长时间
                 .setSocketTimeout(60000) //数据传输的超时时间
@@ -957,7 +958,7 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
             post.addHeader("X-BM-KEY", map.get("X-BM-KEY"));
             post.addHeader("X-BM-SIGN", map.get("X-BM-SIGN"));
             post.setEntity(s);
-            response = (CloseableHttpResponse) httpclient.execute(post);
+            response = httpclient.execute(post);
             if (response != null && response.getStatusLine().getStatusCode() == 200) {
                 result = EntityUtils.toString(response.getEntity());// 返回json格式：
             } else {
