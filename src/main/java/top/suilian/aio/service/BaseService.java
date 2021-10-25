@@ -44,7 +44,7 @@ public class BaseService {
     //region    Utils
     public CommonUtil commonUtil = BeanContext.getBean(CommonUtil.class);
     public HttpUtil httpUtil = BeanContext.getBean(HttpUtil.class);
-    public Logger logger=Logger.getLogger(BaseService.class);
+    public Logger logger = Logger.getLogger(BaseService.class);
     public RedisHelper redisHelper = BeanContext.getBean(RedisHelper.class);
     //endregion
 
@@ -116,6 +116,34 @@ public class BaseService {
         tradeLog.setStatus(status);
         logger.info("setTradeLog：" + JSON.toJSONString(tradeLog));
         return tradeLogService.insert(tradeLog);
+    }
+
+    /**
+     * 0.余额不足
+     * 2.撞单
+     * 3.api错误
+     * 4.买卖区间过小  无法量化
+     * 5.刷开区间最大值
+     * 99.其他
+     */
+    public int setWarmLog(Integer robotId, int status, String msg, String warmDetailMsg) {
+        WarmLog warmLog = tradeLogService.selectByRobotIdAndType(robotId, status);
+        if (warmLog == null && status != 0&&status != 4) {
+            warmLog = new WarmLog();
+            warmLog.setRobotId(robotId);
+            warmLog.setType(status);
+            warmLog.setWarmMsg(msg);
+            warmLog.setWarmDetailMsg(warmDetailMsg);
+            tradeLogService.insertWarmLog(warmLog);
+        } else {
+            warmLog.setWarmMsg(msg);
+            warmLog.setWarmDetailMsg(warmDetailMsg);
+            warmLog.setUpdateTime(new Date());
+            tradeLogService.updateWarmLog(warmLog);
+
+        }
+        logger.info("setWarmLog：" + JSON.toJSONString(warmLog));
+        return tradeLogService.insertWarmLog(warmLog);
     }
 
     public int setTradeLog(Integer id, String remark, int status) {
@@ -376,13 +404,14 @@ public class BaseService {
      * @return
      */
     public JSONObject judgeRes(String res, String code, String action) {
-        logger.info( "log解析：" + res.replace("\t","").replace("\n",""));
-       if(StringUtils.isNotEmpty(res)){
-           JSONObject resJson = JSONObject.fromObject(res);
-           return resJson;
-       }
+        logger.info("log解析：" + res.replace("\t", "").replace("\n", ""));
+        if (StringUtils.isNotEmpty(res)) {
+            JSONObject resJson = JSONObject.fromObject(res);
+            return resJson;
+        }
         return null;
     }
+
     /**
      * 判断字符串是否是json string
      *

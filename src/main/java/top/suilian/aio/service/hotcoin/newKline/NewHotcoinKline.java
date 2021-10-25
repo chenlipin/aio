@@ -175,6 +175,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                     if ("0".equals(exchange.get("orderOperation"))) {
 
                         setTradeLog(id, "撤单数达到上限，停止量化", 0, "000000");
+                        setWarmLog(id,2,"撤单数达到上限，停止量化","");
                         msg = "您的" + getRobotName(this.id) + "量化机器人已停止!";
                         setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
@@ -183,6 +184,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                     } else if ("1".equals(exchange.get("orderOperation"))) {//不停止
 
                         setTradeLog(id, "撤单数次数过多，请注意盘口", 0, "000000");
+                        setWarmLog(id,2,"撤单数次数过多，请注意盘口","");
                         msg = "您的" + getRobotName(this.id) + "量化机器人撤单数次数过多，请注意盘口!";
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
                         //重置撞单次数
@@ -191,7 +193,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                     } else if ("2".equals(exchange.get("orderOperation"))) {//随机暂停后重启
                         int st = (int) (Math.random() * (Integer.parseInt(exchange.get("suspendTopLimit")) - Integer.parseInt(exchange.get("suspendLowerLimit"))) + Integer.parseInt(exchange.get("suspendLowerLimit")));
                         setTradeLog(id, "撤单数次数过多，将暂停" + st + "秒后自动恢复", 0, "000000");
-                        msg = "您的" + getRobotName(this.id) + "量化机器人撤单数次数过多，将暂停片刻后自动恢复!";
+                        setWarmLog(id,2,"撤单数次数过多，将暂停" + st + "秒后自动恢复","");
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
                         //重置撞单次数
                         randomNum = 0;
@@ -204,6 +206,7 @@ public class NewHotcoinKline extends HotCoinParentService {
             }
 
             setTradeLog(id, "撤单数为" + orderNum, 0, "000000");
+
             if (Integer.valueOf(exchange.get("orderSumSwitch")) == 1) {    //防褥羊毛开关
                 setTradeLog(id, "停止量化撤单数设置为：" + exchange.get("orderSum"), 0, "000000");
             }
@@ -366,6 +369,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                 if (maxEatOrder == 0) {
                     logger.info("吃单上限功能未开启：maxEatOrder=" + maxEatOrder);
                 } else if (maxEatOrder <= eatOrder) {
+                    setWarmLog(id,2,"已吃堵盘口单总数(" + eatOrder + ")=吃单成交上限数(" + maxEatOrder + "),吃单上限，停止吃单","");
                     setTradeLog(id, "已吃堵盘口单总数(" + eatOrder + ")=吃单成交上限数(" + maxEatOrder + "),吃单上限，停止吃单", 0);
                 }
 
@@ -393,6 +397,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                         }
                     } else {
                         setTradeLog(id, "出现疑似堵盘口订单，停止量化", 0, "000000");
+                        setWarmLog(id,2,"出现疑似堵盘口订单，停止量化","");
                         String msg = "出现疑似堵盘口订单，您的" + getRobotName(this.id) + "量化机器人已停止!";
                         setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
@@ -424,6 +429,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                         }
                     } else {
                         setTradeLog(id, "出现疑似堵盘口订单，停止量化", 0, "000000");
+                        setWarmLog(id,2,"出现疑似堵盘口订单，停止量化","");
                         String msg = "出现疑似堵盘口订单，您的" + getRobotName(this.id) + "量化机器人已停止!";
                         setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
@@ -488,12 +494,9 @@ public class NewHotcoinKline extends HotCoinParentService {
                     buyPrice = BigDecimal.ZERO;
                     sellPrice = BigDecimal.ZERO;
                 } else {
+                    setWarmLog(id,4,"买一卖一区间过小，无法量化卖1[" + sellPri + "]买1[" + buyPri + "]","");
                     setTradeLog(id, "买一卖一区间过小，无法量化------------------->卖1[" + sellPri + "]买1[" + buyPri + "]", 0, "FF111A");
                     logger.info("robotId" + id + "----" + "买一卖一区间过小，无法量化------------------->卖1[" + sellPri + "]买1[" + buyPri + "]");
-
-
-                    String msg = "您的" + getRobotName(id) + "区间过小，无法量化！";
-                    judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_SMALL_INTERVAL);
                     sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
                     buyPrice = BigDecimal.ZERO;
                     sellPrice = BigDecimal.ZERO;
@@ -553,6 +556,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                 logger.info("不计成本刷开区间中");
             }else if(new BigDecimal(exchange.get("openIntervalAllAmount")).compareTo(intervalAmount.add(new BigDecimal(bid.get(1).toString()))) < 0) {
                 setRobotArgs(id, "isOpenIntervalSwitch", "0");
+                setWarmLog(id,5,"刷开区间的数量已达到最大值,停止刷开区间","");
                 setTradeLog(id, "刷开区间的数量已达到最大值,停止刷开区间", 0, "#67c23a");
                 break;
             }
@@ -623,6 +627,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                     setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");
                     if (Integer.valueOf(exchange.get("orderSumSwitch")) == 1 && type == 1) {    //防褥羊毛开关
                         orderNum++;
+                        setWarmLog(id,2,"订单{"+orderId+"}撤单,撞单数为"+orderNum,"");
                     }
                 }
 

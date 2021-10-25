@@ -9,6 +9,7 @@ import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
+import top.suilian.aio.model.WarmLog;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.loex.LoexParentService;
@@ -123,6 +124,11 @@ public class HotCoinParentService extends BaseService implements RobotAction {
 
                     trade = httpUtil.get("https://" + host + uri + "?" + httpParams);
 
+                    JSONObject jsonObject = JSONObject.fromObject(trade);
+                    if(200!=jsonObject.getInt("code")){
+                       setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+                    }
+
                     setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                     logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
 
@@ -153,7 +159,10 @@ public class HotCoinParentService extends BaseService implements RobotAction {
                 logger.info("挂单参数" + httpParams);
                 trade = httpUtil.get("https://" + host + uri + "?" + httpParams);
 
-
+                JSONObject jsonObject = JSONObject.fromObject(trade);
+                if(200!=jsonObject.getInt("code")){
+                    setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+                }
                 setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                 logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
             }
@@ -204,6 +213,10 @@ public class HotCoinParentService extends BaseService implements RobotAction {
             e.printStackTrace();
         }
         trade = httpUtil.get("https://" + host + uri + "?" + httpParams);
+        JSONObject jsonObject = JSONObject.fromObject(trade);
+        if(200!=jsonObject.getInt("code")){
+            setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+        }
         setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         return trade;
     }
@@ -230,6 +243,10 @@ public class HotCoinParentService extends BaseService implements RobotAction {
             e.printStackTrace();
         }
         String trades = httpUtil.get("https://" + host + uri + "?" + httpParams);
+        JSONObject jsonObject = JSONObject.fromObject(trade);
+        if(200!=jsonObject.getInt("code")){
+            setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+        }
         return trades;
 
     }
@@ -259,6 +276,10 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         params.put("Signature", Signature);
         String httpParams = splicing(params);
         String trades = httpUtil.get("https://" + host + uri + "?" + httpParams);
+        JSONObject jsonObject = JSONObject.fromObject(trades);
+        if(200!=jsonObject.getInt("code")){
+            setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+        }
         logger.info("查询订单："+orderId+"  结果"+trades);
         return trades;
     }
@@ -288,7 +309,10 @@ public class HotCoinParentService extends BaseService implements RobotAction {
 
         HttpUtil httpUtil = new HttpUtil();
         String res = httpUtil.get("https://" + host + uri + "?" + httpParams);
-
+        JSONObject jsonObject = JSONObject.fromObject(res);
+        if(200!=jsonObject.getInt("code")){
+            setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+        }
         return res;
     }
 
@@ -359,6 +383,10 @@ public class HotCoinParentService extends BaseService implements RobotAction {
             params.put("Signature", Signature);
             String httpParams = splicing(params);
             String trades = httpUtil.get(baseUrl + uri + "?" + httpParams);
+            JSONObject jsonObjectss = JSONObject.fromObject(trades);
+            if(200!=jsonObjectss.getInt("code")){
+                setWarmLog(id,3,"API接口错误",jsonObjectss.getString("msg"));
+            }
             JSONObject tradesJson = JSONObject.fromObject(trades);
             JSONObject data = tradesJson.getJSONObject("data");
             logger.info("获取余额"+trades);
@@ -374,6 +402,9 @@ public class HotCoinParentService extends BaseService implements RobotAction {
                     firstBalance = jsonObject.getString("total");
                 } else if (jsonObject.getString("shortName").equals(coinArr.get(1).toUpperCase())) {
                     lastBalance = jsonObject.getString("total");
+                    if(Double.parseDouble(lastBalance)<10){
+                        setWarmLog(id,0,"余额不足",coinArr.get(1).toUpperCase()+"余额为:"+lastBalance);
+                    }
                 }
             }
             HashMap<String, String> balances = new HashMap<>();
