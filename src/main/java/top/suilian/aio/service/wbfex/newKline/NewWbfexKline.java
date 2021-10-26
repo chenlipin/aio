@@ -177,13 +177,13 @@ public class NewWbfexKline extends WbfexParentService {
                     if ("0".equals(exchange.get("orderOperation"))) {
 
                         setTradeLog(id, "撤单数达到上限，停止量化", 0, "000000");
-                        msg = "您的" + getRobotName(this.id) + "量化机器人已停止!";
+                        setWarmLog(id,2,"撤单数达到上限，停止量化","");
                         setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
                         return;
 
                     } else if ("1".equals(exchange.get("orderOperation"))) {//不停止
-
+                        setWarmLog(id,2,"撤单数次数过多，请注意盘口","");
                         setTradeLog(id, "撤单数次数过多，请注意盘口", 0, "000000");
                         msg = "您的" + getRobotName(this.id) + "量化机器人撤单数次数过多，请注意盘口!";
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
@@ -193,6 +193,7 @@ public class NewWbfexKline extends WbfexParentService {
                     } else if ("2".equals(exchange.get("orderOperation"))) {//随机暂停后重启
                         int st = (int) (Math.random() * (Integer.parseInt(exchange.get("suspendTopLimit")) - Integer.parseInt(exchange.get("suspendLowerLimit"))) + Integer.parseInt(exchange.get("suspendLowerLimit")));
                         setTradeLog(id, "撤单数次数过多，将暂停" + st + "秒后自动恢复", 0, "000000");
+                        setWarmLog(id,2,"量化机器人撤单数次数过多，将暂停片刻后自动恢复!","");
                         msg = "您的" + getRobotName(this.id) + "量化机器人撤单数次数过多，将暂停片刻后自动恢复!";
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
                         //重置撞单次数
@@ -354,6 +355,7 @@ public class NewWbfexKline extends WbfexParentService {
                 if (maxEatOrder == 0) {
                     logger.info("吃单上限功能未启动：maxEatOrder=" + maxEatOrder);
                 } else if (maxEatOrder <= eatOrder) {
+                    setWarmLog(2,2,"已吃堵盘口单总数(" + eatOrder + ")=吃单成交上限数(" + maxEatOrder + "),吃单上限，停止吃单","");
                     setTradeLog(id, "已吃堵盘口单总数(" + eatOrder + ")=吃单成交上限数(" + maxEatOrder + "),吃单上限，停止吃单", 0);
                 }
                 //吃买单
@@ -379,6 +381,7 @@ public class NewWbfexKline extends WbfexParentService {
                             }
                         }
                     } else {
+                        setWarmLog(id,2,"出现疑似堵盘口订单，停止量化","");
                         setTradeLog(id, "出现疑似堵盘口订单，停止量化", 0, "000000");
                         String msg = "出现疑似堵盘口订单，您的" + getRobotName(this.id) + "量化机器人已停止!";
                         setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
@@ -410,6 +413,7 @@ public class NewWbfexKline extends WbfexParentService {
                             }
                         }
                     } else {
+                        setWarmLog(id,2,"出现疑似堵盘口订单，停止量化","");
                         setTradeLog(id, "出现疑似堵盘口订单，停止量化", 0, "000000");
                         String msg = "出现疑似堵盘口订单，您的" + getRobotName(this.id) + "量化机器人已停止!";
                         setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
@@ -428,6 +432,7 @@ public class NewWbfexKline extends WbfexParentService {
                     openInterval(sellPri, buyPrices, new BigDecimal(exchange.get("openIntervalPrice")));
                 } else if (new BigDecimal(exchange.get("openIntervalAllAmount")).compareTo(intervalAmount) < 0) {
                     setRobotArgs(id, "isOpenIntervalSwitch", "0");
+                    setWarmLog(id,5,"刷开区间的数量已达到最大值,停止刷开区间","");
                     setTradeLog(id, "刷开区间的数量已达到最大值,停止刷开区间", 0, "000000");
 
                 } else {
@@ -621,6 +626,7 @@ public class NewWbfexKline extends WbfexParentService {
                         setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");
                         if (Integer.valueOf(exchange.get("orderSumSwitch")) == 1 && type == 1) {    //防褥羊毛开关
                             orderNum++;
+                            setWarmLog(id,2,"订单{"+orderId+"}撤单,撞单数为"+orderNum,"");
                         }
                     }
 

@@ -104,7 +104,7 @@ public class NewBitMartKline extends BitMartParentService {
 
         if (runTime <timeSlot) {
 
-            String trades = httpUtil.get(baseUrl + "/spot/v1/symbols/book?size=1&symbol"+exchange.get("market"));
+            String trades = httpUtil.get(baseUrl + "/spot/v1/symbols/book?size=1&symbol="+exchange.get("market"));
 
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
@@ -307,7 +307,7 @@ public class NewBitMartKline extends BitMartParentService {
     public BigDecimal getRandomPrice() throws UnsupportedEncodingException {
         BigDecimal price = null;
 
-        String trades = httpUtil.get(baseUrl + "/spot/v1/symbols/book?size=1&symbol"+exchange.get("market"));
+        String trades = httpUtil.get(baseUrl + "/spot/v1/symbols/book?size=10&symbol="+exchange.get("market"));
 
         com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 

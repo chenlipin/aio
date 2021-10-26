@@ -184,7 +184,7 @@ public class ServiceController extends BaseController {
                     case Constant.KEY_EXCHANGE_GWET:                //playcoin
                         GwetService.start(operationRequest.getId(), operationRequest.getType());
                         break;
-                    case Constant.KEY_EXCHANGE_BITMART:                 //playcoin
+                    case Constant.KEY_EXCHANGE_BITMART:                 //bitmart
                         bitMartService.start(operationRequest.getId(), operationRequest.getType());
                         break;
                 }

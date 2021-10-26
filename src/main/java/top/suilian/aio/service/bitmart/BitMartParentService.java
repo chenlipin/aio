@@ -26,9 +26,6 @@ import java.util.*;
 public class BitMartParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://api-cloud.bitmart.com";
     public String host = "api.hotcoinfin.com";
-    public String accessKey = "dd4ac256f33669200d5c5b600f7565c1f600ee48";
-    public String secretKey = "72b8357b065a9996b62c5f7084088fa1ad5da28e87a819894adf799a3c14e3a5";
-    public String memo = "999";
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
     public boolean isTest = true;
@@ -105,11 +102,11 @@ public class BitMartParentService extends BaseService implements RobotAction {
                     params.put("type", "limit");
                     params.put("size", num + "");
                     params.put("price", price1 + "");
-                    String sing = timestamp + "#" + memo + "#" + JSONObject.toJSONString(params);
-                    String sings = HMAC.sha256_HMAC(sing, secretKey);
+                    String sing = timestamp + "#" + exchange.get("memo") + "#" + JSONObject.toJSONString(params);
+                    String sings = HMAC.sha256_HMAC(sing, exchange.get("apikey"));
                     HashMap<String, String> headMap = new HashMap<>();
                     headMap.put("X-BM-TIMESTAMP", timestamp);
-                    headMap.put("X-BM-KEY", accessKey);
+                    headMap.put("X-BM-KEY", exchange.get("tpass"));
                     headMap.put("X-BM-SIGN", sings);
                     System.out.println("headMap:" + JSONObject.toJSONString(headMap));
                     try {
@@ -117,6 +114,8 @@ public class BitMartParentService extends BaseService implements RobotAction {
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
+                    setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+                    logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
 
                 } else {
                     setTradeLog(id, "price[" + price1 + "] num[" + num + "]", 1);
@@ -130,11 +129,11 @@ public class BitMartParentService extends BaseService implements RobotAction {
                 params.put("type", "limit");
                 params.put("size", num + "");
                 params.put("price", price1 + "");
-                String sing = timestamp + "#" + memo + "#" + JSONObject.toJSONString(params);
-                String sings = HMAC.sha256_HMAC(sing, secretKey);
+                String sing = timestamp + "#" + exchange.get("memo") + "#" + JSONObject.toJSONString(params);
+                String sings = HMAC.sha256_HMAC(sing, exchange.get("apikey"));
                 HashMap<String, String> headMap = new HashMap<>();
                 headMap.put("X-BM-TIMESTAMP", timestamp);
-                headMap.put("X-BM-KEY", accessKey);
+                headMap.put("X-BM-KEY", exchange.get("tpass"));
                 headMap.put("X-BM-SIGN", sings);
                 System.out.println("headMap:" + JSONObject.toJSONString(headMap));
                 try {
@@ -142,8 +141,6 @@ public class BitMartParentService extends BaseService implements RobotAction {
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
-
-
                 setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                 logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
             }
@@ -167,8 +164,8 @@ public class BitMartParentService extends BaseService implements RobotAction {
 
         // 输出字符串
         String trade = null;
-        BigDecimal price1 = nN(price, Integer.parseInt(precision.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.parseInt(precision.get("amountPrecision").toString()));
+        BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
         String uri = "/spot/v1/submit_order";
         Map<String, String> params = new TreeMap<>();
         params.put("symbol", exchange.get("market"));
@@ -176,11 +173,11 @@ public class BitMartParentService extends BaseService implements RobotAction {
         params.put("type", "limit");
         params.put("size", num + "");
         params.put("price", price1 + "");
-        String sing = timestamp + "#" + memo + "#" + JSONObject.toJSONString(params);
-        String sings = HMAC.sha256_HMAC(sing, secretKey);
+        String sing = timestamp + "#" + exchange.get("memo") + "#" + JSONObject.toJSONString(params);
+        String sings = HMAC.sha256_HMAC(sing, exchange.get("apikey"));
         HashMap<String, String> headMap = new HashMap<>();
         headMap.put("X-BM-TIMESTAMP", timestamp);
-        headMap.put("X-BM-KEY", accessKey);
+        headMap.put("X-BM-KEY", exchange.get("tpass"));
         headMap.put("X-BM-SIGN", sings);
         System.out.println("headMap:" + JSONObject.toJSONString(headMap));
         try {
@@ -192,31 +189,31 @@ public class BitMartParentService extends BaseService implements RobotAction {
         return trade;
     }
 
-    //获取委托单
-    public String getTradeOrders(int type) {
-        String trade = null;
-        String uri = "/v1/order/entrust";
-        String httpMethod = "GET";
-        Map<String, Object> params = new TreeMap<>();
-        params.put("AccessKeyId", exchange.get("apikey"));
-        params.put("SignatureVersion", 2);
-        params.put("SignatureMethod", "HmacSHA256");
-        params.put("Timestamp", new Date().getTime());
-        params.put("symbol", exchange.get("market"));
-        params.put("type", type);
-        params.put("count", 100);
-        String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
-        params.put("Signature", Signature);
-        String httpParams = null;
-        try {
-            httpParams = splicing(params);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        String trades = httpUtil.get("https://" + host + uri + "?" + httpParams);
-        return trades;
-
-    }
+//    //获取委托单
+//    public String getTradeOrders(int type) {
+//        String trade = null;
+//        String uri = "/v1/order/entrust";
+//        String httpMethod = "GET";
+//        Map<String, Object> params = new TreeMap<>();
+//        params.put("AccessKeyId", exchange.get("apikey"));
+//        params.put("SignatureVersion", 2);
+//        params.put("SignatureMethod", "HmacSHA256");
+//        params.put("Timestamp", new Date().getTime());
+//        params.put("symbol", exchange.get("market"));
+//        params.put("type", type);
+//        params.put("count", 100);
+//        String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
+//        params.put("Signature", Signature);
+//        String httpParams = null;
+//        try {
+//            httpParams = splicing(params);
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+//        String trades = httpUtil.get("https://" + host + uri + "?" + httpParams);
+//        return trades;
+//
+//    }
 
 
     /**
@@ -226,21 +223,19 @@ public class BitMartParentService extends BaseService implements RobotAction {
      * @return
      * @throws UnsupportedEncodingException
      */
-
-
     public String selectOrder(String orderId) {
         String trade = null;
         long timestamp = new Date().getTime();
         String uri = "/spot/v1/order_detail";
         Map<String, String> params = new TreeMap<>();
-        params.put("symbol", "LEOS_USDT");
+        params.put("symbol", exchange.get("market"));
         params.put("order_id", orderId);
-        String queryStr = "order_id=" + orderId + "&symbol=" + "LEOS_USDT";
-        String sing = timestamp + "#" + memo + "#" + queryStr;
-        String sings = HMAC.sha256_HMAC(sing, secretKey);
+        String queryStr = "order_id=" + orderId + "&symbol=" + exchange.get("market");
+        String sing = timestamp + "#" + exchange.get("memo") + "#" + queryStr;
+        String sings = HMAC.sha256_HMAC(sing, exchange.get("apikey"));
         HashMap<String, String> headMap = new HashMap<>();
         headMap.put("X-BM-TIMESTAMP", timestamp + "");
-        headMap.put("X-BM-KEY", accessKey);
+        headMap.put("X-BM-KEY", exchange.get("tpass"));
         headMap.put("X-BM-SIGN", sings);
         System.out.println("headMap:" + JSONObject.toJSONString(headMap));
         trade = httpUtil.getAddHead(baseUrl + uri + "?" + queryStr, headMap);
@@ -260,13 +255,13 @@ public class BitMartParentService extends BaseService implements RobotAction {
         long timestamp = new Date().getTime();
         String uri = "/spot/v2/cancel_order";
         Map<String, String> params = new TreeMap<>();
-        params.put("symbol", "LEOS_USDT");
+        params.put("symbol", exchange.get("markrt"));
         params.put("order_id", orderId);
-        String sing = timestamp + "#" + memo + "#" + JSONObject.toJSONString(params);
-        String sings = HMAC.sha256_HMAC(sing, secretKey);
+        String sing = timestamp + "#" + exchange.get("memo") + "#" + JSONObject.toJSONString(params);
+        String sings = HMAC.sha256_HMAC(sing, exchange.get("apikey"));
         HashMap<String, String> headMap = new HashMap<>();
         headMap.put("X-BM-TIMESTAMP", timestamp + "");
-        headMap.put("X-BM-KEY", accessKey);
+        headMap.put("X-BM-KEY", exchange.get("tpass"));
         headMap.put("X-BM-SIGN", sings);
         String trade = null;
         try {
@@ -278,43 +273,11 @@ public class BitMartParentService extends BaseService implements RobotAction {
     }
 
 
-    /**
-     * 获取所有尾单
-     *
-     * @return
-     */
-    public String getTrade() {
-
-        String uri = "/v1/order/entrust";
-        String httpMethod = "GET";
-        Map<String, Object> params = new TreeMap<>();
-        params.put("AccessKeyId", exchange.get("apikey"));
-        params.put("SignatureVersion", 2);
-        params.put("SignatureMethod", "HmacSHA256");
-        params.put("Timestamp", new Date().getTime());
-        params.put("symbol", exchange.get("market"));
-        params.put("type", 0);
-        params.put("page", 1);
-        params.put("count", 500);
-        String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
-        params.put("Signature", Signature);
-        String httpParams = null;
-        try {
-            httpParams = splicing(params);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        HttpUtil httpUtil = new HttpUtil();
-        String res = httpUtil.get("https://" + host + uri + "?" + httpParams);
-        System.out.println(res);
-        return res;
-    }
 
 
     /**
      * 获取余额
      */
-
     public void setBalanceRedis() throws UnsupportedEncodingException {
         String coins = redisHelper.getBalanceParam(Constant.KEY_ROBOT_COINS + id);
         if (coins == null) {
@@ -332,33 +295,20 @@ public class BitMartParentService extends BaseService implements RobotAction {
         }
         if (balance == null || overdue) {
             List<String> coinArr = Arrays.asList(coins.split("_"));
-            String trade = null;
-            String uri = "/spot/v1/wallet";
-            long timestamp = new Date().getTime();
-            String sing = timestamp + "#" + memo;
-            String sings = HMAC.sha256_HMAC(sing, secretKey);
-            HashMap<String, String> headMap = new HashMap<>();
-            headMap.put("X-BM-TIMESTAMP", timestamp + "");
-            headMap.put("X-BM-KEY", accessKey);
-            headMap.put("X-BM-SIGN", sings);
-            System.out.println("headMap:" + JSONObject.toJSONString(headMap));
-            trade = httpUtil.getAddHead(baseUrl + uri, headMap);
-            System.out.println(trade);
-            net.sf.json.JSONObject tradesJson = net.sf.json.JSONObject.fromObject(trade);
-            net.sf.json.JSONObject data = tradesJson.getJSONObject("data");
-            logger.info("获取余额" + trade);
-            net.sf.json.JSONArray wallet = data.getJSONArray("wallet");
+            String getbalans = getbalans();
+            logger.info("获取余额" + getbalans);
+            JSONArray jsonArray = JSONObject.parseObject(getbalans).getJSONObject("data").getJSONArray("wallet");
 
             String firstBalance = null;
             String lastBalance = null;
 
 
-            for (int i = 0; i < wallet.size(); i++) {
-                net.sf.json.JSONObject jsonObject = wallet.getJSONObject(i);
-                if (jsonObject.getString("shortName").equals(coinArr.get(0).toUpperCase())) {
-                    firstBalance = jsonObject.getString("total");
-                } else if (jsonObject.getString("shortName").equals(coinArr.get(1).toUpperCase())) {
-                    lastBalance = jsonObject.getString("total");
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject jsonObject = JSONObject.parseObject(jsonArray.get(i).toString());
+                if (jsonObject.getString("id").equals(coinArr.get(0).toUpperCase())) {
+                    firstBalance = jsonObject.getString("available")+"_"+jsonObject.getString("frozen");
+                } else if (jsonObject.getString("id").equals(coinArr.get(1).toUpperCase())) {
+                    lastBalance = jsonObject.getString("available")+"_"+jsonObject.getString("frozen");;
                 }
             }
             HashMap<String, String> balances = new HashMap<>();
@@ -373,11 +323,11 @@ public class BitMartParentService extends BaseService implements RobotAction {
         String trade = null;
         String uri = "/spot/v1/wallet";
         long timestamp = new Date().getTime();
-        String sing = timestamp + "#" + memo;
-        String sings = HMAC.sha256_HMAC(sing, secretKey);
+        String sing = timestamp + "#" + exchange.get("memo");
+        String sings = HMAC.sha256_HMAC(sing, exchange.get("apikey"));
         HashMap<String, String> headMap = new HashMap<>();
         headMap.put("X-BM-TIMESTAMP", timestamp + "");
-        headMap.put("X-BM-KEY", accessKey);
+        headMap.put("X-BM-KEY", exchange.get("tpass"));
         headMap.put("X-BM-SIGN", sings);
         System.out.println("headMap:" + JSONObject.toJSONString(headMap));
         trade = httpUtil.getAddHead(baseUrl + uri, headMap);
@@ -472,12 +422,12 @@ public class BitMartParentService extends BaseService implements RobotAction {
         String submitOrder = submitOrder(type, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
-            if ("200".equals(jsonObject.getString("code"))) {
-                orderId = jsonObject.getJSONObject("data").getString("ID");
+            if ("1000".equals(jsonObject.getString("code"))) {
+                orderId = jsonObject.getJSONObject("data").getString("order_id");
                 hashMap.put("res", "true");
                 hashMap.put("orderId", orderId);
             } else {
-                String msg = jsonObject.getString("msg");
+                String msg = jsonObject.getString("message");
                 hashMap.put("res", "false");
                 hashMap.put("orderId", msg);
             }
@@ -488,32 +438,20 @@ public class BitMartParentService extends BaseService implements RobotAction {
     @Override
     //TradeEnum   1 未成交 2 部分成交 3 完全成交 4 撤单处理中 5 已撤销
     public Map<String, Integer> selectOrderStr(String orderId) {
-        String trade = getTrade();
-        com.alibaba.fastjson.JSONObject jsonObject1 = com.alibaba.fastjson.JSONObject.parseObject(trade);
-        com.alibaba.fastjson.JSONArray entrutsHis = jsonObject1.getJSONObject("data").getJSONArray("entrutsHis");
-        HashMap<String, Integer> map = new HashMap<>();
-        for (Object entrutsHi : entrutsHis) {
-            com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(entrutsHi.toString());
-            map.put(jsonObject.getString("id"), jsonObject.getInteger("statusCode"));
-        }
 
         List<String> orders = Arrays.asList(orderId.split(","));
         HashMap<String, Integer> hashMap = new HashMap<>();
 
         for (String order : orders) {
-            Integer integer = map.get(order);
-            if (integer != null) {
-                hashMap.put(order, getTradeEnum(integer).getStatus());
-            } else {
                 String result = "";
                 result = selectOrder(order);
                 com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(result);
-                if ("200".equals(jsonObject.getString("code"))) {
-                    Integer statusCode = jsonObject.getJSONObject("data").getInteger("statusCode");
+                if ("1000".equals(jsonObject.getString("code"))) {
+                    Integer statusCode = jsonObject.getJSONObject("data").getInteger("status");
                     hashMap.put(order, getTradeEnum(statusCode).getStatus());
                 }
 
-            }
+
         }
         return hashMap;
     }
@@ -528,7 +466,7 @@ public class BitMartParentService extends BaseService implements RobotAction {
         }
         if (StringUtils.isNotEmpty(cancelTrade)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(cancelTrade);
-            if ("200".equals(jsonObject.getString("code")) || "300".equals(jsonObject.getString("code"))) {
+            if ("1000".equals(jsonObject.getString("code")) || "50030".equals(jsonObject.getString("code"))) {
                 return "true";
             }
         }
@@ -538,19 +476,19 @@ public class BitMartParentService extends BaseService implements RobotAction {
 
     public TradeEnum getTradeEnum(Integer integer) {
         switch (integer) {
-            case 1:
+            case 4:
                 return TradeEnum.NOTRADE;
 
-            case 2:
+            case 5:
                 return TradeEnum.TRADEING;
 
-            case 3:
+            case 6:
                 return TradeEnum.NOTRADED;
 
-            case 4:
+            case 8:
                 return TradeEnum.CANCEL;
 
-            case 5:
+            case 7:
                 return TradeEnum.CANCEL;
 
             default:

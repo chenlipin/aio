@@ -120,6 +120,10 @@ public class WbfexParentService extends BaseService implements RobotAction {
                     logger.info("robotId" + id + "----" + "挂单参数：" + params);
 
                     trade = HttpUtil.post(baseUrl + "/open/api/create_order", params);
+                    JSONObject jsonObject = JSONObject.fromObject(trade);
+                    if(0!=jsonObject.getInt("code")){
+                        setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+                    }
 
                     setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                     logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
@@ -152,7 +156,10 @@ public class WbfexParentService extends BaseService implements RobotAction {
 
                 trade = HttpUtil.post(baseUrl + "/open/api/create_order", params);
 
-
+                JSONObject jsonObject = JSONObject.fromObject(trade);
+                if(0!=jsonObject.getInt("code")){
+                    setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+                }
                 setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                 logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
             }
@@ -208,7 +215,10 @@ public class WbfexParentService extends BaseService implements RobotAction {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
+        JSONObject jsonObject = JSONObject.fromObject(trade);
+        if(0!=jsonObject.getInt("code")){
+            setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+        }
 
         setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price + ": 数量" + amount + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
@@ -241,6 +251,10 @@ public class WbfexParentService extends BaseService implements RobotAction {
         params.put("sign", sign);
         String url = splicingMap(baseUrl + "/open/api/order_info", params);
         String trade = httpUtil.get(url);
+        JSONObject jsonObject = JSONObject.fromObject(trade);
+        if(0!=jsonObject.getInt("code")){
+            setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+        }
         return trade;
     }
 
@@ -258,6 +272,10 @@ public class WbfexParentService extends BaseService implements RobotAction {
         params.put("sign", sign);
         String url = splicingMap(baseUrl + "/open/api/v2/new_order", params);
         String tradeOrders = httpUtil.get(url);
+        JSONObject jsonObject = JSONObject.fromObject(tradeOrders);
+        if(0!=jsonObject.getInt("code")){
+            setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+        }
         return tradeOrders;
     }
 
@@ -279,6 +297,10 @@ public class WbfexParentService extends BaseService implements RobotAction {
         String url = splicingMap(baseUrl + "/open/api/user/account", params);
 
         String rt = httpUtil.get(url);
+        JSONObject jsonObject = JSONObject.fromObject(rt);
+        if(0!=jsonObject.getInt("code")){
+            setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+        }
 
         return rt;
     }
@@ -310,7 +332,10 @@ public class WbfexParentService extends BaseService implements RobotAction {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
+        JSONObject jsonObject = JSONObject.fromObject(res);
+        if(0!=jsonObject.getInt("code")){
+            setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+        }
         return res;
     }
 
@@ -340,7 +365,6 @@ public class WbfexParentService extends BaseService implements RobotAction {
             //获取余额
             String rt = getBalance();
             JSONObject obj = JSONObject.fromObject(rt);
-            logger.info("getBalance====================>"+rt);
             if(obj!=null&&"0".equals(obj.getString("code"))){
                 JSONObject data = obj.getJSONObject("data");
                 JSONArray coinLists = data.getJSONArray("coin_list");
@@ -356,6 +380,9 @@ public class WbfexParentService extends BaseService implements RobotAction {
                     } else if (jsonObject.getString("coin").equals(coinArr.get(1))) {
                         lastBalance = jsonObject.getString("normal");
                     }
+                }
+                if(Double.parseDouble(lastBalance)<10){
+                    setWarmLog(id,0,"余额不足",coinArr.get(1).toUpperCase()+"余额为:"+lastBalance);
                 }
                 HashMap<String, String> balances = new HashMap<>();
                 balances.put(coinArr.get(0), firstBalance);
