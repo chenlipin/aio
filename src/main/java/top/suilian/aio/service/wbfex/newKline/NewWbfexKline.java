@@ -76,7 +76,6 @@ public class NewWbfexKline extends WbfexParentService {
 
             }
 
-
             if (exchange.get("tradeRatio") != null || !"0".equals(exchange.get("tradeRatio"))) {
                 Double ratio = 10 * (1 / (1 + Double.valueOf(exchange.get("tradeRatio"))));
                 tradeRatio = new BigDecimal(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -88,6 +87,13 @@ public class NewWbfexKline extends WbfexParentService {
                 return;
             }
             logger.info("设置机器人交易规则结束");
+
+            if ("1".equals(exchange.get("isdeepRobot"))) {
+                logger.info("深度机器人交易开始");
+                runWebfexRandomDepth.init(id + 1);
+            }
+
+
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本

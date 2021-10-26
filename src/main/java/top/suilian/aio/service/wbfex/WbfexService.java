@@ -95,6 +95,7 @@ public class WbfexService {
                 break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewWbfexKline.killWork(id);
+                runWebfexRandomDepth.killWork(id+1);
                 break;
         }
     }

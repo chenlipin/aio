@@ -2,17 +2,23 @@ package top.suilian.aio.service.hotcoin.newKline;
 
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Service;
+import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
 import top.suilian.aio.service.hotcoin.HotCoinParentService;
+import top.suilian.aio.service.hotcoin.kline.RunHotCoinKline;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
 
 import static java.math.BigDecimal.ROUND_DOWN;
+
+
 
 public class NewHotcoinKline extends HotCoinParentService {
     public NewHotcoinKline(
@@ -52,11 +58,13 @@ public class NewHotcoinKline extends HotCoinParentService {
 
     private String sellOrderId = "0";
     private String buyOrderId = "0";
-    private int eatOrder=0;//吃单数量
-    private String transactionRatio="1";
+    private int eatOrder = 0;//吃单数量
+    private String transactionRatio = "1";
     private int maxEatOrder = 0;
     private int timeSlot = 1;
-    private BigDecimal tradeRatio=new BigDecimal(5);
+    private BigDecimal tradeRatio = new BigDecimal(5);
+
+
 
     public void init() throws UnsupportedEncodingException {
 
@@ -64,9 +72,9 @@ public class NewHotcoinKline extends HotCoinParentService {
             logger.info("设置机器人参数开始");
             setParam();
             setTransactionRatio();
-            if(exchange.get("tradeRatio")!=null||!"0".equals(exchange.get("tradeRatio"))){
-                Double ratio =10*(1/(1+Double.valueOf(exchange.get("tradeRatio"))));
-                tradeRatio=new BigDecimal(ratio).setScale(2,BigDecimal.ROUND_HALF_UP);
+            if (exchange.get("tradeRatio") != null || !"0".equals(exchange.get("tradeRatio"))) {
+                Double ratio = 10 * (1 / (1 + Double.valueOf(exchange.get("tradeRatio"))));
+                tradeRatio = new BigDecimal(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
             }
             logger.info("设置机器人参数结束");
 
@@ -74,6 +82,13 @@ public class NewHotcoinKline extends HotCoinParentService {
             setPrecision();
             logger.info("设置机器人交易规则结束");
 
+            /**
+             * 深度
+             */
+            if ("1".equals(exchange.get("isdeepRobot"))) {
+                logger.info("深度机器人交易开始");
+                runHotcoinRandomDepth.init(id + 1);
+            }
 
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
@@ -95,7 +110,7 @@ public class NewHotcoinKline extends HotCoinParentService {
         }
         logger.info("当前时间段单量百分比：" + transactionRatio);
 
-        if (runTime <timeSlot) {
+        if (runTime < timeSlot) {
 
             String uri = "/v1/depth";
             String httpMethod = "GET";
@@ -142,7 +157,7 @@ public class NewHotcoinKline extends HotCoinParentService {
             if (!"0".equals(sellOrderId)) {
                 selectOrderDetail(sellOrderId, 0);
                 sellOrderId = "0";
-                if(maxEatOrder!=0){
+                if (maxEatOrder != 0) {
                     eatOrder++;
                     setTradeLog(id, "已吃堵盘口单总数:" + eatOrder + ";吃单成交上限数:" + maxEatOrder, 0);
                 }
@@ -152,7 +167,7 @@ public class NewHotcoinKline extends HotCoinParentService {
             if (!"0".equals(buyOrderId)) {
                 selectOrderDetail(buyOrderId, 0);
                 buyOrderId = "0";
-                if(maxEatOrder!=0){
+                if (maxEatOrder != 0) {
                     eatOrder++;
                     setTradeLog(id, "已吃堵盘口单总数:" + eatOrder + ";吃单成交上限数:" + maxEatOrder, 0);
                 }
@@ -183,18 +198,16 @@ public class NewHotcoinKline extends HotCoinParentService {
                     } else if ("1".equals(exchange.get("orderOperation"))) {//不停止
 
                         setTradeLog(id, "撤单数次数过多，请注意盘口", 0, "000000");
-                        msg = "您的" + getRobotName(this.id) + "量化机器人撤单数次数过多，请注意盘口!";
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
                         //重置撞单次数
-                        randomNum = 0;
+                        orderNum = 0;
 
                     } else if ("2".equals(exchange.get("orderOperation"))) {//随机暂停后重启
                         int st = (int) (Math.random() * (Integer.parseInt(exchange.get("suspendTopLimit")) - Integer.parseInt(exchange.get("suspendLowerLimit"))) + Integer.parseInt(exchange.get("suspendLowerLimit")));
                         setTradeLog(id, "撤单数次数过多，将暂停" + st + "秒后自动恢复", 0, "000000");
                         msg = "您的" + getRobotName(this.id) + "量化机器人撤单数次数过多，将暂停片刻后自动恢复!";
-                        judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
                         //重置撞单次数
-                        randomNum = 0;
+                        orderNum = 0;
                         //暂停
                         sleep(st * 1000, Integer.parseInt(exchange.get("isMobileSwitch")));
                         return;
@@ -224,11 +237,11 @@ public class NewHotcoinKline extends HotCoinParentService {
 
 
             BigDecimal oldNum = new BigDecimal(String.valueOf(randNumber / Math.pow(10, Double.valueOf(String.valueOf(precision.get("amountPrecision"))))));
-            BigDecimal num=oldNum.multiply(new BigDecimal(transactionRatio));
+            BigDecimal num = oldNum.multiply(new BigDecimal(transactionRatio));
             logger.info("robotId" + id + "----" + "num(挂单数量)：" + num);
 
-            BigDecimal random=new BigDecimal(Math.random() * 10 ).setScale(2,BigDecimal.ROUND_HALF_UP);
-            int type =random.compareTo(tradeRatio)>0 ? 1 : 2;
+            BigDecimal random = new BigDecimal(Math.random() * 10).setScale(2, BigDecimal.ROUND_HALF_UP);
+            int type = random.compareTo(tradeRatio) > 0 ? 1 : 2;
 
 
             try {
@@ -293,7 +306,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                     }
                     break;
                 case 2:
-                    if (2<= (randomNum - 1)) {
+                    if (2 <= (randomNum - 1)) {
                         randomNum -= 1;
 //                        setTradeLog(id, "当前随机值（" + value + ":跌幅）", 1);
                     } else {
@@ -522,6 +535,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                     sellPrice = BigDecimal.ZERO;
                     sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
                     logger.info("robotId" + id + "----" + "新版本回调获取价格");
+                    randomNum = (int) Math.ceil(Math.random() * Integer.parseInt(exchange.get("priceRange")));
                     price = null;
                 }
             }
@@ -551,7 +565,7 @@ public class NewHotcoinKline extends HotCoinParentService {
             }
             if ("0".equals(exchange.get("openIntervalAllAmount")) || exchange.get("openIntervalAllAmount") == null) {
                 logger.info("不计成本刷开区间中");
-            }else if(new BigDecimal(exchange.get("openIntervalAllAmount")).compareTo(intervalAmount.add(new BigDecimal(bid.get(1).toString()))) < 0) {
+            } else if (new BigDecimal(exchange.get("openIntervalAllAmount")).compareTo(intervalAmount.add(new BigDecimal(bid.get(1).toString()))) < 0) {
                 setRobotArgs(id, "isOpenIntervalSwitch", "0");
                 setTradeLog(id, "刷开区间的数量已达到最大值,停止刷开区间", 0, "#67c23a");
                 break;
@@ -565,7 +579,7 @@ public class NewHotcoinKline extends HotCoinParentService {
         try {
             String resultJson = submitTrade(2, buyPri, buyAmount);
             JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
-            if (resultJson != null&& jsonObject.getInt("code")==200) {
+            if (resultJson != null && jsonObject.getInt("code") == 200) {
                 JSONObject data = jsonObject.getJSONObject("data");
                 String tradeId = data.getString("ID");
 //                setTradeLog(id, "买一卖一区间过小，刷开区间-------------->卖单[" + buyPri + "]数量[" + buyAmount + "]", 0);
@@ -636,7 +650,7 @@ public class NewHotcoinKline extends HotCoinParentService {
     }
 
     public static void main(String[] args) {
-        Double ratio =10*(1/(1+Double.valueOf(0.5)));
+        Double ratio = 10 * (1 / (1 + Double.valueOf(0.5)));
         BigDecimal bigDecimal = new BigDecimal(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
         System.out.println(bigDecimal);
     }

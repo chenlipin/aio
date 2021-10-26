@@ -3,16 +3,23 @@ package top.suilian.aio.service.wbfex;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Service;
+import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.service.wbfex.randomDepth.RunWebfexRandomDepth;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
 
+
+@Service
+@DependsOn("beanContext")
 public class WbfexParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://openapi.wbfex.biz";
 
@@ -23,6 +30,8 @@ public class WbfexParentService extends BaseService implements RobotAction {
     public int valid = 1;
     public String exceptionMessage = null;
     public String[] transactionArr = new String[24];
+    public RunWebfexRandomDepth runWebfexRandomDepth = BeanContext.getBean(RunWebfexRandomDepth.class);
+
 
     //设置交易量百分比
     public void setTransactionRatio(){
