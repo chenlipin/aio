@@ -1,8 +1,7 @@
-package top.suilian.aio.service.bitmart.newKline;
+package top.suilian.aio.service.coinstore.newKline;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.serializer.SerializeFilter;
 import net.sf.json.JSONObject;
 import org.springframework.context.annotation.DependsOn;
 import top.suilian.aio.BeanContext;
@@ -10,18 +9,21 @@ import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.bitmart.BitMartParentService;
-import top.suilian.aio.service.bitmart.RandomDepth.RunBitMartRandomDepth;
+import top.suilian.aio.service.coinstore.CoinStoreParentService;
+import top.suilian.aio.service.coinstore.RandomDepth.RunCoinStoreRandomDepth;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 import static java.math.BigDecimal.ROUND_DOWN;
 
 @DependsOn("beanContext")
-public class NewBitMartKline extends BitMartParentService {
-    public NewBitMartKline(
+public class NewCoinStoreKline extends CoinStoreParentService {
+    public NewCoinStoreKline(
             CancelExceptionService cancelExceptionService,
             CancelOrderService cancelOrderService,
             ExceptionMessageService exceptionMessageService,
@@ -64,7 +66,7 @@ public class NewBitMartKline extends BitMartParentService {
     private int timeSlot = 1;
     private BigDecimal tradeRatio=new BigDecimal(5);
 
-    public RunBitMartRandomDepth runBitMartRandomDepth = BeanContext.getBean(RunBitMartRandomDepth.class);
+    public RunCoinStoreRandomDepth runBitMartRandomDepth = BeanContext.getBean(RunCoinStoreRandomDepth.class);
 
     public void init() throws UnsupportedEncodingException {
 
@@ -81,6 +83,7 @@ public class NewBitMartKline extends BitMartParentService {
             logger.info("设置机器人交易规则开始");
             setPrecision();
             logger.info("设置机器人交易规则结束");
+
 
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
@@ -104,20 +107,21 @@ public class NewBitMartKline extends BitMartParentService {
 
         if (runTime <timeSlot) {
 
-            String trades = httpUtil.get(baseUrl + "/spot/v1/symbols/book?size=1&symbol="+exchange.get("market"));
+            String trades = httpUtil.get("https://api.coinstore.com/v2/public/orderbook/market_pair?level=3&depth=5&market_pair="+exchange.get("market"));
 
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-            if (tradesObj != null && 1000==tradesObj.getInteger("code") ) {
+            if (tradesObj != null && 0==tradesObj.getInteger("code") ) {
 
                 com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
-                String buys = com.alibaba.fastjson.JSONObject.toJSONString(data.getJSONArray("buys").get(0));
-                String sell = com.alibaba.fastjson.JSONObject.toJSONString(data.getJSONArray("sells").get(0));
 
-                BigDecimal buyPri = new BigDecimal(JSONObject.fromObject(buys).getString("price"));
-                BigDecimal sellPri = new BigDecimal(JSONObject.fromObject(sell).getString("price"));
+                List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
 
+                List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
+
+                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(4).get(0)));
+                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
                 if (sellPri.compareTo(buyPri) == 0) {
                     //平台撮合功能失败
                     setTradeLog(id, "交易平台无法撮合", 0, "FF111A");
@@ -223,19 +227,19 @@ public class NewBitMartKline extends BitMartParentService {
                 String resultJson = submitTrade(type, price, num);
                 JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
-                if (jsonObject != null && jsonObject.getInt("code") == 1000) {
+                if (jsonObject != null && jsonObject.getInt("code") == 0) {
 
 
                     JSONObject data = jsonObject.getJSONObject("data");
-                    String tradeId = data.getString("order_id");
+                    String tradeId = data.getString("ordId");
 
                     orderIdOne = tradeId;
                     String resultJson1 = submitTrade(type == 1 ? 2 : 1, price, num);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
-                    if (jsonObject1 != null && jsonObject1.getInt("code") == 1000) {
+                    if (jsonObject1 != null && jsonObject1.getInt("code") == 0) {
                         JSONObject data1 = jsonObject1.getJSONObject("data");
-                        orderIdTwo = data1.getString("order_id");
+                        orderIdTwo = data1.getString("ordId");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
 
                     } else {
@@ -308,19 +312,20 @@ public class NewBitMartKline extends BitMartParentService {
     public BigDecimal getRandomPrice() throws UnsupportedEncodingException {
         BigDecimal price = null;
 
-        String trades = httpUtil.get(baseUrl + "/spot/v1/symbols/book?size=10&symbol="+exchange.get("market"));
+        String trades = httpUtil.get("https://api.coinstore.com/v2/public/orderbook/market_pair?level=3&depth=5&market_pair="+exchange.get("market"));
 
         com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-        if (tradesObj != null && 1000==tradesObj.getInteger("code")) {
+        if (tradesObj != null && 0==tradesObj.getInteger("code")) {
 
             com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
 
-            String buys = com.alibaba.fastjson.JSONObject.toJSONString(data.getJSONArray("buys").get(0));
-            String sell = com.alibaba.fastjson.JSONObject.toJSONString(data.getJSONArray("sells").get(0));
+            List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
 
-            BigDecimal buyPri = new BigDecimal(JSONObject.fromObject(buys).getString("price"));
-            BigDecimal sellPri = new BigDecimal(JSONObject.fromObject(sell).getString("price"));
+            List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
+
+            BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(4).get(0)));
+            BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
 
             BigDecimal intervalPrice = sellPri.subtract(buyPri);
@@ -332,8 +337,8 @@ public class NewBitMartKline extends BitMartParentService {
             if ("1".equals(exchange.get("isTradeCheck"))) {
 
                 //吃堵盘口的订单
-                BigDecimal buyAmount = new BigDecimal(String.valueOf(JSONObject.fromObject(buys).getString("amount")));
-                BigDecimal sellAmount = new BigDecimal(String.valueOf(JSONObject.fromObject(sell).getString("amount")));
+                BigDecimal buyAmount = new BigDecimal(String.valueOf(buyPrices.get(4).get(1)));
+                BigDecimal sellAmount = new BigDecimal(String.valueOf(sellPrices.get(0).get(1)));
                 BigDecimal minAmount = new BigDecimal(precision.get("minTradeLimit").toString());
                 if (maxEatOrder == 0) {
                     logger.info("吃单上限功能未开启：maxEatOrder=" + maxEatOrder);
@@ -356,9 +361,9 @@ public class NewBitMartKline extends BitMartParentService {
                                 logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
 
                                 JSONObject jsonObject = judgeRes(sellOrder, "code", "submitTrade");
-                                if (jsonObject != null && jsonObject.getInt("code") == 1000) {
+                                if (jsonObject != null && jsonObject.getInt("code") == 0) {
                                     JSONObject datas = jsonObject.getJSONObject("data");
-                                    sellOrderId = datas.getString("order_id");
+                                    sellOrderId = datas.getString("ordId");
                                 }
                                 return price;
                             } catch (UnsupportedEncodingException e) {
@@ -388,9 +393,9 @@ public class NewBitMartKline extends BitMartParentService {
                                 logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
 
                                 JSONObject jsonObject = judgeRes(buyOrder, "code", "submitTrade");
-                                if (jsonObject != null && jsonObject.getInt("code") == 1000) {
+                                if (jsonObject != null && jsonObject.getInt("code") == 0) {
                                     JSONObject datas = jsonObject.getJSONObject("data");
-                                    buyOrderId = datas.getString("order_id");
+                                    buyOrderId = datas.getString("ordId");
                                 }
                                 return price;
                             } catch (UnsupportedEncodingException e) {
@@ -544,9 +549,9 @@ public class NewBitMartKline extends BitMartParentService {
         try {
             String resultJson = submitTrade(2, buyPri, buyAmount);
             JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
-            if (resultJson != null&& jsonObject.getInt("code")==1000) {
+            if (resultJson != null&& jsonObject.getInt("code")==0) {
                 JSONObject data = jsonObject.getJSONObject("data");
-                String tradeId = data.getString("order_id");
+                String tradeId = data.getString("ordId");
 //                setTradeLog(id, "买一卖一区间过小，刷开区间-------------->卖单[" + buyPri + "]数量[" + buyAmount + "]", 0);
                 //查看订单详情
                 sleep(200, Integer.parseInt(exchange.get("isMobileSwitch")));
@@ -554,16 +559,16 @@ public class NewBitMartKline extends BitMartParentService {
 
                 String str = selectOrder(tradeId);
                 JSONObject jsonObject1 = judgeRes(str, "code", "selectOrder");
-                if (jsonObject1 != null && jsonObject1.getInt("code") == 1000) {
+                if (jsonObject1 != null && jsonObject1.getInt("code") == 0) {
 
                     JSONObject data1 = jsonObject.getJSONObject("data");
-                    int status = data.getInt("status");
-                    if (status == 6) {
+                    String status = data.getString("ordState");
+                    if (status .equals("REPLACED")) {
                         setTradeLog(id, "刷开区间订单id：" + tradeId + "完全成交", 0, "#67c23a");
-                    } else if (status == 8||status == 7) {
+                    } else if (status .equals("CANCELING")||status .equals("CANCELED")) {
                         setTradeLog(id, "刷开区间订单id：" + tradeId + "已撤单", 0, "#67c23a");
                     } else {
-                        if(status==4||status==5) {
+                        if(status .equals("SUBMITTED")||status .equals("SUBMITTING")) {
                             sleep(200, Integer.parseInt(exchange.get("isMobileSwitch")));
                             String res = cancelTrade(tradeId);
                             JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
@@ -588,16 +593,16 @@ public class NewBitMartKline extends BitMartParentService {
         try {
             String str = selectOrder(orderId);
             JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
-            if (jsonObject != null && jsonObject.getInt("code") == 1000) {
+            if (jsonObject != null && jsonObject.getInt("code") == 0) {
 
                 JSONObject data = jsonObject.getJSONObject("data");
-                int status = data.getInt("status");
-                if (status == 6) {
+                String status = data.getString("ordState");
+                if ("REPLACED".equals(status)) {
                     setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
-                } else if (status == 8) {
+                } else if ("CANCELING".equals(status)||"CANCELED".equals(status)) {
                     setTradeLog(id, "订单id：" + orderId + "已撤单", 0, "#67c23a");
                 } else {
-                    if(status==4||status==5) {
+                    if("PARTIAL_FILLED".equals(status)||"SUBMITTED".equals(status)) {
                         String res = cancelTrade(orderId);
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);

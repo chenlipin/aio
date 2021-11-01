@@ -143,7 +143,7 @@ public class BaseService {
 
         }
         logger.info("setWarmLog：" + JSON.toJSONString(warmLog));
-        return tradeLogService.insertWarmLog(warmLog);
+        return 0;
     }
 
     public int setTradeLog(Integer id, String remark, int status) {

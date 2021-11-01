@@ -201,7 +201,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                         setTradeLog(id, "撤单数次数过多，请注意盘口", 0, "000000");
                         setWarmLog(id,2,"撤单数次数过多，请注意盘口","");
                         msg = "您的" + getRobotName(this.id) + "量化机器人撤单数次数过多，请注意盘口!";
-                        judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
+                        //judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
                         //重置撞单次数
                         orderNum = 0;
 
@@ -210,7 +210,6 @@ public class NewHotcoinKline extends HotCoinParentService {
                         setTradeLog(id, "撤单数次数过多，将暂停" + st + "秒后自动恢复", 0, "000000");
                         msg = "您的" + getRobotName(this.id) + "量化机器人撤单数次数过多，将暂停片刻后自动恢复!";
                         setWarmLog(id,2,"撤单数次数过多，将暂停" + st + "秒后自动恢复","");
-                        judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
                         //重置撞单次数
                         orderNum = 0;
                         //暂停

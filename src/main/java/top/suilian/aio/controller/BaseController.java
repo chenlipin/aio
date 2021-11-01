@@ -22,6 +22,7 @@ import top.suilian.aio.service.bitmart.BitMartService;
 import top.suilian.aio.service.bitvictory.BitvictoryService;
 import top.suilian.aio.service.bthex.BthexService;
 import top.suilian.aio.service.ceohk.CeohkService;
+import top.suilian.aio.service.coinstore.CoinStoreService;
 import top.suilian.aio.service.coinvv.CoinvvService;
 import top.suilian.aio.service.digifinex.DigifinexService;
 import top.suilian.aio.service.e9ex.E9exService;
@@ -187,6 +188,9 @@ public class BaseController {
 
     @Autowired
     BitMartService bitMartService;
+
+    @Autowired
+    CoinStoreService coinStoreService;
 
 
     @Autowired
