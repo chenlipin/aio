@@ -40,7 +40,7 @@ public class Constant {
     public static final int KEY_EXCHANGE_FCHAIN = 9;        //FCHAIN
     public static final int KEY_EXCHANGE_S = 10;            //S-EXCHANGE
     public static final int KEY_EXCHANGE_LAEX = 11;         //LAEX
-    public static final int KEY_EXCHANGE_ZG = 12;         //LAEX
+    public static final int KEY_EXCHANGE_ZG = 12;         //zg
     public static final int KEY_EXCHANGE_TEST = 13;         //test
     public static final int KEY_EXCHANGE_HKEX = 14;         //hkex
     public static final int KEY_EXCHANGE_AUXSTO = 15;         //auxsto

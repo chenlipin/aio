@@ -74,6 +74,16 @@ public class NewZgKline extends ZGParentService {
         if (start) {
             logger.info("设置机器人参数开始");
             setParam();
+            try {
+                setBalanceRedis();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            try {
+                Thread.sleep(100000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             setTransactionRatio();
             logger.info("设置买卖单比例");
             if (exchange.get("tradeRatio") != null || !"0".equals(exchange.get("tradeRatio"))) {
@@ -81,7 +91,6 @@ public class NewZgKline extends ZGParentService {
                 tradeRatio = new BigDecimal(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
             }
             logger.info("设置机器人参数结束");
-
             logger.info("设置机器人交易规则开始");
             if (!setPrecision()) {
                 return;

@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 public class ZGParentService extends BaseService {
-    public String baseUrl = "https://api1.zg.com";
+    public String baseUrl = "https://www.ztb.im/api/v1";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
@@ -252,7 +252,7 @@ public class ZGParentService extends BaseService {
      */
     public boolean setPrecision() {
         boolean flag = false;
-        String rt = httpUtil.get("https://api1.zg.com/exchangeInfo");
+        String rt = httpUtil.get("https://www.ztb.im/api/v1/exchangeInfo");
 
         JSONArray array = JSONArray.fromObject(rt);
 
@@ -351,7 +351,6 @@ public class ZGParentService extends BaseService {
 
             String signature = DigestUtils.md5Hex(sign(param)).toUpperCase();
 
-            String baseUrl = "https://api1.zg.com";
             param.put("sign", signature);
             String res = httpUtil.post(baseUrl + "/private/user", (TreeMap<String, Object>) param);
 

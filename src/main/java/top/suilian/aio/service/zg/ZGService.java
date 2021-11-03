@@ -3,17 +3,13 @@ package top.suilian.aio.service.zg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
-import top.suilian.aio.service.bihu.kline.RunBiHuKline;
-import top.suilian.aio.service.fchain.cancel.RunFChainCancel;
-import top.suilian.aio.service.fchain.kline.RunFChainKline;
-import top.suilian.aio.service.fchain.randomDepth.RunFChainDepth;
 import top.suilian.aio.service.zg.cancel.RunZGCancel;
 import top.suilian.aio.service.zg.depth.RunZGDepth;
 import top.suilian.aio.service.zg.kline.RunZGKline;
 import top.suilian.aio.service.zg.newKline.RunNewZgKline;
 
 
-//@Component
+@Component
 public class ZGService {
     @Autowired
     RunZGKline runZGKline;

@@ -17,7 +17,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Component
+@Component
 public class RunNewZgKline {
     //region    Service
     @Autowired
