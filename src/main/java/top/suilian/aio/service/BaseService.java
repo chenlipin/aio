@@ -127,21 +127,12 @@ public class BaseService {
      * 99.其他
      */
     public int setWarmLog(Integer robotId, int status, String msg, String warmDetailMsg) {
-        WarmLog warmLog = tradeLogService.selectByRobotIdAndType(robotId, status);
-        if (warmLog == null && status != 0&&status != 4) {
-            warmLog = new WarmLog();
+        WarmLog warmLog = new WarmLog();
             warmLog.setRobotId(robotId);
             warmLog.setType(status);
             warmLog.setWarmMsg(msg);
             warmLog.setWarmDetailMsg(warmDetailMsg);
             tradeLogService.insertWarmLog(warmLog);
-        } else {
-            warmLog.setWarmMsg(msg);
-            warmLog.setWarmDetailMsg(warmDetailMsg);
-            warmLog.setUpdateTime(new Date());
-            tradeLogService.updateWarmLog(warmLog);
-
-        }
         logger.info("setWarmLog：" + JSON.toJSONString(warmLog));
         return 0;
     }

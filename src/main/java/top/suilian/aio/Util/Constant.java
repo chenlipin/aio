@@ -378,6 +378,7 @@ public class Constant {
      */
     public static final String KEY_LOG_PATH_MXC_KLINE = "mxc/kline";           //mxc日志路径 Kline 日志路径
     public static final String KEY_LOG_PATH_MXC_DEPTH = "mxc/depth";
+    public static final String KEY_LOG_PATH_MXC_REPLENLISGH = "mxc/replenish";
     /**
      * 99ex日志路径
      */
@@ -476,6 +477,7 @@ public class Constant {
     public static final int KEY_RANDOM_DEPTH = 5;            //随机挂深度
     public static final int KEY_MANUAL_TRADE = 6;            //手动挂单
     public static final int KEY_STRATEGY_NEW_KLINE = 7;            //K线新策略
+    public static final int KEY_STRATEGY_REPLENISH = 8;            //补单
 
     //endregion
 

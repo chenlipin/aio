@@ -6,6 +6,7 @@ import top.suilian.aio.Util.Constant;
 import top.suilian.aio.service.mxc.kline.RunMxcKline;
 import top.suilian.aio.service.mxc.newKline.RunNewMxcKline;
 import top.suilian.aio.service.mxc.randomDepth.RunMxcDepth;
+import top.suilian.aio.service.mxc.replenish.RunMxcReplenish;
 
 @Component
 public class MxcService {
@@ -15,6 +16,8 @@ public class MxcService {
     RunNewMxcKline runNewMxcKline;
     @Autowired
     RunMxcDepth runMxcDepth;
+    @Autowired
+    RunMxcReplenish runMxcReplenish;
 
     /**
      * 开启机器人
@@ -41,6 +44,9 @@ public class MxcService {
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewMxcKline.init(id);
                 break;
+            case Constant.KEY_STRATEGY_REPLENISH:
+                runMxcReplenish.init(id);
+                break;
         }
     }
 
@@ -63,6 +69,9 @@ public class MxcService {
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewMxcKline.stopWork(id);
                 break;
+            case Constant.KEY_STRATEGY_REPLENISH:
+                runMxcReplenish.stopWork(id);
+                break;
         }
     }
 
@@ -84,6 +93,9 @@ public class MxcService {
                 break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewMxcKline.killWork(id);
+                break;
+            case Constant.KEY_STRATEGY_REPLENISH:
+                runMxcReplenish.killWork(id);
                 break;
         }
     }

@@ -1,18 +1,26 @@
 package top.suilian.aio.service.zg;
 
+import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Service;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.model.RobotArgs;
+import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
+import top.suilian.aio.service.RobotAction;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class ZGParentService extends BaseService {
+@DependsOn("beanContext")
+@Service
+public class ZGParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://www.ztb.im/api/v1";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
@@ -71,8 +79,8 @@ public class ZGParentService extends BaseService {
         String trade = null;
 
 
-        BigDecimal price1 = nN(price, Integer.valueOf(precision.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.valueOf(precision.get("amountPrecision").toString()));
+        BigDecimal price1 = nN(price, Integer.valueOf(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.valueOf(exchange.get("amountPrecision").toString()));
 
         Double minTradeLimit = Double.valueOf(String.valueOf(precision.get("minTradeLimit")));
         if (num.compareTo(BigDecimal.valueOf(minTradeLimit)) >= 0) {
@@ -98,7 +106,11 @@ public class ZGParentService extends BaseService {
                     logger.info("robotId" + id + "----" + "挂单参数：" + JSONObject.fromObject(param));
 
                     trade = httpUtil.post(baseUrl + "/private/trade/limit", (TreeMap<String, Object>) param);
-
+                    System.out.println("量化挂dan"+trade);
+                    JSONObject jsonObject = JSONObject.fromObject(trade);
+                    if(0!=jsonObject.getInt("code")){
+                        setWarmLog(id,3,"API接口错误",jsonObject.getString("message"));
+                    }
                     setTradeLog(id, "量化挂" + (type == 1 ? "卖" : "买") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                     logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
 
@@ -122,7 +134,10 @@ public class ZGParentService extends BaseService {
                 logger.info("robotId" + id + "----" + "挂单参数：" + JSONObject.fromObject(param));
 
                 trade = httpUtil.post(baseUrl + "/private/trade/limit", (TreeMap<String, Object>) param);
-
+                JSONObject jsonObject = JSONObject.fromObject(trade);
+                if(0!=jsonObject.getInt("code")){
+                    setWarmLog(id,3,"API接口错误",jsonObject.getString("message"));
+                }
                 setTradeLog(id, "深度挂" + (type == 1 ? "卖" : "买") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                 logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
             }
@@ -148,8 +163,8 @@ public class ZGParentService extends BaseService {
         String trade = null;
 
 
-        BigDecimal price1 = nN(price, Integer.valueOf(precision.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.valueOf(precision.get("amountPrecision").toString()));
+        BigDecimal price1 = nN(price, Integer.valueOf(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.valueOf(exchange.get("amountPrecision").toString()));
         Map<String, Object> param = new TreeMap<String, Object>();
 
         param.put("api_key", exchange.get("apikey"));
@@ -165,6 +180,10 @@ public class ZGParentService extends BaseService {
 
         try {
             trade = httpUtil.post(baseUrl + "/private/trade/limit", (TreeMap<String, Object>) param);
+            JSONObject jsonObject = JSONObject.fromObject(trade);
+            if(0!=jsonObject.getInt("code")){
+                setWarmLog(id,3,"API接口错误",jsonObject.getString("message"));
+            }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -199,7 +218,10 @@ public class ZGParentService extends BaseService {
 
         param.put("sign", signature);
         String trades = httpUtil.post(baseUrl + "/private/order/deals", (TreeMap<String, Object>) param);
-
+        JSONObject jsonObject = JSONObject.fromObject(trades);
+        if(0!=jsonObject.getInt("code")){
+            setWarmLog(id,3,"API接口错误",jsonObject.getString("message"));
+        }
         return trades;
     }
 
@@ -224,7 +246,10 @@ public class ZGParentService extends BaseService {
 
         param.put("sign", signature);
         String trades = httpUtil.post(baseUrl + "/private/trade/cancel", (TreeMap<String, Object>) param);
-
+        JSONObject jsonObject = JSONObject.fromObject(trades);
+        if(0!=jsonObject.getInt("code")){
+            setWarmLog(id,3,"API接口错误",jsonObject.getString("message"));
+        }
         return trades;
     }
 
@@ -263,8 +288,8 @@ public class ZGParentService extends BaseService {
                 String pricePrecision = jsonObject.getString("baseAssetPrecision");
                 String amountPrecision = jsonObject.getString("quoteAssetPrecision");
 
-                precision.put("pricePrecision", pricePrecision);
-                precision.put("amountPrecision", amountPrecision);
+                precision.put("pricePrecision", exchange.get("pricePrecision"));
+                precision.put("amountPrecision",  exchange.get("amountPrecision"));
                 /*-------------------------------*/
                 precision.put("exRate", 0.002);
                 precision.put("minTradeLimit", exchange.get("minTradeLimit"));
@@ -359,16 +384,61 @@ public class ZGParentService extends BaseService {
                 JSONObject data = obj.getJSONObject("result");
                 JSONObject firstCoin = data.getJSONObject(coinArr.get(0).toUpperCase());
                 String firstBalance = firstCoin.getString("available");
-
+                String firstBalancefreeze = firstCoin.getString("freeze");
                 JSONObject lastCoin = data.getJSONObject(coinArr.get(1).toUpperCase());
                 String lastBalance = lastCoin.getString("available");
-
+                String lastBalancefreeze = lastCoin.getString("freeze");
                 HashMap<String, String> balances = new HashMap<>();
-                balances.put(coinArr.get(0), firstBalance);
-                balances.put(coinArr.get(1), lastBalance);
+                balances.put(coinArr.get(0), firstBalance+"_"+firstBalancefreeze);
+                balances.put(coinArr.get(1), lastBalance+"_"+lastBalancefreeze);
                 redisHelper.setBalanceParam(Constant.KEY_ROBOT_BALANCE + id, balances);
             }
         }
     }
 
+    @Override
+    public Map<String, String> submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
+        String orderId = "";
+        HashMap<String, String> hashMap = new HashMap<>();
+        String submitOrder = submitOrder(type, price, amount);
+        if (StringUtils.isNotEmpty(submitOrder)) {
+            com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
+            if ( "0".equals(jsonObject.getString("code"))) {
+                orderId  = jsonObject.getJSONObject("result").getString("id");
+                hashMap.put("res", "true");
+                hashMap.put("orderId", orderId);
+            } else {
+                String msg = jsonObject.getString("message");
+                hashMap.put("res", "false");
+                hashMap.put("orderId", msg);
+            }
+        }
+        return hashMap;
+    }
+
+    @Override
+    public Map<String, Integer> selectOrderStr(String orderId) {
+        HashMap<String, Integer> map = new HashMap<>();
+        String[] split = orderId.split(",");
+        for (String s : split) {
+            map.put(s, TradeEnum.NOTRADE.getStatus());
+        }
+        return map;
+    }
+
+    @Override
+    public String cancelTradeStr(String orderId) {
+        String cancelTrade = null;
+        try {
+            cancelTrade = cancelTrade(orderId);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(cancelTrade);
+        if(jsonObject.getInteger("code")==0){
+            return "true";
+        }else {
+            return "false";
+        }
+    }
 }

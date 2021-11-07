@@ -498,6 +498,9 @@ public class NewBitMartKline extends BitMartParentService {
                     sellPrice = BigDecimal.ZERO;
                     sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
                     logger.info("robotId" + id + "----" + "新版本回调获取价格");
+                    while (randomNum == 1 || randomNum == Integer.parseInt(exchange.get("priceRange"))) {
+                        randomNum = (int) Math.ceil(Math.random() * Integer.parseInt(exchange.get("priceRange")));
+                    }
                     price = null;
                 }
             }

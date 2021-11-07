@@ -113,7 +113,7 @@ public class BitMartParentService extends BaseService implements RobotAction {
                         trade = httpUtil.postByPackcoin(baseUrl + uri, params, headMap);
                         net.sf.json.JSONObject jsonObjectss = net.sf.json.JSONObject.fromObject(trade);
                         if(1000!=jsonObjectss.getInt("code")){
-                            setWarmLog(id,3,"API接口错误",jsonObjectss.getString("msg"));
+                            setWarmLog(id,3,"API接口错误",jsonObjectss.getString("message"));
                         }
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
@@ -144,7 +144,7 @@ public class BitMartParentService extends BaseService implements RobotAction {
                     trade = httpUtil.postByPackcoin(baseUrl + uri, params, headMap);
                     net.sf.json.JSONObject jsonObjectss = net.sf.json.JSONObject.fromObject(trade);
                     if(1000!=jsonObjectss.getInt("code")){
-                        setWarmLog(id,3,"API接口错误",jsonObjectss.getString("msg"));
+                        setWarmLog(id,3,"API接口错误",jsonObjectss.getString("message"));
                     }
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
@@ -192,7 +192,7 @@ public class BitMartParentService extends BaseService implements RobotAction {
             trade = httpUtil.postByPackcoin(baseUrl + uri, params, headMap);
             net.sf.json.JSONObject jsonObjectss = net.sf.json.JSONObject.fromObject(trade);
             if(1000!=jsonObjectss.getInt("code")){
-                setWarmLog(id,3,"API接口错误",jsonObjectss.getString("msg"));
+                setWarmLog(id,3,"API接口错误",jsonObjectss.getString("message"));
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -254,7 +254,7 @@ public class BitMartParentService extends BaseService implements RobotAction {
         logger.info("查询订单：" + orderId + "  结果" + trade);
         net.sf.json.JSONObject jsonObjectss = net.sf.json.JSONObject.fromObject(trade);
         if(1000!=jsonObjectss.getInt("code")){
-            setWarmLog(id,3,"API接口错误",jsonObjectss.getString("msg"));
+            setWarmLog(id,3,"API接口错误",jsonObjectss.getString("message"));
         }
         return trade;
     }
@@ -271,7 +271,7 @@ public class BitMartParentService extends BaseService implements RobotAction {
         long timestamp = new Date().getTime();
         String uri = "/spot/v2/cancel_order";
         Map<String, String> params = new TreeMap<>();
-        params.put("symbol", exchange.get("markrt"));
+        params.put("symbol", exchange.get("market"));
         params.put("order_id", orderId);
         String sing = timestamp + "#" + exchange.get("memo") + "#" + JSONObject.toJSONString(params);
         String sings = HMAC.sha256_HMAC(sing, exchange.get("apikey"));
@@ -284,7 +284,7 @@ public class BitMartParentService extends BaseService implements RobotAction {
             trade = httpUtil.postByPackcoin(baseUrl + uri, params, headMap);
             net.sf.json.JSONObject jsonObjectss = net.sf.json.JSONObject.fromObject(trade);
             if(1000!=jsonObjectss.getInt("code")){
-                setWarmLog(id,3,"API接口错误",jsonObjectss.getString("msg"));
+                setWarmLog(id,3,"API接口错误",jsonObjectss.getString("message"));
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -353,7 +353,7 @@ public class BitMartParentService extends BaseService implements RobotAction {
         trade = httpUtil.getAddHead(baseUrl + uri, headMap);
         net.sf.json.JSONObject jsonObjectss = net.sf.json.JSONObject.fromObject(trade);
         if(1000!=jsonObjectss.getInt("code")){
-            setWarmLog(id,3,"API接口错误",jsonObjectss.getString("msg"));
+            setWarmLog(id,3,"API接口错误",jsonObjectss.getString("message"));
         }
        logger.info("getbalans:"+trade);
         return trade;
