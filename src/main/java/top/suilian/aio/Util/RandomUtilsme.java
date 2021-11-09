@@ -28,9 +28,11 @@ public class RandomUtilsme {
     public static Double getRandom(double num, Integer precision) {
         int maxNum = new Double((Math.pow(10, precision) * num)).intValue();
         double v = 0;
-        if (num >= 0) {
+        if (num > 0) {
             int i = new Random().nextInt(maxNum);
             v = i / Math.pow(10, precision);
+        }else {
+           return getRandom(num,precision) ;
         }
         return v;
     }

@@ -597,7 +597,7 @@ public class NewCoinStoreKline extends CoinStoreParentService {
 
                 JSONObject data = jsonObject.getJSONObject("data");
                 String status = data.getString("ordState");
-                if ("REPLACED".equals(status)) {
+                if ("FILLED".equals(status)) {
                     setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                 } else if ("CANCELING".equals(status)||"CANCELED".equals(status)) {
                     setTradeLog(id, "订单id：" + orderId + "已撤单", 0, "#67c23a");

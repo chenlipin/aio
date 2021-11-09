@@ -81,14 +81,11 @@ public class NewZgKline extends ZGParentService {
                 tradeRatio = new BigDecimal(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
             }
             logger.info("设置机器人参数结束");
-
             logger.info("设置机器人交易规则开始");
             if (!setPrecision()) {
                 return;
             }
             logger.info("设置机器人交易规则结束");
-
-
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本
@@ -285,7 +282,7 @@ public class NewZgKline extends ZGParentService {
                     //撞单达上限后的操作
                     //停止机器人
                     if ("0".equals(exchange.get("orderOperation"))) {
-
+                        setWarmLog(id,2,"撤单数达到上限，停止量化","");
                         setTradeLog(id, "撤单数达到上限，停止量化", 0, "000000");
                         msg = "您的" + getRobotName(this.id) + "量化机器人已停止!";
                         setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
@@ -293,7 +290,7 @@ public class NewZgKline extends ZGParentService {
                         return;
 
                     } else if ("1".equals(exchange.get("orderOperation"))) {//不停止
-
+                        setWarmLog(id,2,"撤单数次数过多，请注意盘口","");
                         setTradeLog(id, "撤单数次数过多，请注意盘口", 0, "000000");
                         msg = "您的" + getRobotName(this.id) + "量化机器人撤单数次数过多，请注意盘口!";
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
@@ -302,6 +299,7 @@ public class NewZgKline extends ZGParentService {
 
                     } else if ("2".equals(exchange.get("orderOperation"))) {//随机暂停后重启
                         int st = (int) (Math.random() * (Integer.parseInt(exchange.get("suspendTopLimit")) - Integer.parseInt(exchange.get("suspendLowerLimit"))) + Integer.parseInt(exchange.get("suspendLowerLimit")));
+                        setWarmLog(id,2,"撤单数次数过多，将暂停\" + st + \"秒后自动恢复","");
                         setTradeLog(id, "撤单数次数过多，将暂停" + st + "秒后自动恢复", 0, "000000");
                         msg = "您的" + getRobotName(this.id) + "量化机器人撤单数次数过多，将暂停片刻后自动恢复!";
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
@@ -538,24 +536,24 @@ public class NewZgKline extends ZGParentService {
             Integer value = string.get((int) Math.round(Math.random() * (string.size() - 1)));
             switch (value) {
                 case 0:
-                    setTradeLog(id, "当前随机值（" + value + ":横盘）", 1);
+                 //   setTradeLog(id, "当前随机值（" + value + ":横盘）", 1);
                     break;
                 case 1:
                     if (Integer.parseInt(exchange.get("priceRange")) >= (randomNum + 2)) {
                         randomNum += 1;
-                        setTradeLog(id, "当前随机值（" + value + ":涨幅）", 1);
+                    //    setTradeLog(id, "当前随机值（" + value + ":涨幅）", 1);
                     } else {
                         randomNum -= 1;
-                        setTradeLog(id, "当前随机值（" + value + ":跌幅）", 1);
+                  //      setTradeLog(id, "当前随机值（" + value + ":跌幅）", 1);
                     }
                     break;
                 case 2:
                     if (2 <= (randomNum - 1)) {
                         randomNum -= 1;
-                        setTradeLog(id, "当前随机值（" + value + ":跌幅）", 1);
+                   //     setTradeLog(id, "当前随机值（" + value + ":跌幅）", 1);
                     } else {
                         randomNum += 1;
-                        setTradeLog(id, "当前随机值（" + value + ":涨幅）", 1);
+                  //      setTradeLog(id, "当前随机值（" + value + ":涨幅）", 1);
                     }
                     break;
             }
@@ -605,6 +603,7 @@ public class NewZgKline extends ZGParentService {
                 if (maxEatOrder == 0) {
                     logger.info("吃单上限功能未开启");
                 } else if (maxEatOrder <= eatOrder) {
+                    setWarmLog(id,2,"吃单上限，停止吃单","");
                     setTradeLog(id, "已吃堵盘口单总数(" + eatOrder + ")=吃单成交上限数(" + maxEatOrder + "),吃单上限，停止吃单", 0);
                 }
 
@@ -630,6 +629,7 @@ public class NewZgKline extends ZGParentService {
                             }
                         }
                     } else {
+                        setWarmLog(id,2,"出现疑似堵盘口订单，停止量化","");
                         setTradeLog(id, "出现疑似堵盘口订单，停止量化", 0, "000000");
                         String msg = "出现疑似堵盘口订单，您的" + getRobotName(this.id) + "量化机器人已停止!";
                         setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
@@ -660,6 +660,7 @@ public class NewZgKline extends ZGParentService {
                             }
                         }
                     } else {
+                        setWarmLog(id,2,"出现疑似堵盘口订单，停止量化","");
                         setTradeLog(id, "出现疑似堵盘口订单，停止量化", 0, "000000");
                         String msg = "出现疑似堵盘口订单，您的" + getRobotName(this.id) + "量化机器人已停止!";
                         setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
@@ -672,11 +673,11 @@ public class NewZgKline extends ZGParentService {
                 //刷开区间
                 if ("0".equals(exchange.get("openIntervalAllAmount")) || exchange.get("openIntervalAllAmount").trim() == null) {
                     //刷开区间
-                    String msg = "您的" + getRobotName(this.id) + "刷开量化机器人已开启,将不计成本的刷开区间!";
-                    sendSms(msg, exchange.get("mobile"));
+
                     openInterval(sellPri, buyPrices, new BigDecimal(exchange.get("openIntervalPrice")));
                 } else if (new BigDecimal(exchange.get("openIntervalAllAmount")).compareTo(intervalAmount) < 0) {
                     setRobotArgs(id, "isOpenIntervalSwitch", "0");
+                    setWarmLog(id,2,"刷开区间的数量已达到最大值,停止刷开区间","");
                     setTradeLog(id, "刷开区间的数量已达到最大值,停止刷开区间", 0, "000000");
 
                 } else {
@@ -693,7 +694,7 @@ public class NewZgKline extends ZGParentService {
                 sellPrice = sellPri;
             }
 
-            setTradeLog(id, "区间值-------------------------->" + randomNum, 1);
+          //  setTradeLog(id, "区间值-------------------------->" + randomNum, 1);
 
             BigDecimal disparity = sellPrice.subtract(buyPrice);
             logger.info("robotId" + id + "----" + "上次买一：" + buyPrice + "，上次卖一：" + sellPrice);
@@ -707,7 +708,7 @@ public class NewZgKline extends ZGParentService {
             BigDecimal interval = nN(disparity.divide(new BigDecimal(exchange.get("priceRange")), newScale, ROUND_DOWN), newScale);
 
 
-            setTradeLog(id, "区间差值-------------------------->" + interval, 1);
+           // setTradeLog(id, "区间差值-------------------------->" + interval, 1);
             logger.info("robotId" + id + "----" + "区间值：" + interval);
 
             if ("0".equals(exchange.get("sheetForm"))) {
@@ -722,17 +723,16 @@ public class NewZgKline extends ZGParentService {
                 logger.info("robotId" + id + "----" + "小数位未处理的新价格------->" + oldPrice);
                 logger.info("robotId" + id + "----" + "小数位已处理的新价格------->" + price);
                 if (price.compareTo(sellPri) < 0 && price.compareTo(buyPri) > 0) {
-                    setTradeLog(id, "旧版本------------------->卖1[" + sellPri + "]买1[" + buyPri + "]新[" + price + "]", 1);
+                 //   setTradeLog(id, "旧版本------------------->卖1[" + sellPri + "]买1[" + buyPri + "]新[" + price + "]", 1);
                     logger.info("robotId" + id + "----" + "旧版本结束");
                     buyPrice = BigDecimal.ZERO;
                     sellPrice = BigDecimal.ZERO;
                 } else {
+                    setWarmLog(id,2,"刷买一卖一区间过小，无法量化","");
                     setTradeLog(id, "买一卖一区间过小，无法量化------------------->卖1[" + sellPri + "]买1[" + buyPri + "]", 0, "FF111A");
                     logger.info("robotId" + id + "----" + "买一卖一区间过小，无法量化------------------->卖1[" + sellPri + "]买1[" + buyPri + "]");
 
 
-                    String msg = "您的" + getRobotName(id) + "区间过小，无法量化！";
-                    judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_SMALL_INTERVAL);
                     sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
                     buyPrice = BigDecimal.ZERO;
                     sellPrice = BigDecimal.ZERO;
@@ -741,10 +741,10 @@ public class NewZgKline extends ZGParentService {
                 }
             } else {
                 logger.info("robotId" + id + "----" + "新版本开始");
-                setTradeLog(id, "随机区间值------------------------->" + randomNum, 1);
+             //   setTradeLog(id, "随机区间值------------------------->" + randomNum, 1);
                 BigDecimal minPrice = buyPrice.add(interval.multiply(BigDecimal.valueOf(randomNum - 1)));
                 BigDecimal maxPrice = buyPrice.add(interval.multiply(BigDecimal.valueOf(randomNum)));
-                setTradeLog(id, "区间最小价格[" + minPrice + "]区间最大价格[" + maxPrice + "]", 1);
+            //    setTradeLog(id, "区间最小价格[" + minPrice + "]区间最大价格[" + maxPrice + "]", 1);
                 logger.info("robotId" + id + "----" + "minPrice(区间最小价格)：" + minPrice + "，maxPrice(区间最大价格)：" + maxPrice);
                 BigDecimal diff = maxPrice.subtract(minPrice);
                 BigDecimal random = diff.subtract(diff.multiply(BigDecimal.valueOf(Math.random())));
@@ -754,7 +754,7 @@ public class NewZgKline extends ZGParentService {
                 logger.info("robotId" + id + "----" + "price(新价格)：" + price);
 
                 if (price.compareTo(buyPri) > 0 && price.compareTo(sellPri) < 0) {
-                    setTradeLog(id, "新版本------------------->卖1[" + sellPri + "]买1[" + buyPri + "]新[" + price + "]", 1);
+             //       setTradeLog(id, "新版本------------------->卖1[" + sellPri + "]买1[" + buyPri + "]新[" + price + "]", 1);
                     logger.info("robotId" + id + "----" + "新版本结束");
                 } else {
                     buyPrice = BigDecimal.ZERO;

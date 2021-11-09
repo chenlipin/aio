@@ -258,7 +258,7 @@ public class CoinStoreParentService extends BaseService implements RobotAction {
         System.out.println(url);
         logger.info("查询订单：" + orderId + "  结果" + trade);
         net.sf.json.JSONObject jsonObjectss = net.sf.json.JSONObject.fromObject(trade);
-        if (1000 != jsonObjectss.getInt("code")) {
+        if (0 != jsonObjectss.getInt("code")) {
             setWarmLog(id, 3, "API接口错误", jsonObjectss.getString("message"));
         }
         return trade;
@@ -489,7 +489,7 @@ public class CoinStoreParentService extends BaseService implements RobotAction {
             String result = "";
             result = selectOrder(order);
             JSONObject jsonObject = JSONObject.parseObject(result);
-            if ("1000".equals(jsonObject.getString("code"))) {
+            if ("0".equals(jsonObject.getString("code"))) {
                 Integer statusCode = jsonObject.getJSONObject("data").getInteger("status");
                 hashMap.put(order, getTradeEnum(statusCode).getStatus());
             }
@@ -509,7 +509,7 @@ public class CoinStoreParentService extends BaseService implements RobotAction {
         }
         if (StringUtils.isNotEmpty(cancelTrade)) {
             JSONObject jsonObject = JSONObject.parseObject(cancelTrade);
-            if ("1000".equals(jsonObject.getString("code")) || "50030".equals(jsonObject.getString("code"))) {
+            if ("0".equals(jsonObject.getString("code")) || "50030".equals(jsonObject.getString("code"))) {
                 return "true";
             }
         }

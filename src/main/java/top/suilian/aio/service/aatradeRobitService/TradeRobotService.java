@@ -26,9 +26,13 @@ import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.bitmart.BitMartParentService;
+import top.suilian.aio.service.coinstore.CoinStoreParentService;
+import top.suilian.aio.service.coinstore.CoinStoreService;
 import top.suilian.aio.service.hotcoin.HotCoinParentService;
 import top.suilian.aio.service.loex.LoexParentService;
+import top.suilian.aio.service.mxc.MxcParentService;
 import top.suilian.aio.service.wbfex.WbfexParentService;
+import top.suilian.aio.service.zg.ZGParentService;
 import top.suilian.aio.vo.*;
 
 import java.io.UnsupportedEncodingException;
@@ -145,6 +149,15 @@ public class TradeRobotService {
                 break;
             case Constant.KEY_EXCHANGE_BITMART:
                 robotAction = new BitMartParentService();
+                break;
+            case Constant.KEY_EXCHANGE_COINSTORE:
+                robotAction = new CoinStoreParentService();
+                break;
+            case Constant.KEY_EXCHANGE_MXC:
+                robotAction = new MxcParentService();
+                break;
+            case Constant.KEY_EXCHANGE_ZG:
+                robotAction = new ZGParentService();
                 break;
             default:
                 return null;

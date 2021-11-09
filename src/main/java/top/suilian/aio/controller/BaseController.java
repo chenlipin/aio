@@ -58,8 +58,9 @@ import top.suilian.aio.service.test.TestService;
 import top.suilian.aio.service.wbfex.WbfexService;
 import top.suilian.aio.service.xoxoex.XoxoexService;
 import top.suilian.aio.service.xuebi.XuebiService;
-//import top.suilian.aio.service.zg.ZGService;
-import top.suilian.aio.service.zgv1.ZGService;
+import top.suilian.aio.service.zg.ZGService;
+import top.suilian.aio.service.zg.ZGService;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 

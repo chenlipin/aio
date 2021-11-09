@@ -17,7 +17,7 @@ import java.util.Random;
 
 import static java.math.BigDecimal.ROUND_DOWN;
 
-public class NewMxcKline extends MxcParentService {
+public class NewMxcKline extends MxcParentService  {
     public NewMxcKline(
             CancelExceptionService cancelExceptionService,
             CancelOrderService cancelOrderService,
@@ -163,27 +163,27 @@ public class NewMxcKline extends MxcParentService {
                     //停止机器人
                     if ("0".equals(exchange.get("orderOperation"))) {
 
+                        setWarmLog(id,2,"撤单数达到上限，停止量化","");
                         setTradeLog(id, "撤单数达到上限，停止量化", 0, "000000");
-                        msg = "您的" + getRobotName(this.id) + "量化机器人已停止!";
                         setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
                         return;
 
                     } else if ("1".equals(exchange.get("orderOperation"))) {//不停止
-
+                        setWarmLog(id,2,"撤单数次数过多，请注意盘口","");
                         setTradeLog(id, "撤单数次数过多，请注意盘口", 0, "000000");
                         msg = "您的" + getRobotName(this.id) + "量化机器人撤单数次数过多，请注意盘口!";
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
                         //重置撞单次数
-                        randomNum = 0;
+                        orderNum = 0;
 
                     } else if ("2".equals(exchange.get("orderOperation"))) {//随机暂停后重启
                         int st = (int) (Math.random() * (Integer.parseInt(exchange.get("suspendTopLimit")) - Integer.parseInt(exchange.get("suspendLowerLimit"))) + Integer.parseInt(exchange.get("suspendLowerLimit")));
-                        setTradeLog(id, "撤单数次数过多，将暂停" + st + "秒后自动恢复", 0, "000000");
-                        msg = "您的" + getRobotName(this.id) + "量化机器人撤单数次数过多，将暂停片刻后自动恢复!";
+                        setTradeLog(id, "撤单数次数过多，将暂停" + st + "秒后自动恢复", 0, "f57272");
+                        setWarmLog(id,2,"量化机器人撤单数次数过多，将暂停片刻后自动恢复!","");
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
                         //重置撞单次数
-                        randomNum = 0;
+                        orderNum = 0;
                         //暂停
                         sleep(st * 1000, Integer.parseInt(exchange.get("isMobileSwitch")));
                         return;
@@ -238,14 +238,15 @@ public class NewMxcKline extends MxcParentService {
 
                     } else {
                         String res = cancelTrade(tradeId);
-                        setTradeLog(id, "撤单[" + tradeId + "]=> " + res, 0, "000000");
+                        setTradeLog(id, "撤单[" + tradeId + "]=> " + res, 0, "67c23a");
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, tradeId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                     }
 
 
                 } else if (jsonObject != null && "30002".equals(jsonObject.getString("code"))) {
-                    setTradeLog(id, "交易量过小=> " + jsonObject, 0, "000000");
+                    setWarmLog(id,3,"交易量过小","");
+                    setTradeLog(id, "交易量过小=> " + jsonObject, 0, "f57272");
                 }
             } catch (Exception e) {
                 exceptionMessage = collectExceptionStackMsg(e);
@@ -270,24 +271,24 @@ public class NewMxcKline extends MxcParentService {
             Integer value = string.get((int) Math.round(Math.random() * (string.size() - 1)));
             switch (value) {
                 case 0:
-                    setTradeLog(id, "当前随机值（" + value + ":横盘）", 1);
+                   // setTradeLog(id, "当前随机值（" + value + ":横盘）", 1);
                     break;
                 case 1:
                     if (Integer.parseInt(exchange.get("priceRange")) >= (randomNum + 2)) {
                         randomNum += 1;
-                        setTradeLog(id, "当前随机值（" + value + ":涨幅）", 1);
+                     //   setTradeLog(id, "当前随机值（" + value + ":涨幅）", 1);
                     } else {
                         randomNum -= 1;
-                        setTradeLog(id, "当前随机值（" + value + ":跌幅）", 1);
+                     //   setTradeLog(id, "当前随机值（" + value + ":跌幅）", 1);
                     }
                     break;
                 case 2:
                     if (2 <= (randomNum - 1)) {
                         randomNum -= 1;
-                        setTradeLog(id, "当前随机值（" + value + ":跌幅）", 1);
+                       // setTradeLog(id, "当前随机值（" + value + ":跌幅）", 1);
                     } else {
                         randomNum += 1;
-                        setTradeLog(id, "当前随机值（" + value + ":涨幅）", 1);
+                      //  setTradeLog(id, "当前随机值（" + value + ":涨幅）", 1);
                     }
                     break;
             }
@@ -340,6 +341,7 @@ public class NewMxcKline extends MxcParentService {
                 if (maxEatOrder == 0) {
                     logger.info("吃单上限功能未开启：maxEatOrder=" + maxEatOrder);
                 } else if (maxEatOrder <= eatOrder) {
+                    setWarmLog(id,2,"吃单上限，停止吃单","");
                     setTradeLog(id, "已吃堵盘口单总数(" + eatOrder + ")=吃单成交上限数(" + maxEatOrder + "),吃单上限，停止吃单", 0);
                 }
                 //吃买单
@@ -364,7 +366,8 @@ public class NewMxcKline extends MxcParentService {
                             }
                         }
                     } else {
-                        setTradeLog(id, "出现疑似堵盘口订单，停止量化", 0, "000000");
+                        setWarmLog(id,2,"出现疑似堵盘口订单，停止量化","");
+                        setTradeLog(id, "出现疑似堵盘口订单，停止量化", 0, "f57272");
                         String msg = "出现疑似堵盘口订单，您的" + getRobotName(this.id) + "量化机器人已停止!";
                         setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
@@ -394,7 +397,8 @@ public class NewMxcKline extends MxcParentService {
                             }
                         }
                     } else {
-                        setTradeLog(id, "出现疑似堵盘口订单，停止量化", 0, "000000");
+                        setWarmLog(id,2,"出现疑似堵盘口订单，停止量化","");
+                        setTradeLog(id, "出现疑似堵盘口订单，停止量化", 0, "f57272");
                         String msg = "出现疑似堵盘口订单，您的" + getRobotName(this.id) + "量化机器人已停止!";
                         setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
@@ -416,7 +420,8 @@ public class NewMxcKline extends MxcParentService {
                     openInterval(sellPri, buyPrices, new BigDecimal(exchange.get("openIntervalPrice")));
                 } else if (new BigDecimal(exchange.get("openIntervalAllAmount")).compareTo(intervalAmount) < 0) {
                     setRobotArgs(id, "isOpenIntervalSwitch", "0");
-                    setTradeLog(id, "刷开区间的数量已达到最大值,停止刷开区间", 0, "000000");
+                    setWarmLog(id,2,"刷开区间的数量已达到最大值,停止刷开区间","");
+                    setTradeLog(id, "刷开区间的数量已达到最大值,停止刷开区间", 0, "f57272");
 
                 } else {
                     //刷开区间
@@ -428,7 +433,7 @@ public class NewMxcKline extends MxcParentService {
 
             }
 
-            setTradeLog(id, "区间值-------------------------->" + randomNum, 1);
+           // setTradeLog(id, "区间值-------------------------->" + randomNum, 1);
 
             BigDecimal disparity = sellPrice.subtract(buyPrice);
             logger.info("robotId" + id + "----" + "上次买一：" + buyPrice + "，上次卖一：" + sellPrice);
@@ -442,7 +447,7 @@ public class NewMxcKline extends MxcParentService {
             BigDecimal interval = nN(disparity.divide(new BigDecimal(exchange.get("priceRange")), newScale, ROUND_DOWN), newScale);
 
 
-            setTradeLog(id, "区间差值-------------------------->" + interval, 1);
+          //  setTradeLog(id, "区间差值-------------------------->" + interval, 1);
             logger.info("robotId" + id + "----" + "区间值：" + interval);
 
 
@@ -458,11 +463,12 @@ public class NewMxcKline extends MxcParentService {
                 logger.info("robotId" + id + "----" + "小数位未处理的新价格------->" + oldPrice);
                 logger.info("robotId" + id + "----" + "小数位已处理的新价格------->" + price);
                 if (price.compareTo(sellPri) < 0 && price.compareTo(buyPri) > 0) {
-                    setTradeLog(id, "旧版本------------------->卖1[" + sellPri + "]买1[" + buyPri + "]新[" + price + "]", 1);
+                 //   setTradeLog(id, "旧版本------------------->卖1[" + sellPri + "]买1[" + buyPri + "]新[" + price + "]", 1);
                     logger.info("robotId" + id + "----" + "旧版本结束");
                     buyPrice = BigDecimal.ZERO;
                     sellPrice = BigDecimal.ZERO;
                 } else {
+                    setWarmLog(id,2,"买一卖一区间过小，无法量化","");
                     setTradeLog(id, "买一卖一区间过小，无法量化------------------->卖1[" + sellPri + "]买1[" + buyPri + "]", 0, "FF111A");
                     logger.info("robotId" + id + "----" + "买一卖一区间过小，无法量化------------------->卖1[" + sellPri + "]买1[" + buyPri + "]");
 
@@ -477,10 +483,10 @@ public class NewMxcKline extends MxcParentService {
                 }
             } else {
                 logger.info("robotId" + id + "----" + "新版本开始");
-                setTradeLog(id, "随机区间值------------------------->" + randomNum, 1);
+               // setTradeLog(id, "随机区间值------------------------->" + randomNum, 1);
                 BigDecimal minPrice = buyPrice.add(interval.multiply(BigDecimal.valueOf(randomNum - 1)));
                 BigDecimal maxPrice = buyPrice.add(interval.multiply(BigDecimal.valueOf(randomNum)));
-                setTradeLog(id, "区间最小价格[" + minPrice + "]区间最大价格[" + maxPrice + "]", 1);
+                //setTradeLog(id, "区间最小价格[" + minPrice + "]区间最大价格[" + maxPrice + "]", 1);
                 logger.info("robotId" + id + "----" + "minPrice(区间最小价格)：" + minPrice + "，maxPrice(区间最大价格)：" + maxPrice);
                 BigDecimal diff = maxPrice.subtract(minPrice);
                 BigDecimal random = diff.subtract(diff.multiply(BigDecimal.valueOf(Math.random())));
@@ -490,7 +496,7 @@ public class NewMxcKline extends MxcParentService {
                 logger.info("robotId" + id + "----" + "price(新价格)：" + price);
 
                 if (price.compareTo(buyPri) > 0 && price.compareTo(sellPri) < 0) {
-                    setTradeLog(id, "新版本------------------->卖1[" + sellPri + "]买1[" + buyPri + "]新[" + price + "]", 1);
+                   // setTradeLog(id, "新版本------------------->卖1[" + sellPri + "]买1[" + buyPri + "]新[" + price + "]", 1);
                     logger.info("robotId" + id + "----" + "新版本结束");
                 } else {
                     buyPrice = BigDecimal.ZERO;
@@ -498,6 +504,9 @@ public class NewMxcKline extends MxcParentService {
                     sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
                     logger.info("robotId" + id + "----" + "新版本回调获取价格");
                     price = null;
+                    while (randomNum == 1 || randomNum == Integer.parseInt(exchange.get("priceRange"))) {
+                        randomNum = (int) Math.ceil(Math.random() * Integer.parseInt(exchange.get("priceRange")));
+                    }
                 }
             }
 
@@ -527,7 +536,7 @@ public class NewMxcKline extends MxcParentService {
                 logger.info("不计成本刷开区间中");
             } else if (new BigDecimal(exchange.get("openIntervalAllAmount")).compareTo(intervalAmount.add(new BigDecimal(bid.getString("quantity")))) < 0) {
                 setRobotArgs(id, "isOpenIntervalSwitch", "0");
-                setTradeLog(id, "刷开区间的数量已达到最大值,停止刷开区间", 0, "000000");
+                setTradeLog(id, "刷开区间的数量已达到最大值,停止刷开区间", 0, "f57272");
                 break;
             }
             //开始挂单
@@ -563,9 +572,9 @@ public class NewMxcKline extends MxcParentService {
                         }
 
                         if ("FILLED".equals(status)) {
-                            setTradeLog(id, "订单id：" + tradeId + "完全成交", 0, "000000");
+                            setTradeLog(id, "订单id：" + tradeId + "完全成交", 0, "#67c23a");
                         } else if ("CANCELED".equals(status)) {
-                            setTradeLog(id, "订单id：" + tradeId + "已撤单", 0, "000000");
+                            setTradeLog(id, "订单id：" + tradeId + "已撤单", 0, "#67c23a");
                         } else {
                             String res = cancelTrade(tradeId);
                             JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
@@ -606,14 +615,15 @@ public class NewMxcKline extends MxcParentService {
                     }
 
                     if ("FILLED".equals(status)) {
-                        setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "000000");
+                        setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                     } else if ("CANCELED".equals(status)) {
-                        setTradeLog(id, "订单id：" + orderId + "已撤单", 0, "000000");
+                        setTradeLog(id, "订单id：" + orderId + "已撤单", 0, "#67c23a");
                     } else {
                         String res = cancelTrade(orderId);
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                         setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "000000");
+                        setWarmLog(id,2,"订单撞单+1,单号:"+orderId,"");
                         if (Integer.valueOf(exchange.get("orderSumSwitch")) == 1 && type == 1) {    //防褥羊毛开关
                             orderNum++;
                         }
