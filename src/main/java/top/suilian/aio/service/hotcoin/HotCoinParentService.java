@@ -5,6 +5,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
+import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.RobotArgs;
@@ -12,6 +13,8 @@ import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.model.WarmLog;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
+import top.suilian.aio.service.hotcoin.kline.RunHotCoinKline;
 import top.suilian.aio.service.loex.LoexParentService;
 
 import javax.crypto.Mac;
@@ -28,6 +31,7 @@ import java.util.stream.Collectors;
 public class HotCoinParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://api.hotcoinfin.com";
     public String host = "api.hotcoinfin.com";
+    public RunHotcoinRandomDepth runHotcoinRandomDepth = BeanContext.getBean(RunHotcoinRandomDepth.class);
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;

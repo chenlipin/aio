@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 public class ZGParentService extends BaseService {
-    public String baseUrl = "https://api1.zg.com";
+    public String baseUrl = "https://www.ztb.im";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;

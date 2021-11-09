@@ -20,7 +20,7 @@
         update_time
     </sql>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from warm_log
@@ -33,10 +33,10 @@
     </delete>
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="top.suilian.aio.model.WarmLog" useGeneratedKeys="true">
         insert into warm_log
-        ( id,robot_id,type
+        ( robot_id,type
         ,warm_msg,warm_detail_msg,creat_time
         ,update_time)
-        values (#{id,jdbcType=INTEGER},#{robotId,jdbcType=INTEGER},#{type,jdbcType=INTEGER}
+        values (#{robotId,jdbcType=INTEGER},#{type,jdbcType=INTEGER}
         ,#{warmMsg,jdbcType=VARCHAR},#{warmDetailMsg,jdbcType=VARCHAR},#{creatTime,jdbcType=TIMESTAMP}
         ,#{updateTime,jdbcType=TIMESTAMP})
     </insert>
@@ -97,7 +97,7 @@
         where   id = #{id,jdbcType=INTEGER} 
     </update>
 
-    <select id="selectByRobotIdAndType" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <select id="selectByRobotIdAndType" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from warm_log

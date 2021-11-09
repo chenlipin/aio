@@ -87,6 +87,8 @@ public class NewZgKline extends ZGParentService {
                 return;
             }
             logger.info("设置机器人交易规则结束");
+
+
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本

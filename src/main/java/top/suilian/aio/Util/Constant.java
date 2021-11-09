@@ -86,6 +86,10 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_BITMART=52;   //BITMART
 
+
+    public static final int KEY_EXCHANGE_COINSTORE=53;   //COINSTORE
+
+
     //endregion
 
 
@@ -444,14 +448,16 @@ public class Constant {
 
 
     /**
-     * hotcoin 日志路径
+     * bitmart 日志路径
      */
-    public static final String KEY_LOG_PATH_BITMART_KLINE = "bitmart/newkline";           //HOTCOIN Kline 日志路径
-    public static final String KEY_LOG_PATH_BITMART_REFER_DEPTH = "bitmart/referDepth";           //HOTCOIN 对标深度日志路径
-    public static final String KEY_LOG_PATH_BITMART_REFER_KLINE = "bitmart/referKline";         //HOTCOIN 对标k线日志路径
+    public static final String KEY_LOG_PATH_BITMART_KLINE = "bitmart/newkline";           //bitmart Kline 日志路径
+    public static final String KEY_LOG_PATH_BITMART_REFER_DEPTH = "bitmart/referDepth";           //bitmart 对标深度日志路径
+    public static final String KEY_LOG_PATH_BITMART_REFER_KLINE = "bitmart/referKline";         //bitmart 对标k线日志路径
     public static final String KEY_LOG_PATH_BITMART_DEPTH="bitmart/depth";
-
-
+    /**
+     * coinstore 日志路径
+     */
+    public static final String KEY_LOG_PATH_CPINSTORE_KLINE = "coinstore/newkline";
     //region    redis
     public static final String KEY_ROBOT_ARG = "KEY_ROBOT_ARG_";             //机器人参数
     public static final String KEY_ROBOT = "KEY_ROBOT_";             //机器人

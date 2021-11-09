@@ -90,6 +90,7 @@ public class HotCoinService {
                 break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewHotcoinKline.killWork(id);
+                runHotcoinRandomDepth.killWork(id+1);
                 break;
         }
     }

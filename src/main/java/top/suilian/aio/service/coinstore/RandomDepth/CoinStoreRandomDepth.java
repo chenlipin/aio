@@ -1,19 +1,19 @@
-package top.suilian.aio.service.hotcoin.RandomDepth;
+package top.suilian.aio.service.coinstore.RandomDepth;
 
 import net.sf.json.JSONObject;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.hotcoin.HotCoinParentService;
+import top.suilian.aio.service.coinstore.CoinStoreParentService;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class HotcoinRandomDepth extends HotCoinParentService {
+public class CoinStoreRandomDepth extends CoinStoreParentService {
 
-    public HotcoinRandomDepth(
+    public CoinStoreRandomDepth(
             CancelExceptionService cancelExceptionService,
             CancelOrderService cancelOrderService,
             ExceptionMessageService exceptionMessageService,
@@ -45,21 +45,21 @@ public class HotcoinRandomDepth extends HotCoinParentService {
     public void init() {
         logger.info("\r\n------------------------------{" + id + "} 开始------------------------------\r\n");
         if (start) {
-            logger.info("设置深度机器人参数开始");
+            logger.info("设置机器人参数开始");
             setParam();
-            logger.info("设置深度机器人参数结束");
+            logger.info("设置机器人参数结束");
 
-            logger.info("设置深度机器人交易规则开始");
+            logger.info("设置机器人交易规则开始");
 
             setPrecision();
 
-            logger.info("设置深度机器人交易规则结束");
+            logger.info("设置机器人交易规则结束");
             start = false;
         }
         if (Integer.parseInt(exchange.get("depthCancelNum")) >= depthCancelOrderNum) {
             //获取深度
             List<BigDecimal> depthPrice = getDepth();
-            logger.info("深度 获取的随机的买卖单价格:" + depthPrice);
+            logger.info("获取的随机的买卖单价格:" + depthPrice);
             //买单数量
             BigDecimal buyNum = getOrderAmount();
             logger.info("深度买单价格:" + depthPrice.get(0));
@@ -73,14 +73,14 @@ public class HotcoinRandomDepth extends HotCoinParentService {
 
             //挂买
             try {
-                logger.info("深度 挂买单");
+                logger.info("挂买单");
                 String resultBuy = submitOrder(1, depthPrice.get(0), buyNum);
                 JSONObject buyResultObject = judgeRes(resultBuy, "code", "submitTrade");
                 if(resultBuy!=null&&buyResultObject.getInt("code")==200){
-                    setTradeLog(id, "深度 买单价格："+depthPrice.get(0)+",数量："+buyNum+",挂单结果："+buyResultObject, 0, "05cbc8");
+                    setTradeLog(id, "买单价格："+depthPrice.get(0)+",数量："+buyNum+",挂单结果："+buyResultObject, 0, "05cbc8");
                     JudegOrder(buyResultObject);
                 }else{
-                    setTradeLog(id, "深度 买单价格："+depthPrice.get(0)+",数量："+buyNum+",挂单结果："+buyResultObject, 0, "05cbc8");
+                    setTradeLog(id, "买单价格："+depthPrice.get(0)+",数量："+buyNum+",挂单结果："+buyResultObject, 0, "05cbc8");
                     sleep( 10000, Integer.parseInt(exchange.get("isMobileSwitch")));
                 }
             } catch (UnsupportedEncodingException e) {
@@ -94,10 +94,10 @@ public class HotcoinRandomDepth extends HotCoinParentService {
                 String resultSell = submitOrder(2, depthPrice.get(1), sellNum);
                 JSONObject sellResultObject = judgeRes(resultSell, "code", "submitTrade");
                 if(resultSell!=null&&sellResultObject.getInt("code")==200){
-                    setTradeLog(id, "深度 卖单价格："+depthPrice.get(1)+",数量："+sellNum+"，挂单结果："+sellResultObject, 0, "ff6224");
+                    setTradeLog(id, "卖单价格："+depthPrice.get(1)+",数量："+sellNum+"，挂单结果："+sellResultObject, 0, "ff6224");
                     JudegOrder(sellResultObject);
                 }else {
-                    setTradeLog(id, "深度 卖单价格："+depthPrice.get(1)+",数量："+sellNum+"，挂单结果："+sellResultObject, 0, "ff6224");
+                    setTradeLog(id, "卖单价格："+depthPrice.get(1)+",数量："+sellNum+"，挂单结果："+sellResultObject, 0, "ff6224");
                     sleep( 10000, Integer.parseInt(exchange.get("isMobileSwitch")));
                 }
             } catch (UnsupportedEncodingException e) {
@@ -106,7 +106,7 @@ public class HotcoinRandomDepth extends HotCoinParentService {
                 logger.info("robotId:" + id + exceptionMessage);
                 e.printStackTrace();
             }
-            setTradeLog(id, "深度 已达撤单数" + depthCancelOrderNum, 0, "000000");
+            setTradeLog(id, "已达撤单数" + depthCancelOrderNum, 0, "000000");
             if (Integer.parseInt(exchange.get("depthCancelNum")) < depthCancelOrderNum) {
                 setTradeLog(id, "深度撤单达到上限,停止深度撤单", 0, "000000");
                 setRobotArgs(id, "depthSwitch", "0");
@@ -135,15 +135,15 @@ public class HotcoinRandomDepth extends HotCoinParentService {
                 JSONObject data1 = jsonObject.getJSONObject("data");
                 int status = data1.getInt("statusCode");
                 if (status == 3) {
-                    setTradeLog(id, "深度订单id：" + tradeId + "完全成交", 0, "000000");
+                    setTradeLog(id, "订单id：" + tradeId + "完全成交", 0, "000000");
                     depthCancelOrderNum++;
                 } else if (status == 5) {
-                    setTradeLog(id, "深度订单id：" + tradeId + "已撤单", 0, "000000");
+                    setTradeLog(id, "订单id：" + tradeId + "已撤单", 0, "000000");
                 } else {
                     String res = cancelTrade(tradeId);
                     JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                     setCancelOrder(cancelRes, res, tradeId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
-                    setTradeLog(id, "深度订单撤单[" + tradeId + "]=>" + res, 0, "000000");
+                    setTradeLog(id, "撤单[" + tradeId + "]=>" + res, 0, "000000");
                 }
             }
         }
@@ -163,7 +163,7 @@ public class HotcoinRandomDepth extends HotCoinParentService {
         params.put("symbol", exchange.get("market"));
         params.put("step", 3060);
 
-        String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
+        String Signature = getSignature(exchange.get("tpass"), "host", uri, httpMethod, params);
         params.put("Signature", Signature);
         String httpParams = null;
         try {
@@ -198,16 +198,16 @@ public class HotcoinRandomDepth extends HotCoinParentService {
 
 
             BigDecimal buyMinPri = new BigDecimal(String.valueOf(buyPrices.get(fromDepth).get(0)));
-            logger.info("深度 买" + fromDepth + "价格:" + buyMinPri);
+            logger.info("买" + fromDepth + "价格:" + buyMinPri);
 
             BigDecimal buyMaxPri = new BigDecimal(String.valueOf(buyPrices.get(toDepth).get(0)));
-            logger.info("深度 买" + toDepth + "价格:" + buyMaxPri);
+            logger.info("买" + toDepth + "价格:" + buyMaxPri);
 
             BigDecimal sellMinPri = new BigDecimal(String.valueOf(sellPrices.get(fromDepth).get(0)));
-            logger.info("深度 卖" + fromDepth + "价格:" + sellMinPri);
+            logger.info("卖" + fromDepth + "价格:" + sellMinPri);
 
             BigDecimal sellMaxPri = new BigDecimal(String.valueOf(sellPrices.get(toDepth).get(0)));
-            logger.info("深度 卖" + toDepth + "价格:" + sellMaxPri);
+            logger.info("卖" + toDepth + "价格:" + sellMaxPri);
 
             Integer newScale = Integer.parseInt(precision.get("pricePrecision").toString());
             int maxBuy = buyMinPri.multiply(BigDecimal.valueOf(Math.pow(10, newScale))).intValue();
