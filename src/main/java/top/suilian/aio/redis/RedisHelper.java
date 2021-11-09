@@ -35,6 +35,10 @@ public class RedisHelper {
         arg.setExtObject(robot);
         redisStringExecutor.set(Constant.KEY_ROBOT + id, JSON.toJSONString(arg));
     }
+    public void  setSt(String key,String value) {
+        redisStringExecutor.set(key, value);
+    }
+
 
     /**
      * 获得机器人

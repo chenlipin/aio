@@ -81,8 +81,8 @@ public class MxcReplenish extends MxcParentService {
 //            BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).getString("price")));
 //            BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).getString("price")));
 
-            BigDecimal buyPri=new BigDecimal("9.800");
-            BigDecimal sellPri=new BigDecimal("10.200");
+            BigDecimal buyPri = new BigDecimal("9.800");
+            BigDecimal sellPri = new BigDecimal("10.200");
 
             if (sellPri.compareTo(buyPri) <= 0) {
                 //平台撮合功能失败
@@ -111,9 +111,9 @@ public class MxcReplenish extends MxcParentService {
                 logger.info("卖一[" + buyPri + "],卖一[" + sellPri + "],差值" + nowRange + ";大于:" + maxrange);
                 BigDecimal bigDecimal1 = new BigDecimal(Math.pow(10, pricePrecision) + "");
 
-                BigDecimal bigDecimal = BigDecimal.ONE.divide(bigDecimal1,pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
+                BigDecimal bigDecimal = BigDecimal.ONE.divide(bigDecimal1, pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
                 //可以挂单的区间数
-                BigDecimal ranggeInt = needRange.divide(bigDecimal,0,BigDecimal.ROUND_HALF_DOWN);
+                BigDecimal ranggeInt = needRange.divide(bigDecimal, 0, BigDecimal.ROUND_HALF_DOWN);
                 //可以挂单的次数
                 int relishOrderQty = Math.min(Integer.parseInt(ranggeInt.toString()), Integer.parseInt(exchange.get("relishOrderQty")));
                 logger.info("可以挂单的区间数==》" + Integer.parseInt(ranggeInt.toString()));
@@ -162,7 +162,7 @@ public class MxcReplenish extends MxcParentService {
                 } else {
                     logger.info("-----买卖单都补-------");
                     BigDecimal oneRange = needRange.divide(new BigDecimal(relishOrderQty), pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
-                    for (int i=0;i<relishOrderQty/2;i++){
+                    for (int i = 0; i < relishOrderQty / 2; i++) {
                         Order order = new Order();
                         Order order1 = new Order();
                         BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, amountPrecision);
@@ -182,6 +182,9 @@ public class MxcReplenish extends MxcParentService {
                     }
                 }
                 logger.info(JSON.toJSONString(orderList));
+                logger.info("-----------------开始补单-------------------");
+                replenish(orderList);
+                logger.info("-----------------补单结束-------------------");
                 try {
                     Thread.sleep(300000);
                 } catch (InterruptedException e) {
@@ -220,4 +223,47 @@ public class MxcReplenish extends MxcParentService {
         private BigDecimal price;
         private BigDecimal amount;
     }
+
+    void replenish(List<Order> orderList) {
+        String[] split = exchange.get("market").split("_");
+        BigDecimal maxLeftQty = new BigDecimal(exchange.get("maxLeftQty"));
+        BigDecimal maxRightQty = new BigDecimal(exchange.get("maxRightQty"));
+
+
+        for (Order order : orderList) {
+            BigDecimal maxLeftQty_redis = redisHelper.get("maxLeftQty_" + id) == null ? new BigDecimal(redisHelper.get("maxLeftQty_" + id)) : BigDecimal.ZERO;
+            BigDecimal maxRightQty_redis = redisHelper.get("maxRightQty_" + id) == null ? new BigDecimal(redisHelper.get("maxRightQty_" + id)) : BigDecimal.ZERO;
+
+            if (order.type == 1) {
+                if (maxRightQty_redis.add(order.getAmount()).compareTo(maxRightQty) > 0) {
+                    setTradeLog(id, split[1] + "现在已补单" + maxRightQty_redis + "再补单将超出最大补单量" + maxRightQty + "停止补单", 0, "1cd66c");
+                    setWarmLog(id, 2, split[1] + "现在已补单" + maxRightQty_redis + "再补单将超出最大补单量" + maxRightQty + "停止补单", "");
+                    return;
+                }
+            } else {
+                if (maxLeftQty_redis.add(order.getAmount()).compareTo(maxLeftQty) > 0) {
+                    setTradeLog(id, split[0] + "现在已补单" + maxRightQty_redis + "再补单将超出最大补单量" + maxRightQty + "停止补单", 0, "1cd66c");
+                    setWarmLog(id, 2, split[0] + "现在已补单" + maxRightQty_redis + "再补单将超出最大补单量" + maxRightQty + "停止补单", "");
+                    return;
+                }
+            }
+            String trade = submitOrder(order.getType(), order.getPrice(), order.getAmount());
+            setTradeLog(id, "补单=》挂" + (order.getType() == 1 ? "买" : "卖") + "单[价格：" + order.getPrice() + ": 数量" + order.getAmount() + "]=>" + trade, 0, order.getType() == 1 ? "05cbc8" : "ff6224");
+            JSONObject jsonObject = JSONObject.fromObject(trade);
+            if (200 == jsonObject.getInt("code")) {
+                if (order.type == 1) {
+                    redisHelper.setSt("maxRightQty_" + id, maxRightQty_redis.add(order.getAmount()).toString());
+                } else {
+                    redisHelper.setSt("maxLeftQty_" + id, maxRightQty_redis.add(order.getAmount()).toString());
+                }
+            }
+        }
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }
+
+
