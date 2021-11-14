@@ -5,8 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91c6167b-67c5-4fab-8024-448c6d6d8b6f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/NewHotcoinKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/NewHotcoinKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/b8e3086e-801b-46a5-b07f-702a9771779b.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__ch_qos_logback_logback_classic_1_2_3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__ch_qos_logback_logback_classic_1_2_3.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__ch_qos_logback_logback_core_1_2_3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__ch_qos_logback_logback_core_1_2_3.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_fastjson_1_2_28.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_fastjson_1_2_28.xml" afterDir="false" />
@@ -106,21 +104,12 @@
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_yaml_snakeyaml_1_23.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_yaml_snakeyaml_1_23.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__redis_clients_jedis_3_1_0_m1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__redis_clients_jedis_3_1_0_m1.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/RandomUtilsme.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/RandomUtilsme.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/BaseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/BaseService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/RobotController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/RobotController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/BitMartParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/BitMartParentService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/newKline/NewBitMartKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/newKline/NewBitMartKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/NewHotcoinKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/NewHotcoinKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/wbfex/WbfexParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/wbfex/WbfexParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/replenish/MxcReplenish.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/replenish/MxcReplenish.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/vo/CancalAllOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/vo/CancalAllOrder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/mybatis/WarmLogMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mybatis/WarmLogMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/MxcParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/MxcParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/MxcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/MxcService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/newKline/NewMxcKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/newKline/NewMxcKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/ZGParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/ZGParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/newKline/NewZgKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/newKline/NewZgKline.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -157,13 +146,13 @@
     </file-type-list>
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/RandomDepth/RunLoexRandomDepth.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/EgParentService.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/playcoin/kline/PlayCoinKline.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/klineReferToZg/EgKlineToZg.java" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/depthReferToZg/EgDepthToZg.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fubt/kline/FubtKline.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/klineReferToZg/EgKlineToZg.java" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/BitMartParentService.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/EgParentService.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fubt/kline/FubtKline.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/RandomDepth/RunLoexRandomDepth.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/playcoin/kline/PlayCoinKline.java" root0="SKIP_INSPECTION" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -341,7 +330,6 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="rest.client.default.execution.environment" value="dev" />
   </component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
@@ -386,6 +374,17 @@
     </option>
   </component>
   <component name="RunManager" selected="Spring Boot.AioApplication">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="NewHotcoinKline" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="top.suilian.aio.service.hotcoin.newKline.NewHotcoinKline" />
       <module name="aio" />
@@ -408,17 +407,6 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -641,7 +629,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java</url>
-          <line>411</line>
+          <line>435</line>
           <option name="timeStamp" value="33" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -678,11 +666,6 @@
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/wbfex/WbfexParentService.java</url>
           <line>121</line>
           <option name="timeStamp" value="66" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/newKline/NewBitMartKline.java</url>
-          <line>106</line>
-          <option name="timeStamp" value="69" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/newKline/NewBitMartKline.java</url>
@@ -741,18 +724,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/replenish/MxcReplenish.java</url>
-          <line>123</line>
+          <line>131</line>
           <option name="timeStamp" value="98" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/replenish/MxcReplenish.java</url>
-          <line>155</line>
+          <line>169</line>
           <option name="timeStamp" value="99" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/replenish/MxcReplenish.java</url>
-          <line>131</line>
+          <line>142</line>
           <option name="timeStamp" value="100" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/replenish/MxcReplenish.java</url>
+          <line>248</line>
+          <option name="timeStamp" value="102" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

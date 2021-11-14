@@ -283,6 +283,30 @@ public class TradeRobotService {
 
     }
 
+    public String getReplenish(CancalAllOrder req) {
+//        Member user = redisHelper.getUser(req.getToken());
+//        if (user == null || !user.getMemberId().equals(req.getUserId())) {
+//            throw new RuntimeException("用户身份校验失败");
+//        }
+        String maxLeftQty = redisHelper.get("maxLeftQty_" + req.getRobotId()) == null ? "0" : redisHelper.get("maxLeftQty_" + req.getRobotId());
+        String maxRightQty = redisHelper.get("maxRightQty_" + req.getRobotId()) == null ? "0" : redisHelper.get("maxRightQty_" + req.getRobotId());
+
+        return maxLeftQty + "_" + maxRightQty;
+    }
+
+    public void clean(CancalAllOrder req) {
+        Member user = redisHelper.getUser(req.getToken());
+        if (user == null || !user.getMemberId().equals(req.getUserId())) {
+            throw new RuntimeException("用户身份校验失败");
+        }
+        if (req.getType().equals("left")) {
+            redisHelper.remove("maxLeftQty_" + req.getRobotId());
+        } else {
+            redisHelper.remove("maxRightQty_" + req.getRobotId());
+        }
+    }
+
+
     /**
      * 一键挂单核心逻辑
      */
@@ -350,7 +374,7 @@ public class TradeRobotService {
 
                 //决定是挂买单还是卖单
                 boolean type = true;
-                boolean typeTrade=true;
+                boolean typeTrade = true;
                 BigDecimal price = BigDecimal.ZERO;
                 if (type && newBuyOrder < fastTradeReq.getBuyOrdermun()) {
                     //计算买价
@@ -365,7 +389,7 @@ public class TradeRobotService {
                     Double pricePrecision1 = (fastTradeReq.getSellorderRangePrice() + pricePrecision + sellOneRange * newSellOrder);
                     price = new BigDecimal(fastTradeReq.getSellorderBasePrice() + pricePrecision1).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
                     //挂卖单
-                    typeTrade=false;
+                    typeTrade = false;
                     newSellOrder++;
                 }
                 Map<String, String> stringStringMap = robotAction.submitOrderStr(typeTrade ? 1 : 2, price, amount);

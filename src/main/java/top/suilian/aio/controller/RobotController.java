@@ -147,10 +147,24 @@ public class RobotController {
     @ResponseBody
     public ResponseEntity trade() {
         return ResponseEntity.success();
-
     }
 
 
+    @RequestMapping(value = "/getReplenish")
+    @ResponseBody
+    public ResponseEntity getReplenish(@Valid @RequestBody CancalAllOrder req) {
+        String orders = tradeRobotService.getReplenish(req);
+        return ResponseEntity.success(orders);
+
+    }
+
+    @RequestMapping(value = "/replenishCl")
+    @ResponseBody
+    public ResponseEntity clean(@Valid @RequestBody CancalAllOrder req) {
+     tradeRobotService.clean(req);
+        return ResponseEntity.success();
+
+    }
 
 
 }
