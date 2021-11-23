@@ -11,6 +11,7 @@ import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
 import top.suilian.aio.service.mxc.MxcParentService;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -67,6 +68,14 @@ public class MxcReplenish extends MxcParentService {
             logger.info("补单策略设置机器人交易规则结束");
             start = false;
         }
+        int i1 = RandomUtils.nextInt(5);
+        if(2==i1){
+            try {
+                setBalanceRedis();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
         String trades = getDepth();
         JSONObject tradesObj = judgeRes(trades, "code", "getRandomPrice");
 
@@ -78,11 +87,10 @@ public class MxcReplenish extends MxcParentService {
 
             List<JSONObject> sellPrices = (List<JSONObject>) result.get("asks");
 
-//            BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).getString("price")));
-//            BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).getString("price")));
+            BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).getString("price")));
+            BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).getString("price")));
 
-            BigDecimal buyPri = new BigDecimal("9.800");
-            BigDecimal sellPri = new BigDecimal("10.200");
+
 
             if (sellPri.compareTo(buyPri) <= 0) {
                 //平台撮合功能失败
@@ -106,9 +114,9 @@ public class MxcReplenish extends MxcParentService {
             Double pricePrecision = Double.parseDouble(precision.get("pricePrecision").toString());
 
             if (nowRange.compareTo(maxrange) > 0) {
-                setTradeLog(id, "卖一[" + buyPri + "],卖一[" + sellPri + "],差值大于:" + maxrange + ";开始补单", 0, "a61b12");
-                setWarmLog(id, 2, "卖一[" + buyPri + "],卖一[" + sellPri + "],差值大于:" + maxrange + ";开始补单", "");
-                logger.info("卖一[" + buyPri + "],卖一[" + sellPri + "],差值" + nowRange + ";大于:" + maxrange);
+                setTradeLog(id, "买一[" + buyPri + "],卖一[" + sellPri + "],差值大于:" + maxrange + ";开始补单", 0, "a61b12");
+                setWarmLog(id, 2, "买一[" + buyPri + "],卖一[" + sellPri + "],差值大于:" + maxrange + ";开始补单", "");
+                logger.info("买一[" + buyPri + "],卖一[" + sellPri + "],差值" + nowRange + ";大于:" + maxrange);
                 BigDecimal bigDecimal1 = new BigDecimal(Math.pow(10, pricePrecision) + "");
 
                 BigDecimal bigDecimal = BigDecimal.ONE.divide(bigDecimal1, pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
@@ -129,6 +137,9 @@ public class MxcReplenish extends MxcParentService {
                         for (int i = 0; i < relishOrderQty; i++) {
                             Order order = new Order();
                             Double random = RandomUtilsme.getRandom(Double.parseDouble(oneRange.toString()), pricePrecision.intValue());
+                            if(i==relishOrderQty-1){
+                                random=Double.parseDouble(oneRange.toString());
+                            }
                             logger.info("一个区间的价格：" + oneRange + "---随机的价格" + random);
                             BigDecimal orderPrice = basePrice.add(oneRange.multiply(new BigDecimal(i))).add(new BigDecimal(random.toString()));
                             BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, amountPrecision);
@@ -144,6 +155,9 @@ public class MxcReplenish extends MxcParentService {
                         for (int i = 0; i < relishOrderQty; i++) {
                             Order order = new Order();
                             Double random = RandomUtilsme.getRandom(Double.parseDouble(oneRange.toString()), pricePrecision.intValue());
+                            if(i==relishOrderQty-1){
+                                random=Double.parseDouble(oneRange.toString());
+                            }
                             logger.info("一个区间的价格：" + oneRange + "---随机的价格" + random);
                             BigDecimal orderPrice = basePrice.subtract(oneRange.multiply(new BigDecimal(i))).subtract(new BigDecimal(random.toString()));
                             BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, amountPrecision);
@@ -154,6 +168,9 @@ public class MxcReplenish extends MxcParentService {
                         }
                     }
                     logger.info(JSON.toJSONString(orderList));
+                    logger.info("-----------------开始补单-------------------");
+                    replenish(orderList);
+                    logger.info("-----------------补单结束-------------------");
                     try {
                         Thread.sleep(300000);
                     } catch (InterruptedException e) {
@@ -168,9 +185,15 @@ public class MxcReplenish extends MxcParentService {
                         BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, amountPrecision);
                         BigDecimal orderAmount1 = getOrderAmount(relishMin, relishMax, amountPrecision);
                         Double random = RandomUtilsme.getRandom(Double.parseDouble(oneRange.toString()), pricePrecision.intValue());
+                        if(i==relishOrderQty / 2-1){
+                            random=Double.parseDouble(oneRange.toString());
+                        }
                         logger.info("一个区间的价格：" + oneRange + "---随机的价格" + random);
                         BigDecimal orderPrice = sellPri.subtract(oneRange.multiply(new BigDecimal(i))).subtract(new BigDecimal(random.toString())).setScale(pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
                         BigDecimal orderPrice1 = buyPri.add(oneRange.multiply(new BigDecimal(i))).add(new BigDecimal(random.toString())).setScale(pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
+                        if(i==relishOrderQty / 2-1){
+                            orderPrice1=orderPrice1.add(oneRange);
+                        }
                         order.setPrice(orderPrice);
                         order.setAmount(orderAmount);
                         order.setType(2);
@@ -186,22 +209,20 @@ public class MxcReplenish extends MxcParentService {
                 replenish(orderList);
                 logger.info("-----------------补单结束-------------------");
                 try {
-                    Thread.sleep(300000);
+                    Thread.sleep(30000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
             } else {
                 int anInt = RandomUtils.nextInt(5);
                 if (anInt == 3) {
-                    setTradeLog(id, "卖一[" + buyPri + "],卖一[" + sellPri + "],差值小于:" + maxrange + ";正常无需补单", 0, "1cd66c");
+                    setTradeLog(id, "买一[" + buyPri + "],卖一[" + sellPri + "],差值小于:" + maxrange + ";正常无需补单", 0, "1cd66c");
                 }
                 try {
-                    Thread.sleep(80000);
+                    Thread.sleep(8000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                return;
             }
         }
 
@@ -231,20 +252,20 @@ public class MxcReplenish extends MxcParentService {
 
 
         for (Order order : orderList) {
-            BigDecimal maxLeftQty_redis = redisHelper.get("maxLeftQty_" + id) == null ? new BigDecimal(redisHelper.get("maxLeftQty_" + id)) : BigDecimal.ZERO;
-            BigDecimal maxRightQty_redis = redisHelper.get("maxRightQty_" + id) == null ? new BigDecimal(redisHelper.get("maxRightQty_" + id)) : BigDecimal.ZERO;
+            BigDecimal maxLeftQty_redis = redisHelper.get("maxLeftQty_" + id) != null ? new BigDecimal(redisHelper.get("maxLeftQty_" + id)) : BigDecimal.ZERO;
+            BigDecimal maxRightQty_redis = redisHelper.get("maxRightQty_" + id) != null ? new BigDecimal(redisHelper.get("maxRightQty_" + id)) : BigDecimal.ZERO;
 
             if (order.type == 1) {
                 if (maxRightQty_redis.add(order.getAmount()).compareTo(maxRightQty) > 0) {
                     setTradeLog(id, split[1] + "现在已补单" + maxRightQty_redis + "再补单将超出最大补单量" + maxRightQty + "停止补单", 0, "1cd66c");
                     setWarmLog(id, 2, split[1] + "现在已补单" + maxRightQty_redis + "再补单将超出最大补单量" + maxRightQty + "停止补单", "");
-                    return;
+                    break;
                 }
             } else {
                 if (maxLeftQty_redis.add(order.getAmount()).compareTo(maxLeftQty) > 0) {
                     setTradeLog(id, split[0] + "现在已补单" + maxRightQty_redis + "再补单将超出最大补单量" + maxRightQty + "停止补单", 0, "1cd66c");
                     setWarmLog(id, 2, split[0] + "现在已补单" + maxRightQty_redis + "再补单将超出最大补单量" + maxRightQty + "停止补单", "");
-                    return;
+                    break;
                 }
             }
             String trade = submitOrder(order.getType(), order.getPrice(), order.getAmount());
@@ -254,7 +275,7 @@ public class MxcReplenish extends MxcParentService {
                 if (order.type == 1) {
                     redisHelper.setSt("maxRightQty_" + id, maxRightQty_redis.add(order.getAmount()).toString());
                 } else {
-                    redisHelper.setSt("maxLeftQty_" + id, maxRightQty_redis.add(order.getAmount()).toString());
+                    redisHelper.setSt("maxLeftQty_" + id, maxLeftQty_redis.add(order.getAmount()).toString());
                 }
             }
         }

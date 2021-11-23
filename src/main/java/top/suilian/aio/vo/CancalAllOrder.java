@@ -34,6 +34,8 @@ public class CancalAllOrder implements Serializable {
     @NotNull(message = "token不能为空")
     private String token;
 
+    private String type;
+
 
 
 }

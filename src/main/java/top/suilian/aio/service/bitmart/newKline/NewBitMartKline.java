@@ -406,21 +406,35 @@ public class NewBitMartKline extends BitMartParentService {
                     }
                 }
             }
-
-            if (Integer.parseInt(exchange.get("isOpenIntervalSwitch")) == 1 && intervalPrice.compareTo(new BigDecimal(exchange.get("openIntervalFromPrice"))) < 1) {
+            if(Integer.parseInt(exchange.get("isOpenIntervalSwitch")) == 1&&Integer.parseInt(exchange.get("rangeAction")) == 1){
+                if(intervalPrice.compareTo(new BigDecimal(exchange.get("openIntervalFromPrice")))<1){
+                    setWarmLog(id,2,"盘口区间过小，停止量化","");
+                    setTradeLog(id, "盘口区间过小，停止量化", 0, "000000");
+                    try {
+                        Thread.sleep(20000);
+                        return null;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if (Integer.parseInt(exchange.get("isOpenIntervalSwitch")) == 1 && intervalPrice.compareTo(new BigDecimal(exchange.get("openIntervalFromPrice"))) < 1&&Integer.parseInt(exchange.get("rangeAction")) != 1) {
                 //刷开区间
-                if ("0".equals(exchange.get("openIntervalAllAmount")) || exchange.get("openIntervalAllAmount").trim() == null) {
+                if ("0".equals(exchange.get("openIntervalAllAmount"))) {
                     //刷开区间
                     String msg = "您的" + getRobotName(this.id) + "刷开量化机器人已开启,将不计成本的刷开区间!";
                     sendSms(msg, exchange.get("mobile"));
                     openInterval(sellPri,data.getJSONArray("buys"),  new BigDecimal(exchange.get("openIntervalPrice")));
-                } else if (new BigDecimal(exchange.get("openIntervalAllAmount")).compareTo(intervalAmount) < 0) {
-                    setRobotArgs(id, "isOpenIntervalSwitch", "0");
-                    setWarmLog(id,2,"刷开区间的数量已达到最大值,停止刷开区间","");
-                    setTradeLog(id, "刷开区间的数量已达到最大值,停止刷开区间", 0, "000000");
                 } else {
-                    //刷开区间
-                    openInterval(sellPri, data.getJSONArray("buys"), new BigDecimal(exchange.get("openIntervalPrice")));
+                    exchange.get("openIntervalAllAmount");
+                    if (new BigDecimal(exchange.get("openIntervalAllAmount")).compareTo(intervalAmount) < 0) {
+                        setRobotArgs(id, "isOpenIntervalSwitch", "0");
+                        setWarmLog(id,2,"刷开区间的数量已达到最大值,停止刷开区间","");
+                        setTradeLog(id, "刷开区间的数量已达到最大值,停止刷开区间", 0, "000000");
+                    } else {
+                        //刷开区间
+                        openInterval(sellPri, data.getJSONArray("buys"), new BigDecimal(exchange.get("openIntervalPrice")));
+                    }
                 }
             }
 
