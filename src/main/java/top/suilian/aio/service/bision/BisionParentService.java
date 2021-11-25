@@ -2,6 +2,8 @@ package top.suilian.aio.service.bision;
 
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Service;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.Util.HttpUtil;
@@ -17,7 +19,8 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-
+@DependsOn("beanContext")
+@Service
 public class BisionParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://api.xt.com";
 
@@ -77,16 +80,16 @@ public class BisionParentService extends BaseService implements RobotAction {
         String trade = null;
 
 
-        BigDecimal price1 = nN(price, Integer.valueOf(precision.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.valueOf(precision.get("amountPrecision").toString()));
+        BigDecimal price1 = nN(price, Integer.valueOf(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.valueOf(exchange.get("amountPrecision").toString()));
 
-        Double minTradeLimit = Double.valueOf(String.valueOf(precision.get("minTradeLimit")));
+        Double minTradeLimit = Double.valueOf(String.valueOf(exchange.get("minTradeLimit")));
         if (num.compareTo(BigDecimal.valueOf(minTradeLimit)) >= 0) {
 
             boolean flag = exchange.containsKey("numThreshold");
             if (flag) {
                 Double numThreshold1 = Double.valueOf(exchange.get("numThreshold"));
-                if (price1.compareTo(BigDecimal.ZERO) > 0 && num.compareTo(BigDecimal.valueOf(numThreshold1)) < 1) {
+                if (price1.compareTo(BigDecimal.ZERO) > 0) {
                     if (num.compareTo(BigDecimal.valueOf(numThreshold1)) == 1) {
                         num = BigDecimal.valueOf(numThreshold1);
                     }
@@ -113,7 +116,7 @@ public class BisionParentService extends BaseService implements RobotAction {
 
                 } else {
                     setTradeLog(id, "price[" + price1 + "] num[" + num + "]", 1);
-                    logger.info("robotId" + id + "----" + "挂单失败结束");
+                    logger.info("robotId" + id + "----" + "挂单失败结束11");
                 }
             } else {
                 Map<String, Object> param = new TreeMap<String, Object>();
@@ -140,7 +143,7 @@ public class BisionParentService extends BaseService implements RobotAction {
 
         } else {
             setTradeLog(id, "交易量最小为：" + precision.get("minTradeLimit"), 0);
-            logger.info("robotId" + id + "----" + "挂单失败结束");
+            logger.info("robotId" + id + "----" + "挂单失败结束11");
         }
 
         valid = 1;

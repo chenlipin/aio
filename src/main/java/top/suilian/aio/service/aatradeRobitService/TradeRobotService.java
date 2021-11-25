@@ -25,6 +25,7 @@ import top.suilian.aio.model.Robot;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.service.bision.BisionParentService;
 import top.suilian.aio.service.bitmart.BitMartParentService;
 import top.suilian.aio.service.coinstore.CoinStoreParentService;
 import top.suilian.aio.service.coinstore.CoinStoreService;
@@ -158,6 +159,9 @@ public class TradeRobotService {
                 break;
             case Constant.KEY_EXCHANGE_ZG:
                 robotAction = new ZGParentService();
+                break;
+            case Constant.KEY_EXCHANGE_BiSION:
+                robotAction = new BisionParentService();
                 break;
             default:
                 return null;
