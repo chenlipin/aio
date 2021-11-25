@@ -524,3 +524,5 @@ public class Constant {
     public static final long KEY_CLEAR_START_LOG = 1000 * 60 * 60 * 12;        //开始清除改时间之前日志
     public static final long KEY_BALACE_TIME = 3 * 60 * 1000;        //清除改时间之前日志
 }
+
+

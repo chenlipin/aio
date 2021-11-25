@@ -1,4 +1,4 @@
-package top.suilian.aio.service.bision.newKlile;
+package top.suilian.aio.service.zg.depthReferToZg;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class RunNewBisionKline {
+public class ZgRunDepthReferToZg {
     //region    Service
     @Autowired
     CancelExceptionService cancelExceptionService;
@@ -42,6 +42,7 @@ public class RunNewBisionKline {
     RedisHelper redisHelper;
     @Autowired
     CommonUtil commonUtil;
+
     //endregion
 
 
@@ -53,7 +54,7 @@ public class RunNewBisionKline {
      */
     public void init(int id) {
         //实例化策略对象
-        NewBisionKline kline = new NewBisionKline(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
+        ZgDepthToZg kline = new ZgDepthToZg(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
         redisHelper.initRobot(id);
         work = new Work(kline);
         works.add(work);
@@ -92,7 +93,7 @@ public class RunNewBisionKline {
     public boolean killWork(int id) {
         for (Work work : works) {
             if (work.getName() == id) {
-                Thread thread = CommonUtil.getThreadByName(Constant.KEY_THREAD_KLINE + id);
+                Thread thread = commonUtil.getThreadByName(Constant.KEY_THREAD_KLINE + id);
                 if (thread == null) {
                     return true;
                 } else {
@@ -111,9 +112,9 @@ public class RunNewBisionKline {
     }
 
     class Work extends StopableTask<Work> {
-        NewBisionKline kline;
+        ZgDepthToZg kline;
 
-        public Work(NewBisionKline kline) {
+        public Work(ZgDepthToZg kline) {
             super(kline.id);
             this.kline = kline;
         }
