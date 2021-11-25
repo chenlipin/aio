@@ -1,11 +1,13 @@
 package top.suilian.aio.service.bision;
 
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
+import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.service.BaseService;
+import top.suilian.aio.service.RobotAction;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -16,8 +18,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
-public class BisionParentService extends BaseService {
-    public String baseUrl = "https://api.bision.com";
+public class BisionParentService extends BaseService implements RobotAction {
+    public String baseUrl = "https://api.xt.com";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
@@ -28,7 +30,7 @@ public class BisionParentService extends BaseService {
     public String[] transactionArr = new String[24];
 
     //设置交易量百分比
-    public void setTransactionRatio(){
+    public void setTransactionRatio() {
         String transactionRatio = exchange.get("transactionRatio");
         if (transactionRatio != null) {
             String str[] = transactionRatio.split(",");
@@ -101,9 +103,13 @@ public class BisionParentService extends BaseService {
                     String signature = HMAC.sha256_HMAC(peload, exchange.get("tpass"));
                     param.put("signature", signature);
                     logger.info("挂单参数:" + peload);
-                    trade = httpUtil.post(baseUrl + "/trade/api/v1/order", param);
-                    setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+                    trade = HttpUtil.post(baseUrl + "/trade/api/v1/order", param);
+                    setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                     logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
+                    JSONObject jsonObject = JSONObject.fromObject(trade);
+                    if (200 != jsonObject.getInt("code")) {
+                        setWarmLog(id, 3, "API接口错误", jsonObject.getString("msgInfo"));
+                    }
 
                 } else {
                     setTradeLog(id, "price[" + price1 + "] num[" + num + "]", 1);
@@ -123,8 +129,12 @@ public class BisionParentService extends BaseService {
                 param.put("signature", signature);
                 logger.info("挂单参数:" + peload);
                 trade = httpUtil.post(baseUrl + "/trade/api/v1/order", param);
-                setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+                setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                 logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
+                JSONObject jsonObject = JSONObject.fromObject(trade);
+                if (200 != jsonObject.getInt("code")) {
+                    setWarmLog(id, 3, "API接口错误", jsonObject.getString("msgInfo"));
+                }
             }
 
 
@@ -153,9 +163,12 @@ public class BisionParentService extends BaseService {
         String sign = gotoSign(param, exchange.get("tpass"));
 
         param.put("sign", sign);
-        String tradeOrders = httpUtil.get(baseUrl + "/api/v2/getOrders?method=getOrders&accesskey=" + exchange.get("apikey") + "&tradeType=" + type + "&currency=" + exchange.get("market") + "&pageIndex=1&pageSize=20&sign=" + sign + "&reqTime=" + timestamp);
-
-        return tradeOrders;
+        String trade = httpUtil.get(baseUrl + "/api/v2/getOrders?method=getOrders&accesskey=" + exchange.get("apikey") + "&tradeType=" + type + "&currency=" + exchange.get("market") + "&pageIndex=1&pageSize=20&sign=" + sign + "&reqTime=" + timestamp);
+        JSONObject jsonObject = JSONObject.fromObject(trade);
+        if (200 != jsonObject.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("msgInfo"));
+        }
+        return trade;
     }
 
 
@@ -178,6 +191,10 @@ public class BisionParentService extends BaseService {
         String peload = toSort(param);
         String signature = HMAC.sha256_HMAC(peload, exchange.get("tpass"));
         String orderInfo = httpUtil.get(baseUrl + "/trade/api/v1/getOrder?accesskey=" + exchange.get("apikey") + "&id=" + orderId + "&market=" + exchange.get("market") + "&signature=" + signature + "&nonce=" + timestamp);
+        JSONObject jsonObject = JSONObject.fromObject(orderInfo);
+        if (200 != jsonObject.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("msgInfo"));
+        }
         return orderInfo;
     }
 
@@ -195,6 +212,10 @@ public class BisionParentService extends BaseService {
         String peload = toSort(param);
         String signature = HMAC.sha256_HMAC(peload, exchange.get("tpass"));
         String orderInfo = httpUtil.get(baseUrl + "/trade/api/v1/getBalance?accesskey=" + exchange.get("apikey") + "&signature=" + signature + "&nonce=" + timestamp);
+        JSONObject jsonObject = JSONObject.fromObject(orderInfo);
+        if (200 != jsonObject.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("msgInfo"));
+        }
         return orderInfo;
     }
 
@@ -216,7 +237,11 @@ public class BisionParentService extends BaseService {
         String peload = toSort(param);
         String signature = HMAC.sha256_HMAC(peload, exchange.get("tpass"));
         param.put("signature", signature);
-        res = httpUtil.post(baseUrl + "/trade/api/v1/cancel", param);
+        res = HttpUtil.post(baseUrl + "/trade/api/v1/cancel", param);
+        JSONObject jsonObject = JSONObject.fromObject(res);
+        if (200 != jsonObject.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("msgInfo"));
+        }
         return res;
     }
 
@@ -248,11 +273,15 @@ public class BisionParentService extends BaseService {
             System.out.println(rt);
             JSONObject obj = JSONObject.fromObject(rt);
 
-            if (obj.getString("code").equals("200") && obj.getJSONObject("data") != null) {
+            if ("200".equals(obj.getString("code")) && obj.getJSONObject("data") != null) {
                 JSONObject data = obj.getJSONObject("data");
                 HashMap<String, String> balances = new HashMap<String, String>();
-                balances.put(coinArr.get(0), data.getJSONObject(coinArr.get(0)).getString("available"));
-                balances.put(coinArr.get(1), data.getJSONObject(coinArr.get(1)).getString("available"));
+                balances.put(coinArr.get(0), data.getJSONObject(coinArr.get(0)).getString("available")+"_"+data.getJSONObject(coinArr.get(0)).getString("freeze"));
+                if (data.getJSONObject(coinArr.get(1)) != null) {
+                    balances.put(coinArr.get(1), "0");
+                } else {
+                    balances.put(coinArr.get(1), data.getJSONObject(coinArr.get(1)).getString("available")+"_"+data.getJSONObject(coinArr.get(1)).getString("freeze"));
+                }
                 redisHelper.setBalanceParam(Constant.KEY_ROBOT_BALANCE + id, balances);
             } else {
                 logger.info("获取余额失败：" + obj);
@@ -271,7 +300,7 @@ public class BisionParentService extends BaseService {
      */
     public void setCancelOrder(JSONObject cancelRes, String res, String orderId, Integer type) {
         int cancelStatus = Constant.KEY_CANCEL_ORDER_STATUS_FAILED;
-        if (cancelRes != null && cancelRes.getInt("code") == 0) {
+        if (cancelRes != null && cancelRes.getInt("code") == 200) {
             cancelStatus = Constant.KEY_CANCEL_ORDER_STATUS_CANCELLED;
         }
         insertCancel(id, orderId, 1, type, Integer.parseInt(exchange.get("isMobileSwitch")), cancelStatus, res, Constant.KEY_EXCHANGE_BiSION);
@@ -297,6 +326,58 @@ public class BisionParentService extends BaseService {
         return falg;
     }
 
+
+    @Override
+    public Map<String, String> submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
+        String orderId = "";
+        HashMap<String, String> hashMap = new HashMap<>();
+        String submitOrder = null;
+        try {
+            submitOrder = submitTrade(type, price, amount);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        if (StringUtils.isNotEmpty(submitOrder)) {
+            com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
+            if ("200".equals(jsonObject.getString("code"))) {
+                orderId = jsonObject.getJSONObject("data").getString("id");
+                hashMap.put("res", "true");
+                hashMap.put("orderId", orderId);
+            } else {
+                String msg = jsonObject.getString("msgInfo");
+                hashMap.put("res", "false");
+                hashMap.put("orderId", msg);
+            }
+        }
+        return hashMap;
+    }
+
+    @Override
+    public Map<String, Integer> selectOrderStr(String orderId) {
+        List<String> orders = Arrays.asList(orderId.split(","));
+        HashMap<String, Integer> hashMap = new HashMap<>();
+        orders.forEach(e -> {
+            hashMap.put(e, 2);
+        });
+        return hashMap;
+    }
+
+    @Override
+    public String cancelTradeStr(String orderId) {
+        String cancelTrade = "";
+        try {
+            cancelTrade = cancelTrade(orderId);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        if (StringUtils.isNotEmpty(cancelTrade)) {
+            com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(cancelTrade);
+            if ("200".equals(jsonObject.getString("code"))) {
+                return "true";
+            }
+        }
+        return "false";
+    }
 
     public String gotoSign(HashMap<String, String> params, String secret) {
         String sign = "";
