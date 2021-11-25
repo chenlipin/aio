@@ -6,9 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="91c6167b-67c5-4fab-8024-448c6d6d8b6f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/BisionParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/BisionParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/newKlile/NewBisionKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/newKlile/NewBisionKline.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -35,11 +32,6 @@
     </dirStrings>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="master" />
-      </map>
-    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitSEFilterConfiguration">
@@ -225,17 +217,18 @@
     <property name="DatabaseDriversLRU" value="mysql" />
     <property name="RequestMappingsPanelOrder0" value="0" />
     <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelOrder2" value="2" />
     <property name="RequestMappingsPanelWidth0" value="75" />
     <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RequestMappingsPanelWidth2" value="75" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1590216529706" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/replenish" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
   </component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
@@ -291,6 +284,19 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="CommonUtil" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="top.suilian.aio.Util.CommonUtil" />
+      <module name="aio" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="top.suilian.aio.Util.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="NewHotcoinKline" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="top.suilian.aio.service.hotcoin.newKline.NewHotcoinKline" />
       <module name="aio" />
@@ -304,21 +310,18 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="RandomUtilsme" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="top.suilian.aio.Util.RandomUtilsme" />
+    <configuration name="ZgDepthToZg" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="top.suilian.aio.service.zg.depthReferToZg.ZgDepthToZg" />
       <module name="aio" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="top.suilian.aio.Util.*" />
+          <option name="PATTERN" value="top.suilian.aio.service.zg.depthReferToZg.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
-    </configuration>
-    <configuration name="generated-requests#15" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" index="15" runType="Run single request">
-      <method v="2" />
     </configuration>
     <configuration name="generated-requests#24" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" index="24" runType="Run single request">
       <method v="2" />
@@ -334,20 +337,20 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.RandomUtilsme" />
       <item itemvalue="Application.NewHotcoinKline" />
-      <item itemvalue="HTTP Request.generated-requests#15" />
+      <item itemvalue="Application.ZgDepthToZg" />
+      <item itemvalue="Application.CommonUtil" />
       <item itemvalue="HTTP Request.generated-requests#25" />
       <item itemvalue="HTTP Request.generated-requests#24" />
       <item itemvalue="Spring Boot.AioApplication" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.CommonUtil" />
+        <item itemvalue="Application.ZgDepthToZg" />
+        <item itemvalue="Application.NewHotcoinKline" />
         <item itemvalue="HTTP Request.generated-requests#24" />
         <item itemvalue="HTTP Request.generated-requests#25" />
-        <item itemvalue="HTTP Request.generated-requests#15" />
-        <item itemvalue="Application.NewHotcoinKline" />
-        <item itemvalue="Application.RandomUtilsme" />
       </list>
     </recent_temporary>
   </component>
@@ -394,6 +397,9 @@
       <workItem from="1635523616448" duration="23237000" />
       <workItem from="1635939837652" duration="3606000" />
       <workItem from="1635944148669" duration="38814000" />
+      <workItem from="1636895191935" duration="26526000" />
+      <workItem from="1637388568397" duration="8954000" />
+      <workItem from="1637709580168" duration="9351000" />
     </task>
     <servers />
   </component>
@@ -535,7 +541,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java</url>
-          <line>439</line>
+          <line>435</line>
           <option name="timeStamp" value="33" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -647,6 +653,21 @@
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/replenish/MxcReplenish.java</url>
           <line>248</line>
           <option name="timeStamp" value="102" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/kline/RunZGKline.java</url>
+          <line>122</line>
+          <option name="timeStamp" value="106" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/depthReferToZg/ZgDepthToZg.java</url>
+          <line>151</line>
+          <option name="timeStamp" value="117" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/depthReferToZg/ZgDepthToZg.java</url>
+          <line>100</line>
+          <option name="timeStamp" value="119" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
