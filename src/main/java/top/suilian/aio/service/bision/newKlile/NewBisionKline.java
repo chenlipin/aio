@@ -220,7 +220,7 @@ public class NewBisionKline extends BisionParentService {
             logger.info("robotId" + id + "----" + "num(挂单数量)：" + num);
 
             BigDecimal random = new BigDecimal(Math.random() * 10).setScale(2, BigDecimal.ROUND_HALF_UP);
-            int type = random.compareTo(tradeRatio) > 0 ? 1 : 2;
+            int type = random.compareTo(tradeRatio) > 0 ? 0 : 1;
 
 
             try {
@@ -234,7 +234,7 @@ public class NewBisionKline extends BisionParentService {
                     String tradeId = data.getString("id");
 
                     orderIdOne = tradeId;
-                    String resultJson1 = submitTrade(type == 1 ? 2 : 1, price, num);
+                    String resultJson1 = submitTrade(type == 0 ? 1 : 0, price, num);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
                     if (jsonObject1 != null && jsonObject1.getInt("code") == 200) {
@@ -352,7 +352,7 @@ public class NewBisionKline extends BisionParentService {
                                 buyAmount = minAmount;
                             }
                             try {
-                                String sellOrder = submitTrade(2, buyPri, buyAmount);
+                                String sellOrder = submitTrade(0, buyPri, buyAmount);
                                 setTradeLog(id, "堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]", 0);
                                 logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
 

@@ -4,12 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.service.bision.kline.RunBisionKline;
+import top.suilian.aio.service.bision.newKlile.RunNewBisionKline;
 
 @Component
 public class BisionService {
     @Autowired
     RunBisionKline runBisionKline;
-
+    @Autowired
+    RunNewBisionKline runNewBisionKline;
     /**
      * 开启机器人
      *
@@ -32,6 +34,9 @@ public class BisionService {
                 break;
             case Constant.KEY_RANDOM_DEPTH:
                 break;
+            case Constant.KEY_STRATEGY_NEW_KLINE:
+                runNewBisionKline.init(id);
+                break;
         }
     }
 
@@ -50,6 +55,9 @@ public class BisionService {
                 break;
             case Constant.KEY_RANDOM_DEPTH:
                 break;
+            case Constant.KEY_STRATEGY_NEW_KLINE:
+                runNewBisionKline.stopWork(id);
+                break;
         }
     }
 
@@ -67,6 +75,9 @@ public class BisionService {
             case Constant.KEY_STRATEGY_CANCEL:
                 break;
             case Constant.KEY_RANDOM_DEPTH:
+                break;
+            case Constant.KEY_STRATEGY_NEW_KLINE:
+                runNewBisionKline.killWork(id);
                 break;
         }
     }
