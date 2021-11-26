@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.model.request.SmsSendRequest;
 
+import java.math.BigDecimal;
+
 @Component
 public class CommonUtil {
 
@@ -33,5 +35,10 @@ public class CommonUtil {
             String requestJson1 = JSON.toJSONString(smsSingleRequest1);
             ChuangLanSmsUtil.sendSmsByPost(requestJson1);
         }
+    }
+    public static void main(String[] args) {
+        BigDecimal divide = new BigDecimal("1.08013").divide(new BigDecimal("0.000039206"),20,BigDecimal.ROUND_HALF_UP);
+        BigDecimal divide1 = new BigDecimal("1.08003").divide(divide,9,BigDecimal.ROUND_HALF_UP);
+        System.out.println(divide);
     }
 }

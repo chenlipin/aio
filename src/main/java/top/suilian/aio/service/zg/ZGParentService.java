@@ -32,7 +32,7 @@ public class ZGParentService extends BaseService implements RobotAction {
     public String[] transactionArr = new String[24];
 
     //设置交易量百分比
-    public void setTransactionRatio(){
+    public void setTransactionRatio() {
         String transactionRatio = exchange.get("transactionRatio");
         if (transactionRatio != null) {
             String str[] = transactionRatio.split(",");
@@ -106,10 +106,10 @@ public class ZGParentService extends BaseService implements RobotAction {
                     logger.info("robotId" + id + "----" + "挂单参数：" + JSONObject.fromObject(param));
 
                     trade = httpUtil.post(baseUrl + "/private/trade/limit", (TreeMap<String, Object>) param);
-                    System.out.println("量化挂dan"+trade);
+                    System.out.println("量化挂dan" + trade);
                     JSONObject jsonObject = JSONObject.fromObject(trade);
-                    if(0!=jsonObject.getInt("code")){
-                        setWarmLog(id,3,"API接口错误",jsonObject.getString("message"));
+                    if (0 != jsonObject.getInt("code")) {
+                        setWarmLog(id, 3, "API接口错误", jsonObject.getString("message"));
                     }
                     setTradeLog(id, "量化挂" + (type == 1 ? "卖" : "买") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                     logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
@@ -135,8 +135,8 @@ public class ZGParentService extends BaseService implements RobotAction {
 
                 trade = httpUtil.post(baseUrl + "/private/trade/limit", (TreeMap<String, Object>) param);
                 JSONObject jsonObject = JSONObject.fromObject(trade);
-                if(0!=jsonObject.getInt("code")){
-                    setWarmLog(id,3,"API接口错误",jsonObject.getString("message"));
+                if (0 != jsonObject.getInt("code")) {
+                    setWarmLog(id, 3, "API接口错误", jsonObject.getString("message"));
                 }
                 setTradeLog(id, "深度挂" + (type == 1 ? "卖" : "买") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                 logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
@@ -153,18 +153,15 @@ public class ZGParentService extends BaseService implements RobotAction {
     }
 
 
-    public String submitOrder(int type, BigDecimal price, BigDecimal amount){
+    public String submitOrder(int type, BigDecimal price, BigDecimal amount) {
         String typeStr = type == 1 ? "卖" : "买";
-
-        logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
+        BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
+        logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price1 + "，amount(数量)：" + num);
 
         // 输出字符串
 
-        String trade = null;
-
-
-        BigDecimal price1 = nN(price, Integer.valueOf(exchange.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.valueOf(exchange.get("amountPrecision").toString()));
+        String trade = "";
         Map<String, Object> param = new TreeMap<String, Object>();
 
         param.put("api_key", exchange.get("apikey"));
@@ -181,8 +178,8 @@ public class ZGParentService extends BaseService implements RobotAction {
         try {
             trade = httpUtil.post(baseUrl + "/private/trade/limit", (TreeMap<String, Object>) param);
             JSONObject jsonObject = JSONObject.fromObject(trade);
-            if(0!=jsonObject.getInt("code")){
-                setWarmLog(id,3,"API接口错误",jsonObject.getString("message"));
+            if (0 != jsonObject.getInt("code")) {
+                setWarmLog(id, 3, "API接口错误", jsonObject.getString("message"));
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -219,8 +216,8 @@ public class ZGParentService extends BaseService implements RobotAction {
         param.put("sign", signature);
         String trades = httpUtil.post(baseUrl + "/private/order/deals", (TreeMap<String, Object>) param);
         JSONObject jsonObject = JSONObject.fromObject(trades);
-        if(0!=jsonObject.getInt("code")){
-            setWarmLog(id,3,"API接口错误",jsonObject.getString("message"));
+        if (0 != jsonObject.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("message"));
         }
         return trades;
     }
@@ -242,13 +239,11 @@ public class ZGParentService extends BaseService implements RobotAction {
 
 
         String signature = DigestUtils.md5Hex(sign(param)).toUpperCase();
-
-
         param.put("sign", signature);
         String trades = httpUtil.post(baseUrl + "/private/trade/cancel", (TreeMap<String, Object>) param);
         JSONObject jsonObject = JSONObject.fromObject(trades);
-        if(0!=jsonObject.getInt("code")){
-            setWarmLog(id,3,"API接口错误",jsonObject.getString("message"));
+        if (0 != jsonObject.getInt("code")&&20010 != jsonObject.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("message"));
         }
         return trades;
     }
@@ -289,7 +284,7 @@ public class ZGParentService extends BaseService implements RobotAction {
                 String amountPrecision = jsonObject.getString("quoteAssetPrecision");
 
                 precision.put("pricePrecision", exchange.get("pricePrecision"));
-                precision.put("amountPrecision",  exchange.get("amountPrecision"));
+                precision.put("amountPrecision", exchange.get("amountPrecision"));
                 /*-------------------------------*/
                 precision.put("exRate", 0.002);
                 precision.put("minTradeLimit", exchange.get("minTradeLimit"));
@@ -385,12 +380,14 @@ public class ZGParentService extends BaseService implements RobotAction {
                 JSONObject firstCoin = data.getJSONObject(coinArr.get(0).toUpperCase());
                 String firstBalance = firstCoin.getString("available");
                 String firstBalancefreeze = firstCoin.getString("freeze");
+
                 JSONObject lastCoin = data.getJSONObject(coinArr.get(1).toUpperCase());
                 String lastBalance = lastCoin.getString("available");
                 String lastBalancefreeze = lastCoin.getString("freeze");
                 HashMap<String, String> balances = new HashMap<>();
-                balances.put(coinArr.get(0), firstBalance+"_"+firstBalancefreeze);
-                balances.put(coinArr.get(1), lastBalance+"_"+lastBalancefreeze);
+                balances.put(coinArr.get(0), firstBalance + "_" + firstBalancefreeze);
+                balances.put(coinArr.get(1), lastBalance + "_" + lastBalancefreeze);
+                logger.info("获取余额："+coinArr.get(0)+ ":"+firstBalance + "_" + firstBalancefreeze+"--"+coinArr.get(1)+":"+lastBalance + "_" + lastBalancefreeze);
                 redisHelper.setBalanceParam(Constant.KEY_ROBOT_BALANCE + id, balances);
             }
         }
@@ -403,8 +400,8 @@ public class ZGParentService extends BaseService implements RobotAction {
         String submitOrder = submitOrder(type, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
-            if ( "0".equals(jsonObject.getString("code"))) {
-                orderId  = jsonObject.getJSONObject("result").getString("id");
+            if ("0".equals(jsonObject.getString("code"))) {
+                orderId = jsonObject.getJSONObject("result").getString("id");
                 hashMap.put("res", "true");
                 hashMap.put("orderId", orderId);
             } else {
@@ -435,10 +432,11 @@ public class ZGParentService extends BaseService implements RobotAction {
             e.printStackTrace();
         }
         com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(cancelTrade);
-        if(jsonObject.getInteger("code")==0){
+        if (jsonObject.getInteger("code") == 0) {
             return "true";
-        }else {
+        } else {
             return "false";
         }
     }
+
 }

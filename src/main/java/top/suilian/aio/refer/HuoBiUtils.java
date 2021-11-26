@@ -8,6 +8,7 @@ import top.suilian.aio.Util.BaseHttp;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.Refer;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class HuoBiUtils extends BaseHttp {
         String trades = get("https://api.huobi.pro/market/depth?symbol=" + referSymbol + "&depth=20&type=step0");
         JSONObject tradesObj = JSONObject.fromObject(trades);
 
-        if (!"".equals(trades) && trades != null && !trades.isEmpty() && tradesObj != null) {
+        if (trades != null && !trades.isEmpty() && tradesObj != null) {
             JSONObject depthJson = tradesObj.getJSONObject("tick");
             JSONArray bidsJson=depthJson.getJSONArray("bids");
             JSONArray asksJson=depthJson.getJSONArray("asks");
@@ -69,6 +70,24 @@ public class HuoBiUtils extends BaseHttp {
             }
             depth.put("asks",asks);
 
+        }
+        return depth;
+    }
+
+    public static Map<String, BigDecimal> getDepth1(String symbol) {
+        HashMap<String,BigDecimal> depth = new HashMap<>();
+
+        String referSymbol=symbol.replaceAll("_","");
+
+        String trades = get("https://api.huobi.pro/market/depth?symbol=" + referSymbol + "&depth=5&type=step0");
+        JSONObject tradesObj = JSONObject.fromObject(trades);
+
+        if (trades != null && !trades.isEmpty() && tradesObj != null) {
+            JSONObject depthJson = tradesObj.getJSONObject("tick");
+            JSONArray bidsJson=depthJson.getJSONArray("bids");
+            JSONArray asksJson=depthJson.getJSONArray("asks");
+            depth.put("bids",  new BigDecimal(String.valueOf(bidsJson.getJSONArray(0).get(0))));
+            depth.put("asks", new BigDecimal(String.valueOf(asksJson.getJSONArray(0).get(0))));
         }
         return depth;
     }
