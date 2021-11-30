@@ -98,6 +98,9 @@ public class ZGService {
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewZgKline.killWork(id);
                 break;
+            case 8:
+                zgRunDepthReferToZg.killWork(id);
+                break;
         }
     }
 }
