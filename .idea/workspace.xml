@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="aab95e56-2f13-4cf0-957d-bf6edc2827a5" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/newKlile/NewBisionKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/newKlile/NewBisionKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/ZGService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/ZGService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/RandomDepth/RunLoexRandomDepth.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/EgParentService.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/playcoin/kline/PlayCoinKline.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/klineReferToZg/EgKlineToZg.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/depthReferToZg/EgDepthToZg.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fubt/kline/FubtKline.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/BitMartParentService.java" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="RunManager">
     <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
@@ -21,5 +47,30 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+  </component>
+  <component name="TaskManager">
+    <servers />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>
