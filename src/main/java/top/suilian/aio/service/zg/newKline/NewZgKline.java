@@ -114,7 +114,7 @@ public class NewZgKline extends ZGParentService {
             String trades = httpUtil.get(baseUrl + "/depth?symbol=" + exchange.get("market") + "&size=5");
             JSONObject tradesObj = judgeRes(trades, "bids", "getRandomPrice");
 
-            if (!"".equals(trades) && trades != null && !trades.isEmpty() && tradesObj != null) {
+            if (trades != null && !trades.isEmpty() && tradesObj != null) {
 
                 List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
 

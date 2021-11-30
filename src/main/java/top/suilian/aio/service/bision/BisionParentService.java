@@ -1,8 +1,9 @@
 package top.suilian.aio.service.bision;
 
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Service;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.Util.HttpUtil;
@@ -18,9 +19,10 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-
+@DependsOn("beanContext")
+@Service
 public class BisionParentService extends BaseService implements RobotAction {
-    public String baseUrl = "https://api.bision.com";
+    public String baseUrl = "https://api.xt.com";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
@@ -31,7 +33,7 @@ public class BisionParentService extends BaseService implements RobotAction {
     public String[] transactionArr = new String[24];
 
     //设置交易量百分比
-    public void setTransactionRatio(){
+    public void setTransactionRatio() {
         String transactionRatio = exchange.get("transactionRatio");
         if (transactionRatio != null) {
             String str[] = transactionRatio.split(",");
@@ -78,16 +80,16 @@ public class BisionParentService extends BaseService implements RobotAction {
         String trade = null;
 
 
-        BigDecimal price1 = nN(price, Integer.valueOf(precision.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.valueOf(precision.get("amountPrecision").toString()));
+        BigDecimal price1 = nN(price, Integer.valueOf(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.valueOf(exchange.get("amountPrecision").toString()));
 
-        Double minTradeLimit = Double.valueOf(String.valueOf(precision.get("minTradeLimit")));
+        Double minTradeLimit = Double.valueOf(String.valueOf(exchange.get("minTradeLimit")));
         if (num.compareTo(BigDecimal.valueOf(minTradeLimit)) >= 0) {
 
             boolean flag = exchange.containsKey("numThreshold");
             if (flag) {
                 Double numThreshold1 = Double.valueOf(exchange.get("numThreshold"));
-                if (price1.compareTo(BigDecimal.ZERO) > 0 && num.compareTo(BigDecimal.valueOf(numThreshold1)) < 1) {
+                if (price1.compareTo(BigDecimal.ZERO) > 0) {
                     if (num.compareTo(BigDecimal.valueOf(numThreshold1)) == 1) {
                         num = BigDecimal.valueOf(numThreshold1);
                     }
@@ -105,16 +107,16 @@ public class BisionParentService extends BaseService implements RobotAction {
                     param.put("signature", signature);
                     logger.info("挂单参数:" + peload);
                     trade = HttpUtil.post(baseUrl + "/trade/api/v1/order", param);
-                    setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+                    setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                     logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
                     JSONObject jsonObject = JSONObject.fromObject(trade);
-                    if(200!=jsonObject.getInt("code")){
-                        setWarmLog(id,3,"API接口错误",jsonObject.getString("info"));
+                    if (200 != jsonObject.getInt("code")) {
+                        setWarmLog(id, 3, "API接口错误", jsonObject.getString("msgInfo"));
                     }
 
                 } else {
                     setTradeLog(id, "price[" + price1 + "] num[" + num + "]", 1);
-                    logger.info("robotId" + id + "----" + "挂单失败结束");
+                    logger.info("robotId" + id + "----" + "挂单失败结束11");
                 }
             } else {
                 Map<String, Object> param = new TreeMap<String, Object>();
@@ -130,18 +132,18 @@ public class BisionParentService extends BaseService implements RobotAction {
                 param.put("signature", signature);
                 logger.info("挂单参数:" + peload);
                 trade = httpUtil.post(baseUrl + "/trade/api/v1/order", param);
-                setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+                setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                 logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
                 JSONObject jsonObject = JSONObject.fromObject(trade);
-                if(200!=jsonObject.getInt("code")){
-                    setWarmLog(id,3,"API接口错误",jsonObject.getString("info"));
+                if (200 != jsonObject.getInt("code")) {
+                    setWarmLog(id, 3, "API接口错误", jsonObject.getString("msgInfo"));
                 }
             }
 
 
         } else {
             setTradeLog(id, "交易量最小为：" + precision.get("minTradeLimit"), 0);
-            logger.info("robotId" + id + "----" + "挂单失败结束");
+            logger.info("robotId" + id + "----" + "挂单失败结束11");
         }
 
         valid = 1;
@@ -166,8 +168,8 @@ public class BisionParentService extends BaseService implements RobotAction {
         param.put("sign", sign);
         String trade = httpUtil.get(baseUrl + "/api/v2/getOrders?method=getOrders&accesskey=" + exchange.get("apikey") + "&tradeType=" + type + "&currency=" + exchange.get("market") + "&pageIndex=1&pageSize=20&sign=" + sign + "&reqTime=" + timestamp);
         JSONObject jsonObject = JSONObject.fromObject(trade);
-        if(200!=jsonObject.getInt("code")){
-            setWarmLog(id,3,"API接口错误",jsonObject.getString("info"));
+        if (200 != jsonObject.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("msgInfo"));
         }
         return trade;
     }
@@ -193,8 +195,8 @@ public class BisionParentService extends BaseService implements RobotAction {
         String signature = HMAC.sha256_HMAC(peload, exchange.get("tpass"));
         String orderInfo = httpUtil.get(baseUrl + "/trade/api/v1/getOrder?accesskey=" + exchange.get("apikey") + "&id=" + orderId + "&market=" + exchange.get("market") + "&signature=" + signature + "&nonce=" + timestamp);
         JSONObject jsonObject = JSONObject.fromObject(orderInfo);
-        if(200!=jsonObject.getInt("code")){
-            setWarmLog(id,3,"API接口错误",jsonObject.getString("info"));
+        if (200 != jsonObject.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("msgInfo"));
         }
         return orderInfo;
     }
@@ -214,8 +216,8 @@ public class BisionParentService extends BaseService implements RobotAction {
         String signature = HMAC.sha256_HMAC(peload, exchange.get("tpass"));
         String orderInfo = httpUtil.get(baseUrl + "/trade/api/v1/getBalance?accesskey=" + exchange.get("apikey") + "&signature=" + signature + "&nonce=" + timestamp);
         JSONObject jsonObject = JSONObject.fromObject(orderInfo);
-        if(200!=jsonObject.getInt("code")){
-            setWarmLog(id,3,"API接口错误",jsonObject.getString("info"));
+        if (200 != jsonObject.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("msgInfo"));
         }
         return orderInfo;
     }
@@ -240,8 +242,8 @@ public class BisionParentService extends BaseService implements RobotAction {
         param.put("signature", signature);
         res = HttpUtil.post(baseUrl + "/trade/api/v1/cancel", param);
         JSONObject jsonObject = JSONObject.fromObject(res);
-        if(200!=jsonObject.getInt("code")){
-            setWarmLog(id,3,"API接口错误",jsonObject.getString("info"));
+        if (200 != jsonObject.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("msgInfo"));
         }
         return res;
     }
@@ -277,8 +279,12 @@ public class BisionParentService extends BaseService implements RobotAction {
             if ("200".equals(obj.getString("code")) && obj.getJSONObject("data") != null) {
                 JSONObject data = obj.getJSONObject("data");
                 HashMap<String, String> balances = new HashMap<String, String>();
-                balances.put(coinArr.get(0), data.getJSONObject(coinArr.get(0)).getString("available"));
-                balances.put(coinArr.get(1), data.getJSONObject(coinArr.get(1)).getString("available"));
+                balances.put(coinArr.get(0), data.getJSONObject(coinArr.get(0)).getString("available")+"_"+data.getJSONObject(coinArr.get(0)).getString("freeze"));
+                if (data.getJSONObject(coinArr.get(1)) != null) {
+                    balances.put(coinArr.get(1), "0");
+                } else {
+                    balances.put(coinArr.get(1), data.getJSONObject(coinArr.get(1)).getString("available")+"_"+data.getJSONObject(coinArr.get(1)).getString("freeze"));
+                }
                 redisHelper.setBalanceParam(Constant.KEY_ROBOT_BALANCE + id, balances);
             } else {
                 logger.info("获取余额失败：" + obj);
@@ -338,12 +344,12 @@ public class BisionParentService extends BaseService implements RobotAction {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
             if ("200".equals(jsonObject.getString("code"))) {
                 orderId = jsonObject.getJSONObject("data").getString("id");
-                hashMap.put("res","true");
-                hashMap.put("orderId",orderId);
-            }else {
-                String msg = jsonObject.getString("info");
-                hashMap.put("res","false");
-                hashMap.put("orderId",msg);
+                hashMap.put("res", "true");
+                hashMap.put("orderId", orderId);
+            } else {
+                String msg = jsonObject.getString("msgInfo");
+                hashMap.put("res", "false");
+                hashMap.put("orderId", msg);
             }
         }
         return hashMap;
@@ -353,8 +359,8 @@ public class BisionParentService extends BaseService implements RobotAction {
     public Map<String, Integer> selectOrderStr(String orderId) {
         List<String> orders = Arrays.asList(orderId.split(","));
         HashMap<String, Integer> hashMap = new HashMap<>();
-        orders.forEach(e->{
-            hashMap.put(e,2);
+        orders.forEach(e -> {
+            hashMap.put(e, 2);
         });
         return hashMap;
     }
