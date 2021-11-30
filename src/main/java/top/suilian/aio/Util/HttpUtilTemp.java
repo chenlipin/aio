@@ -1,10 +1,4 @@
-/*
- * Copyright (C) 1997-2021 康成投资（中国）有限公司
- *
- * http://www.rt-mart.com
- *
- * 版权归本公司所有，不得私自使用、拷贝、修改、删除，否则视为侵权
- */
+
 package top.suilian.aio.Util;
 
 
@@ -22,13 +16,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 
-/**
- * <B>Description:</B>  <br>
- * <B>Create on:</B> 2021/10/21 9:02 <br>
- *
- * @author dong.wan
- * @version 1.0
- */
+
 
 public class HttpUtilTemp {
     public static CloseableHttpClient buildSSLCloseableHttpClient()

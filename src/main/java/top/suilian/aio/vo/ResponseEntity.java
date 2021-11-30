@@ -12,12 +12,6 @@ import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 
-/**
- * @author ：huabo.yang
- * @description：自定义返回数据格式
- * @modified By：yulong.ao
- * @version: 1.1.1$
- */
 
 public class ResponseEntity implements Serializable {
 

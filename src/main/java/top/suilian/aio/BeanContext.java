@@ -1,10 +1,4 @@
-package top.suilian.aio;/*
- * Copyright (C) 1997-2021 康成投资（中国）有限公司
- *
- * http://www.rt-mart.com
- *
- * 版权归本公司所有，不得私自使用、拷贝、修改、删除，否则视为侵权
- */
+package top.suilian.aio;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -13,13 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-/**
- * <B>Description:</B>  <br>
- * <B>Create on:</B> 2021/8/30 15:40 <br>
- *
- * @author dong.wan
- * @version 1.0
- */
+
 
 @Order(value = 1)
 @Component
