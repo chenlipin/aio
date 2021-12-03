@@ -27,4 +27,6 @@ public interface ApitradeLogMapper {
     List<ApitradeLog> selectByRobotIdNOTrade(Integer robotId);
 
    ApitradeLog selectByRobotIdAndOrderId(@Param("robotId") Integer robotId, @Param("orderId") String orderId);
+
+    List<ApitradeLog> selectByRobotIdAndTime(@Param("robotId")Integer robotId,@Param("time") String time);
 }

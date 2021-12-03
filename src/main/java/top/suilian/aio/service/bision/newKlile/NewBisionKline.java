@@ -221,10 +221,9 @@ public class NewBisionKline extends BisionParentService {
 
             BigDecimal random = new BigDecimal(Math.random() * 10).setScale(2, BigDecimal.ROUND_HALF_UP);
             int type = random.compareTo(tradeRatio) > 0 ? 0 : 1;
-             type=1;
 
             try {
-                String resultJson = submitTrade(type, price, num.add(new BigDecimal("0.05")));
+                String resultJson = submitTrade(type, price, num);
                 JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
                 if (jsonObject != null && jsonObject.getInt("code") == 200) {

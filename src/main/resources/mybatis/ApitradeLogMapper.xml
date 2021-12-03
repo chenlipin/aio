@@ -181,4 +181,13 @@
   </select>
 
 
+  <select id="selectByRobotIdAndTime" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from apitrade_log
+    where
+    robot_id = #{robotId}
+    AND created_at > #{time}
+  </select>
+
 </mapper>

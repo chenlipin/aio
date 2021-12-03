@@ -7,6 +7,7 @@
  */
 package top.suilian.aio.Util;
 
+import java.math.BigDecimal;
 import java.util.Random;
 
 /**
@@ -26,16 +27,14 @@ public class RandomUtilsme {
      * @return
      */
     public static Double getRandom(double num, Integer precision) {
-        int maxNum = new Double((Math.pow(10, precision) * num)).intValue();
+        double v1 = Double.parseDouble(new BigDecimal(num).setScale(6, BigDecimal.ROUND_HALF_UP).toString());
+        int maxNum = new Double((Math.pow(10, precision) * v1)).intValue();
         double v = 0;
-        if (num > 0) {
             int i = new Random().nextInt(maxNum);
             v = i / Math.pow(10, precision);
-        }else {
-           return getRandom(num,precision) ;
-        }
         return v;
     }
+
 
     /**
      * 获得一个比num小的整数

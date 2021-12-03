@@ -273,14 +273,14 @@ public class BisionParentService extends BaseService implements RobotAction {
 
             //获取余额
             String rt = getBalance();
-            System.out.println(rt);
+          logger.info("获取余额"+rt);
             JSONObject obj = JSONObject.fromObject(rt);
 
             if ("200".equals(obj.getString("code")) && obj.getJSONObject("data") != null) {
                 JSONObject data = obj.getJSONObject("data");
                 HashMap<String, String> balances = new HashMap<String, String>();
                 balances.put(coinArr.get(0), data.getJSONObject(coinArr.get(0)).getString("available")+"_"+data.getJSONObject(coinArr.get(0)).getString("freeze"));
-                if (data.getJSONObject(coinArr.get(1)) != null) {
+                if (data.getJSONObject(coinArr.get(1)) == null) {
                     balances.put(coinArr.get(1), "0");
                 } else {
                     balances.put(coinArr.get(1), data.getJSONObject(coinArr.get(1)).getString("available")+"_"+data.getJSONObject(coinArr.get(1)).getString("freeze"));
