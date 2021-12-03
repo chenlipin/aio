@@ -1,15 +1,8 @@
-/*
- * Copyright (C) 1997-2021 康成投资（中国）有限公司
- *
- * http://www.rt-mart.com
- *
- * 版权归本公司所有，不得私自使用、拷贝、修改、删除，否则视为侵权
- */
+
 package top.suilian.aio.service.aatradeRobitService;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +13,10 @@ import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.RandomUtilsme;
 import top.suilian.aio.dao.ApitradeLogMapper;
 import top.suilian.aio.dao.RobotMapper;
-import top.suilian.aio.dao.TradeLogMapper;
-import top.suilian.aio.model.*;
+import top.suilian.aio.model.ApitradeLog;
+import top.suilian.aio.model.Member;
+import top.suilian.aio.model.Robot;
+import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.bision.BisionParentService;
@@ -38,20 +33,12 @@ import top.suilian.aio.vo.*;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-/**
- * <B>Description:</B>  <br>
- * <B>Create on:</B> 2021/9/14 9:59 <br>
- *
- * @author dong.wan
- * @version 1.0
- */
-@Log4j2
+
 @Service
 public class TradeRobotService {
     @Autowired
@@ -61,8 +48,6 @@ public class TradeRobotService {
     private ThreadPoolTaskExecutor executor;
     @Autowired
     private ApitradeLogMapper apitradeLogMapper;
-    @Autowired
-    private TradeLogMapper tradeLogMapper;
     @Autowired
     HotCoinParentService hotCoinParentService;
     @Autowired
@@ -113,10 +98,6 @@ public class TradeRobotService {
      */
     public ResponseEntity fastTrade(FastTradeReq req) {
         Member user = redisHelper.getUser(req.getToken());
-
-        if ("运行中".equals(map.get(req.getRobotId()))) {
-            throw new RuntimeException("已经有一个任务正在运行中");
-        }
         if (user == null || !user.getMemberId().equals(req.getUserId())) {
             throw new RuntimeException("用户身份校验失败");
         }
@@ -272,25 +253,25 @@ public class TradeRobotService {
      * @return
      */
     public void cancalByOrderId(CancalOrderReq req) {
-//        Member user = redisHelper.getUser(req.getToken());
-//        if (user == null || !user.getMemberId().equals(req.getUserId())) {
-//            throw new RuntimeException("用户身份校验失败");
-//        }
+        Member user = redisHelper.getUser(req.getToken());
+        if (user == null || !user.getMemberId().equals(req.getUserId())) {
+            throw new RuntimeException("用户身份校验失败");
+        }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
         if (!checkSignature) {
 //            throw new RuntimeException("Signature失败");
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
-//        ApitradeLog apitradeLog = apitradeLogMapper.selectByRobotIdAndOrderId(req.getRobotId(), req.getOrderId());
-//        if (!apitradeLog.getStatus().equals(TradeEnum.CANCEL.getStatus())) {
-        String str = robotAction.cancelTradeStr(req.getOrderId());
-        if (!"true".equals(str)) {
-            throw new RuntimeException(ResultCode.ERROR.getMessage());
+        ApitradeLog apitradeLog = apitradeLogMapper.selectByRobotIdAndOrderId(req.getRobotId(), req.getOrderId());
+        if (!apitradeLog.getStatus().equals(TradeEnum.CANCEL.getStatus())) {
+            String str = robotAction.cancelTradeStr(req.getOrderId());
+            if (!"true".equals(str)) {
+                throw new RuntimeException(ResultCode.ERROR.getMessage());
+            }
+            apitradeLog.setStatus(-1);
+            apitradeLog.setUpdatedAt(new Date());
+            apitradeLogMapper.updateByPrimaryKey(apitradeLog);
         }
-//            apitradeLog.setStatus(-1);
-//            apitradeLog.setUpdatedAt(new Date());
-//            apitradeLogMapper.updateByPrimaryKey(apitradeLog);
-
 
     }
 
@@ -317,14 +298,6 @@ public class TradeRobotService {
         }
     }
 
-    public void chedan(CancalAllOrder req) {
-//       List<TradeLog> list= tradeLogMapper.selectByid(req.getRobotId(),req.getTime());
-//        for (TradeLog tradeLog : list) {
-//            tradeLog.getRemark().substring()
-//            JSONObject.parseObject(tradeLog.getRemark())
-//        }
-    }
-
 
     /**
      * 一键挂单核心逻辑
@@ -340,7 +313,9 @@ public class TradeRobotService {
 
         @Override
         public void run() {
-
+            if ("运行中".equals(map.get(fastTradeReq.getRobotId()))) {
+                throw new RuntimeException("已经有一个任务正在运行中");
+            }
             map.put(fastTradeReq.getRobotId(), "运行中");
             //获取机器人参数
             Map<String, String> param = robotAction.getParam();
@@ -369,8 +344,8 @@ public class TradeRobotService {
                     }
                 }
                 //计算挂单数量
-                Double amountPrecision = RandomUtilsme.getRandom(fastTradeReq.getMaxAmount() - fastTradeReq.getMinAmount(), 8);
-                BigDecimal amount = new BigDecimal(fastTradeReq.getMinAmount() + amountPrecision).setScale(Integer.parseInt(param.get("amountPrecision")), RoundingMode.HALF_UP);
+                Double amountPrecision = RandomUtilsme.getRandom(fastTradeReq.getMaxAmount() - fastTradeReq.getMinAmount(), Integer.parseInt(param.get("amountPrecision")));
+                BigDecimal amount = new BigDecimal(fastTradeReq.getMinAmount() + amountPrecision).setScale(Integer.parseInt(param.get("amountPrecision")), BigDecimal.ROUND_HALF_UP);
 
                 /**
                  * 买单区间差价
@@ -387,23 +362,22 @@ public class TradeRobotService {
                 /**
                  * 卖单一个区间差价
                  */
-                double sellOneRange = sellRange / fastTradeReq.getSellOrdermun();
+                double sellOneRange = buyRange / fastTradeReq.getBuyOrdermun();
 
                 //决定是挂买单还是卖单
                 boolean type = true;
                 boolean typeTrade = true;
                 BigDecimal price = BigDecimal.ZERO;
-                if (type && newBuyOrder < fastTradeReq.getBuyOrdermun() && fastTradeReq.getBuyOrdermun() > 0) {
+                if (type && newBuyOrder < fastTradeReq.getBuyOrdermun()) {
                     //计算买价
-                    Double pricePrecision = RandomUtilsme.getRandom(buyOneRange, 8);
+                    Double pricePrecision = RandomUtilsme.getRandom(buyOneRange, Integer.parseInt(param.get("pricePrecision")));
                     Double pricePrecision1 = (fastTradeReq.getBuyorderRangePrice() + pricePrecision + buyOneRange * newBuyOrder);
                     price = new BigDecimal(fastTradeReq.getBuyorderBasePrice() - pricePrecision1).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
                     //挂买单
-                    typeTrade=true;
                     newBuyOrder++;
                 } else {
                     //计算卖价
-                    Double pricePrecision = RandomUtilsme.getRandom(sellOneRange, 8);
+                    Double pricePrecision = RandomUtilsme.getRandom(sellOneRange, Integer.parseInt(param.get("pricePrecision")));
                     Double pricePrecision1 = (fastTradeReq.getSellorderRangePrice() + pricePrecision + sellOneRange * newSellOrder);
                     price = new BigDecimal(fastTradeReq.getSellorderBasePrice() + pricePrecision1).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
                     //挂卖单
@@ -411,18 +385,16 @@ public class TradeRobotService {
                     newSellOrder++;
                 }
                 Map<String, String> stringStringMap = robotAction.submitOrderStr(typeTrade ? 1 : 2, price, amount);
-                log.info("挂单方向：" + (typeTrade ? "买" : "卖") + "--价格" + price + "--数量" + amount);
                 ApitradeLog apitradeLog = new ApitradeLog();
                 apitradeLog.setAmount(amount);
                 apitradeLog.setPrice(price);
                 apitradeLog.setRobotId(fastTradeReq.getRobotId());
                 apitradeLog.setMemberId(fastTradeReq.getUserId());
-                apitradeLog.setType(typeTrade ? 1 : 2);
+                apitradeLog.setType(type ? 1 : 2);
                 apitradeLog.setTradeType(1);
                 apitradeLog.setStatus(0);
                 apitradeLog.setMemo(uuid);
                 apitradeLog.setOrderId(stringStringMap.get("orderId"));
-                apitradeLog.setOrderId(uuid);
                 apitradeLog.setCreatedAt(new Date());
                 if (first) {
                     apitradeLog.setMemo(uuid + "_" + JSON.toJSONString(fastTradeReq));
