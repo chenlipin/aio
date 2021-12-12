@@ -156,7 +156,7 @@ public class RobotController {
     @RequestMapping(value = "/chedan")
     @ResponseBody
     public ResponseEntity chedan(@Valid @RequestBody CancalAllOrder req) {
-        tradeRobotService.chedan(req);
+//        tradeRobotService.chedan(req);
         return ResponseEntity.success();
 
     }
