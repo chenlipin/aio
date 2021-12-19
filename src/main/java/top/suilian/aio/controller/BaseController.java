@@ -19,6 +19,7 @@ import top.suilian.aio.service.bilian.BiLianService;
 import top.suilian.aio.service.bision.BisionService;
 import top.suilian.aio.service.bitai.BiTaiService;
 import top.suilian.aio.service.bitmart.BitMartService;
+import top.suilian.aio.service.bitterex.BitterexService;
 import top.suilian.aio.service.bitvictory.BitvictoryService;
 import top.suilian.aio.service.bthex.BthexService;
 import top.suilian.aio.service.ceohk.CeohkService;
@@ -197,6 +198,8 @@ public class BaseController {
 
     @Autowired
     KucoinService kucoinService;
+    @Autowired
+    BitterexService bitterexService;
 
     @Autowired
     GwetService GwetService;

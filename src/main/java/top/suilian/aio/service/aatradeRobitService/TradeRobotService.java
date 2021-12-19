@@ -21,6 +21,7 @@ import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.bision.BisionParentService;
 import top.suilian.aio.service.bitmart.BitMartParentService;
+import top.suilian.aio.service.bitterex.BitterexParentService;
 import top.suilian.aio.service.coinstore.CoinStoreParentService;
 import top.suilian.aio.service.coinstore.CoinStoreService;
 import top.suilian.aio.service.hotcoin.HotCoinParentService;
@@ -155,6 +156,9 @@ public class TradeRobotService {
             case Constant.KEY_EXCHANGE_KUCOIN:
                 robotAction = new KucoinParentService();
                 break;
+            case Constant.KEY_EXCHANGE_BITTEREX:
+                robotAction = new BitterexParentService();
+                break;
             default:
                 return null;
         }
@@ -258,26 +262,26 @@ public class TradeRobotService {
      */
     public void cancalByOrderId(CancalOrderReq req) {
         Member user = redisHelper.getUser(req.getToken());
-        if (user == null || !user.getMemberId().equals(req.getUserId())) {
-            throw new RuntimeException("用户身份校验失败");
-        }
-        boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
-        if (!checkSignature) {
-//            throw new RuntimeException("Signature失败");
-        }
+//        if (user == null || !user.getMemberId().equals(req.getUserId())) {
+//            throw new RuntimeException("用户身份校验失败");
+//        }
+//        boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
+//        if (!checkSignature) {
+////            throw new RuntimeException("Signature失败");
+//        }
         RobotAction robotAction = getRobotAction(req.getRobotId());
-        ApitradeLog apitradeLog = apitradeLogMapper.selectByRobotIdAndOrderId(req.getRobotId(), req.getOrderId());
-        if (!apitradeLog.getStatus().equals(TradeEnum.CANCEL.getStatus())) {
+//        ApitradeLog apitradeLog = apitradeLogMapper.selectByRobotIdAndOrderId(req.getRobotId(), req.getOrderId());
+//        if (!apitradeLog.getStatus().equals(TradeEnum.CANCEL.getStatus())) {
             String str = robotAction.cancelTradeStr(req.getOrderId());
             if (!"true".equals(str)) {
                 throw new RuntimeException(ResultCode.ERROR.getMessage());
             }
-            apitradeLog.setStatus(-1);
-            apitradeLog.setUpdatedAt(new Date());
-            apitradeLogMapper.updateByPrimaryKey(apitradeLog);
+//            apitradeLog.setStatus(-1);
+//            apitradeLog.setUpdatedAt(new Date());
+//            apitradeLogMapper.updateByPrimaryKey(apitradeLog);
         }
 
-    }
+
 
     public String getReplenish(CancalAllOrder req) {
 //        Member user = redisHelper.getUser(req.getToken());
