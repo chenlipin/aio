@@ -23,6 +23,7 @@ import top.suilian.aio.service.bitterex.BitterexService;
 import top.suilian.aio.service.bitvictory.BitvictoryService;
 import top.suilian.aio.service.bthex.BthexService;
 import top.suilian.aio.service.ceohk.CeohkService;
+import top.suilian.aio.service.coinnoe.CoinnoeService;
 import top.suilian.aio.service.coinstore.CoinStoreService;
 import top.suilian.aio.service.coinvv.CoinvvService;
 import top.suilian.aio.service.digifinex.DigifinexService;
@@ -61,6 +62,7 @@ import top.suilian.aio.service.test.TestService;
 import top.suilian.aio.service.wbfex.WbfexService;
 import top.suilian.aio.service.xoxoex.XoxoexService;
 import top.suilian.aio.service.xuebi.XuebiService;
+import top.suilian.aio.service.zb.ZbService;
 import top.suilian.aio.service.zg.ZGService;
 import top.suilian.aio.service.zg.ZGService;
 
@@ -201,6 +203,10 @@ public class BaseController {
     @Autowired
     BitterexService bitterexService;
 
+    @Autowired
+    ZbService zbService;
+    @Autowired
+    CoinnoeService coinnoeService;
     @Autowired
     GwetService GwetService;
 

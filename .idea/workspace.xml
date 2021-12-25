@@ -11,7 +11,9 @@
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/BisionParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/BisionParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitterex/BitterexParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitterex/BitterexParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/ZGParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/ZGParentService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +48,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitterex" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe" />
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="ReactorSettings">
@@ -54,6 +56,8 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\aio\src\main\java\top\suilian\aio\service\coinnoe" />
+      <recent name="D:\aio\src\main\java\top\suilian\aio\service\zb" />
       <recent name="D:\aio\src\main\java\top\suilian\aio\service\bitterex" />
       <recent name="D:\aio\src\main\java\top\suilian\aio\service\kucoin" />
     </key>
@@ -109,7 +113,7 @@
       <workItem from="1638599849890" duration="16547000" />
       <workItem from="1639145818923" duration="4097000" />
       <workItem from="1639796237814" duration="11703000" />
-      <workItem from="1639836729780" duration="16473000" />
+      <workItem from="1639836729780" duration="53024000" />
     </task>
     <servers />
   </component>
@@ -140,6 +144,26 @@
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitterex/BitterexParentService.java</url>
           <line>125</line>
           <option name="timeStamp" value="31" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zb/ZbParentService.java</url>
+          <line>259</line>
+          <option name="timeStamp" value="38" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/CoinnoeParentService.java</url>
+          <line>258</line>
+          <option name="timeStamp" value="48" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/CoinnoeParentService.java</url>
+          <line>327</line>
+          <option name="timeStamp" value="49" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/CoinnoeParentService.java</url>
+          <line>315</line>
+          <option name="timeStamp" value="50" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

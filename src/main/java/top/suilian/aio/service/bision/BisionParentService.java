@@ -79,21 +79,12 @@ public class BisionParentService extends BaseService implements RobotAction {
 
         String trade = null;
 
-
         BigDecimal price1 = nN(price, Integer.valueOf(exchange.get("pricePrecision").toString()));
         BigDecimal num = nN(amount, Integer.valueOf(exchange.get("amountPrecision").toString()));
 
         Double minTradeLimit = Double.valueOf(String.valueOf(exchange.get("minTradeLimit")));
         if (num.compareTo(BigDecimal.valueOf(minTradeLimit)) >= 0) {
-
-            boolean flag = exchange.containsKey("numThreshold");
-            if (flag) {
-                Double numThreshold1 = Double.valueOf(exchange.get("numThreshold"));
                 if (price1.compareTo(BigDecimal.ZERO) > 0) {
-                    if (num.compareTo(BigDecimal.valueOf(numThreshold1)) == 1) {
-                        num = BigDecimal.valueOf(numThreshold1);
-                    }
-
                     Map<String, Object> param = new TreeMap<String, Object>();
                     param.put("nonce", timestamp);
                     param.put("accesskey", exchange.get("apikey"));
@@ -118,33 +109,7 @@ public class BisionParentService extends BaseService implements RobotAction {
                     setTradeLog(id, "price[" + price1 + "] num[" + num + "]", 1);
                     logger.info("robotId" + id + "----" + "挂单失败结束11");
                 }
-            } else {
-                Map<String, Object> param = new TreeMap<String, Object>();
-                param.put("nonce", timestamp);
-                param.put("accesskey", exchange.get("apikey"));
-                param.put("entrustType", "0");
-                param.put("price", String.valueOf(price1));
-                param.put("number", String.valueOf(num));
-                param.put("type", type == 0 ? "0" : "1");
-                param.put("market", exchange.get("market"));
-                String peload = toSort(param);
-                String signature = HMAC.sha256_HMAC(peload, exchange.get("tpass"));
-                param.put("signature", signature);
-                logger.info("挂单参数:" + peload);
-                trade = httpUtil.post(baseUrl + "/trade/api/v1/order", param);
-                setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
-                logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
-                JSONObject jsonObject = JSONObject.fromObject(trade);
-                if (200 != jsonObject.getInt("code")) {
-                    setWarmLog(id, 3, "API接口错误", jsonObject.getString("msgInfo"));
-                }
             }
-
-
-        } else {
-            setTradeLog(id, "交易量最小为：" + precision.get("minTradeLimit"), 0);
-            logger.info("robotId" + id + "----" + "挂单失败结束11");
-        }
 
         valid = 1;
         return trade;
@@ -336,7 +301,7 @@ public class BisionParentService extends BaseService implements RobotAction {
         HashMap<String, String> hashMap = new HashMap<>();
         String submitOrder = null;
         try {
-            submitOrder = submitTrade(type, price, amount);
+            submitOrder = submitTrade(type==1?1:0, price, amount);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

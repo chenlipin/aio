@@ -93,6 +93,9 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_BITTEREX=55;   //bitterex
 
+    public static final int KEY_EXCHANGE_ZB=56;   //zb
+
+    public static final int KEY_EXCHANGE_COINNOE=57;   //coinnoe
     //endregion
 
 

@@ -330,8 +330,35 @@ public class HMAC {
         return strResult;
     }
 
+    public  static String SHA1(String str){
+        MessageDigest sha1Digest = null;
+        try {
+            sha1Digest = MessageDigest.getInstance("SHA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        byte[] sha1Encode = sha1Digest.digest(str.getBytes());
+        String signSecret = convertByteToHexString(sha1Encode);
+        return signSecret;
+    }
+    public static String convertByteToHexString(byte[] bytes) {
+        String result = "";
+        for (int i = 0; i < bytes.length; i++) {
+            int temp = bytes[i] & 0xff;
+            String tempHex = Integer.toHexString(temp);
+            if (tempHex.length() < 2) {
+                result += "0" + tempHex;
+            } else {
+                result += tempHex;
+            }
+        }
+        return result;
+
+    }
+
     public static void main(String[] args) {
-        String s = HMAC.SHA512("");
+        String s = HMAC.md5_HMAC("accesskey=ce2a18e0-dshs-4c44-4515-9aca67dd706e&acctType=0&amount=0.001&currency=zb_qc&method=order&price=1.0&tradeType=1",
+                "86429c69799d3d6ac5da5c2c514baa874d75a4ba");
         System.out.println(s);
     }
 
