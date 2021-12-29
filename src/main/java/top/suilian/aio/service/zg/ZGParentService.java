@@ -397,7 +397,7 @@ public class ZGParentService extends BaseService implements RobotAction {
     public Map<String, String> submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
         String orderId = "";
         HashMap<String, String> hashMap = new HashMap<>();
-        String submitOrder = submitOrder(type, price, amount);
+        String submitOrder = submitOrder(type==1?2:1 ,price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
             if ("0".equals(jsonObject.getString("code"))) {

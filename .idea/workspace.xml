@@ -4,26 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f9f995ce-7686-48a2-aa52-c3126f612e92" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/kucoin/KucoinParentService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/kucoin/KucoinService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/kucoin/newKline/NewKucoinKline.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/kucoin/newKline/RunNewKucoinKline.java" afterDir="false" />
+    <list default="true" id="8557044c-4e1c-4db1-816f-53730281e38e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitterex/BitterexParentService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitterex/BitterexService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitterex/newKline/NewBitterexKline.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitterex/newKline/RunNewBitterexKline.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/CoinnoeParentService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/CoinnoeService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/newKline/NewCoinoneKline.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/newKline/RunNewCoinnoeKline.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zb/ZbParentService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zb/ZbService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zb/newKline/NewZbKline.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zb/newKline/RunNewZbKline.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/RandomUtilsme.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/RandomUtilsme.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/HMAC.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/HMAC.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/RobotController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/RobotController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/dao/ApitradeLogMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/dao/ApitradeLogMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/dao/TradeLogMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/dao/TradeLogMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/BisionParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/BisionParentService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fchain/FChainParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fchain/FChainParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/depthReferToZg/ZgDepthToZg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/depthReferToZg/ZgDepthToZg.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/vo/CancalAllOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/vo/CancalAllOrder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/ZGParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/ZGParentService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/mybatis/ApitradeLogMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mybatis/ApitradeLogMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/mybatis/TradeLogMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mybatis/TradeLogMapper.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,25 +44,30 @@
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fubt/kline/FubtKline.java" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/BitMartParentService.java" root0="SKIP_INSPECTION" />
   </component>
-  <component name="ProjectId" id="22fMVTsSyo2bKSBQTmwLgG2frc0" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
   </component>
-  <component name="ProjectViewState">
-    <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showLibraryContents" value="true" />
-  </component>
   <component name="PropertiesComponent">
-    <property name="RequestMappingsPanelOrder0" value="0" />
-    <property name="RequestMappingsPanelOrder1" value="1" />
-    <property name="RequestMappingsPanelWidth0" value="75" />
-    <property name="RequestMappingsPanelWidth1" value="75" />
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bkex" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\wandong\Desktop\rt_wd\java\aio\src\main\java\top\suilian\aio\service\bkex" />
+      <recent name="C:\Users\wandong\Desktop\rt_wd\java\aio\src\main\java\top\suilian\aio\service\zbg" />
+    </key>
   </component>
   <component name="RunManager">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="AioApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="aio" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="top.suilian.aio.AioApplication" />
@@ -69,30 +76,12 @@
       </method>
     </configuration>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <changelist id="f9f995ce-7686-48a2-aa52-c3126f612e92" name="Default Changelist" comment="" />
-      <created>1640224212396</created>
-      <option name="number" value="Default" />
-      <option name="presentableId" value="Default" />
-      <updated>1640224212396</updated>
-      <workItem from="1640224215015" duration="608000" />
-      <workItem from="1640741437052" duration="630000" />
-    </task>
     <servers />
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
-        <entry key="1">
-          <value>
-            <State />
-          </value>
-        </entry>
         <entry key="MAIN">
           <value>
             <State />

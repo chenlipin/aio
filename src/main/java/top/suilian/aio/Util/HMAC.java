@@ -291,5 +291,75 @@ public class HMAC {
         return httpParams.toString();
     }
 
+    public static String SHA512( String strText) {
+        return SHA(strText);
+    }
+
+    private static  String SHA(String strText) {
+        // 返回值
+        String strResult = null;
+
+        // 是否是有效字符串
+
+            try {
+                // SHA 加密开始
+                // 创建加密对象 并傳入加密類型
+                MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+                // 传入要加密的字符串
+                messageDigest.update(strText.getBytes());
+                // 得到 byte 類型结果
+                byte byteBuffer[] = messageDigest.digest();
+
+                // 將 byte 轉換爲 string
+                StringBuffer strHexString = new StringBuffer();
+                // 遍歷 byte buffer
+                for (int i = 0; i < byteBuffer.length; i++) {
+                    String hex = Integer.toHexString(0xff & byteBuffer[i]);
+                    if (hex.length() == 1) {
+                        strHexString.append('0');
+                    }
+                    strHexString.append(hex);
+                }
+                // 得到返回結果
+                strResult = strHexString.toString();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+
+
+        return strResult;
+    }
+
+    public  static String SHA1(String str){
+        MessageDigest sha1Digest = null;
+        try {
+            sha1Digest = MessageDigest.getInstance("SHA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        byte[] sha1Encode = sha1Digest.digest(str.getBytes());
+        String signSecret = convertByteToHexString(sha1Encode);
+        return signSecret;
+    }
+    public static String convertByteToHexString(byte[] bytes) {
+        String result = "";
+        for (int i = 0; i < bytes.length; i++) {
+            int temp = bytes[i] & 0xff;
+            String tempHex = Integer.toHexString(temp);
+            if (tempHex.length() < 2) {
+                result += "0" + tempHex;
+            } else {
+                result += tempHex;
+            }
+        }
+        return result;
+
+    }
+
+    public static void main(String[] args) {
+        String s = HMAC.md5_HMAC("accesskey=ce2a18e0-dshs-4c44-4515-9aca67dd706e&acctType=0&amount=0.001&currency=zb_qc&method=order&price=1.0&tradeType=1",
+                "86429c69799d3d6ac5da5c2c514baa874d75a4ba");
+        System.out.println(s);
+    }
 
 }

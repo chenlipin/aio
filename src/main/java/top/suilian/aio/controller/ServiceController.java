@@ -194,6 +194,22 @@ public class ServiceController extends BaseController {
                     case Constant.KEY_EXCHANGE_KUCOIN:                 //kucoin
                         kucoinService.start(operationRequest.getId(), operationRequest.getType());
                         break;
+
+                    case Constant.KEY_EXCHANGE_BITTEREX:             //bitterex
+                        bitterexService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
+                    case Constant.KEY_EXCHANGE_ZB:             //zb
+                        zbService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
+                    case Constant.KEY_EXCHANGE_COINNOE:             //coinnoe
+                        coinnoeService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
+                    case Constant.KEY_EXCHANGE_ZBG:             //zbg
+                        zbgService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
+                    case Constant.KEY_EXCHANGE_BKEX:             //bkex
+                        bkexService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
                 }
                 if (operationRequest.getCategory() == 1) {
                     insertRobotLog(operationRequest.getId(), "重启机器人", Constant.KEY_STATUS_RESTART);
@@ -368,6 +384,21 @@ public class ServiceController extends BaseController {
                 case Constant.KEY_EXCHANGE_KUCOIN:                 //kucoin
                     kucoinService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
+                case Constant.KEY_EXCHANGE_BITTEREX:                 //bitterex
+                    bitterexService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_ZB:             //zb
+                    zbService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_COINNOE:             //coinnoe
+                    coinnoeService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_ZBG:             //zbg
+                    zbgService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_BKEX:             //bkex
+                    bkexService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
             }
         } else {
             robotService.stopRobot(operationRequest.getId());
@@ -540,6 +571,21 @@ public class ServiceController extends BaseController {
                     break;
                 case Constant.KEY_EXCHANGE_KUCOIN:                 //kucoin
                     kucoinService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_BITTEREX:                 //bitterex
+                    bitterexService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_ZB:             //zb
+                    zbService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_COINNOE:             //coinnoe
+                    coinnoeService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_ZBG:             //zbg
+                    zbgService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_BKEX:             //bkex
+                    bkexService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {
