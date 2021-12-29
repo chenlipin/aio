@@ -340,7 +340,7 @@ public class Constant {
      */
     public static final String KEY_LOG_PATH_BISION_LINE = "bision/ownkline";           //bision日志路径 自己刷K线 日志路径
 
-
+    public static final String KEY_LOG_PATH_BKEX_LINE = "bkex/ownkline";           //bision日志路径 自己刷K线 日志路径
     /**
      * fbsex 日志路径
      */

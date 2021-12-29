@@ -1,6 +1,7 @@
 package top.suilian.aio.service.bkex.coinnoe;
 
 import com.alibaba.fastjson.JSON;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.DependsOn;
@@ -25,7 +26,7 @@ import java.util.*;
 @Service
 @DependsOn("beanContext")
 public class BkexParentService extends BaseService implements RobotAction {
-    public String baseUrl = "https://api.coinone.co.kr/v2";
+    public String baseUrl = "https://api.bkex.com";
     public String host = "";
     public RunHotcoinRandomDepth runHotcoinRandomDepth = BeanContext.getBean(RunHotcoinRandomDepth.class);
 
@@ -79,7 +80,7 @@ public class BkexParentService extends BaseService implements RobotAction {
         String typeStr = type == 1 ? "买" : "卖";
 
         logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
-        String uri = type == 1 ? "/order/limit_buy" : "/order/limit_sell";
+        String uri = "/v2/u/order/create";
         // 输出字符串
         String trade = null;
         BigDecimal price1 = nN(price, Integer.parseInt(precision.get("pricePrecision").toString()));
@@ -97,21 +98,27 @@ public class BkexParentService extends BaseService implements RobotAction {
                     }
                     Map<String, String> params = new TreeMap<>();
                     HashMap<String, String> head = new HashMap<>();
-                    params.put("access_token", exchange.get("apikey"));
-                    params.put("nonce", time + "");
+                    params.put("type", "LIMIT");
+                    params.put("direction", type==1?"BID":"ASK");
                     params.put("price", price1 + "");
-                    params.put("qty", amount + "");
-                    params.put("currency", exchange.get("market"));
-                    String play = HMAC.Base64(JSON.toJSONString(params));
-                    head.put("X-COINONE-PAYLOAD", play);
-                    String sign = HMAC.Hmac_SHA512(play, exchange.get("tpass").toUpperCase());
-                    head.put("X-COINONE-SIGNATURE", sign);
-                    logger.info("挂单参数" + params);
-                    trade = httpUtil.post(baseUrl + uri, params, head);
+                    params.put("volume", amount + "");
+                    params.put("symbol", exchange.get("market"));
+                    String sort=toSort(params);
+                    String sign= HMAC.sha256_HMAC(sort,exchange.get("tpass"));
+                    head.put("X_ACCESS_KEY",exchange.get("apikey"));
+                    head.put("X_SIGNATURE",sign);
+                    head.put("Cache-Control","no-cache");
+                    try {
+                        trade=httpUtil.post(baseUrl+"/v2/u/order/create",params,head);
+                        setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+                        logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
 
                     JSONObject jsonObject = JSONObject.fromObject(trade);
-                    if (0 != jsonObject.getInt("errorCode")) {
-                        setWarmLog(id, 3, "API接口错误", jsonObject.getString("errorMsg"));
+                    if (0 != jsonObject.getInt("code")) {
+                        setWarmLog(id, 3, "API接口错误", jsonObject.getString("msg"));
                     }
 
                     setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
@@ -124,21 +131,27 @@ public class BkexParentService extends BaseService implements RobotAction {
             } else {
                 Map<String, String> params = new TreeMap<>();
                 HashMap<String, String> head = new HashMap<>();
-                params.put("access_token", exchange.get("apikey"));
-                params.put("nonce", time + "");
+                params.put("type", "LIMIT");
+                params.put("direction", type==1?"BID":"ASK");
                 params.put("price", price1 + "");
-                params.put("qty", amount + "");
-                params.put("currency", exchange.get("market"));
-                String play = HMAC.Base64(JSON.toJSONString(params));
-                head.put("X-COINONE-PAYLOAD", play);
-                String sign = HMAC.Hmac_SHA512(play, exchange.get("tpass").toUpperCase());
-                head.put("X-COINONE-SIGNATURE", sign);
-                logger.info("挂单参数" + params);
-                trade = httpUtil.post(baseUrl + uri, params, head);
+                params.put("volume", amount + "");
+                params.put("symbol", exchange.get("market"));
+                String sort=toSort(params);
+                String sign= HMAC.sha256_HMAC(sort,exchange.get("tpass"));
+                head.put("X_ACCESS_KEY",exchange.get("apikey"));
+                head.put("X_SIGNATURE",sign);
+                head.put("Cache-Control","no-cache");
+                try {
+                    trade=httpUtil.post(baseUrl+"/v2/u/order/create",params,head);
+                    setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+                    logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
 
                 JSONObject jsonObject = JSONObject.fromObject(trade);
-                if (0 != jsonObject.getInt("errorCode")) {
-                    setWarmLog(id, 3, "API接口错误", jsonObject.getString("errorMsg"));
+                if (0 != jsonObject.getInt("code")) {
+                    setWarmLog(id, 3, "API接口错误", jsonObject.getString("msg"));
                 }
                 setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                 logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
@@ -160,35 +173,31 @@ public class BkexParentService extends BaseService implements RobotAction {
         BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
         BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
         String trade = null;
-        long time = new Date().getTime() / 1000;
-        String timestamp = String.valueOf(new Date().getTime());
-        String typeStr = type == 0 ? "买" : "卖";
-        String uri = type == 1 ? "/order/limit_buy" : "/order/limit_sell";
-        logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
-        // 输出字符串
         Map<String, String> params = new TreeMap<>();
         HashMap<String, String> head = new HashMap<>();
-        params.put("access_token", exchange.get("apikey"));
-        params.put("nonce", time + "");
+        params.put("type", "LIMIT");
+        params.put("direction", type==1?"BID":"ASK");
         params.put("price", price1 + "");
-        params.put("qty", num + "");
-        params.put("currency", exchange.get("market"));
-        String play = HMAC.Base64(JSON.toJSONString(params));
-        head.put("X-COINONE-PAYLOAD", play);
-        String sign = HMAC.Hmac_SHA512(play, exchange.get("tpass").toUpperCase());
-        head.put("X-COINONE-SIGNATURE", sign);
-        logger.info("挂单参数" + params);
+        params.put("volume", amount + "");
+        params.put("symbol", exchange.get("market"));
+        String sort=toSort(params);
+        String sign= HMAC.sha256_HMAC(sort,exchange.get("tpass"));
+        head.put("X_ACCESS_KEY",exchange.get("apikey"));
+        head.put("X_SIGNATURE",sign);
+        head.put("Cache-Control","no-cache");
         try {
-            trade = httpUtil.post(baseUrl + uri, params, head);
+            trade=httpUtil.post(baseUrl+"/v2/u/order/create",params,head);
+            setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+            logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
         JSONObject jsonObject = JSONObject.fromObject(trade);
-        if (0 != jsonObject.getInt("errorCode")) {
-            setWarmLog(id, 3, "API接口错误", jsonObject.getString("errorMsg"));
+        if (0 != jsonObject.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("msg"));
         }
-        setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+       // setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         return trade;
     }
 
@@ -203,28 +212,15 @@ public class BkexParentService extends BaseService implements RobotAction {
 
     public String selectOrder(String orderId) throws UnsupportedEncodingException {
         String trade = null;
-        long time = new Date().getTime() / 1000;
-        String timestamp = String.valueOf(new Date().getTime());
-        Map<String, String> params = new TreeMap<>();
-        HashMap<String, String> head = new HashMap<>();
-        params.put("access_token", exchange.get("apikey"));
-        params.put("nonce", time + "");
-        params.put("order_id", orderId);
-        params.put("currency", exchange.get("market"));
-        String play = HMAC.Base64(JSON.toJSONString(params));
-        head.put("X-COINONE-PAYLOAD", play);
-        String sign = HMAC.Hmac_SHA512(play, exchange.get("tpass").toUpperCase());
-        head.put("X-COINONE-SIGNATURE", sign);
-        try {
-            trade = httpUtil.post(baseUrl + "/order/query_order/", params, head);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        JSONObject jsonObject = JSONObject.fromObject(trade);
-        if (0 != jsonObject.getInt("errorCode")) {
-            setWarmLog(id, 3, "API接口错误", jsonObject.getString("errorMsg"));
-        }
+        Map<String, String> param = new TreeMap<>();
+        HashMap<String, String> header = new HashMap<>();
+        param.put("orderId", orderId);
+        String sort = toSort(param);
+        String sign = HMAC.sha256_HMAC(sort, exchange.get("tpass"));
+        header.put("X_ACCESS_KEY", exchange.get("apikey"));
+        header.put("X_SIGNATURE", sign);
+        header.put("Cache-Control", "no-cache");
+        trade = httpUtil.getAddHead(baseUrl + "/v2/u/order/openOrder/detail?orderId="+orderId, header);
         return trade;
     }
 
@@ -236,33 +232,21 @@ public class BkexParentService extends BaseService implements RobotAction {
      * @return https://api.coinone.co.kr/v2/order/cancel/
      * @throws UnsupportedEncodingException
      */
-    public String cancelTrade(String orderId, BigDecimal qty, BigDecimal price) throws UnsupportedEncodingException {
+    public String cancelTrade(String orderId) throws UnsupportedEncodingException {
 
         String trade = null;
-        long time = new Date().getTime() / 1000;
-        String timestamp = String.valueOf(new Date().getTime());
-        Map<String, String> params = new TreeMap<>();
-        HashMap<String, String> head = new HashMap<>();
-        params.put("access_token", exchange.get("apikey"));
-        params.put("nonce", time + "");
-        params.put("order_id", orderId);
-        params.put("qty", qty + "");
-        params.put("price", price + "");
-        params.put("is_ask", "1");
-        params.put("currency", exchange.get("market"));
-        String play = HMAC.Base64(JSON.toJSONString(params));
-        head.put("X-COINONE-PAYLOAD", play);
-        String sign = HMAC.Hmac_SHA512(play, exchange.get("tpass").toUpperCase());
-        head.put("X-COINONE-SIGNATURE", sign);
-        try {
-            trade = httpUtil.post(baseUrl + "/order/cancel/", params, head);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
+        Map<String, String> param = new TreeMap<>();
+        HashMap<String, String> header = new HashMap<>();
+        param.put("orderId", orderId);
+        String sort = toSort(param);
+        String sign = HMAC.sha256_HMAC(sort, exchange.get("tpass"));
+        header.put("X_ACCESS_KEY", exchange.get("apikey"));
+        header.put("X_SIGNATURE", sign);
+        header.put("Cache-Control", "no-cache");
+        trade = httpUtil.post(baseUrl + "/v2/u/order/cancel",param, header);
         JSONObject jsonObject = JSONObject.fromObject(trade);
-        if (0 != jsonObject.getInt("errorCode") && 117 != jsonObject.getInt("errorCode")) {
-            setWarmLog(id, 3, "API接口错误", jsonObject.getString("errorMsg"));
+        if (0 != jsonObject.getInt("code") ) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("msg"));
         }
         return trade;
     }
@@ -288,41 +272,35 @@ public class BkexParentService extends BaseService implements RobotAction {
         }
         if (balance == null || overdue) {
             List<String> coinArr = Arrays.asList(coins.split("_"));
-
-            long time = new Date().getTime() / 1000;
-            Map<String, String> params = new TreeMap<>();
-            HashMap<String, String> head = new HashMap<>();
-            params.put("access_token", exchange.get("apikey"));
-            params.put("nonce", time + "");
-            String play = HMAC.Base64(JSON.toJSONString(params));
-            head.put("X-COINONE-PAYLOAD", play);
-            String sign = HMAC.Hmac_SHA512(play, exchange.get("tpass").toUpperCase());
-            head.put("X-COINONE-SIGNATURE", sign);
             String trade = null;
-            try {
-                trade = httpUtil.post(baseUrl + "/account/balance/", params, head);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            Map<String, String> param = new TreeMap<>();
+            HashMap<String, String> header = new HashMap<>();
+            String sort = toSort(param);
+            String sign = HMAC.sha256_HMAC(sort, exchange.get("tpass"));
+            header.put("X_ACCESS_KEY", exchange.get("apikey"));
+            header.put("X_SIGNATURE", sign);
+            header.put("Cache-Control", "no-cache");
+            trade = httpUtil.getAddHead(baseUrl + "/v2/u/account/balance", header);
             JSONObject tradesJson = JSONObject.fromObject(trade);
-
-
-            Double firstBalance = null;
-            Double lastBalance = null;
-            Double firstBalance1 = null;
-            Double lastBalance1 = null;
-
-            JSONObject jsonObject = tradesJson.getJSONObject(coinArr.get(0));
-            firstBalance = jsonObject.getDouble("avail");
-            firstBalance1 = jsonObject.getDouble("balance") - firstBalance;
-
-            JSONObject jsonObject1 = tradesJson.getJSONObject(coinArr.get(1));
-            lastBalance = jsonObject1.getDouble("avail");
-            lastBalance1 = jsonObject1.getDouble("balance") - firstBalance;
-            if (lastBalance < 10) {
+            JSONArray jsonArray = tradesJson.getJSONObject("data").getJSONArray("WALLET");
+            String firstBalance = null;
+            String lastBalance = null;
+            String firstBalance1 = null;
+            String lastBalance1 = null;
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                if(jsonObject.getString("currency").equals(coinArr.get(0))){
+                    firstBalance=jsonObject.getString("available");
+                    firstBalance1=jsonObject.getString("frozen");
+                }
+                if(jsonObject.getString("currency").equals(coinArr.get(1))){
+                    lastBalance=jsonObject.getString("available");
+                    lastBalance1=jsonObject.getString("frozen");
+                }
+            }
+            if (Double.parseDouble(lastBalance) < 10) {
                 setWarmLog(id, 0, "余额不足", coinArr.get(1).toUpperCase() + "余额为:" + lastBalance);
             }
-
             HashMap<String, String> balances = new HashMap<>();
             balances.put(coinArr.get(0), new BigDecimal(firstBalance).setScale(2,BigDecimal.ROUND_HALF_DOWN).toPlainString() + "_" +
                     new BigDecimal(firstBalance1).setScale(2,BigDecimal.ROUND_HALF_DOWN).toPlainString());
@@ -421,12 +399,12 @@ public class BkexParentService extends BaseService implements RobotAction {
         String submitOrder = submitOrder(type, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
-            if ("0".equals(jsonObject.getString("errorCode"))) {
-                orderId = jsonObject.getString("orderId");
+            if ("0".equals(jsonObject.getString("code"))) {
+                orderId = jsonObject.getString("data");
                 hashMap.put("res", "true");
                 hashMap.put("orderId", orderId);
             } else {
-                String msg = jsonObject.getString("errorMsg");
+                String msg = jsonObject.getString("msg");
                 hashMap.put("res", "false");
                 hashMap.put("orderId", msg);
             }
@@ -450,7 +428,7 @@ public class BkexParentService extends BaseService implements RobotAction {
     public String cancelTradeStr(String orderId) {
         String cancelTrade = "";
         try {
-            cancelTrade = cancelTrade(orderId, null, null);
+            cancelTrade = cancelTrade(orderId);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -485,5 +463,29 @@ public class BkexParentService extends BaseService implements RobotAction {
                 return TradeEnum.CANCEL;
 
         }
+    }
+
+    private static String toSort(Map<String, String> map) {
+        StringBuffer buffer = new StringBuffer();
+
+        int i = 0;
+        int max = map.size() - 1;
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+
+            if (entry.getValue() != null) {
+
+                if (i == max) {
+                    buffer.append(entry.getKey() + "=");
+                    buffer.append(entry.getValue().toString());
+                } else {
+                    buffer.append(entry.getKey() + "=");
+                    buffer.append(entry.getValue().toString() + "&");
+                }
+                i++;
+
+            }
+
+        }
+        return buffer.toString();
     }
 }

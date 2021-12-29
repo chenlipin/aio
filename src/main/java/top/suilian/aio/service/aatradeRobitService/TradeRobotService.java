@@ -22,6 +22,7 @@ import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.bision.BisionParentService;
 import top.suilian.aio.service.bitmart.BitMartParentService;
 import top.suilian.aio.service.bitterex.BitterexParentService;
+import top.suilian.aio.service.bkex.coinnoe.BkexParentService;
 import top.suilian.aio.service.coinnoe.CoinnoeParentService;
 import top.suilian.aio.service.coinstore.CoinStoreParentService;
 import top.suilian.aio.service.coinstore.CoinStoreService;
@@ -166,6 +167,9 @@ public class TradeRobotService {
                 break;
             case Constant.KEY_EXCHANGE_COINNOE:
                 robotAction = new CoinnoeParentService();
+                break;
+            case Constant.KEY_EXCHANGE_BKEX:
+                robotAction = new BkexParentService();
                 break;
             default:
                 return null;

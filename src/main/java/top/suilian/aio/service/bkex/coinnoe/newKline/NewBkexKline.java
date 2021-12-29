@@ -43,7 +43,7 @@ public class NewBkexKline extends BkexParentService {
         super.httpUtil = httpUtil;
         super.redisHelper = redisHelper;
         super.id = id;
-        super.logger = getLogger(Constant.KEY_LOG_PATH_BISION_LINE, id);
+        super.logger = getLogger(Constant.KEY_LOG_PATH_BKEX_LINE, id);
     }
 
     private BigDecimal intervalAmount = BigDecimal.ZERO;
@@ -81,7 +81,7 @@ public class NewBkexKline extends BkexParentService {
 
             setPrecision();
             logger.info("设置机器人交易规则结束");
-
+            submitOrder(2,new BigDecimal("0.002033"),new BigDecimal("2550"));
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本
@@ -103,15 +103,18 @@ public class NewBkexKline extends BkexParentService {
         logger.info("当前时间段单量百分比：" + transactionRatio);
 
         if (runTime < timeSlot) {
-            String trades = httpUtil.get("https://api.coinone.co.kr/orderbook/?currency="+exchange.get("market"));
+            String trades = httpUtil.get(baseUrl+"/v2/q/depth?depth=1&symbol="+exchange.get("market"));
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
             if (tradesObj != null) {
-                JSONArray bid = tradesObj.getJSONArray("bid");
-                JSONArray ask = tradesObj.getJSONArray("ask");
+                com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
+                List<List<String>> buyPrices = (List<List<String>>) data.get("bid");
 
-                BigDecimal buyPri = new BigDecimal( bid.getJSONObject(0).getString("price"));
-                BigDecimal sellPri = new BigDecimal(ask.getJSONObject(0).getString("price"));
+                List<List<String>> sellPrices = (List<List<String>>) data.get("ask");
+
+                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
+
 
                 if (sellPri.compareTo(buyPri) == 0) {
                     //平台撮合功能失败
@@ -218,19 +221,19 @@ public class NewBkexKline extends BkexParentService {
                 String resultJson = submitTrade(type, price1, num1);
                 JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
-                if (jsonObject != null && jsonObject.getInt("errorCode") == 0) {
-                    String tradeId = jsonObject.getString("orderId");
+                if (jsonObject != null && jsonObject.getInt("code") == 0) {
+                    String tradeId = jsonObject.getString("data");
 
                     orderIdOne = tradeId;
                     String resultJson1 = submitTrade(type == 1 ? 2 : 1, price, num);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
-                    if (jsonObject1 != null && jsonObject1.getInt("errorCode") == 0) {
-                        orderIdTwo = jsonObject1.getString("orderId");
+                    if (jsonObject1 != null && jsonObject1.getInt("code") == 0) {
+                        orderIdTwo = jsonObject1.getString("data");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
 
                     } else {
-                        String res = cancelTrade(tradeId,num1,price1);
+                        String res = cancelTrade(tradeId);
                         setTradeLog(id, "撤单[" + tradeId + "]=> " + res, 0, "000000");
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, tradeId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
@@ -300,16 +303,17 @@ public class NewBkexKline extends BkexParentService {
     public BigDecimal getRandomPrice() throws UnsupportedEncodingException {
         BigDecimal price = null;
 
-        String trades = httpUtil.get("https://api.coinone.co.kr/orderbook/?currency="+exchange.get("market"));
+        String trades = httpUtil.get(baseUrl+"/v2/q/depth?depth=1&symbol="+exchange.get("market"));
         //获取深度 判断平台撮合是否成功
         com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
         if (tradesObj != null) {
-            JSONArray bid = tradesObj.getJSONArray("bid");
-            JSONArray ask = tradesObj.getJSONArray("ask");
+            com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
+            List<List<String>> buyPrices = (List<List<String>>) data.get("bid");
 
-            BigDecimal buyPri = new BigDecimal( bid.getJSONObject(0).getString("price"));
-            BigDecimal sellPri = new BigDecimal(ask.getJSONObject(0).getString("price"));
+            List<List<String>> sellPrices = (List<List<String>>) data.get("ask");
 
+            BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+            BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
             BigDecimal intervalPrice = sellPri.subtract(buyPri);
 
@@ -317,11 +321,11 @@ public class NewBkexKline extends BkexParentService {
             logger.info("robotId" + id + "----" + "当前买一卖一差值：" + intervalPrice);
 
             //判断盘口买卖检测开关是否开启
-            if ("1".equals(exchange.get("isTradeCheck"))) {
+            if ("0".equals(exchange.get("isTradeCheck"))) {
 
                 //吃堵盘口的订单
-                BigDecimal buyAmount = new BigDecimal(bid.getJSONObject(0).getString("qty"));
-                BigDecimal sellAmount = new BigDecimal(ask.getJSONObject(0).getString("qty"));
+                BigDecimal buyAmount = new BigDecimal(String.valueOf(buyPrices.get(0).get(1)));
+                BigDecimal sellAmount = new BigDecimal(String.valueOf(sellPrices.get(0).get(1)));
                 BigDecimal minAmount = new BigDecimal(precision.get("minTradeLimit").toString());
                 if (maxEatOrder == 0) {
                     logger.info("吃单上限功能未开启：maxEatOrder=" + maxEatOrder);
@@ -342,9 +346,9 @@ public class NewBkexKline extends BkexParentService {
                                 setTradeLog(id, "堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]", 0);
                                 logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
 
-                                JSONObject jsonObject = judgeRes(sellOrder, "errorCode", "submitTrade");
-                                if (jsonObject != null && jsonObject.getInt("errorCode") == 0) {
-                                    sellOrderId = jsonObject.getString("orderId");
+                                JSONObject jsonObject = judgeRes(sellOrder, "code", "submitTrade");
+                                if (jsonObject != null && jsonObject.getInt("code") == 0) {
+                                    sellOrderId = jsonObject.getString("data");
                                 }
                                 return price;
                             } catch (UnsupportedEncodingException e) {
@@ -373,9 +377,9 @@ public class NewBkexKline extends BkexParentService {
                                 setTradeLog(id, "堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]", 0);
                                 logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
 
-                                JSONObject jsonObject = judgeRes(buyOrder, "errorCode", "submitTrade");
-                                if (jsonObject != null && jsonObject.getInt("code") == 1000) {
-                                    buyOrderId = jsonObject.getString("orderId");
+                                JSONObject jsonObject = judgeRes(buyOrder, "code", "submitTrade");
+                                if (jsonObject != null && jsonObject.getInt("code") == 0) {
+                                    buyOrderId = jsonObject.getString("data");
                                 }
                                 return price;
                             } catch (UnsupportedEncodingException e) {
@@ -545,7 +549,7 @@ public class NewBkexKline extends BkexParentService {
                     } else {
 
                         sleep(200, Integer.parseInt(exchange.get("isMobileSwitch")));
-                        String res = cancelTrade(tradeId,null,null);
+                        String res = cancelTrade(tradeId);
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, tradeId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                         setTradeLog(id, "刷开区间撤单[" + tradeId + "]=>" + res, 0, "#67c23a");
@@ -568,21 +572,19 @@ public class NewBkexKline extends BkexParentService {
             String str = selectOrder(orderId);
             JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
             if (jsonObject != null) {
-                String status = jsonObject.getString("status");
-                if ("filled".equals(status)) {
+                if(jsonObject.getString("msg").equals("Order does not exist.")){
                     setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
-                } else {
-                    String res = cancelTrade(orderId,new BigDecimal(jsonObject.getString("qty")),new BigDecimal(jsonObject.getString("qty")));
+                }else {
+                    String res = cancelTrade(orderId);
                     JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                     setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                     setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");
                     if (Integer.parseInt(exchange.get("orderSumSwitch")) == 1 && type == 1) {    //防褥羊毛开关
                         orderNum++;
                         setWarmLog(id,2,"订单{"+orderId+"}撤单,撞单数为"+orderNum,"");
+
                     }
                 }
-
-
             }
         } catch (UnsupportedEncodingException e) {
             exceptionMessage = collectExceptionStackMsg(e);
