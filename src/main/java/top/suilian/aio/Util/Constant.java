@@ -89,6 +89,8 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_COINSTORE=53;   //COINSTORE
 
+    public static final int KEY_EXCHANGE_KUCOIN=54;   //KUCOIN
+
 
     //endregion
 

@@ -190,6 +190,10 @@ public class ServiceController extends BaseController {
                     case Constant.KEY_EXCHANGE_COINSTORE:                 //coinstore
                         coinStoreService.start(operationRequest.getId(), operationRequest.getType());
                         break;
+
+                    case Constant.KEY_EXCHANGE_KUCOIN:                 //kucoin
+                        kucoinService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
                 }
                 if (operationRequest.getCategory() == 1) {
                     insertRobotLog(operationRequest.getId(), "重启机器人", Constant.KEY_STATUS_RESTART);
@@ -361,6 +365,9 @@ public class ServiceController extends BaseController {
                 case Constant.KEY_EXCHANGE_COINSTORE:                //cpoinstore
                     coinStoreService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
+                case Constant.KEY_EXCHANGE_KUCOIN:                 //kucoin
+                    kucoinService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
             }
         } else {
             robotService.stopRobot(operationRequest.getId());
@@ -530,6 +537,9 @@ public class ServiceController extends BaseController {
                     break;
                 case Constant.KEY_EXCHANGE_COINSTORE:                //bitmart
                     coinStoreService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_KUCOIN:                 //kucoin
+                    kucoinService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {

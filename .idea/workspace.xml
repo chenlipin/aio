@@ -4,7 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7a4f2a6f-6a1d-4ebe-9f6b-4c386d89653a" name="Default Changelist" comment="" />
+    <list default="true" id="f9f995ce-7686-48a2-aa52-c3126f612e92" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/kucoin/KucoinParentService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/kucoin/KucoinService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/kucoin/newKline/NewKucoinKline.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/kucoin/newKline/RunNewKucoinKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/RandomUtilsme.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/RandomUtilsme.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/RobotController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/RobotController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/dao/ApitradeLogMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/dao/ApitradeLogMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/dao/TradeLogMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/dao/TradeLogMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/BisionParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/BisionParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fchain/FChainParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fchain/FChainParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/depthReferToZg/ZgDepthToZg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/depthReferToZg/ZgDepthToZg.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/vo/CancalAllOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/vo/CancalAllOrder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mybatis/ApitradeLogMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mybatis/ApitradeLogMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mybatis/TradeLogMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mybatis/TradeLogMapper.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,7 +42,7 @@
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fubt/kline/FubtKline.java" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/BitMartParentService.java" root0="SKIP_INSPECTION" />
   </component>
-  <component name="ProjectId" id="21iLnGkbWnnQKDacBQIXl8js9sj" />
+  <component name="ProjectId" id="22fMVTsSyo2bKSBQTmwLgG2frc0" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
   </component>
@@ -41,17 +61,6 @@
     <property name="aspect.path.notification.shown" value="true" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="AioApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="aio" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="top.suilian.aio.AioApplication" />
@@ -63,14 +72,13 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="7a4f2a6f-6a1d-4ebe-9f6b-4c386d89653a" name="Default Changelist" comment="" />
-      <created>1638419128192</created>
+      <changelist id="f9f995ce-7686-48a2-aa52-c3126f612e92" name="Default Changelist" comment="" />
+      <created>1640224212396</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1638419128192</updated>
-      <workItem from="1638419133953" duration="2291000" />
-      <workItem from="1639013334073" duration="734000" />
-      <workItem from="1639022536944" duration="2086000" />
+      <updated>1640224212396</updated>
+      <workItem from="1640224215015" duration="608000" />
+      <workItem from="1640741437052" duration="630000" />
     </task>
     <servers />
   </component>
@@ -82,27 +90,7 @@
       <map>
         <entry key="1">
           <value>
-            <State>
-              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
-              <option name="FILTERS">
-                <map>
-                  <entry key="branch">
-                    <value>
-                      <list>
-                        <option value="HEAD" />
-                      </list>
-                    </value>
-                  </entry>
-                  <entry key="structure">
-                    <value>
-                      <list>
-                        <option value="dir:C:/Users/wandong/Desktop/rt_wd/java/aio/src/main/java/top/suilian/aio/service/zbt" />
-                      </list>
-                    </value>
-                  </entry>
-                </map>
-              </option>
-            </State>
+            <State />
           </value>
         </entry>
         <entry key="MAIN">
@@ -110,11 +98,6 @@
             <State />
           </value>
         </entry>
-      </map>
-    </option>
-    <option name="OPEN_GENERIC_TABS">
-      <map>
-        <entry key="1" value="TOOL_WINDOW" />
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />

@@ -43,8 +43,8 @@ public class FChainParentService extends BaseService {
         String trade = null;
 
 
-        BigDecimal price1 = nN(price, Integer.valueOf(precision.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.valueOf(precision.get("amountPrecision").toString()));
+        BigDecimal price1 = nN(price, Integer.parseInt(precision.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.parseInt(precision.get("amountPrecision").toString()));
 
         Double minTradeLimit = Double.valueOf(String.valueOf(precision.get("minTradeLimit")));
         if (num.compareTo(BigDecimal.valueOf(minTradeLimit)) >= 0) {

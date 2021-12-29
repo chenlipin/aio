@@ -43,6 +43,8 @@ import top.suilian.aio.service.hotcoin.HotCoinService;
 import top.suilian.aio.service.hwanc.HwancService;
 import top.suilian.aio.service.idcm.IdcmService;
 import top.suilian.aio.service.kcoin.KcoinService;
+import top.suilian.aio.service.kucoin.KucoinParentService;
+import top.suilian.aio.service.kucoin.KucoinService;
 import top.suilian.aio.service.laex.LaexService;
 import top.suilian.aio.service.loex.LoexService;
 import top.suilian.aio.service.mxc.MxcService;
@@ -193,6 +195,8 @@ public class BaseController {
     @Autowired
     CoinStoreService coinStoreService;
 
+    @Autowired
+    KucoinService kucoinService;
 
     @Autowired
     GwetService GwetService;

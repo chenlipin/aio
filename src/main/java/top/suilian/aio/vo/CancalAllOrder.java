@@ -24,6 +24,8 @@ public class CancalAllOrder implements Serializable {
 
     private String type;
 
+    private String time;
+
 
 
 }

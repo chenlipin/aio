@@ -96,6 +96,8 @@ public class ZgDepthToZg extends ZGParentService {
         depth = HuoBiUtils.getDepth(exchange.get("referMarket"));
         logger.info(JSONObject.toJSONString(depth));
         Integer deepNum=Integer.parseInt(exchange.get("deepNum"));
+
+        BigDecimal maxAmount = new BigDecimal(exchange.get("maxAmount"));
         BigDecimal amountPoint = new BigDecimal(exchange.get("amountPoint"));
 
         Map<String, String> bids = depth.get("bids");
@@ -116,6 +118,9 @@ public class ZgDepthToZg extends ZGParentService {
                 price = price.multiply(buyPoint);
 
                 BigDecimal amount = new BigDecimal(bids.get(key)).multiply(amountPoint);
+                if(maxAmount.compareTo(amount)<=0){
+                    continue;
+                }
                 String order = submitOrder(2, price, amount);
                 JSONObject jsonObject = JSONObject.parseObject(order);
                 String orderIdTwo = jsonObject.getJSONObject("result").getString("id");
@@ -131,6 +136,9 @@ public class ZgDepthToZg extends ZGParentService {
                 BigDecimal price = new BigDecimal(key);
                 price = price.multiply(sellPoint);
                 BigDecimal amount =  new BigDecimal(bids.get(key)).multiply(amountPoint);
+                if(maxAmount.compareTo(amount)<=0){
+                    continue;
+                }
                 String order = submitOrder(1, price, amount);
                 JSONObject jsonObject = JSONObject.parseObject(order);
                 String orderIdTwo = jsonObject.getJSONObject("result").getString("id");
@@ -164,13 +172,15 @@ public class ZgDepthToZg extends ZGParentService {
             BigDecimal priceKline = new BigDecimal(refer.getPrice());
             priceKline = priceKline.multiply(buyPoint);
             BigDecimal amountKline =  new BigDecimal(refer.getAmount()).multiply(amountPoint);
-            String order1 = submitOrder(refer.getIsSell().equals("buy") ? 2 : 1, priceKline, amountKline);
-            JSONObject jsonObject = JSONObject.parseObject(order1);
-            buyOrder = jsonObject.getJSONObject("result").getString("id");
+            if(maxAmount.compareTo(amountKline)>0) {
+                String order1 = submitOrder(refer.getIsSell().equals("buy") ? 2 : 1, priceKline, amountKline);
+                JSONObject jsonObject = JSONObject.parseObject(order1);
+                buyOrder = jsonObject.getJSONObject("result").getString("id");
 
-            String order2 = submitOrder(refer.getIsSell().equals("buy") ? 1 : 2, priceKline, amountKline);
-            JSONObject jsonObject2 = JSONObject.parseObject(order2);
-            sellOrder = jsonObject2.getJSONObject("result").getString("id");
+                String order2 = submitOrder(refer.getIsSell().equals("buy") ? 1 : 2, priceKline, amountKline);
+                JSONObject jsonObject2 = JSONObject.parseObject(order2);
+                sellOrder = jsonObject2.getJSONObject("result").getString("id");
+            }
         } else {
             setTradeLog(id, "未切换交易对，请确认该对标平台存在该交易对", 0, "000000");
         }
