@@ -4,29 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8557044c-4e1c-4db1-816f-53730281e38e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitterex/BitterexParentService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitterex/BitterexService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitterex/newKline/NewBitterexKline.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitterex/newKline/RunNewBitterexKline.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/CoinnoeParentService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/CoinnoeService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/newKline/NewCoinoneKline.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/newKline/RunNewCoinnoeKline.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zb/ZbParentService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zb/ZbService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zb/newKline/NewZbKline.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zb/newKline/RunNewZbKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/HMAC.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/HMAC.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/BisionParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/BisionParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fchain/FChainParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fchain/FChainParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/ZGParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/ZGParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-    </list>
+    <list default="true" id="8557044c-4e1c-4db1-816f-53730281e38e" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
