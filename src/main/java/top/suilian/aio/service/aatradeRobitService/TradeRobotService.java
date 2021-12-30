@@ -32,6 +32,7 @@ import top.suilian.aio.service.loex.LoexParentService;
 import top.suilian.aio.service.mxc.MxcParentService;
 import top.suilian.aio.service.wbfex.WbfexParentService;
 import top.suilian.aio.service.zb.ZbParentService;
+import top.suilian.aio.service.zbg.ZbgParentService;
 import top.suilian.aio.service.zg.ZGParentService;
 import top.suilian.aio.vo.*;
 
@@ -167,6 +168,9 @@ public class TradeRobotService {
                 break;
             case Constant.KEY_EXCHANGE_COINNOE:
                 robotAction = new CoinnoeParentService();
+                break;
+            case Constant.KEY_EXCHANGE_ZBG:
+                robotAction = new ZbgParentService();
                 break;
             case Constant.KEY_EXCHANGE_BKEX:
                 robotAction = new BkexParentService();

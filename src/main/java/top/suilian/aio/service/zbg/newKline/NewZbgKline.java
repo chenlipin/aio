@@ -81,7 +81,6 @@ public class NewZbgKline extends ZbgParentService {
 
             setPrecision();
             logger.info("设置机器人交易规则结束");
-
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本
@@ -103,15 +102,17 @@ public class NewZbgKline extends ZbgParentService {
         logger.info("当前时间段单量百分比：" + transactionRatio);
 
         if (runTime < timeSlot) {
-            String trades = httpUtil.get("https://api.coinone.co.kr/orderbook/?currency="+exchange.get("market"));
+            String trades = httpUtil.get("https://kline.zbgpro.com/api/data/v1/entrusts?dataSize=1&marketName="+exchange.get("market"));
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
             if (tradesObj != null) {
-                JSONArray bid = tradesObj.getJSONArray("bid");
-                JSONArray ask = tradesObj.getJSONArray("ask");
+                com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("datas");
+                List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
 
-                BigDecimal buyPri = new BigDecimal( bid.getJSONObject(0).getString("price"));
-                BigDecimal sellPri = new BigDecimal(ask.getJSONObject(0).getString("price"));
+                List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
+
+                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
                 if (sellPri.compareTo(buyPri) == 0) {
                     //平台撮合功能失败
@@ -218,19 +219,19 @@ public class NewZbgKline extends ZbgParentService {
                 String resultJson = submitTrade(type, price1, num1);
                 JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
-                if (jsonObject != null && jsonObject.getInt("errorCode") == 0) {
-                    String tradeId = jsonObject.getString("orderId");
+                if (jsonObject != null && jsonObject.getJSONObject("resMsg").getInt("code") == 1) {
+                    String tradeId = jsonObject.getString("datas");
 
                     orderIdOne = tradeId;
                     String resultJson1 = submitTrade(type == 1 ? 2 : 1, price, num);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
-                    if (jsonObject1 != null && jsonObject1.getInt("errorCode") == 0) {
-                        orderIdTwo = jsonObject1.getString("orderId");
+                    if (jsonObject1 != null && jsonObject1.getJSONObject("resMsg").getInt("code") == 1) {
+                        orderIdTwo = jsonObject1.getString("datas");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
 
                     } else {
-                        String res = cancelTrade(tradeId,num1,price1);
+                        String res = cancelTrade(tradeId);
                         setTradeLog(id, "撤单[" + tradeId + "]=> " + res, 0, "000000");
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, tradeId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
@@ -300,15 +301,17 @@ public class NewZbgKline extends ZbgParentService {
     public BigDecimal getRandomPrice() throws UnsupportedEncodingException {
         BigDecimal price = null;
 
-        String trades = httpUtil.get("https://api.coinone.co.kr/orderbook/?currency="+exchange.get("market"));
+        String trades = httpUtil.get("https://kline.zbgpro.com/api/data/v1/entrusts?dataSize=1&marketName="+exchange.get("market"));
         //获取深度 判断平台撮合是否成功
         com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
         if (tradesObj != null) {
-            JSONArray bid = tradesObj.getJSONArray("bid");
-            JSONArray ask = tradesObj.getJSONArray("ask");
+            com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("datas");
+            List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
 
-            BigDecimal buyPri = new BigDecimal( bid.getJSONObject(0).getString("price"));
-            BigDecimal sellPri = new BigDecimal(ask.getJSONObject(0).getString("price"));
+            List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
+
+            BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+            BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
 
             BigDecimal intervalPrice = sellPri.subtract(buyPri);
@@ -320,8 +323,8 @@ public class NewZbgKline extends ZbgParentService {
             if ("1".equals(exchange.get("isTradeCheck"))) {
 
                 //吃堵盘口的订单
-                BigDecimal buyAmount = new BigDecimal(bid.getJSONObject(0).getString("qty"));
-                BigDecimal sellAmount = new BigDecimal(ask.getJSONObject(0).getString("qty"));
+                BigDecimal buyAmount = new BigDecimal(String.valueOf(buyPrices.get(0).get(1)));
+                BigDecimal sellAmount =new BigDecimal(String.valueOf(sellPrices.get(0).get(1)));
                 BigDecimal minAmount = new BigDecimal(precision.get("minTradeLimit").toString());
                 if (maxEatOrder == 0) {
                     logger.info("吃单上限功能未开启：maxEatOrder=" + maxEatOrder);
@@ -343,8 +346,8 @@ public class NewZbgKline extends ZbgParentService {
                                 logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
 
                                 JSONObject jsonObject = judgeRes(sellOrder, "errorCode", "submitTrade");
-                                if (jsonObject != null && jsonObject.getInt("errorCode") == 0) {
-                                    sellOrderId = jsonObject.getString("orderId");
+                                if (jsonObject != null && jsonObject.getJSONObject("resMsg").getInt("code") == 1) {
+                                    sellOrderId = jsonObject.getString("datas");
                                 }
                                 return price;
                             } catch (UnsupportedEncodingException e) {
@@ -374,8 +377,8 @@ public class NewZbgKline extends ZbgParentService {
                                 logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
 
                                 JSONObject jsonObject = judgeRes(buyOrder, "errorCode", "submitTrade");
-                                if (jsonObject != null && jsonObject.getInt("code") == 1000) {
-                                    buyOrderId = jsonObject.getString("orderId");
+                                if (jsonObject != null && jsonObject.getJSONObject("resMsg").getInt("code") == 1) {
+                                    buyOrderId = jsonObject.getString("datas");
                                 }
                                 return price;
                             } catch (UnsupportedEncodingException e) {
@@ -545,7 +548,7 @@ public class NewZbgKline extends ZbgParentService {
                     } else {
 
                         sleep(200, Integer.parseInt(exchange.get("isMobileSwitch")));
-                        String res = cancelTrade(tradeId,null,null);
+                        String res = cancelTrade(tradeId);
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, tradeId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                         setTradeLog(id, "刷开区间撤单[" + tradeId + "]=>" + res, 0, "#67c23a");
@@ -568,11 +571,11 @@ public class NewZbgKline extends ZbgParentService {
             String str = selectOrder(orderId);
             JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
             if (jsonObject != null) {
-                String status = jsonObject.getString("status");
+                String status = jsonObject.getJSONObject("datas").getString("state");
                 if ("filled".equals(status)) {
                     setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                 } else {
-                    String res = cancelTrade(orderId,new BigDecimal(jsonObject.getString("qty")),new BigDecimal(jsonObject.getString("qty")));
+                    String res = cancelTrade(orderId);
                     JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                     setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                     setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");
