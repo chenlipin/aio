@@ -18,6 +18,7 @@ import top.suilian.aio.service.biki.BikiService;
 import top.suilian.aio.service.bilian.BiLianService;
 import top.suilian.aio.service.bision.BisionService;
 import top.suilian.aio.service.bitai.BiTaiService;
+import top.suilian.aio.service.bithumb.BithumbService;
 import top.suilian.aio.service.bitmart.BitMartService;
 import top.suilian.aio.service.bitterex.BitterexService;
 import top.suilian.aio.service.bitvictory.BitvictoryService;
@@ -213,6 +214,8 @@ public class BaseController {
     ZbgService zbgService;
     @Autowired
     BkexService bkexService;
+    @Autowired
+    BithumbService bithumbService;
     @Autowired
     GwetService GwetService;
 
