@@ -102,6 +102,8 @@ public class Constant {
     public static final int KEY_EXCHANGE_BKEX=59;   //bkex
 
     public static final int KEY_EXCHANGE_bithumb=60;//bithumb
+
+    public static final int KEY_EXCHANGE_SKIESEX=61; //skiesex
     //endregion
 
 
