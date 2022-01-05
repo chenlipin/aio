@@ -105,7 +105,7 @@ public class BthexParentService extends BaseService {
 
                     trade = httpUtil.post(baseUrl + "?action=trade", params);
 
-                    setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 0 ? "05cbc8" : "ff6224");
+                  //  setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 0 ? "05cbc8" : "ff6224");
                     logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
 
                 } else {

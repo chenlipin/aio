@@ -18,6 +18,7 @@ import top.suilian.aio.service.biki.BikiService;
 import top.suilian.aio.service.bilian.BiLianService;
 import top.suilian.aio.service.bision.BisionService;
 import top.suilian.aio.service.bitai.BiTaiService;
+import top.suilian.aio.service.bithumb.BithumbService;
 import top.suilian.aio.service.bitmart.BitMartService;
 import top.suilian.aio.service.bitterex.BitterexService;
 import top.suilian.aio.service.bitvictory.BitvictoryService;
@@ -59,6 +60,7 @@ import top.suilian.aio.service.qb.QbService;
 import top.suilian.aio.service.ronance.RonanceService;
 import top.suilian.aio.service.s.SService;
 import top.suilian.aio.service.senbit.SenbitService;
+import top.suilian.aio.service.skiesex.SkiesexService;
 import top.suilian.aio.service.test.TestService;
 import top.suilian.aio.service.wbfex.WbfexService;
 import top.suilian.aio.service.xoxoex.XoxoexService;
@@ -213,6 +215,10 @@ public class BaseController {
     ZbgService zbgService;
     @Autowired
     BkexService bkexService;
+    @Autowired
+    BithumbService bithumbService;
+    @Autowired
+    SkiesexService skiesexService;
     @Autowired
     GwetService GwetService;
 

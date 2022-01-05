@@ -1,6 +1,0 @@
-{
-  "errcode": "-1",
-  "msg": "Required request body is missing: public top.suilian.aio.vo.ResponseEntity top.suilian.aio.controller.RobotController.trade(top.suilian.aio.vo.TradeReq)",
-  "data": null,
-  "id": null
-}

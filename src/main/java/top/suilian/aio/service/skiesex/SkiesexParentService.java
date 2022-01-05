@@ -1,7 +1,6 @@
-package top.suilian.aio.service.zbg;
+package top.suilian.aio.service.skiesex;
 
 import com.alibaba.fastjson.JSON;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.DependsOn;
@@ -25,8 +24,8 @@ import java.util.*;
 
 @Service
 @DependsOn("beanContext")
-public class ZbgParentService extends BaseService implements RobotAction {
-    public String baseUrl = "https://www.zbgpro.com";
+public class SkiesexParentService extends BaseService implements RobotAction {
+    public String baseUrl = "https://openapi.sky-x.com";
     public String host = "";
     public RunHotcoinRandomDepth runHotcoinRandomDepth = BeanContext.getBean(RunHotcoinRandomDepth.class);
 
@@ -76,11 +75,11 @@ public class ZbgParentService extends BaseService implements RobotAction {
      * @throws UnsupportedEncodingException
      */
     public String submitTrade(int type, BigDecimal price, BigDecimal amount) throws UnsupportedEncodingException {
-        long time = new Date().getTime() ;
+        long time = new Date().getTime() / 1000;
         String typeStr = type == 1 ? "买" : "卖";
 
         logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
-        String uri = "/exchange/api/v1/order/create";
+        String uri = "/order/entrusts";
         // 输出字符串
         String trade = null;
         BigDecimal price1 = nN(price, Integer.parseInt(precision.get("pricePrecision").toString()));
@@ -98,23 +97,24 @@ public class ZbgParentService extends BaseService implements RobotAction {
                     }
                     Map<String, String> params = new TreeMap<>();
                     HashMap<String, String> head = new HashMap<>();
-                    params.put("side", type==1?"buy":"sell");
+                    params.put("accesskey", exchange.get("apikey"));
+                    params.put("time", time + "");
                     params.put("price", price1 + "");
-                    params.put("amount", amount + "");
                     params.put("symbol", exchange.get("market"));
-                    String splice = HMAC.splice(params);
-                    String signStr = exchange.get("apikey") + time + com.alibaba.fastjson.JSONObject.toJSONString(params) + exchange.get("tpass");
-                    String sign = HMAC.MD5(signStr);
-                    head.put("Apiid",  exchange.get("apikey"));
-                    head.put("Timestamp",  time+"");
-                    head.put("Sign", sign);
+                    params.put("type","0");
+                    params.put("side",type==1?"1":"0");
+                    params.put("number", amount + "");
+                    String splicing = splicing(params);
+                    String tpass = HMAC.Hmac_SHA1(splicing, exchange.get("tpass"));
+                    String play = HMAC.Base64(JSON.toJSONString(params));
+                    head.put("Authorization", tpass);
                     logger.info("挂单参数" + params);
                     trade = httpUtil.postByPackcoin(baseUrl + uri, params, head);
                     JSONObject jsonObject = JSONObject.fromObject(trade);
-                    JSONObject resMsg = jsonObject.getJSONObject("resMsg");
-                    if (1 != resMsg.getInt("code")) {
-                        setWarmLog(id, 3, "API接口错误", resMsg.getString("message"));
+                    if (0 != jsonObject.getInt("errorCode")) {
+                        setWarmLog(id, 3, "API接口错误", jsonObject.getString("errorMsg"));
                     }
+
                     setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                     logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
 
@@ -125,22 +125,21 @@ public class ZbgParentService extends BaseService implements RobotAction {
             } else {
                 Map<String, String> params = new TreeMap<>();
                 HashMap<String, String> head = new HashMap<>();
-                params.put("side", type==1?"buy":"sell");
+                params.put("access_token", exchange.get("apikey"));
+                params.put("nonce", time + "");
                 params.put("price", price1 + "");
-                params.put("amount", amount + "");
-                params.put("symbol", exchange.get("market"));
-                String splice = HMAC.splice(params);
-                String signStr = exchange.get("apikey") + time + com.alibaba.fastjson.JSONObject.toJSONString(params) + exchange.get("tpass");
-                String sign = HMAC.MD5(signStr);
-                head.put("Apiid",  exchange.get("apikey"));
-                head.put("Timestamp",  time+"");
-                head.put("Sign", sign);
+                params.put("qty", amount + "");
+                params.put("currency", exchange.get("market"));
+                String play = HMAC.Base64(JSON.toJSONString(params));
+                head.put("X-COINONE-PAYLOAD", play);
+                String sign = HMAC.Hmac_SHA512(play, exchange.get("tpass").toUpperCase());
+                head.put("X-COINONE-SIGNATURE", sign);
                 logger.info("挂单参数" + params);
-                trade = httpUtil.postByPackcoin(baseUrl + uri, params, head);
+                trade = httpUtil.post(baseUrl + uri, params, head);
+
                 JSONObject jsonObject = JSONObject.fromObject(trade);
-                JSONObject resMsg = jsonObject.getJSONObject("resMsg");
-                if (1 != resMsg.getInt("code")) {
-                    setWarmLog(id, 3, "API接口错误", resMsg.getString("message"));
+                if (0 != jsonObject.getInt("errorCode")) {
+                    setWarmLog(id, 3, "API接口错误", jsonObject.getString("errorMsg"));
                 }
                 setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                 logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
@@ -159,34 +158,36 @@ public class ZbgParentService extends BaseService implements RobotAction {
 
     //对标下单
     public String submitOrder(int type, BigDecimal price, BigDecimal amount) {
-        long time = new Date().getTime() ;
-        String typeStr = type == 1 ? "买" : "卖";
         BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
         BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
         String trade = null;
+        long time = new Date().getTime() / 1000;
+        String timestamp = String.valueOf(new Date().getTime());
+        String typeStr = type == 0 ? "买" : "卖";
+        String uri = type == 1 ? "/order/limit_buy" : "/order/limit_sell";
+        logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
+        // 输出字符串
         Map<String, String> params = new TreeMap<>();
         HashMap<String, String> head = new HashMap<>();
-        params.put("side", type==1?"buy":"sell");
+        params.put("access_token", exchange.get("apikey"));
+        params.put("nonce", time + "");
         params.put("price", price1 + "");
-        params.put("amount", amount + "");
-        params.put("symbol", exchange.get("market"));
-        String splice = HMAC.splice(params);
-        String signStr = exchange.get("apikey") + time + com.alibaba.fastjson.JSONObject.toJSONString(params) + exchange.get("tpass");
-        String sign = HMAC.MD5(signStr);
-        head.put("Apiid",  exchange.get("apikey"));
-        head.put("Timestamp",  time+"");
-        head.put("Sign", sign);
+        params.put("qty", num + "");
+        params.put("currency", exchange.get("market"));
+        String play = HMAC.Base64(JSON.toJSONString(params));
+        head.put("X-COINONE-PAYLOAD", play);
+        String sign = HMAC.Hmac_SHA512(play, exchange.get("tpass").toUpperCase());
+        head.put("X-COINONE-SIGNATURE", sign);
         logger.info("挂单参数" + params);
-        String uri = "/exchange/api/v1/order/create";
         try {
-            trade = httpUtil.postByPackcoin(baseUrl + uri, params, head);
+            trade = httpUtil.post(baseUrl + uri, params, head);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+
         JSONObject jsonObject = JSONObject.fromObject(trade);
-        JSONObject resMsg = jsonObject.getJSONObject("resMsg");
-        if (1 != resMsg.getInt("code")) {
-            setWarmLog(id, 3, "API接口错误", resMsg.getString("message"));
+        if (0 != jsonObject.getInt("errorCode")) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("errorMsg"));
         }
         setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         return trade;
@@ -199,25 +200,31 @@ public class ZbgParentService extends BaseService implements RobotAction {
      * @return https://api.coinone.co.kr/v2/order/query_order/
      * @throws UnsupportedEncodingException
      */
+
+
     public String selectOrder(String orderId) throws UnsupportedEncodingException {
         String trade = null;
+        long time = new Date().getTime() / 1000;
         String timestamp = String.valueOf(new Date().getTime());
         Map<String, String> params = new TreeMap<>();
         HashMap<String, String> head = new HashMap<>();
-        params.put("order-id", orderId);
-        params.put("symbol", exchange.get("market"));
-        String splice = HMAC.splice(params);
-        String signStr = exchange.get("apikey") + timestamp + splice + exchange.get("tpass");
-        String sign = HMAC.MD5(signStr);
-        head.put("Apiid",  exchange.get("apikey"));
-        head.put("Timestamp",  timestamp+"");
-        head.put("Sign", sign);
-        logger.info("查询订单详" + params);
-        trade = httpUtil.getAddHead(baseUrl + "/exchange/api/v1/order/detail?symbol="+exchange.get("market")+"&order-id="+orderId, head);
+        params.put("access_token", exchange.get("apikey"));
+        params.put("nonce", time + "");
+        params.put("order_id", orderId);
+        params.put("currency", exchange.get("market"));
+        String play = HMAC.Base64(JSON.toJSONString(params));
+        head.put("X-COINONE-PAYLOAD", play);
+        String sign = HMAC.Hmac_SHA512(play, exchange.get("tpass").toUpperCase());
+        head.put("X-COINONE-SIGNATURE", sign);
+        try {
+            trade = httpUtil.post(baseUrl + "/order/query_order/", params, head);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
         JSONObject jsonObject = JSONObject.fromObject(trade);
-        JSONObject resMsg = jsonObject.getJSONObject("resMsg");
-        if (1 != resMsg.getInt("code")) {
-            setWarmLog(id, 3, "API接口错误", resMsg.getString("message"));
+        if (0 != jsonObject.getInt("errorCode")) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("errorMsg"));
         }
         return trade;
     }
@@ -230,26 +237,33 @@ public class ZbgParentService extends BaseService implements RobotAction {
      * @return https://api.coinone.co.kr/v2/order/cancel/
      * @throws UnsupportedEncodingException
      */
-    public String cancelTrade(String orderId) throws UnsupportedEncodingException {
+    public String cancelTrade(String orderId, BigDecimal qty, BigDecimal price) throws UnsupportedEncodingException {
 
         String trade = null;
+        long time = new Date().getTime() / 1000;
         String timestamp = String.valueOf(new Date().getTime());
         Map<String, String> params = new TreeMap<>();
         HashMap<String, String> head = new HashMap<>();
-        params.put("order-id", orderId);
-        params.put("symbol", exchange.get("market"));
-        String splice = HMAC.splice(params);
-        String signStr = exchange.get("apikey") + timestamp + com.alibaba.fastjson.JSONObject.toJSONString(params) + exchange.get("tpass");
-        String sign = HMAC.MD5(signStr);
-        head.put("Apiid",  exchange.get("apikey"));
-        head.put("Timestamp",  timestamp+"");
-        head.put("Sign", sign);
-        logger.info("撤单参数" + params);
-        trade = httpUtil.postByPackcoin(baseUrl + "/exchange/api/v1/order/cancel", params, head);
+        params.put("access_token", exchange.get("apikey"));
+        params.put("nonce", time + "");
+        params.put("order_id", orderId);
+        params.put("qty", qty + "");
+        params.put("price", price + "");
+        params.put("is_ask", "1");
+        params.put("currency", exchange.get("market"));
+        String play = HMAC.Base64(JSON.toJSONString(params));
+        head.put("X-COINONE-PAYLOAD", play);
+        String sign = HMAC.Hmac_SHA512(play, exchange.get("tpass").toUpperCase());
+        head.put("X-COINONE-SIGNATURE", sign);
+        try {
+            trade = httpUtil.post(baseUrl + "/order/cancel/", params, head);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
         JSONObject jsonObject = JSONObject.fromObject(trade);
-        JSONObject resMsg = jsonObject.getJSONObject("resMsg");
-        if (1 != resMsg.getInt("code")&&2012 != resMsg.getInt("code")) {
-            setWarmLog(id, 3, "API接口错误", resMsg.getString("message"));
+        if (0 != jsonObject.getInt("errorCode") && 117 != jsonObject.getInt("errorCode")) {
+            setWarmLog(id, 3, "API接口错误", jsonObject.getString("errorMsg"));
         }
         return trade;
     }
@@ -276,34 +290,36 @@ public class ZbgParentService extends BaseService implements RobotAction {
         if (balance == null || overdue) {
             List<String> coinArr = Arrays.asList(coins.split("_"));
 
-            long time = new Date().getTime() ;
-            String trade = null;
-            String timestamp = String.valueOf(new Date().getTime());
+            long time = new Date().getTime() / 1000;
+            Map<String, String> params = new TreeMap<>();
             HashMap<String, String> head = new HashMap<>();
-            String signStr = exchange.get("apikey") + timestamp  + exchange.get("tpass");
-            String sign = HMAC.MD5(signStr);
-            head.put("Apiid",  exchange.get("apikey"));
-            head.put("Timestamp",  timestamp+"");
-            head.put("Sign", sign);
-            trade = httpUtil.getAddHead(baseUrl + "/exchange/api/v1/account/balance", head);
+            params.put("access_token", exchange.get("apikey"));
+            params.put("nonce", time + "");
+            String play = HMAC.Base64(JSON.toJSONString(params));
+            head.put("X-COINONE-PAYLOAD", play);
+            String sign = HMAC.Hmac_SHA512(play, exchange.get("tpass").toUpperCase());
+            head.put("X-COINONE-SIGNATURE", sign);
+            String trade = null;
+            try {
+                trade = httpUtil.post(baseUrl + "/account/balance/", params, head);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             JSONObject tradesJson = JSONObject.fromObject(trade);
-            JSONArray datas = tradesJson.getJSONArray("datas");
+
+
             Double firstBalance = null;
             Double lastBalance = null;
             Double firstBalance1 = null;
             Double lastBalance1 = null;
 
-            for (int i = 0; i < datas.size(); i++) {
-                JSONObject jsonObject = datas.getJSONObject(i);
-                if(jsonObject.getString("currency").equals(coinArr.get(0))){
-                    firstBalance= jsonObject.getDouble("available");
-                    firstBalance1= jsonObject.getDouble("freeze");
-                }
-                if(jsonObject.getString("currency").equals(coinArr.get(1))){
-                    lastBalance= jsonObject.getDouble("available");
-                    lastBalance1= jsonObject.getDouble("freeze");
-                }
-            }
+            JSONObject jsonObject = tradesJson.getJSONObject(coinArr.get(0));
+            firstBalance = jsonObject.getDouble("avail");
+            firstBalance1 = jsonObject.getDouble("balance") - firstBalance;
+
+            JSONObject jsonObject1 = tradesJson.getJSONObject(coinArr.get(1));
+            lastBalance = jsonObject1.getDouble("avail");
+            lastBalance1 = jsonObject1.getDouble("balance") - firstBalance;
             if (lastBalance < 10) {
                 setWarmLog(id, 0, "余额不足", coinArr.get(1).toUpperCase() + "余额为:" + lastBalance);
             }
@@ -385,9 +401,9 @@ public class ZbgParentService extends BaseService implements RobotAction {
         }
     }
 
-    public static String splicing(Map<String, Object> params) throws UnsupportedEncodingException {
+    public static String splicing(Map<String, String> params) throws UnsupportedEncodingException {
         StringBuffer httpParams = new StringBuffer();
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
+        for (Map.Entry<String, String> entry : params.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue().toString();
             httpParams.append(key).append("=").append(URLEncoder.encode(value, "UTF-8")).append("&");
@@ -406,12 +422,12 @@ public class ZbgParentService extends BaseService implements RobotAction {
         String submitOrder = submitOrder(type, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
-            if ("1".equals(jsonObject.getJSONObject("resMsg").getString("code"))) {
-                orderId = jsonObject.getString("datas");
+            if ("0".equals(jsonObject.getString("errorCode"))) {
+                orderId = jsonObject.getString("orderId");
                 hashMap.put("res", "true");
                 hashMap.put("orderId", orderId);
             } else {
-                String msg = jsonObject.getJSONObject("resMsg").getString("message");
+                String msg = jsonObject.getString("errorMsg");
                 hashMap.put("res", "false");
                 hashMap.put("orderId", msg);
             }
@@ -435,13 +451,13 @@ public class ZbgParentService extends BaseService implements RobotAction {
     public String cancelTradeStr(String orderId) {
         String cancelTrade = "";
         try {
-            cancelTrade = cancelTrade(orderId);
+            cancelTrade = cancelTrade(orderId, null, null);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         if (StringUtils.isNotEmpty(cancelTrade)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(cancelTrade);
-            if ("1".equals(jsonObject.getString("code"))) {
+            if ("0".equals(jsonObject.getString("code"))) {
                 return "true";
             }
         }

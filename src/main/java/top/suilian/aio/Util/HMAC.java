@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -14,6 +15,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class HMAC {
     /**
@@ -190,6 +192,8 @@ public class HMAC {
 
 
 
+
+
     public static String Hmac_SHA512(String encryptText, String encryptKey)
     {
         byte[] data= new byte[0];
@@ -278,17 +282,12 @@ public class HMAC {
      */
 
     public static String splice(Map<String, String> params) {
-
-        StringBuffer httpParams = new StringBuffer();
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue().toString();
-            httpParams.append(key).append("=").append(value).append("&");
-        }
-        if (httpParams.length() > 0) {
-            httpParams.deleteCharAt(httpParams.length() - 1);
-        }
-        return httpParams.toString();
+        String content = params.entrySet().stream()
+                .filter(e -> e != null && StringUtils.isNotEmpty(e.getKey()))
+                .sorted(Map.Entry.comparingByKey())
+                .map(e -> e.getKey() + (e.getValue() == null ? "" : e.getValue()))
+                .collect(Collectors.joining(""));
+        return content;
     }
 
     public static String SHA512( String strText) {

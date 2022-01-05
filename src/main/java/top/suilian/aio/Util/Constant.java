@@ -100,6 +100,10 @@ public class Constant {
     public static final int KEY_EXCHANGE_ZBG=58;   //zbg
 
     public static final int KEY_EXCHANGE_BKEX=59;   //bkex
+
+    public static final int KEY_EXCHANGE_bithumb=60;//bithumb
+
+    public static final int KEY_EXCHANGE_SKIESEX=61; //skiesex
     //endregion
 
 
@@ -469,6 +473,8 @@ public class Constant {
      * coinstore 日志路径
      */
     public static final String KEY_LOG_PATH_CPINSTORE_KLINE = "coinstore/newkline";
+
+    public static final String KEY_LOG_PATH_bithhub_kilne="bithhub/kline";
     //region    redis
     public static final String KEY_ROBOT_ARG = "KEY_ROBOT_ARG_";             //机器人参数
     public static final String KEY_ROBOT = "KEY_ROBOT_";             //机器人
