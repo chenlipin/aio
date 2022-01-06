@@ -76,7 +76,7 @@ public class SkiesexParentService extends BaseService implements RobotAction {
      * @throws UnsupportedEncodingException
      */
     public String submitTrade(int type, BigDecimal price, BigDecimal amount) throws UnsupportedEncodingException {
-        long time = new Date().getTime();
+
         String typeStr = type == 1 ? "买" : "卖";
 
         logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
@@ -98,8 +98,9 @@ public class SkiesexParentService extends BaseService implements RobotAction {
                     }
                     Map<String, String> params = new TreeMap<>();
                     HashMap<String, String> head = new HashMap<>();
+                    long time = new Date().getTime();
                     params.put("accesskey", exchange.get("apikey"));
-                    params.put("time", time + "");
+                    params.put("time", time-3000 + "");
                     params.put("price", price1 + "");
                     params.put("symbol", exchange.get("market"));
                     params.put("type", "0");
@@ -126,6 +127,7 @@ public class SkiesexParentService extends BaseService implements RobotAction {
                 Map<String, String> params = new TreeMap<>();
                 HashMap<String, String> head = new HashMap<>();
                 params.put("accesskey", exchange.get("apikey"));
+                long time = new Date().getTime();
                 params.put("time", time + "");
                 params.put("price", price1 + "");
                 params.put("symbol", exchange.get("market"));
@@ -296,11 +298,12 @@ public class SkiesexParentService extends BaseService implements RobotAction {
         if (balance == null || overdue) {
             List<String> coinArr = Arrays.asList(coins.split("_"));
 
-            long time = new Date().getTime();
+
             Map<String, String> params = new TreeMap<>();
             HashMap<String, String> head = new HashMap<>();
-            String uri = " /asset/account";
+            String uri = "/asset/account";
             params.put("accesskey", exchange.get("apikey"));
+            long time = new Date().getTime();
             params.put("time", time + "");
             params.put("type", "1");
             String splicing = splicing(params);
@@ -431,8 +434,8 @@ public class SkiesexParentService extends BaseService implements RobotAction {
         String submitOrder = submitOrder(type, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
-            if ("0".equals(jsonObject.getString("errorCode"))) {
-                orderId = jsonObject.getString("orderId");
+            if ("200".equals(jsonObject.getString("status"))) {
+                orderId = jsonObject.getJSONObject("data").getString("id");
                 hashMap.put("res", "true");
                 hashMap.put("orderId", orderId);
             } else {
@@ -466,7 +469,7 @@ public class SkiesexParentService extends BaseService implements RobotAction {
         }
         if (StringUtils.isNotEmpty(cancelTrade)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(cancelTrade);
-            if ("0".equals(jsonObject.getString("code"))) {
+            if ("200".equals(jsonObject.getString("status"))) {
                 return "true";
             }
         }

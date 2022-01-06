@@ -81,14 +81,6 @@ public class NewSkiesexKline extends SkiesexParentService {
 
             setPrecision();
             logger.info("设置机器人交易规则结束");
-
-            String s = cancelTrade("58315288034148352");
-            try {
-                Thread.sleep(100000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本
@@ -110,15 +102,18 @@ public class NewSkiesexKline extends SkiesexParentService {
         logger.info("当前时间段单量百分比：" + transactionRatio);
 
         if (runTime < timeSlot) {
-            String trades = httpUtil.get("https://api.coinone.co.kr/orderbook/?currency="+exchange.get("market"));
+            String trades = httpUtil.get("https://openapi.skies-x.com/kline/depths?accesskey="+exchange.get("apikey")+"&symbol="+(exchange.get("market").replace("_","")));
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
             if (tradesObj != null) {
-                JSONArray bid = tradesObj.getJSONArray("bid");
-                JSONArray ask = tradesObj.getJSONArray("ask");
+                com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
 
-                BigDecimal buyPri = new BigDecimal( bid.getJSONObject(0).getString("price"));
-                BigDecimal sellPri = new BigDecimal(ask.getJSONObject(0).getString("price"));
+                List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
+
+                List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
+
+                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
                 if (sellPri.compareTo(buyPri) == 0) {
                     //平台撮合功能失败
@@ -192,7 +187,7 @@ public class NewSkiesexKline extends SkiesexParentService {
 
             setTradeLog(id, "撤单数为" + orderNum, 0, "000000");
 
-            if (Integer.valueOf(exchange.get("orderSumSwitch")) == 1) {    //防褥羊毛开关
+            if (Integer.parseInt(exchange.get("orderSumSwitch")) == 1) {    //防褥羊毛开关
                 setTradeLog(id, "停止量化撤单数设置为：" + exchange.get("orderSum"), 0, "000000");
             }
             BigDecimal price = getRandomPrice();
@@ -225,15 +220,15 @@ public class NewSkiesexKline extends SkiesexParentService {
                 String resultJson = submitTrade(type, price1, num1);
                 JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
-                if (jsonObject != null && jsonObject.getInt("errorCode") == 0) {
-                    String tradeId = jsonObject.getString("orderId");
+                if (jsonObject != null && jsonObject.getInt("status") == 200) {
+                    String tradeId = jsonObject.getJSONObject("data").getString("id");
 
                     orderIdOne = tradeId;
                     String resultJson1 = submitTrade(type == 1 ? 2 : 1, price, num);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
-                    if (jsonObject1 != null && jsonObject1.getInt("errorCode") == 0) {
-                        orderIdTwo = jsonObject1.getString("orderId");
+                    if (jsonObject1 != null && jsonObject1.getInt("status") == 200) {
+                        orderIdTwo = jsonObject1.getJSONObject("data").getString("id");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
 
                     } else {
@@ -307,15 +302,18 @@ public class NewSkiesexKline extends SkiesexParentService {
     public BigDecimal getRandomPrice() throws UnsupportedEncodingException {
         BigDecimal price = null;
 
-        String trades = httpUtil.get("https://api.coinone.co.kr/orderbook/?currency="+exchange.get("market"));
+        String trades = httpUtil.get("https://openapi.skies-x.com/kline/depths?accesskey="+exchange.get("apikey")+"&symbol="+(exchange.get("market").replace("_","")));
         //获取深度 判断平台撮合是否成功
         com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
         if (tradesObj != null) {
-            JSONArray bid = tradesObj.getJSONArray("bid");
-            JSONArray ask = tradesObj.getJSONArray("ask");
+            com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
 
-            BigDecimal buyPri = new BigDecimal( bid.getJSONObject(0).getString("price"));
-            BigDecimal sellPri = new BigDecimal(ask.getJSONObject(0).getString("price"));
+            List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
+
+            List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
+
+            BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+            BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
 
             BigDecimal intervalPrice = sellPri.subtract(buyPri);
@@ -327,8 +325,8 @@ public class NewSkiesexKline extends SkiesexParentService {
             if ("1".equals(exchange.get("isTradeCheck"))) {
 
                 //吃堵盘口的订单
-                BigDecimal buyAmount = new BigDecimal(bid.getJSONObject(0).getString("qty"));
-                BigDecimal sellAmount = new BigDecimal(ask.getJSONObject(0).getString("qty"));
+                BigDecimal buyAmount = new BigDecimal(String.valueOf(buyPrices.get(0).get(1)));
+                BigDecimal sellAmount =new BigDecimal(String.valueOf(sellPrices.get(0).get(1)));
                 BigDecimal minAmount = new BigDecimal(precision.get("minTradeLimit").toString());
                 if (maxEatOrder == 0) {
                     logger.info("吃单上限功能未开启：maxEatOrder=" + maxEatOrder);
@@ -350,8 +348,8 @@ public class NewSkiesexKline extends SkiesexParentService {
                                 logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
 
                                 JSONObject jsonObject = judgeRes(sellOrder, "errorCode", "submitTrade");
-                                if (jsonObject != null && jsonObject.getInt("errorCode") == 0) {
-                                    sellOrderId = jsonObject.getString("orderId");
+                                if (jsonObject != null && jsonObject.getInt("status") == 200) {
+                                    sellOrderId = jsonObject.getJSONObject("data").getString("id");
                                 }
                                 return price;
                             } catch (UnsupportedEncodingException e) {
@@ -381,8 +379,8 @@ public class NewSkiesexKline extends SkiesexParentService {
                                 logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
 
                                 JSONObject jsonObject = judgeRes(buyOrder, "errorCode", "submitTrade");
-                                if (jsonObject != null && jsonObject.getInt("code") == 1000) {
-                                    buyOrderId = jsonObject.getString("orderId");
+                                if (jsonObject != null && jsonObject.getInt("status") == 200) {
+                                    buyOrderId = jsonObject.getJSONObject("data").getString("orderId");
                                 }
                                 return price;
                             } catch (UnsupportedEncodingException e) {
@@ -575,8 +573,8 @@ public class NewSkiesexKline extends SkiesexParentService {
             String str = selectOrder(orderId);
             JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
             if (jsonObject != null) {
-                String status = jsonObject.getString("status");
-                if ("filled".equals(status)) {
+                String status = jsonObject.getJSONObject("data").getString("status");
+                if ("2".equals(status)) {
                     setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                 } else {
                     String res = cancelTrade(orderId);
