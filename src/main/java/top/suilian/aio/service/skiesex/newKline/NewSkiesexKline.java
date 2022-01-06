@@ -82,7 +82,7 @@ public class NewSkiesexKline extends SkiesexParentService {
             setPrecision();
             logger.info("设置机器人交易规则结束");
 
-            String s = submitTrade(1, new BigDecimal(""), new BigDecimal(""));
+            String s = cancelTrade("58315288034148352");
             try {
                 Thread.sleep(100000);
             } catch (InterruptedException e) {
@@ -237,7 +237,7 @@ public class NewSkiesexKline extends SkiesexParentService {
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
 
                     } else {
-                        String res = cancelTrade(tradeId,num1,price1);
+                        String res = cancelTrade(tradeId);
                         setTradeLog(id, "撤单[" + tradeId + "]=> " + res, 0, "000000");
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, tradeId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
@@ -552,7 +552,7 @@ public class NewSkiesexKline extends SkiesexParentService {
                     } else {
 
                         sleep(200, Integer.parseInt(exchange.get("isMobileSwitch")));
-                        String res = cancelTrade(tradeId,null,null);
+                        String res = cancelTrade(tradeId);
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, tradeId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                         setTradeLog(id, "刷开区间撤单[" + tradeId + "]=>" + res, 0, "#67c23a");
@@ -579,7 +579,7 @@ public class NewSkiesexKline extends SkiesexParentService {
                 if ("filled".equals(status)) {
                     setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                 } else {
-                    String res = cancelTrade(orderId,new BigDecimal(jsonObject.getString("qty")),new BigDecimal(jsonObject.getString("qty")));
+                    String res = cancelTrade(orderId);
                     JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                     setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                     setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");

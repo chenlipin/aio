@@ -809,7 +809,7 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
                 .build();
         HttpGet get = new HttpGet(url);
         get.setConfig(config);
-        get.addHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+//        get.addHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
         Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
@@ -819,7 +819,7 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
 
         try {
             response = httpClient.execute(get);
-            if (response != null && response.getStatusLine().getStatusCode() != 100) {
+            if (response != null && response.getStatusLine().getStatusCode() != 100000) {
                 HttpEntity entity = response.getEntity();
                 result = entityToString(entity);
             } else {
