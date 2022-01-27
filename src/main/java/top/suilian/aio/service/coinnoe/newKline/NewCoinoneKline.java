@@ -222,6 +222,11 @@ public class NewCoinoneKline extends CoinnoeParentService {
                     String tradeId = jsonObject.getString("orderId");
 
                     orderIdOne = tradeId;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     String resultJson1 = submitTrade(type == 1 ? 2 : 1, price, num);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
