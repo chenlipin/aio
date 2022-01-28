@@ -373,7 +373,7 @@ public class KucoinParentService extends BaseService implements RobotAction {
         HashMap<String, String> hashMap = new HashMap<>();
         String submitOrder = null;
         try {
-            submitOrder = submitOrder(type, price, amount);
+            submitOrder = submitTrade(type, price, amount);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

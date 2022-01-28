@@ -122,6 +122,11 @@ public class CoinnoeParentService extends BaseService implements RobotAction {
                     setTradeLog(id, "price[" + price1 + "] num[" + num + "]", 1);
                     logger.info("robotId" + id + "----" + "挂单失败结束");
                 }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             } else {
                 Map<String, String> params = new TreeMap<>();
                 HashMap<String, String> head = new HashMap<>();
@@ -144,7 +149,11 @@ public class CoinnoeParentService extends BaseService implements RobotAction {
                 setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                 logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
             }
-
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
         } else {
             setTradeLog(id, "交易量最小为：" + precision.get("minTradeLimit"), 0);
@@ -190,6 +199,11 @@ public class CoinnoeParentService extends BaseService implements RobotAction {
             setWarmLog(id, 3, "API接口错误", jsonObject.getString("errorMsg"));
         }
         setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return trade;
     }
 
@@ -225,6 +239,11 @@ public class CoinnoeParentService extends BaseService implements RobotAction {
         JSONObject jsonObject = JSONObject.fromObject(trade);
         if (0 != jsonObject.getInt("errorCode")) {
             setWarmLog(id, 3, "API接口错误", jsonObject.getString("errorMsg"));
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         return trade;
     }
@@ -265,6 +284,11 @@ public class CoinnoeParentService extends BaseService implements RobotAction {
         if (0 != jsonObject.getInt("errorCode") && 117 != jsonObject.getInt("errorCode")) {
             setWarmLog(id, 3, "API接口错误", jsonObject.getString("errorMsg"));
         }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return trade;
     }
 
@@ -273,6 +297,11 @@ public class CoinnoeParentService extends BaseService implements RobotAction {
      */
 
     public void setBalanceRedis() throws UnsupportedEncodingException {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String coins = redisHelper.getBalanceParam(Constant.KEY_ROBOT_COINS + id);
         if (coins == null) {
             RobotArgs robotArgs = robotArgsService.findOne(id, "market");
@@ -344,11 +373,6 @@ public class CoinnoeParentService extends BaseService implements RobotAction {
      * @param type
      */
     public void setCancelOrder(JSONObject cancelRes, String res, String orderId, Integer type) {
-        int cancelStatus = Constant.KEY_CANCEL_ORDER_STATUS_FAILED;
-        if (cancelRes != null && cancelRes.getInt("code") == 200) {
-            cancelStatus = Constant.KEY_CANCEL_ORDER_STATUS_CANCELLED;
-        }
-        insertCancel(id, orderId, 1, type, Integer.parseInt(exchange.get("isMobileSwitch")), cancelStatus, res, Constant.KEY_EXCHANGE_HOTCOIN);
     }
 
 

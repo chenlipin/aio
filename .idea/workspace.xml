@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8557044c-4e1c-4db1-816f-53730281e38e" name="Default Changelist" comment="" />
+    <list default="true" id="08d1241d-212c-4b6f-a71b-a49e0134832e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bithumb/BithumbParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bithumb/BithumbParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bithumb/newKline/NewBithumbKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bithumb/newKline/NewBithumbKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/CoinnoeParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/CoinnoeParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/newKline/NewCoinoneKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/newKline/NewCoinoneKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/HotCoinParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/HotCoinParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/RandomDepth/RunHotcoinRandomDepth.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/RandomDepth/RunHotcoinRandomDepth.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/kucoin/KucoinParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/kucoin/KucoinParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,28 +32,8 @@
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fubt/kline/FubtKline.java" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/BitMartParentService.java" root0="SKIP_INSPECTION" />
   </component>
-  <component name="ProjectId" id="22zNkBl5CLdAn7VER2vw1oMZAJ6" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
-  </component>
-  <component name="ProjectViewState">
-    <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showLibraryContents" value="true" />
-  </component>
-  <component name="PropertiesComponent">
-    <property name="ExpandSpringBootJavaOptionsPanel" value="true" />
-    <property name="RequestMappingsPanelOrder0" value="0" />
-    <property name="RequestMappingsPanelOrder1" value="1" />
-    <property name="RequestMappingsPanelWidth0" value="75" />
-    <property name="RequestMappingsPanelWidth1" value="75" />
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="aspect.path.notification.shown" value="true" />
-    <property name="nodejs_package_manager_path" value="npm" />
-  </component>
-  <component name="ReactorSettings">
-    <option name="notificationShown" value="true" />
   </component>
   <component name="RunManager">
     <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
@@ -59,33 +49,27 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="AioApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <configuration name="AioApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
       <module name="aio" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="top.suilian.aio.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
       <option name="SPRING_BOOT_MAIN_CLASS" value="top.suilian.aio.AioApplication" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
-      <option name="ALTERNATIVE_JRE_PATH" value="1.8 (2)" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.AioApplication" />
+      </list>
+    </recent_temporary>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <changelist id="9b114d84-1381-444f-a76f-bff03135497e" name="Default Changelist" comment="" />
-      <created>1640836601607</created>
-      <option name="number" value="Default" />
-      <option name="presentableId" value="Default" />
-      <updated>1640836601607</updated>
-      <workItem from="1640836610980" duration="306000" />
-      <workItem from="1641362176314" duration="6477000" />
-      <workItem from="1641453849888" duration="43000" />
-      <workItem from="1642052625669" duration="1448000" />
-    </task>
     <servers />
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -98,36 +82,5 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/skiesex/SkiesexParentService.java</url>
-          <line>235</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/skiesex/SkiesexParentService.java</url>
-          <line>267</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/skiesex/SkiesexParentService.java</url>
-          <line>312</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/skiesex/SkiesexParentService.java</url>
-          <line>339</line>
-          <option name="timeStamp" value="82" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/skiesex/newKline/NewSkiesexKline.java</url>
-          <line>108</line>
-          <option name="timeStamp" value="84" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
