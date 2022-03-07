@@ -118,7 +118,7 @@ public class MxcParentService extends BaseService implements RobotAction {
                         e.printStackTrace();
                     }
                     JSONObject jsonObject = JSONObject.fromObject(trade);
-                    if(200!=jsonObject.getInt("code")){
+                    if(jsonObject==null||200!=jsonObject.getInt("code")){
                         setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
                     }
                     setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
