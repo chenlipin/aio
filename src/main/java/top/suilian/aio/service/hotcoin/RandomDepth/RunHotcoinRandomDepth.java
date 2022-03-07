@@ -123,7 +123,7 @@ public class RunHotcoinRandomDepth {
         @Override
         public void dowork() {
             Robot robot = redisHelper.getRobot(name);
-            if (robot != null && redisHelper.getRobot(name).getStatus() == Constant.KEY_ROBOT_STATUS_RUN) {
+            if (robot != null ) {
                 String key = "_exception";
                 try {
                     randomDepth.init();
@@ -140,7 +140,6 @@ public class RunHotcoinRandomDepth {
                         redisHelper.setParam(randomDepth.id + key, String.valueOf(System.currentTimeMillis()));
                     } else if (System.currentTimeMillis() - Long.valueOf(redisHelper.getParam(randomDepth.id + key)) > Constant.KEY_SNS_INTERFACE_ERROR_TIME) {
                         redisHelper.setParam(randomDepth.id + key + "_true", "true");
-                        commonUtil.sendSms(redisHelper.getRobot(randomDepth.id).getName() + "异常机器人停止");
                         redisHelper.removeParent(randomDepth.id+key);
                     }
                 }

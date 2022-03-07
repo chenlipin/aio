@@ -113,7 +113,7 @@ public class MxcParentService extends BaseService implements RobotAction {
                     logger.info("下单参数：" + params);
                     try {
                         trade = httpUtil.postes(baseUrl + "/open/api/v2/order/place?api_key=" + exchange.get("apikey") + "&recv_window=20" + "&req_time=" + timestamp + "&sign=" + sign, params);
-
+                        logger.info("submitOrder1返回参数：" + trade);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -146,12 +146,12 @@ public class MxcParentService extends BaseService implements RobotAction {
 
                 try {
                     trade = httpUtil.postes(baseUrl + "/open/api/v2/order/place?api_key=" + exchange.get("apikey") + "&recv_window=20" + "&req_time=" + timestamp + "&sign=" + sign, params);
-
+                    logger.info("submitOrder2返回参数：" + trade);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 JSONObject jsonObject = JSONObject.fromObject(trade);
-                if(200!=jsonObject.getInt("code")){
+                if(jsonObject==null||200!=jsonObject.getInt("code")){
                     setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
                 }
                 setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
@@ -193,7 +193,8 @@ public class MxcParentService extends BaseService implements RobotAction {
         try {
             trade = httpUtil.postes(baseUrl + "/open/api/v2/order/place?api_key=" + exchange.get("apikey") + "&recv_window=20" + "&req_time=" + timestamp + "&sign=" + sign, params);
             JSONObject jsonObject = JSONObject.fromObject(trade);
-            if(200!=jsonObject.getInt("code")){
+            logger.info("submitOrder返回参数：" + trade);
+            if(jsonObject==null||200!=jsonObject.getInt("code")){
                 setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
             }
         } catch (Exception e) {
@@ -230,8 +231,9 @@ public class MxcParentService extends BaseService implements RobotAction {
         logger.info("请求参数：" + str);
 
         String trade = httpUtil.get(baseUrl + "/open/api/v2/order/query?" + str);
+        logger.info("selectOrder返回参数：" + trade);
         JSONObject jsonObject = JSONObject.fromObject(trade);
-        if(200!=jsonObject.getInt("code")){
+        if(jsonObject==null||200!=jsonObject.getInt("code")){
             setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
         }
         return trade;
@@ -262,8 +264,9 @@ public class MxcParentService extends BaseService implements RobotAction {
         logger.info("请求参数：" + str);
         //delete请求
         String res = httpUtil.delete(baseUrl + "/open/api/v2/order/cancel?" + str);
+        logger.info("cancelTrade请求参数：" + res);
         JSONObject jsonObject = JSONObject.fromObject(res);
-        if(200!=jsonObject.getInt("code")){
+        if(jsonObject==null||200!=jsonObject.getInt("code")){
             setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
         }
         return res;

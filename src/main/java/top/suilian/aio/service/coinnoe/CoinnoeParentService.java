@@ -373,11 +373,6 @@ public class CoinnoeParentService extends BaseService implements RobotAction {
      * @param type
      */
     public void setCancelOrder(JSONObject cancelRes, String res, String orderId, Integer type) {
-        int cancelStatus = Constant.KEY_CANCEL_ORDER_STATUS_FAILED;
-        if (cancelRes != null && cancelRes.getInt("code") == 200) {
-            cancelStatus = Constant.KEY_CANCEL_ORDER_STATUS_CANCELLED;
-        }
-        insertCancel(id, orderId, 1, type, Integer.parseInt(exchange.get("isMobileSwitch")), cancelStatus, res, Constant.KEY_EXCHANGE_HOTCOIN);
     }
 
 

@@ -222,11 +222,6 @@ public class NewCoinoneKline extends CoinnoeParentService {
                     String tradeId = jsonObject.getString("orderId");
 
                     orderIdOne = tradeId;
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                     String resultJson1 = submitTrade(type == 1 ? 2 : 1, price, num);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
@@ -577,7 +572,7 @@ public class NewCoinoneKline extends CoinnoeParentService {
                 if ("filled".equals(status)) {
                     setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                 } else {
-                    String res = cancelTrade(orderId,new BigDecimal(jsonObject.getString("qty")),new BigDecimal(jsonObject.getString("qty")));
+                    String res = cancelTrade(orderId,new BigDecimal(jsonObject.getString("originalQty")),new BigDecimal(jsonObject.getString("price")));
                     JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                     setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                     setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");

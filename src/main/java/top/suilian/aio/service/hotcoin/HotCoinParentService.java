@@ -185,7 +185,7 @@ public class HotCoinParentService extends BaseService implements RobotAction {
     //对标下单
     public String submitOrder(int type, BigDecimal price, BigDecimal amount) {
         String timestamp = String.valueOf(new Date().getTime());
-        String typeStr = type == 0 ? "买" : "卖";
+        String typeStr = type == 1 ? "买" : "卖";
 
         logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
 
@@ -211,6 +211,7 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
         params.put("Signature", Signature);
         String httpParams = null;
+        logger.info("挂单参数" + params);
         try {
             httpParams = splicing(params);
         } catch (UnsupportedEncodingException e) {
