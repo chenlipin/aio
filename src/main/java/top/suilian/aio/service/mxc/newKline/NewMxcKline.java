@@ -249,6 +249,14 @@ public class NewMxcKline extends MxcParentService  {
                     setTradeLog(id, "交易量过小=> " + jsonObject, 0, "f57272");
                 }
             } catch (Exception e) {
+                if(orderIdOne!=null&&orderIdTwo==null){
+                    String res = cancelTrade(orderIdOne);
+                    setTradeLog(id, "撤单[" + orderIdOne + "]=> " + res, 0, "67c23a");
+                }
+                if(orderIdOne==null&&orderIdTwo!=null){
+                    String res = cancelTrade(orderIdTwo);
+                    setTradeLog(id, "撤单[" + orderIdTwo + "]=> " + res, 0, "67c23a");
+                }
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId" + id + "----" + exceptionMessage);
