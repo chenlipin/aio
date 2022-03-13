@@ -151,13 +151,17 @@ public class NewBitterexKline extends BitterexParentService {
             }
 
 
-            if (!"0".equals(orderIdOne) && !"0".equals(orderIdTwo)) {
+            if (!"0".equals(orderIdOne) || !"0".equals(orderIdTwo)) {
 
-                selectOrderDetail(orderIdOne, 1,flag);
+                if(!"0".equals(orderIdOne)) {
+                    selectOrderDetail(orderIdOne, 1, flag);
+                    orderIdOne = "0";
+                }
 
-                orderIdOne = "0";
-                selectOrderDetail(orderIdTwo, 1,!flag);
-                orderIdTwo = "0";
+                if(!"0".equals(orderIdTwo)) {
+                    selectOrderDetail(orderIdTwo, 1, !flag);
+                    orderIdTwo = "0";
+                }
 
                 String msg = "";
                 if (orderNum >= Integer.parseInt(exchange.get("orderSum"))) {
@@ -236,7 +240,7 @@ public class NewBitterexKline extends BitterexParentService {
                     String resultJson1 = submitTrade(type == 1 ? 2 : 1, price, num,!flag);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
-                    if ("CLOSED".equals(jsonObject1.getString("status"))) {
+                    if (jsonObject1.getString("status")==null||"CLOSED".equals(jsonObject1.getString("status"))) {
                         orderIdTwo = jsonObject1.getString("id");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
 
@@ -246,10 +250,10 @@ public class NewBitterexKline extends BitterexParentService {
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, tradeId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                     }
-
-
                 }
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
+                String res = cancelTrade(orderIdOne,flag);
+                setTradeLog(id, "撤单1[" + orderIdOne + "]=> " + res, 0, "000000");
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId" + id + "----" + exceptionMessage);
