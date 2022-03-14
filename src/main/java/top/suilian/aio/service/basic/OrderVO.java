@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Data
 public class OrderVO implements Serializable {
     private String type;
-    private BigDecimal number;
+    private String number;
     private String pair;
-    private BigDecimal price;
+    private String price;
 }

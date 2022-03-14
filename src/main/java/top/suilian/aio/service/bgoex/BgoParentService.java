@@ -1,6 +1,5 @@
 package top.suilian.aio.service.bgoex;
 
-import com.sun.org.apache.xerces.internal.xs.XSIDCDefinition;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import top.suilian.aio.Util.Constant;

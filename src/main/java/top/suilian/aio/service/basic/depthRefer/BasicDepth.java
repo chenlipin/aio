@@ -55,7 +55,7 @@ public class BasicDepth extends BasicParentService {
             logger.info("设置机器人参数结束");
             start = false;
         }
-
+        submitOrder(null);
         Map<String, List<DeepVo>> deep = BianUtils.getdeep(exchange.get("referMarket"));
         List<DeepVo> history = BianUtils.getHistory(exchange.get("referMarket"));
 
@@ -67,25 +67,25 @@ public class BasicDepth extends BasicParentService {
 
         ArrayList<OrderVO> orderVOS = new ArrayList<>();
         //深度单子
-        for (int i = 0; i < deepBuyList.size()&&i<=deepNum; i++) {
+        for (int i = 0; i < deepBuyList.size()&&i<=deepNum-1; i++) {
             //买单
             OrderVO orderVOBuy = new OrderVO();
             DeepVo deepVoBuy = deepBuyList.get(i);
             orderVOBuy.setPair(exchange.get("market"));
-            BigDecimal price = nN(deepVoBuy.getPrice(), Integer.parseInt(exchange.get("pricePrecision").toString()));
-            BigDecimal num = nN(deepVoBuy.getAmount().multiply(amountPoint), Integer.parseInt(exchange.get("amountPrecision").toString()));
-            orderVOBuy.setPrice(price);
-            orderVOBuy.setNumber(num);
+            BigDecimal price = nN(deepVoBuy.getPrice(), Integer.parseInt(exchange.get("pricePrecision").toString())).stripTrailingZeros();
+            BigDecimal num = nN(deepVoBuy.getAmount().multiply(amountPoint), Integer.parseInt(exchange.get("amountPrecision").toString())).stripTrailingZeros();
+            orderVOBuy.setPrice(price.stripTrailingZeros().toPlainString());
+            orderVOBuy.setNumber(num.stripTrailingZeros().toPlainString());
             orderVOBuy.setType("buy");
             //卖单
             DeepVo deepVoSell = deepSellList.get(i);
             OrderVO orderVOSell = new OrderVO();
             orderVOSell.setPair(exchange.get("market"));
-            BigDecimal price1 = nN(deepVoSell.getPrice(), Integer.parseInt(exchange.get("pricePrecision").toString()));
-            BigDecimal num1 = nN(deepVoSell.getAmount().multiply(amountPoint), Integer.parseInt(exchange.get("amountPrecision").toString()));
-            orderVOSell.setPrice(price1);
-            orderVOSell.setNumber(num1);
-            orderVOBuy.setType("sell");
+            BigDecimal price1 = nN(deepVoSell.getPrice(), Integer.parseInt(exchange.get("pricePrecision").toString())).stripTrailingZeros();
+            BigDecimal num1 = nN(deepVoSell.getAmount().multiply(amountPoint), Integer.parseInt(exchange.get("amountPrecision").toString())).stripTrailingZeros();
+            orderVOSell.setPrice(price1.stripTrailingZeros().toPlainString());
+            orderVOSell.setNumber(num1.stripTrailingZeros().toPlainString());
+            orderVOSell.setType("sell");
 
             orderVOS.add(orderVOBuy);
             orderVOS.add(orderVOSell);
@@ -94,17 +94,17 @@ public class BasicDepth extends BasicParentService {
         for (DeepVo deepVo : history) {
             boolean flag = RandomUtils.nextBoolean();
             OrderVO order = new OrderVO();
-            BigDecimal price1 = nN(deepVo.getPrice(), Integer.parseInt(exchange.get("pricePrecision").toString()));
-            BigDecimal num1 = nN(deepVo.getAmount().multiply(amountPoint), Integer.parseInt(exchange.get("amountPrecision").toString()));
+            BigDecimal price1 = nN(deepVo.getPrice(), Integer.parseInt(exchange.get("pricePrecision").toString())).stripTrailingZeros();
+            BigDecimal num1 = nN(deepVo.getAmount().multiply(amountPoint), Integer.parseInt(exchange.get("amountPrecision").toString())).stripTrailingZeros();
 
-            order.setPrice(price1);
-            order.setNumber(num1);
+            order.setPrice(price1.stripTrailingZeros().toPlainString());
+            order.setNumber(num1.stripTrailingZeros().toPlainString());
             order.setPair(exchange.get("market"));
             order.setType(flag?"buy":"sell");
 
             OrderVO order2 = new OrderVO();
-            order2.setPrice(price1);
-            order2.setNumber(num1);
+            order2.setPrice(price1.stripTrailingZeros().toPlainString());
+            order2.setNumber(num1.stripTrailingZeros().toPlainString());
             order2.setPair(exchange.get("market"));
             order2.setType(flag?"sell":"buy");
 
