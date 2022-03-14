@@ -5,19 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="08d1241d-212c-4b6f-a71b-a49e0134832e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/HMAC.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/HMAC.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/HttpUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/HttpUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/BianUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/BianUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/DeepVo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/DeepVo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/BasicParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/BasicParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/OrderVO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/OrderVO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/depthRefer/BasicDepth.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/depthRefer/BasicDepth.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bgoex/BgoParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bgoex/BgoParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bthex/newKline/RunNewBthexKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bthex/newKline/RunNewBthexKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/kline/HotCoinKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/kline/HotCoinKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/pickcoin/kline/PickcionKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/pickcoin/kline/PickcionKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/kline/ZGKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/kline/ZGKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -131,7 +119,7 @@
       <workItem from="1646809624748" duration="1707000" />
       <workItem from="1646899025545" duration="232000" />
       <workItem from="1646904980876" duration="624000" />
-      <workItem from="1647218119836" duration="16986000" />
+      <workItem from="1647218119836" duration="18443000" />
     </task>
     <servers />
   </component>
@@ -165,7 +153,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/depthRefer/BasicDepth.java</url>
-          <line>114</line>
+          <line>113</line>
           <option name="timeStamp" value="105" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">

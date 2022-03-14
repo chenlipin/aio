@@ -55,7 +55,6 @@ public class BasicDepth extends BasicParentService {
             logger.info("设置机器人参数结束");
             start = false;
         }
-        submitOrder(null);
         Map<String, List<DeepVo>> deep = BianUtils.getdeep(exchange.get("referMarket"));
         List<DeepVo> history = BianUtils.getHistory(exchange.get("referMarket"));
 
@@ -114,8 +113,10 @@ public class BasicDepth extends BasicParentService {
         //挂单
         String order = submitOrder(orderVOS);
         JSONObject jsonObject = JSONObject.parseObject(order);
-        if (jsonObject.getInteger("jsonObject").equals(200)){
+        if (jsonObject!=null&&jsonObject.getInteger("status").equals(200)){
             orders = jsonObject.getJSONArray("data");
+        }else {
+            setTradeLog(id, "挂单失败", 0);
         }
         sleep(3000, Integer.parseInt("1"));
        if (lastOrders.size()>0){
