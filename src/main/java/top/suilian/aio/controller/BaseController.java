@@ -11,6 +11,7 @@ import top.suilian.aio.service.RobotLogService;
 import top.suilian.aio.service.RobotService;
 import top.suilian.aio.service.asproex.AsproexService;
 import top.suilian.aio.service.auxsto.AuxstoService;
+import top.suilian.aio.service.basic.BasicService;
 import top.suilian.aio.service.bbkx.BbkxService;
 import top.suilian.aio.service.bgoex.BgoService;
 import top.suilian.aio.service.bihu.BiHuService;
@@ -221,6 +222,8 @@ public class BaseController {
     SkiesexService skiesexService;
     @Autowired
     GwetService GwetService;
+    @Autowired
+    BasicService basicService;
 
     //endregion
 

@@ -104,6 +104,9 @@ public class Constant {
     public static final int KEY_EXCHANGE_bithumb=60;//bithumb
 
     public static final int KEY_EXCHANGE_SKIESEX=61; //skiesex
+
+
+    public static final int KEY_EXCHANGE_BASIC=62; //basic
     //endregion
 
 
@@ -473,6 +476,9 @@ public class Constant {
      * coinstore 日志路径
      */
     public static final String KEY_LOG_PATH_CPINSTORE_KLINE = "coinstore/newkline";
+
+
+    public static final String KEY_LOG_PATH_CL_REFER_DEPTH ="basic/refer";
 
     public static final String KEY_LOG_PATH_bithhub_kilne="bithhub/kline";
     //region    redis

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.Util.HttpUtil;
+import top.suilian.aio.refer.BianUtils;
+import top.suilian.aio.refer.DeepVo;
 import top.suilian.aio.service.ExceptionMessageService;
 
 import javax.crypto.Mac;
@@ -356,11 +358,9 @@ public class TestController extends BaseController {
 
     @GetMapping("/testde")
     public void demo() {
-        egService.start(17, 3);
-        //senbitService.start(17,7);
-        //zgService.start(17,7);
-        //bthexService.start(17,7);
-        GwetService.start(17, 7);
+        List<DeepVo> btcusdt = BianUtils.getHistory("BTCUSDT");
+        String string = com.alibaba.fastjson.JSONObject.toJSONString(btcusdt);
+        System.out.println(string);
     }
 
 

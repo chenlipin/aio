@@ -10,6 +10,7 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -290,6 +291,20 @@ public class HMAC {
         return content;
     }
 
+    public static String splicing(Map<String, Object> params) throws UnsupportedEncodingException {
+        StringBuffer httpParams = new StringBuffer();
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue().toString();
+            httpParams.append(key).append("=").append(URLEncoder.encode(value, "UTF-8")).append("&");
+        }
+        if (httpParams.length() > 0) {
+            httpParams.deleteCharAt(httpParams.length() - 1);
+        }
+        return httpParams.toString();
+    }
+
+
     public static String SHA512( String strText) {
         return SHA(strText);
     }
@@ -354,6 +369,8 @@ public class HMAC {
         return result;
 
     }
+
+
 
     public static void main(String[] args) {
         String s = HMAC.md5_HMAC("accesskey=ce2a18e0-dshs-4c44-4515-9aca67dd706e&acctType=0&amount=0.001&currency=zb_qc&method=order&price=1.0&tradeType=1",

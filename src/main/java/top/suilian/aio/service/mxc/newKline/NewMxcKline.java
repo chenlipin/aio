@@ -232,7 +232,6 @@ public class NewMxcKline extends MxcParentService  {
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
                     if (jsonObject1 != null && "200".equals(jsonObject1.getString("code"))) {
-
                         orderIdTwo = jsonObject1.getString("data");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
 
@@ -249,13 +248,14 @@ public class NewMxcKline extends MxcParentService  {
                     setTradeLog(id, "交易量过小=> " + jsonObject, 0, "f57272");
                 }
             } catch (Exception e) {
-                if(orderIdOne!=null&&orderIdTwo==null){
+                logger.info("xxxx");
+                if((!"0".equals(orderIdOne))&&"0".equals(orderIdTwo)){
                     String res = cancelTrade(orderIdOne);
-                    setTradeLog(id, "撤单[" + orderIdOne + "]=> " + res, 0, "67c23a");
+                    setTradeLog(id, "1撤单[" + orderIdOne + "]=> " + res, 0, "67c23a");
                 }
-                if(orderIdOne==null&&orderIdTwo!=null){
+                if((!"0".equals(orderIdTwo))&&"0".equals(orderIdOne)){
                     String res = cancelTrade(orderIdTwo);
-                    setTradeLog(id, "撤单[" + orderIdTwo + "]=> " + res, 0, "67c23a");
+                    setTradeLog(id, "2撤单[" + orderIdTwo + "]=> " + res, 0, "67c23a");
                 }
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
