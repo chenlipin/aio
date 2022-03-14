@@ -40,7 +40,7 @@ public class BiMartUtils extends BaseHttp {
         }
         for (int i = 0; i < asksJson.size(); i++) {
             DeepVo deepVo = new DeepVo();
-            JSONObject jsonObject = bidsJson.getJSONObject(i);
+            JSONObject jsonObject = asksJson.getJSONObject(i);
             BigDecimal price = new BigDecimal(jsonObject.getString("price"));
             BigDecimal amount = new BigDecimal(jsonObject.getString("amount"));
             deepVo.setType(2);
