@@ -35,15 +35,6 @@ public class BasicParentService extends BaseService {
     public String exceptionMessage = null;
 
     public String submitOrder(List<OrderVO> list) {
-//        Map params = new HashMap();
-//        params.put("timestamp",System.currentTimeMillis());
-//        params.put("ApiKey", "1");
-//        params.put("ApiSecret","YFYnZzLAIZ7oFZYW04TF8Us8KlmIxvoP");
-//        params.put("orders","[{\"number\":0.1,\"pair\":\"BTC_USDT\",\"price\":38607,\"type\":\"sell\"},{\"number\":0.1,\"pair\":\"BTC_USDT\",\"price\":38607,\"type\":\"buy\"}]");
-//        //调用httpRequest方法，这个方法主要用于请求地址，并加上请求参数
-//        String string = httpRequest("http://45.32.127.96:11100/api/v1/placeOrders", params);
-//        System.out.println(string);
-//        return string;
         Map<String, String> map = new TreeMap<>();
         String timestamp = System.currentTimeMillis() + "";
         String apiKey = exchange.get("apikey");
@@ -52,19 +43,46 @@ public class BasicParentService extends BaseService {
         map.put("ApiSecret", tpass);
         map.put("timestamp", timestamp);
         map.put("orders",com.alibaba.fastjson.JSONObject.toJSONString(list));
-        System.out.println(map.get("orders"));
         String post = "";
         try {
-            setTradeLog(id, "挂单参数" + com.alibaba.fastjson.JSONObject.toJSONString(list), 0, "000000");
+            logger.info("挂单参数" + com.alibaba.fastjson.JSONObject.toJSONString(list));
             post = httpRequest(baseUrl + "/api/v1/placeOrders", map);
-            setTradeLog(id, "挂单结果" + com.alibaba.fastjson.JSONObject.toJSONString(post), 0, "#67c23a");
+            setTradeLog(id, "挂单结果" + post, 0, "#67c23a");
         } catch (Exception e) {
             e.printStackTrace();
         }
         return post;
     }
 
-    public String cancalOrder(com.alibaba.fastjson.JSONArray list, String pair) {
+    public String submitOrder(OrderVO order) {
+        Map<String, String> map = new TreeMap<>();
+        String timestamp = System.currentTimeMillis() + "";
+        String apiKey = exchange.get("apikey");
+        String tpass = exchange.get("tpass");
+        map.put("ApiKey", apiKey);
+        map.put("ApiSecret", tpass);
+        map.put("timestamp", timestamp);
+        map.put("number",order.getNumber());
+        map.put("pair",order.getPair());
+        map.put("price",order.getPrice());
+        map.put("type",order.getType());
+        String post = "";
+        try {
+            post = httpRequest(baseUrl + "/api/v1/place", map);
+            setTradeLog(id, "挂单结果" + post, 0, "#67c23a");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return post;
+    }
+
+    public void cancalOrder(com.alibaba.fastjson.JSONArray list, String pair) {
+        for (Object o : list) {
+            cancalOrder(o.toString());
+        }
+    }
+
+    public String cancalOrder(String orderId) {
         Map<String, String> map = new TreeMap<>();
         String timestamp = System.currentTimeMillis() + "";
         String ApiKey = exchange.get("apikey");
@@ -72,17 +90,15 @@ public class BasicParentService extends BaseService {
         map.put("ApiKey", ApiKey);
         map.put("ApiSecret", tpass);
         map.put("timestamp", timestamp);
-        map.put("pair", pair);
-        map.put("orders", com.alibaba.fastjson.JSONObject.toJSONString(list));
-        map.put("sign", makeSign(map));
+        map.put("orderId", orderId);
         String post = "";
         try {
-            setTradeLog(id, "撤单参数" + com.alibaba.fastjson.JSONObject.toJSONString(list), 0, "#67c23a");
-            post = httpRequest(baseUrl + "/v1/order/batchCancel", map);
-            setTradeLog(id, "撤单结果" + post, 0, "#67c23a");
+            post = httpRequest(baseUrl + "/api/v1/cancel", map);
+            setTradeLog(id, orderId+"撤单结果" + post, 0, "#67c23a");
         } catch (Exception e) {
             e.printStackTrace();
         }
+        sleep(500,1);
         return post;
     }
 
@@ -110,21 +126,14 @@ public class BasicParentService extends BaseService {
             String timestamp = System.currentTimeMillis() + "";
             String ApiKey = exchange.get("apikey");
             String tpass = exchange.get("tpass");
-            map.put("ApiKey", ApiKey);
-            map.put("ApiSecret", tpass);
-            map.put("timestamp", timestamp);
-            String splicing = "";
-            String post = "";
-            try {
-                splicing = HMAC.splicing(map);
-                String sign = HMAC.MD5(splicing);
-                map.put("sign", sign);
-                post = HttpUtil.post(baseUrl + "/api/v1/balanceList", map);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            JSONObject jsonObject = JSONObject.fromObject(post);
-            if (jsonObject != null && jsonObject.getInt("status") == 200) {
+            Map params = new HashMap();
+            params.put("timestamp",System.currentTimeMillis());
+            params.put("ApiKey",ApiKey);
+            params.put("ApiSecret",tpass);
+            String url = baseUrl+"/api/v1/balanceList";
+            String string = httpRequest(url, params);
+            JSONObject jsonObject = JSONObject.fromObject(string);
+            if (jsonObject != null && jsonObject.getInt("status") == 0) {
                 JSONArray data = jsonObject.getJSONArray("data");
                 String firstBalance = "";
                 String firstBalancefreeze = "";
@@ -137,8 +146,8 @@ public class BasicParentService extends BaseService {
                         firstBalancefreeze = jsonObject1.getString("balanceFrozen");
                     }
                     if (jsonObject1.getString("coinCode").equals(coinArr.get(1))) {
-                        lastBalance = jsonObject1.getString("balanceFrozen");
-                        lastBalancefreeze = jsonObject1.getString("freeze");
+                        lastBalance = jsonObject1.getString("balanceAvailable");
+                        lastBalancefreeze = jsonObject1.getString("balanceFrozen");
                     }
                 }
                 HashMap<String, String> balances = new HashMap<>();

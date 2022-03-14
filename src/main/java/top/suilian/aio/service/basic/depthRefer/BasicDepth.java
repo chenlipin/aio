@@ -6,6 +6,7 @@ import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
+import top.suilian.aio.refer.BiMartUtils;
 import top.suilian.aio.refer.BianUtils;
 import top.suilian.aio.refer.DeepVo;
 import top.suilian.aio.service.*;
@@ -44,9 +45,10 @@ public class BasicDepth extends BasicParentService {
     }
 
     private boolean start = true;
-    private JSONArray orders=null;
-    private JSONArray lastOrders=null;
+    private JSONArray orders = null;
+    private JSONArray lastOrders = null;
     public HashMap<String, Map<String, String>> depth = new HashMap<>();
+
     public void init() {
 
         if (start) {
@@ -55,9 +57,16 @@ public class BasicDepth extends BasicParentService {
             logger.info("设置机器人参数结束");
             start = false;
         }
-        Map<String, List<DeepVo>> deep = BianUtils.getdeep(exchange.get("referMarket"));
-        List<DeepVo> history = BianUtils.getHistory(exchange.get("referMarket"));
 
+        Map<String, List<DeepVo>> deep = null;
+        List<DeepVo> history = null;
+        if (exchange.get("referExchange") == null) {
+            deep = BianUtils.getdeep(exchange.get("referMarket"));
+            history = BianUtils.getHistory(exchange.get("referMarket"));
+        } else if (exchange.get("referExchange").equals("bitmart")) {
+            deep = BiMartUtils.getdeep(exchange.get("referMarket"));
+            history = BiMartUtils.getHistory(exchange.get("referMarket"));
+        }
         BigDecimal amountPoint = new BigDecimal(exchange.get("amountPoint"));
         int deepNum = Integer.parseInt(exchange.get("deepNum"));
 
@@ -66,7 +75,7 @@ public class BasicDepth extends BasicParentService {
 
         ArrayList<OrderVO> orderVOS = new ArrayList<>();
         //深度单子
-        for (int i = 0; i < deepBuyList.size()&&i<=deepNum-1; i++) {
+        for (int i = 0; i < deepBuyList.size() && i <= deepNum - 1; i++) {
             //买单
             OrderVO orderVOBuy = new OrderVO();
             DeepVo deepVoBuy = deepBuyList.get(i);
@@ -99,13 +108,13 @@ public class BasicDepth extends BasicParentService {
             order.setPrice(price1.stripTrailingZeros().toPlainString());
             order.setNumber(num1.stripTrailingZeros().toPlainString());
             order.setPair(exchange.get("market"));
-            order.setType(flag?"buy":"sell");
+            order.setType(flag ? "buy" : "sell");
 
             OrderVO order2 = new OrderVO();
             order2.setPrice(price1.stripTrailingZeros().toPlainString());
             order2.setNumber(num1.stripTrailingZeros().toPlainString());
             order2.setPair(exchange.get("market"));
-            order2.setType(flag?"sell":"buy");
+            order2.setType(flag ? "sell" : "buy");
 
             orderVOS.add(order);
             orderVOS.add(order2);
@@ -113,22 +122,24 @@ public class BasicDepth extends BasicParentService {
         //挂单
         String order = submitOrder(orderVOS);
         JSONObject jsonObject = JSONObject.parseObject(order);
-        if (jsonObject!=null&&jsonObject.getInteger("status").equals(200)){
+        if (jsonObject != null && jsonObject.getInteger("status").equals(0)) {
             orders = jsonObject.getJSONArray("data");
-        }else {
+        } else {
             setTradeLog(id, "挂单失败", 0);
         }
-        sleep(3000, Integer.parseInt("1"));
-       if (lastOrders.size()>0){
-           cancalOrder(lastOrders,exchange.get("market"));
-           lastOrders=orders;
-       }
+        if (lastOrders != null && lastOrders.size() > 0) {
+           cancalOrder(lastOrders, exchange.get("market"));
+        }
+        lastOrders = orders;
         int st = (int) (Math.random() * (Integer.parseInt(exchange.get("endTime")) - Integer.parseInt(exchange.get("startTime"))) + Integer.parseInt(exchange.get("startTime")));
         setTradeLog(id, "暂停时间----------------------------->" + st + "秒", 0);
-        sleep(20000, Integer.parseInt("1"));
+        sleep(st*1000, Integer.parseInt("1"));
         logger.info("--------------------------------------------结束---------------------------------------------");
         try {
-            setBalanceRedis();
+            int i = RandomUtils.nextInt(10);
+            if (i==5) {
+                setBalanceRedis();
+            }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
