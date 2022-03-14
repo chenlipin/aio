@@ -2,7 +2,6 @@ package top.suilian.aio.service.bthex.newKline;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import sun.rmi.runtime.Log;
 import top.suilian.aio.Util.CommonUtil;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;

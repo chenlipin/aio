@@ -51,7 +51,7 @@ public class BianUtils extends BaseHttp {
 
     public static List<DeepVo> getHistory(String symbol) {
         List<DeepVo> deepVos = new ArrayList<>();
-        String trades = get(uri + "/api/v3/trades?limit=5&symbol=" + symbol.toUpperCase());
+        String trades = get(uri + "/api/v3/trades?limit=3&symbol=" + symbol.toUpperCase());
         JSONArray jsonArray = JSONArray.fromObject(trades);
         for (int i = 0; i < jsonArray.size(); i++) {
             DeepVo deepVo = new DeepVo();

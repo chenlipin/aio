@@ -1,6 +1,5 @@
 package top.suilian.aio.service.hotcoin.kline;
 
-import jdk.nashorn.internal.runtime.options.LoggingOption;
 import net.sf.json.JSONObject;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;

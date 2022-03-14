@@ -7,7 +7,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
+import java.net.HttpURLConnection;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
@@ -22,6 +22,8 @@ import org.apache.http.util.CharArrayBuffer;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+
+import java.net.URLEncoder;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.X509TrustManager;
@@ -174,6 +176,47 @@ public class HttpUtil {
             }
         }
         return null;
+    }
+
+    public static String postBasic(String url, Map<String, String> params) throws Exception {
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestProperty("Charset", "UTF-8");
+        con.setRequestMethod("POST");
+        con.setConnectTimeout(30 * 1000);
+        con.setReadTimeout(100 * 1000);
+        con.setDoOutput(true);
+        if (params != null) {
+            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+            StringBuffer httpParams = new StringBuffer();
+            for (Entry<String, String> entry : params.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                httpParams.append(key).append("=").append(URLEncoder.encode(value, "UTF-8")).append("&");
+            }
+            if (httpParams.length() > 0) {
+                httpParams.deleteCharAt(httpParams.length() - 1);
+            }
+            wr.writeBytes(httpParams.toString());
+            wr.flush();
+            wr.close();
+        }
+        return toConnection(con);
+    }
+
+    public static String toConnection(HttpURLConnection con) throws Exception {
+        int responseCode = con.getResponseCode();
+        if (responseCode < 200 || responseCode >= 300) {
+            System.out.println("Request failed:" + responseCode);
+        }
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        StringWriter writer = new StringWriter();
+        char[] chars = new char[1024];
+        int count = 0;
+        while ((count = in.read(chars)) > 0) {
+            writer.write(chars, 0, count);
+        }
+        return writer.toString();
     }
 
 

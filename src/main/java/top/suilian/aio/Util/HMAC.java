@@ -304,6 +304,24 @@ public class HMAC {
         return httpParams.toString();
     }
 
+    public static String splicingBasic(Map<String, String> params){
+        StringBuffer httpParams = new StringBuffer();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue().toString();
+            try {
+                httpParams.append(key).append("=").append(URLEncoder.encode(value, "UTF-8")).append("&");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+        if (httpParams.length() > 0) {
+            httpParams.deleteCharAt(httpParams.length() - 1);
+        }
+        return httpParams.toString();
+    }
+
+
 
     public static String SHA512( String strText) {
         return SHA(strText);
