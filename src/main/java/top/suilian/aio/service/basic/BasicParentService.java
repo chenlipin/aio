@@ -33,7 +33,7 @@ public class BasicParentService extends BaseService {
     public boolean submitCnt = true;
     public int valid = 1;
     public String exceptionMessage = null;
-
+    public String[] transactionArr = new String[24];
     public String submitOrder(List<OrderVO> list) {
         Map<String, String> map = new TreeMap<>();
         String timestamp = System.currentTimeMillis() + "";
@@ -101,6 +101,107 @@ public class BasicParentService extends BaseService {
         sleep(500,1);
         return post;
     }
+
+    public String selectOrder(String orderId) {
+        Map<String, String> map = new TreeMap<>();
+        String timestamp = System.currentTimeMillis() + "";
+        String ApiKey = exchange.get("apikey");
+        String tpass = exchange.get("tpass");
+        map.put("ApiKey", ApiKey);
+        map.put("ApiSecret", tpass);
+        map.put("timestamp", timestamp);
+        map.put("orderId", orderId);
+        String post = "";
+        try {
+            post = httpRequest(baseUrl + "/api/v1/detailById", map);
+            setTradeLog(id, orderId+"查询订单结果" + post, 0, "#67c23a");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return post;
+    }
+
+    //设置交易量百分比
+    public void setTransactionRatio() {
+        String transactionRatio = exchange.get("transactionRatio");
+        if (transactionRatio != null) {
+            String str[] = transactionRatio.split(",");
+            if (str.length > 0 && str.length <= 24) {
+                int j = str.length;
+                for (int i = 0; i < j; i++) {
+                    transactionArr[i] = str[i].trim();
+                }
+                if (j < 24) {
+                    for (; j < 24; j++) {
+                        transactionArr[j] = "1";
+                    }
+                }
+            } else if (str.length > 24) {
+                for (int i = 0; i < 24; i++) {
+                    transactionArr[i] = str[i].trim();
+                }
+            }
+        } else {
+            for (int i = 0; i < 24; i++) {
+                transactionArr[i] = "1";
+            }
+        }
+    }
+
+    /**
+     * 存储撤单信息
+     *
+     * @param cancelRes
+     * @param res
+     * @param orderId
+     * @param type
+     */
+    public void setCancelOrder(JSONObject cancelRes, String res, String orderId, Integer type) {
+        int cancelStatus = Constant.KEY_CANCEL_ORDER_STATUS_FAILED;
+        if (cancelRes != null && cancelRes.getInt("code") == 200) {
+            cancelStatus = Constant.KEY_CANCEL_ORDER_STATUS_CANCELLED;
+        }
+        insertCancel(id, orderId, 1, type, Integer.parseInt(exchange.get("isMobileSwitch")), cancelStatus, res, Constant.KEY_EXCHANGE_HOTCOIN);
+    }
+
+
+    /**
+     * 交易规则获取
+     */
+    public void setPrecision() {
+
+        precision.put("amountPrecision", exchange.get("amountPrecision"));
+        precision.put("pricePrecision", exchange.get("pricePrecision"));
+        precision.put("minTradeLimit", exchange.get("minTradeLimit"));
+    }
+
+    public String submitTrade(int type, BigDecimal price, BigDecimal amount) {
+        // 输出字符串
+        String trade = null;
+        BigDecimal price1 = nN(price, Integer.valueOf(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.valueOf(exchange.get("amountPrecision").toString()));
+        Map<String, String> map = new TreeMap<>();
+        String timestamp = System.currentTimeMillis() + "";
+        String apiKey = exchange.get("apikey");
+        String tpass = exchange.get("tpass");
+        map.put("ApiKey", apiKey);
+        map.put("ApiSecret", tpass);
+        map.put("timestamp", timestamp);
+        map.put("number",amount+"");
+        map.put("pair",exchange.get("market"));
+        map.put("price",price+"");
+        map.put("type",type==0?"buy":"sell");
+        try {
+            logger.info("挂单参数" + map);
+            trade = httpRequest(baseUrl + "/api/v1/place", map);
+            setTradeLog(id, "挂单结果" + trade, 0, "#67c23a");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+        return trade;
+    }
+
 
     //获取余额
     public void setBalanceRedis() throws UnsupportedEncodingException {

@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="08d1241d-212c-4b6f-a71b-a49e0134832e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/BiMartUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/BiMartUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/BasicParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/BasicParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/BasicService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/BasicService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,13 +24,13 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/depthReferToZg/EgDepthToZg.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/klineReferToZg/EgKlineToZg.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/BitMartParentService.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/EgParentService.java" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/loex/RandomDepth/RunLoexRandomDepth.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fubt/kline/FubtKline.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/EgParentService.java" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/playcoin/kline/PlayCoinKline.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/klineReferToZg/EgKlineToZg.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/eg/depthReferToZg/EgDepthToZg.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/fubt/kline/FubtKline.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/BitMartParentService.java" root0="SKIP_INSPECTION" />
   </component>
   <component name="ProjectId" id="24nzXWhq9lCzgR51IMywjj4gQJo" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -59,6 +58,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\wandong\Desktop\rt_wd\java\aio\src\main\java\top\suilian\aio\service\basic" />
       <recent name="D:\aio\src\main\java\top\suilian\aio\service\basic" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -124,7 +124,9 @@
       <workItem from="1646809624748" duration="1707000" />
       <workItem from="1646899025545" duration="232000" />
       <workItem from="1646904980876" duration="624000" />
-      <workItem from="1647218119836" duration="18443000" />
+      <workItem from="1647218119836" duration="20446000" />
+      <workItem from="1647332132693" duration="800000" />
+      <workItem from="1647332956855" duration="3576000" />
     </task>
     <servers />
   </component>
@@ -159,7 +161,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/BasicParentService.java</url>
-          <line>152</line>
+          <line>253</line>
           <option name="timeStamp" value="118" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
