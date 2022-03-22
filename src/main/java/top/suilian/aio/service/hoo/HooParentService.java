@@ -6,12 +6,13 @@ import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.service.BaseService;
+import top.suilian.aio.service.RobotAction;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class HooParentService extends BaseService {
+public class HooParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://api.hoo.com";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
@@ -303,4 +304,18 @@ public class HooParentService extends BaseService {
         return timespace;
     }
 
+    @Override
+    public Map<String, String> submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Integer> selectOrderStr(String orderId) {
+        return null;
+    }
+
+    @Override
+    public String cancelTradeStr(String orderId) {
+        return null;
+    }
 }

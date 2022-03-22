@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="08d1241d-212c-4b6f-a71b-a49e0134832e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/BiMartUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/BiMartUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -125,6 +124,7 @@
       <workItem from="1646899025545" duration="232000" />
       <workItem from="1646904980876" duration="624000" />
       <workItem from="1647218119836" duration="18443000" />
+      <workItem from="1647948832061" duration="644000" />
     </task>
     <servers />
   </component>
@@ -166,6 +166,11 @@
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/depthRefer/BasicDepth.java</url>
           <line>62</line>
           <option name="timeStamp" value="123" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/BianUtils.java</url>
+          <line>19</line>
+          <option name="timeStamp" value="124" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
