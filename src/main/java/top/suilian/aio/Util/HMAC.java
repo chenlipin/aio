@@ -304,6 +304,19 @@ public class HMAC {
         return httpParams.toString();
     }
 
+    public static String splicingStr(Map<String, String> params) throws UnsupportedEncodingException {
+        StringBuffer httpParams = new StringBuffer();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue().toString();
+            httpParams.append(key).append("=").append(URLEncoder.encode(value, "UTF-8")).append("&");
+        }
+        if (httpParams.length() > 0) {
+            httpParams.deleteCharAt(httpParams.length() - 1);
+        }
+        return httpParams.toString();
+    }
+
     public static String splicingBasic(Map<String, String> params){
         StringBuffer httpParams = new StringBuffer();
         for (Map.Entry<String, String> entry : params.entrySet()) {

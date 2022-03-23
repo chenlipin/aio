@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 public class HooParentService extends BaseService implements RobotAction {
-    public String baseUrl = "https://api.hoo.com";
+    public String baseUrl = "https://api.hoolgd.com";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
@@ -53,16 +53,16 @@ public class HooParentService extends BaseService implements RobotAction {
 
 
     /**
-     * 下单
+     * 下单   {"code":0,"code_num":0,"msg":"ok","message":"ok","data":{"order_id":"34489150830","trade_no":"40522245595950224093911"}}
      */
-    protected String submitOrder(int type, BigDecimal price, BigDecimal amount) throws UnsupportedEncodingException {
+    protected String submitTrade(int type, BigDecimal price, BigDecimal amount)   {
 
         String typeStr = type == 1 ? "1" : "-1";//买/卖
         // 输出字符串
         String trade = null;
 
-        BigDecimal price1 = nN(price, Integer.valueOf(precision.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.valueOf(precision.get("amountPrecision").toString()));
+        BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
         logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
 
         Map<String, String> params = new TreeMap<String, String>();
@@ -72,7 +72,12 @@ public class HooParentService extends BaseService implements RobotAction {
         String timespace=getTimespace();
         params.put("ts",timespace);
         params.put("nonce",timespace);
-        String signs= HMAC.splice(params);
+        String signs= null;
+        try {
+            signs = HMAC.splicingStr(params);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         String sign=HMAC.sha256_HMAC(signs,exchange.get("tpass"));
         params.put("sign",sign);
         params.put("symbol",exchange.get("market"));
@@ -80,16 +85,21 @@ public class HooParentService extends BaseService implements RobotAction {
         params.put("quantity",String.valueOf(num));
         params.put("side",typeStr);
         logger.info("robotId" + id + "----" + "挂单参数：" + params);
-        trade = httpUtil.post(baseUrl + "/open/v1/orders/place",params,hader);
+        try {
+            trade = httpUtil.post(baseUrl + "/open/innovate/v1/orders/place",params,hader);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         JSONObject rt = JSONObject.fromObject(trade);
-        if (rt != null && rt.getInt("code")==0) {
-            setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
-            logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
-        } else {
+        if(0!=rt.getInt("code")){
+            setWarmLog(id,3,"API接口错误",rt.getString("msg"));
             setTradeLog(id, "price[" + price1 + "] num[" + num + "]", 1);
             logger.info("robotId" + id + "----" + "挂单失败结束");
+        }else
+       {
+            setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+            logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
         }
-        valid = 1;
         return trade;
     }
 
@@ -98,22 +108,30 @@ public class HooParentService extends BaseService implements RobotAction {
      * 查询订单详情
      *
      * @param orderId
-     * @return
+     * @return{"code":0,"code_num":0,"msg":"ok","message":"ok","data":{"create_at":1648047858200,"fee":"0","match_amt":"0","match_price":"0","match_qty":"0","order_id":"34489150830","order_type":1,"price":"1.2920","quantity":"4.000","side":1,"status":2,"symbol":"FTM-USDT","ticker":"FTM-USDT","trade_no":"40522245595950224093911","trades":[]}}
      * @throws UnsupportedEncodingException
      */
 
 
-    public String selectOrder(String orderId) throws UnsupportedEncodingException {
+    public String selectOrder(String orderId){
         Map<String,String> parms= new TreeMap<>();
         parms.put("client_id",exchange.get("apikey"));
         String timespace=getTimespace();
         parms.put("ts",timespace);
         parms.put("nonce",timespace);
-        String signs= HMAC.splice(parms);
+        String signs= null;
+        try {
+            signs = HMAC.splicingStr(parms);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         String sign=HMAC.sha256_HMAC(signs,exchange.get("tpass"));
         String parm=signs+"&sign="+sign+"&symbol="+exchange.get("market")+"&order_id="+orderId;
-        String rt = httpUtil.get(baseUrl+"/open/v1/orders/detail?"+parm);
-        logger.info("订单详情："+rt);
+        String rt = httpUtil.get(baseUrl+"/open/innovate/v1/orders/detail?"+parm);
+        JSONObject object = JSONObject.fromObject(rt);
+        if(0!=object.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", object.getString("msg"));
+        }
         return rt;
 
     }
@@ -135,15 +153,20 @@ public class HooParentService extends BaseService implements RobotAction {
     }
 
     public String getDepth(){
-        Map<String,String> parms= new TreeMap<>();
+        Map<String,Object> parms= new TreeMap<>();
         parms.put("client_id",exchange.get("apikey"));
         String timespace=getTimespace();
         parms.put("ts",timespace);
         parms.put("nonce",timespace);
-        String signs= HMAC.splice(parms);
+        String signs= null;
+        try {
+            signs = HMAC.splicing(parms);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         String sign=HMAC.sha256_HMAC(signs,exchange.get("tpass"));
         String parm=signs+"&sign="+sign+"&symbol="+exchange.get("market");
-        String res = httpUtil.get(baseUrl+"/open/v1/depth?"+parm);
+        String res = httpUtil.get(baseUrl+"/open/innovate/v1/depth?"+parm);
         logger.info("查询深度列表"+res);
         return res;
 
@@ -156,16 +179,20 @@ public class HooParentService extends BaseService implements RobotAction {
 
     protected String getBalance() {
 
-        Map<String,String> parms= new TreeMap<>();
+        Map<String,Object> parms= new TreeMap<>();
         parms.put("client_id",exchange.get("apikey"));
         String timespace=getTimespace();
         parms.put("ts",timespace);
         parms.put("nonce",timespace);
-        String signs= HMAC.splice(parms);
+        String signs= null;
+        try {
+            signs = HMAC.splicing(parms);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         String sign=HMAC.sha256_HMAC(signs,exchange.get("tpass"));
         String parm=signs+"&sign="+sign;
-        String res = httpUtil.get(baseUrl+"/open/v1/balance?"+parm);
-        logger.info("查询余额"+res);
+        String res = httpUtil.get(baseUrl+"/open/innovate/v1/balance?"+parm);
         return res;
     }
 
@@ -173,17 +200,22 @@ public class HooParentService extends BaseService implements RobotAction {
      * 撤单
      *
      * @param orderId
-     * @return
+     * @return {"code":0,"code_num":0,"msg":"ok","message":"ok","data":[]}
      * @throws UnsupportedEncodingException
      */
-    public String cancelTrade(String orderId,String tradeNo) throws UnsupportedEncodingException {
+    public String cancelTrade(String orderId,String tradeNo) {
 
         Map<String, String> params = new TreeMap<String, String>();
         params.put("client_id",exchange.get("apikey"));
         String timespace=getTimespace();
         params.put("ts",timespace);
         params.put("nonce",timespace);
-        String signs= HMAC.splice(params);
+        String signs= null;
+        try {
+            signs = HMAC.splicingStr(params);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         String sign=HMAC.sha256_HMAC(signs,exchange.get("tpass"));
         params.put("sign",sign);
         params.put("symbol",exchange.get("market"));
@@ -191,7 +223,16 @@ public class HooParentService extends BaseService implements RobotAction {
         params.put("trade_no",tradeNo);
         HashMap<String, String> headMap = new HashMap<String, String>();
         headMap.put("Content-Type", " application/x-www-form-urlencoded");
-        String res = httpUtil.post(baseUrl + "/open/v1/orders/cancel",params, headMap);
+        String res = null;
+        try {
+            res = httpUtil.post(baseUrl + "/open/innovate/v1/orders/cancel",params, headMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        JSONObject object = JSONObject.fromObject(res);
+        if(0!=object.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", object.getString("msg"));
+        }
         return res;
     }
 
@@ -199,7 +240,7 @@ public class HooParentService extends BaseService implements RobotAction {
      * 获取余额
      */
 
-    public void setBalanceRedis() throws UnsupportedEncodingException {
+    public void setBalanceRedis() {
 
         String coins = redisHelper.getBalanceParam(Constant.KEY_ROBOT_COINS + id);
         if (coins == null) {
@@ -216,10 +257,12 @@ public class HooParentService extends BaseService implements RobotAction {
             }
         }
         if (balance == null || overdue) {
-            List<String> coinArr = Arrays.asList(coins.split("-"));
+            List<String> coinArr = Arrays.asList(coins.split("_"));
 
             String firstBalance = null;
             String lastBalance = null;
+            String firstBalance1 = null;
+            String lastBalance1 = null;
             //获取余额
             String rt = getBalance();
             JSONObject obj = JSONObject.fromObject(rt);
@@ -228,16 +271,23 @@ public class HooParentService extends BaseService implements RobotAction {
                 for(int i=0;i<dataJson.size();i++){
                     if(dataJson.getJSONObject(i).getString("symbol").equals(coinArr.get(0))){
                         firstBalance = dataJson.getJSONObject(i).getString("amount");
+                        firstBalance1 = dataJson.getJSONObject(i).getString("freeze");
                     } else if(dataJson.getJSONObject(i).getString("symbol").equals(coinArr.get(1))){
                         lastBalance = dataJson.getJSONObject(i).getString("amount");
+                        lastBalance1 = dataJson.getJSONObject(i).getString("freeze");
                     }
                 }
             }else {
                 logger.info("获取余额失败"+obj);
             }
+            if(lastBalance!=null){
+                if (Double.parseDouble(lastBalance) < 10) {
+                    setWarmLog(id, 0, "余额不足", coinArr.get(1).toUpperCase() + "余额为:" + lastBalance);
+                }
+            }
             HashMap<String, String> balances = new HashMap<>();
-            balances.put(coinArr.get(0), firstBalance);
-            balances.put(coinArr.get(1), lastBalance);
+            balances.put(coinArr.get(0), firstBalance+"_"+firstBalance1);
+            balances.put(coinArr.get(1), lastBalance+"_"+lastBalance1);
             redisHelper.setBalanceParam(Constant.KEY_ROBOT_BALANCE + id, balances);
         }
     }
@@ -256,42 +306,6 @@ public class HooParentService extends BaseService implements RobotAction {
             cancelStatus = Constant.KEY_CANCEL_ORDER_STATUS_CANCELLED;
         }
         insertCancel(id, orderId, 1, type, Integer.parseInt(exchange.get("isMobileSwitch")), cancelStatus, res, Constant.KEY_EXCHANGE_WBFEX);
-    }
-
-
-    /**C
-     * 交易规则获取
-     */
-    public boolean setPrecision() {
-        //为client_id, ts, nonce, sign
-        boolean falg = false;
-        Map<String,String> parms= new TreeMap<>();
-        parms.put("client_id",exchange.get("apikey"));
-        String timespace=getTimespace();
-        parms.put("ts",timespace);
-        parms.put("nonce",timespace);
-        String signs= HMAC.splice(parms);
-        String sign=HMAC.sha256_HMAC(signs,exchange.get("tpass"));
-        String parm=signs+"&sign="+sign;
-        String rt = httpUtil.get(baseUrl+"/open/v1/tickers?"+parm);
-
-        JSONObject rtObj = judgeRes(rt, "code", "setPrecision");
-
-        if (!rt.equals("") && rtObj != null&&rtObj.getInt("code")==0) {
-            JSONArray jsonArray = rtObj.getJSONArray("data");
-            for(int i=0;i<jsonArray.size();i++){
-                if(jsonArray.getJSONObject(i).getString("symbol").equals(exchange.get("market"))){
-                    precision.put("amountPrecision",jsonArray.getJSONObject(i).getString("qty_num") );
-                    precision.put("pricePrecision", jsonArray.getJSONObject(i).getString("amt_num"));
-                    precision.put("minTradeLimit",exchange.get("minTradeLimit"));
-                    falg=true;
-                }
-            }
-
-        }else {
-            setTradeLog(id, "精度接口异常：" + rt, 0, "000000");
-        }
-        return falg;
     }
 
     public String getTimespace(){
