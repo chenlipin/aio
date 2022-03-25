@@ -2,6 +2,7 @@ package top.suilian.aio.service.hoo.RandomDepth;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
@@ -65,11 +66,11 @@ public class HooRandomDepth extends HooParentService {
             logger.info("深度卖单价格:" + depthPrice.get(1));
             logger.info("深度卖单数量:" + sellNum);
 
-
+            String resultBuy="";
             //挂买
             try {
                 logger.info("深度 挂买单");
-                String resultBuy = submitTrade(1, depthPrice.get(0), buyNum);
+                 resultBuy = submitTrade(1, depthPrice.get(0), buyNum);
                 JSONObject buyResultObject = JSONObject.fromObject(resultBuy);
                 if(buyResultObject.getInt("code") == 0){
                     setTradeLog(id, "深度 买单价格："+depthPrice.get(0)+",数量："+buyNum+",挂单结果："+buyResultObject, 0, "05cbc8");
@@ -79,14 +80,22 @@ public class HooRandomDepth extends HooParentService {
                     sleep( 10000, Integer.parseInt(exchange.get("isMobileSwitch")));
                 }
             } catch (Exception e) {
+                if (StringUtils.isNotEmpty(resultBuy)) {
+                    JSONObject object = JSONObject.fromObject(resultBuy);
+                    JSONObject data = object.getJSONObject("data");
+                    if (object.getInt("code") == 0) {
+                        cancelTrade(data.getString("order_id"),data.getString("trade_no"));
+                    }
+                }
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId:" + id + exceptionMessage);
             }
             //挂卖
+            String resultSellStr="";
             try {
                 logger.info("卖单");
-                String resultSellStr = submitTrade(-1, depthPrice.get(1), sellNum);
+                 resultSellStr = submitTrade(-1, depthPrice.get(1), sellNum);
                 JSONObject resultSell = JSONObject.fromObject(resultSellStr);
                 if(resultSell!=null&&resultSell.getInt("code")==0){
                     setTradeLog(id, "深度 卖单价格："+depthPrice.get(1)+",数量："+sellNum+"，挂单结果："+resultSellStr, 0, "ff6224");
@@ -96,6 +105,13 @@ public class HooRandomDepth extends HooParentService {
                     sleep( 10000, Integer.parseInt(exchange.get("isMobileSwitch")));
                 }
             } catch (Exception e) {
+                if (StringUtils.isNotEmpty(resultSellStr)) {
+                    JSONObject object = JSONObject.fromObject(resultSellStr);
+                    JSONObject data = object.getJSONObject("data");
+                    if (object.getInt("code") == 0) {
+                        cancelTrade(data.getString("order_id"),data.getString("trade_no"));
+                    }
+                }
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId:" + id + exceptionMessage);

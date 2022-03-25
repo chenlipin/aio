@@ -3,12 +3,15 @@ package top.suilian.aio.service.hoo;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.service.hoo.RandomDepth.RunHooRandomDepth;
+import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -16,7 +19,7 @@ import java.util.*;
 
 public class HooParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://api.hoolgd.com";
-
+    public RunHooRandomDepth runHooRandomDepth = BeanContext.getBean(RunHooRandomDepth.class);
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
     public boolean isTest = true;

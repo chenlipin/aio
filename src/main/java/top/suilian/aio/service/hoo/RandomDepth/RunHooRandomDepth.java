@@ -136,7 +136,7 @@ public class RunHooRandomDepth {
                     redisHelper.setParam("Exception_" + randomDepth.id, strs);                    //长时间异常，发送短信给我
                     if (redisHelper.getParam(randomDepth.id + key) == null) {
                         redisHelper.setParam(randomDepth.id + key, String.valueOf(System.currentTimeMillis()));
-                    } else if (System.currentTimeMillis() - Long.valueOf(redisHelper.getParam(randomDepth.id + key)) > Constant.KEY_SNS_INTERFACE_ERROR_TIME) {
+                    } else if (System.currentTimeMillis() - Long.parseLong(redisHelper.getParam(randomDepth.id + key)) > Constant.KEY_SNS_INTERFACE_ERROR_TIME) {
                         redisHelper.setParam(randomDepth.id + key + "_true", "true");
                         redisHelper.removeParent(randomDepth.id+key);
                     }

@@ -10,6 +10,7 @@ import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
 import top.suilian.aio.service.hoo.HooParentService;
+import top.suilian.aio.service.hoo.RandomDepth.RunHooRandomDepth;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -77,10 +78,10 @@ public class HooKline extends HooParentService {
             /**
              * 深度
              */
-//            if ("1".equals(exchange.get("isdeepRobot"))) {
-//                logger.info("深度机器人交易开始");
-//                runHotcoinRandomDepth.init(id + 1);
-//            }
+            if ("1".equals(exchange.get("isdeepRobot"))) {
+                logger.info("深度机器人交易开始");
+                runHooRandomDepth.init(id + 1);
+            }
 
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
