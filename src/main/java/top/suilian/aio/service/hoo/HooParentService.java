@@ -172,7 +172,6 @@ public class HooParentService extends BaseService implements RobotAction {
         String sign=HMAC.sha256_HMAC(signs,exchange.get("tpass"));
         String parm=signs+"&sign="+sign+"&symbol="+exchange.get("market");
         String res = httpUtil.get(baseUrl+"/open/v1/depth?"+parm);
-        logger.info("查询深度列表"+res);
         return res;
 
     }

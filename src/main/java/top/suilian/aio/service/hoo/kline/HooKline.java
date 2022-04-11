@@ -321,8 +321,10 @@ public class HooKline extends HooParentService {
 
             BigDecimal buyPri = new BigDecimal(bids.getJSONObject(0).getString("price"));
             BigDecimal sellPri = new BigDecimal(asks.getJSONObject(0).getString("price"));
-
-            if (System.currentTimeMillis()-ordersleeptime>1000*60*180+(RandomUtils.nextInt(10)* 1000L)){
+            long l = 1000 * 60 * 3 + (RandomUtils.nextInt(10) * 1000L);
+            logger.info("当前时间:"+System.currentTimeMillis()+"--ordersleeptime:"+ordersleeptime+"--差值："+l );
+            if (System.currentTimeMillis()-ordersleeptime> l){
+                logger.info("开始补单子" );
                 boolean type = RandomUtils.nextBoolean();
                 String resultJson = submitTrade(type?1:-1, type?sellPri:buyPri, new BigDecimal(exchange.get("minTradeLimit")));
                 JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
