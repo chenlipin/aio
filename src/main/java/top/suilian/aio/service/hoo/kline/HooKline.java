@@ -52,6 +52,8 @@ public class HooKline extends HooParentService {
     private String orderIdTwo = "0";
     private String orderIdOnetradeNo = "0";
     private String orderIdTwotradeNo = "0";
+    private String sleepOrder = "0";
+    private String sleepOrdertradeNo = "0";
     private boolean start = true;
     private int orderNum = 0;
     private int runTime = 0;
@@ -65,6 +67,7 @@ public class HooKline extends HooParentService {
     private String transactionRatio = "1";
     private int maxEatOrder = 0;
     private int timeSlot = 1;
+    long ordersleeptime=0;
 
 
 
@@ -101,8 +104,8 @@ public class HooKline extends HooParentService {
         if (transactionRatio.equals("0") || transactionRatio.equals("")) {
             transactionRatio = "1";
         }
+        setPrecision();
         logger.info("当前时间段单量百分比：" + transactionRatio);
-
         if (runTime < timeSlot) {
             String trades  = getDepth();
             //获取深度 判断平台撮合是否成功
@@ -141,9 +144,13 @@ public class HooKline extends HooParentService {
                     eatOrder++;
                     setTradeLog(id, "已吃堵盘口单总数:" + eatOrder + ";吃单成交上限数:" + maxEatOrder, 0);
                 }
-
             }
 
+
+            if (!"0".equals(sleepOrder)) {
+                selectOrderDetail(sleepOrder, 2,sleepOrdertradeNo);
+                sleepOrder = "0";
+            }
 
             if (!"0".equals(orderIdOne) && !"0".equals(orderIdTwo)) {
 
@@ -230,6 +237,7 @@ public class HooKline extends HooParentService {
                         orderIdTwo = data1.getString("order_id");
                         orderIdTwotradeNo=data1.getString("trade_no");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
+                        ordersleeptime=System.currentTimeMillis();
                     } else {
                         String res = cancelTrade(tradeId,orderIdOnetradeNo);
                         setTradeLog(id, "撤单[" + tradeId + "]=> " + res, 0, "000000");
@@ -313,8 +321,22 @@ public class HooKline extends HooParentService {
 
             BigDecimal buyPri = new BigDecimal(bids.getJSONObject(0).getString("price"));
             BigDecimal sellPri = new BigDecimal(asks.getJSONObject(0).getString("price"));
-
-
+            long l = 1000 * 60 * 3 + (RandomUtils.nextInt(10) * 1000L);
+            logger.info("当前时间:"+System.currentTimeMillis()+"--ordersleeptime:"+ordersleeptime+"--差值："+l );
+            if (System.currentTimeMillis()-ordersleeptime> l){
+                logger.info("开始补单子" );
+                boolean type = RandomUtils.nextBoolean();
+                String resultJson = submitTrade(type?1:-1, type?sellPri:buyPri, new BigDecimal(exchange.get("minTradeLimit")));
+                JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
+                if (jsonObject != null && jsonObject.getInt("code") == 0) {
+                    JSONObject data1 = jsonObject.getJSONObject("data");
+                    orderIdTwo = data1.getString("order_id");
+                    orderIdTwotradeNo=data1.getString("trade_no");
+                    removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
+                    ordersleeptime=System.currentTimeMillis();
+                    logger.info("长时间没挂单 补单方向" + (type?"buy":"sell")   + "：数量" +exchange.get("minTradeLimit") +"价格："+ (type?sellPri:buyPri) );
+                }
+            }
             BigDecimal intervalPrice = sellPri.subtract(buyPri);
 
             logger.info("robotId" + id + "----" + "最新买一：" + buyPri + "，最新卖一：" + sellPri);
