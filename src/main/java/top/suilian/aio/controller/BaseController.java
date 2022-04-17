@@ -21,6 +21,7 @@ import top.suilian.aio.service.bision.BisionService;
 import top.suilian.aio.service.bitai.BiTaiService;
 import top.suilian.aio.service.bithumb.BithumbService;
 import top.suilian.aio.service.bitmart.BitMartService;
+import top.suilian.aio.service.bitrue.BitrueService;
 import top.suilian.aio.service.bitterex.BitterexService;
 import top.suilian.aio.service.bitvictory.BitvictoryService;
 import top.suilian.aio.service.bkex.coinnoe.BkexService;
@@ -224,6 +225,8 @@ public class BaseController {
     GwetService GwetService;
     @Autowired
     BasicService basicService;
+    @Autowired
+    BitrueService bitrueService;
 
     //endregion
 

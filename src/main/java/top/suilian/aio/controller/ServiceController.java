@@ -217,8 +217,8 @@ public class ServiceController extends BaseController {
                     case Constant.KEY_EXCHANGE_SKIESEX:             //skiesex
                         skiesexService.start(operationRequest.getId(), operationRequest.getType());
                         break;
-                    case Constant.KEY_EXCHANGE_BASIC:             //basic
-                        basicService.start(operationRequest.getId(), operationRequest.getType());
+                    case Constant.KEY_EXCHANGE_BITRUE:             //basic
+                        bitrueService.start(operationRequest.getId(), operationRequest.getType());
                         break;
                 }
                 if (operationRequest.getCategory() == 1) {
@@ -418,6 +418,9 @@ public class ServiceController extends BaseController {
                 case Constant.KEY_EXCHANGE_BASIC:             //basic
                     basicService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
+                case Constant.KEY_EXCHANGE_BITRUE:             //basic
+                    bitrueService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
             }
         } else {
             robotService.stopRobot(operationRequest.getId());
@@ -611,6 +614,9 @@ public class ServiceController extends BaseController {
                     break;
                 case Constant.KEY_EXCHANGE_BASIC:             //basic
                     basicService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_BITRUE:             //basic
+                    bitrueService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {

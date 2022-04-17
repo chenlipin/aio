@@ -107,6 +107,9 @@ public class Constant {
 
 
     public static final int KEY_EXCHANGE_BASIC=62; //basic
+
+
+    public static final int KEY_EXCHANGE_BITRUE=63; //bitrue
     //endregion
 
 
