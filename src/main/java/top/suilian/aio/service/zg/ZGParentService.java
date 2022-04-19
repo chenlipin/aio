@@ -271,27 +271,12 @@ public class ZGParentService extends BaseService implements RobotAction {
      * 交易规则获取
      */
     public boolean setPrecision() {
-        boolean flag = false;
-        String rt = httpUtil.get("https://www.ztb.im/api/v1/exchangeInfo");
-
-        JSONArray array = JSONArray.fromObject(rt);
-
-        for (int i = 0; i < array.size(); i++) {
-            JSONObject jsonObject = array.getJSONObject(i);
-
-            if (jsonObject.getString("symbol").equals(exchange.get("market").toUpperCase())) {
-                String pricePrecision = jsonObject.getString("baseAssetPrecision");
-                String amountPrecision = jsonObject.getString("quoteAssetPrecision");
-
                 precision.put("pricePrecision", exchange.get("pricePrecision"));
                 precision.put("amountPrecision", exchange.get("amountPrecision"));
-                /*-------------------------------*/
                 precision.put("exRate", 0.002);
                 precision.put("minTradeLimit", exchange.get("minTradeLimit"));
-                flag = true;
-            }
-        }
-        return flag;
+
+        return true;
     }
 
 

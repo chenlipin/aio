@@ -107,9 +107,9 @@ public class TradeRobotService {
      */
     public ResponseEntity fastTrade(FastTradeReq req) {
         Member user = redisHelper.getUser(req.getToken());
-        if (user == null || !user.getMemberId().equals(req.getUserId())) {
-            throw new RuntimeException("用户身份校验失败");
-        }
+//        if (user == null || !user.getMemberId().equals(req.getUserId())) {
+//            throw new RuntimeException("用户身份校验失败");
+//        }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
         if (!checkSignature) {
 //            throw new RuntimeException("Signature失败");
@@ -420,7 +420,8 @@ public class TradeRobotService {
                     typeTrade = false;
                     newSellOrder++;
                 }
-                Map<String, String> stringStringMap = robotAction.submitOrderStr(typeTrade ? 1 : 2, price, amount);
+//                Map<String, String> stringStringMap = robotAction.submitOrderStr(typeTrade ? 1 : 2, price, amount);
+                Map<String, String> stringStringMap=null;
                 ApitradeLog apitradeLog = new ApitradeLog();
                 apitradeLog.setAmount(amount);
                 apitradeLog.setPrice(price);
