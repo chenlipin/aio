@@ -77,6 +77,13 @@ public class HooKline extends HooParentService {
             logger.info("设置机器人参数开始");
             setParam();
             setTransactionRatio();
+            String balance = getBalance();
+            System.out.println(balance);
+            try {
+                Thread.sleep(1000000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             logger.info("设置机器人参数结束");
             /**
              * 深度
@@ -104,7 +111,6 @@ public class HooKline extends HooParentService {
         if (transactionRatio.equals("0") || transactionRatio.equals("")) {
             transactionRatio = "1";
         }
-        setPrecision();
         logger.info("当前时间段单量百分比：" + transactionRatio);
         if (runTime < timeSlot) {
             String trades  = getDepth();
