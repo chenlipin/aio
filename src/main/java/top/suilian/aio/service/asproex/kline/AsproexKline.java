@@ -318,7 +318,7 @@ public class AsproexKline extends AsproexParentService {
                     }
                     return price;
 
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if (buyAmount.compareTo(new BigDecimal(exchange.get("buyMinLimitAmount"))) < 1 && maxEatOrder > eatOrder) {
@@ -336,7 +336,7 @@ public class AsproexKline extends AsproexParentService {
                     }
                     return price;
 
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

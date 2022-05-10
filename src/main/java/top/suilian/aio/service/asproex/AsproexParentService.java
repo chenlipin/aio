@@ -59,7 +59,7 @@ public class AsproexParentService extends BaseService {
      * @return
      * @throws UnsupportedEncodingException
      */
-    public String submitTrade(int type, BigDecimal price, BigDecimal amount) throws UnsupportedEncodingException {
+    public String submitTrade(int type, BigDecimal price, BigDecimal amount)   {
 
         String timestamp = String.valueOf(new Date().getTime());
         String typeStr = type == 1 ? "买" : "卖";
@@ -71,8 +71,8 @@ public class AsproexParentService extends BaseService {
         String trade = null;
 
 
-        BigDecimal price1 = nN(price, Integer.valueOf(precision.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.valueOf(precision.get("amountPrecision").toString()));
+        BigDecimal price1 = nN(price, Integer.parseInt(precision.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.parseInt(precision.get("amountPrecision").toString()));
 
         Double minTradeLimit = Double.valueOf(String.valueOf(precision.get("minTradeLimit")));
         if (num.compareTo(BigDecimal.valueOf(minTradeLimit)) >= 0) {
@@ -93,7 +93,7 @@ public class AsproexParentService extends BaseService {
 
                     logger.info("robotId" + id + "----" + "挂单参数：" + par);
 
-                    trade = httpUtil.doPost(baseUrl + "/openapi/v1/order", par, exchange.get("apikey"));
+                    trade = httpUtil.doPost(baseUrl + "/api/v1/order", par, exchange.get("apikey"));
 
                     setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
                     logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);

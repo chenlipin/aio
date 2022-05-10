@@ -450,7 +450,7 @@ public class HttpUtil {
         HttpGet get = new HttpGet(url);
         get.setConfig(config);
         get.setHeader("Content-type", "application/x-www-form-urlencoded");
-        get.addHeader("X-BH-APIKEY", apikey);
+        get.addHeader("X-MBX-APIKEY", apikey);
         CloseableHttpResponse response = null;
         try {
             response = httpClient.execute(get);
@@ -493,7 +493,7 @@ public class HttpUtil {
             s.setContentEncoding("UTF-8");
             post.setHeader("Content-type", "application/x-www-form-urlencoded");
             post.setHeader("User-Agent","Mozilla/5.0(Windows;U;Windows NT 5.1;en-US;rv:0.9.4)");
-            post.addHeader("X-BH-APIKEY", apiKey);
+            post.addHeader("X-MBX-APIKEY", apiKey);
             post.setEntity(s);
             response = httpclient.execute(post);
             if (response != null && response.getStatusLine().getStatusCode() == 200) {
@@ -606,7 +606,7 @@ public class HttpUtil {
         httpDelete.setConfig(requestConfig);
         httpDelete.setHeader("Content-type", "application/x-www-form-urlencoded");
         httpDelete.setHeader("User-Agent","Mozilla/5.0(Windows;U;Windows NT 5.1;en-US;rv:0.9.4)");
-        httpDelete.addHeader("X-BH-APIKEY", apiKey);
+        httpDelete.addHeader("X-MBX-APIKEY", apiKey);
         httpDelete.setHeader("DataEncoding", "UTF-8");
         httpDelete.setHeader("token", token);
 

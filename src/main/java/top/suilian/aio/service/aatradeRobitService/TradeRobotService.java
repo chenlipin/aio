@@ -22,6 +22,7 @@ import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.bision.BisionParentService;
 import top.suilian.aio.service.bithumb.BithumbParentService;
 import top.suilian.aio.service.bitmart.BitMartParentService;
+import top.suilian.aio.service.bitrue.BitrueParentService;
 import top.suilian.aio.service.bitterex.BitterexParentService;
 import top.suilian.aio.service.bkex.coinnoe.BkexParentService;
 import top.suilian.aio.service.coinnoe.CoinnoeParentService;
@@ -186,6 +187,9 @@ public class TradeRobotService {
                 break;
             case Constant.KEY_EXCHANGE_HOO:
                 robotAction = new HooParentService();
+                break;
+            case Constant.KEY_EXCHANGE_BITRUE:
+                robotAction = new BitrueParentService();
                 break;
             default:
                 return null;
@@ -420,8 +424,7 @@ public class TradeRobotService {
                     typeTrade = false;
                     newSellOrder++;
                 }
-//                Map<String, String> stringStringMap = robotAction.submitOrderStr(typeTrade ? 1 : 2, price, amount);
-                Map<String, String> stringStringMap=null;
+                Map<String, String> stringStringMap = robotAction.submitOrderStr(typeTrade ? 1 : 2, price, amount);
                 ApitradeLog apitradeLog = new ApitradeLog();
                 apitradeLog.setAmount(amount);
                 apitradeLog.setPrice(price);
