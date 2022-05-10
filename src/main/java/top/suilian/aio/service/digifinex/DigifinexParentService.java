@@ -26,7 +26,7 @@ public class DigifinexParentService extends BaseService {
     public String[] transactionArr = new String[24];
 
     //设置交易量百分比
-    public void setTransactionRatio(){
+    public void setTransactionRatio() {
         String transactionRatio = exchange.get("transactionRatio");
         if (transactionRatio != null) {
             String str[] = transactionRatio.split(",");
@@ -61,42 +61,25 @@ public class DigifinexParentService extends BaseService {
         String typeStr = type == 1 ? "买" : "卖";
         logger.info("robotId:" + id + "robotId:" + id + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
         String trade = null;
+        BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
+        Map<String, String> param = new TreeMap<>();
+        param.put("symbol", exchange.get("market"));
+        param.put("type", type == 1 ? "buy" : "sell");
+        param.put("price", String.valueOf(price));
+        param.put("amount", String.valueOf(amount));
+        String payload = HMAC.splice(param);
 
-        BigDecimal price1 = nN(price, Integer.valueOf(precision.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.valueOf(precision.get("amountPrecision").toString()));
-        Double minTradeLimit = Double.valueOf(String.valueOf(precision.get("minTradeLimit")));
-
-        if (num.compareTo(BigDecimal.valueOf(minTradeLimit)) >= 0) {
-            Double numThreshold1 = Double.valueOf(exchange.get("numThreshold"));
-            if (price1.compareTo(BigDecimal.ZERO) > 0 && num.compareTo(BigDecimal.valueOf(numThreshold1)) < 1) {
-                if (num.compareTo(BigDecimal.valueOf(numThreshold1)) == 1) {
-                    num = BigDecimal.valueOf(numThreshold1);
-                }
-                Map<String, String> param = new TreeMap<>();
-                param.put("symbol", exchange.get("market"));
-                param.put("type", type == 1 ? "buy" : "sell");
-                param.put("price", String.valueOf(price));
-                param.put("amount", String.valueOf(amount));
-                String payload = HMAC.splice(param);
-
-                HashMap<String, String> head = new HashMap<String, String>();
-                String apikey = exchange.get("apikey");
-                String sign = HMAC.sha256_HMAC(payload, exchange.get("tpass"));
-                String timestamp = getTimestamp();
-                head.put("ACCESS-KEY", apikey);
-                head.put("ACCESS-TIMESTAMP", timestamp);
-                head.put("ACCESS-SIGN", sign);
-                trade = httpUtil.post(baseUrl + "/spot/order/new", param, head);
-                setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
-                logger.info("robotId:" + id + "挂单成功结束：" + trade);
-            } else {
-                setTradeLog(id, "price[" + price1 + "] num[" + num + "]", 1);
-                logger.info("robotId:" + id + "挂单失败结束");
-            }
-        } else {
-            setTradeLog(id, "交易量最小为：" + precision.get("minTradeLimit"), 0);
-            logger.info("robotId:" + id + "挂单失败结束");
-        }
+        HashMap<String, String> head = new HashMap<String, String>();
+        String apikey = exchange.get("apikey");
+        String sign = HMAC.sha256_HMAC(payload, exchange.get("tpass"));
+        String timestamp = getTimestamp();
+        head.put("ACCESS-KEY", apikey);
+        head.put("ACCESS-TIMESTAMP", timestamp);
+        head.put("ACCESS-SIGN", sign);
+        trade = httpUtil.post(baseUrl + "/spot/order/new", param, head);
+        setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+        logger.info("robotId:" + id + "挂单成功结束：" + trade);
 
         return trade;
     }

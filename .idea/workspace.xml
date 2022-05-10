@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a484eefc-fb36-49c2-8de3-528f70940baa" name="Changes" comment="" />
+    <list default="true" id="a484eefc-fb36-49c2-8de3-528f70940baa" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/digifinex/DigifinexParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/digifinex/DigifinexParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/digifinex/DigifinexService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/digifinex/DigifinexService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -39,7 +43,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitrue" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/digifinex/newKline" />
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="ReactorSettings">
@@ -47,6 +51,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\wandong\Desktop\rt_wd\java\aio\src\main\java\top\suilian\aio\service\digifinex\newKline" />
       <recent name="D:\aio\src\main\java\top\suilian\aio\service\bitrue" />
       <recent name="D:\aio\src\main\java\top\suilian\aio\service" />
     </key>
@@ -104,7 +109,9 @@
       <workItem from="1651126628465" duration="34000" />
       <workItem from="1651126693131" duration="11000" />
       <workItem from="1651136229715" duration="587000" />
-      <workItem from="1652143444854" duration="327000" />
+      <workItem from="1652143444854" duration="1048000" />
+      <workItem from="1652152518292" duration="642000" />
+      <workItem from="1652163602119" duration="2570000" />
     </task>
     <servers />
   </component>
@@ -148,7 +155,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hoo/kline/HooKline.java</url>
-          <line>103</line>
+          <line>110</line>
           <option name="timeStamp" value="147" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -175,6 +182,21 @@
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitrue/newKline/NewBitrueKline.java</url>
           <line>226</line>
           <option name="timeStamp" value="179" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/digifinex/newKline/DigfinexNewKline.java</url>
+          <line>81</line>
+          <option name="timeStamp" value="180" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/digifinex/DigifinexParentService.java</url>
+          <line>60</line>
+          <option name="timeStamp" value="181" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/digifinex/DigifinexParentService.java</url>
+          <line>258</line>
+          <option name="timeStamp" value="182" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
