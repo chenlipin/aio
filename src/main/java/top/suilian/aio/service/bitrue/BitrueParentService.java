@@ -98,7 +98,7 @@ public class BitrueParentService extends BaseService implements RobotAction {
     public String selectOrder(String orderId) throws UnsupportedEncodingException {
         Long timestamp = getTime();
         String trade = null;
-        String param = "orderId=" + orderId + "&timestamp=" + timestamp;
+        String param = "orderId=" + orderId +"&symbol=" + exchange.get("market")+"&timestamp=" + timestamp;
         String signs = HMAC.sha256_HMAC(param, exchange.get("tpass"));
         String par = param + "&signature=" + signs;
         String orderInfo = httpUtil.doGet(baseUrl + "/api/v1/order?" + par, exchange.get("apikey"));

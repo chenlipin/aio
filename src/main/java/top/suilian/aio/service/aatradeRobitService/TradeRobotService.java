@@ -22,6 +22,7 @@ import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.bision.BisionParentService;
 import top.suilian.aio.service.bithumb.BithumbParentService;
 import top.suilian.aio.service.bitmart.BitMartParentService;
+import top.suilian.aio.service.bitrue.BitrueParentService;
 import top.suilian.aio.service.bitterex.BitterexParentService;
 import top.suilian.aio.service.bkex.coinnoe.BkexParentService;
 import top.suilian.aio.service.coinnoe.CoinnoeParentService;
@@ -107,9 +108,9 @@ public class TradeRobotService {
      */
     public ResponseEntity fastTrade(FastTradeReq req) {
         Member user = redisHelper.getUser(req.getToken());
-        if (user == null || !user.getMemberId().equals(req.getUserId())) {
-            throw new RuntimeException("用户身份校验失败");
-        }
+//        if (user == null || !user.getMemberId().equals(req.getUserId())) {
+//            throw new RuntimeException("用户身份校验失败");
+//        }
         boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
         if (!checkSignature) {
 //            throw new RuntimeException("Signature失败");
@@ -186,6 +187,9 @@ public class TradeRobotService {
                 break;
             case Constant.KEY_EXCHANGE_HOO:
                 robotAction = new HooParentService();
+                break;
+            case Constant.KEY_EXCHANGE_BITRUE:
+                robotAction = new BitrueParentService();
                 break;
             default:
                 return null;
