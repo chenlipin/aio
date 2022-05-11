@@ -51,6 +51,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitrue" />
+    <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
@@ -98,7 +99,7 @@
       <updated>1650187639318</updated>
       <workItem from="1650187666130" duration="18523000" />
       <workItem from="1650590027229" duration="2340000" />
-      <workItem from="1651926872659" duration="1486000" />
+      <workItem from="1651926872659" duration="2289000" />
     </task>
     <servers />
   </component>
