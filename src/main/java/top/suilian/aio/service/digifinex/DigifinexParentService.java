@@ -77,7 +77,7 @@ public class DigifinexParentService extends BaseService {
                 param.put("type", type == 1 ? "buy" : "sell");
                 param.put("price", String.valueOf(price));
                 param.put("amount", String.valueOf(amount));
-                String payload = HMAC.splice(param);
+                String payload = HMAC.splicingStr(param);
 
                 HashMap<String, String> head = new HashMap<String, String>();
                 String apikey = exchange.get("apikey");
@@ -116,7 +116,7 @@ public class DigifinexParentService extends BaseService {
         String trade = null;
         Map<String, String> param = new TreeMap<>();
         param.put("order_id", orderId);
-        String payload = HMAC.splice(param);
+        String payload = HMAC.splicingStr(param);
         String sign = HMAC.sha256_HMAC(payload, exchange.get("tpass"));
         Map<String, String> head = new HashMap<String, String>();
         String apikey = exchange.get("apikey");
@@ -159,7 +159,7 @@ public class DigifinexParentService extends BaseService {
         String trade = null;
         Map<String, String> param = new TreeMap<>();
         param.put("order_id", orderId);
-        String payload = HMAC.splice(param);
+        String payload = HMAC.splicingStr(param);
         HashMap<String, String> head = new HashMap<String, String>();
         String apikey = exchange.get("apikey");
         String sign = HMAC.sha256_HMAC(payload, exchange.get("tpass"));
@@ -200,21 +200,27 @@ public class DigifinexParentService extends BaseService {
             JSONObject jsonObject1 = judgeRes(rt, "list", "getBalance");
             if (rt != null && "0".equals(jsonObject1.getString("code"))) {
                 JSONArray coinListss = jsonObject1.getJSONArray("list");
-                String firstBalance = null;
-                String lastBalance = null;
+                Double firstBalance = null;
+                Double firstBalance1 = null;
+                Double lastBalance = null;
+                Double lastBalance1 = null;
+
 
                 for (int i = 0; i < coinListss.size(); i++) {
                     JSONObject jsonObject = JSONObject.fromObject(coinListss.get(i));
 
                     if (jsonObject.getString("currency").equals(coinArr.get(0))) {
-                        firstBalance = jsonObject.getString("free");
+                        firstBalance = jsonObject.getDouble("free");
+                        firstBalance1=jsonObject.getDouble("total")-firstBalance;
                     } else if (jsonObject.getString("currency").equals(coinArr.get(1))) {
-                        lastBalance = jsonObject.getString("free");
+                        lastBalance = jsonObject.getDouble("free");
+                        lastBalance1=jsonObject.getDouble("total")-lastBalance;
                     }
                 }
                 HashMap<String, String> balances = new HashMap<>();
-                balances.put(coinArr.get(0), firstBalance);
-                balances.put(coinArr.get(1), lastBalance);
+                balances.put(coinArr.get(0), firstBalance+"_"+firstBalance1);
+                balances.put(coinArr.get(1), lastBalance+"_"+lastBalance1);
+                logger.info("获取余额:"+firstBalance+"_"+"lastBalance");
                 redisHelper.setBalanceParam(Constant.KEY_ROBOT_BALANCE + id, balances);
             } else {
                 logger.info("获取余额失败");
@@ -246,29 +252,10 @@ public class DigifinexParentService extends BaseService {
      * 交易规则获取
      */
     public boolean setPrecision() {
-        boolean falg = false;
-        String rt = httpUtil.get(baseUrl + "/markets");
-        JSONObject jsonObject1 = judgeRes(rt, "data", "setPrecision");
-        if (jsonObject1 != null && "0".equals(jsonObject1.getString("code"))) {
-            JSONArray jsonArray = jsonObject1.getJSONArray("data");
-            for (int i = 0; i < jsonArray.size(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                if (jsonObject.getString("market").equals(exchange.get("market"))) {
-                    String amountPrecision = jsonObject.getString("volume_precision");
-                    String pricePrecision = jsonObject.getString("price_precision");
-                    String minTradeLimit = "5";//平台接口错误   写死为5
-                    precision.put("amountPrecision", amountPrecision);
-                    precision.put("pricePrecision", pricePrecision);
-                    precision.put("minTradeLimit", minTradeLimit);
-                    falg = true;
-                    break;
-                }
-            }
-
-        } else {
-            setTradeLog(id, "获取交易规则异常", 0);
-        }
-        return falg;
+        precision.put("amountPrecision", exchange.get("amountPrecision"));
+        precision.put("pricePrecision", exchange.get("pricePrecision"));
+        precision.put("minTradeLimit", exchange.get("minTradeLimit"));
+        return true;
     }
 
 

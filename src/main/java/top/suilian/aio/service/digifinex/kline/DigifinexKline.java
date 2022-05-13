@@ -150,7 +150,12 @@ public class DigifinexKline extends DigifinexParentService {
                     String msg = "您的" + getRobotName(this.id) + "量化机器人已停止!";
                     judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
                     setTradeLog(id, "撤单数达到上限，停止量化", 0, "000000");
-                    setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
+                    try {
+                        Thread.sleep(1000*60*13);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    orderNum=0;
                     return;
                 }
             }
@@ -484,6 +489,11 @@ public class DigifinexKline extends DigifinexParentService {
                     } else {
                         if (Integer.valueOf(exchange.get("orderSumSwitch")) == 1 && type == 1) {    //防褥羊毛开关
                             orderNum++;
+                        }
+                        try {
+                            Thread.sleep(1000*60*8);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                         String res = cancelTrade(orderId);
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
