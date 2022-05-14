@@ -3,10 +3,12 @@ package top.suilian.aio.service.digifinex;
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.service.BaseService;
+import top.suilian.aio.service.RobotAction;
 
 import javax.crypto.Mac;
 import java.io.UnsupportedEncodingException;
@@ -14,7 +16,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.*;
 
-public class DigifinexParentService extends BaseService {
+public class DigifinexParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://openapi.digifinex.vip/v3";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
@@ -26,7 +28,7 @@ public class DigifinexParentService extends BaseService {
     public String[] transactionArr = new String[24];
 
     //设置交易量百分比
-    public void setTransactionRatio(){
+    public void setTransactionRatio() {
         String transactionRatio = exchange.get("transactionRatio");
         if (transactionRatio != null) {
             String str[] = transactionRatio.split(",");
@@ -64,40 +66,23 @@ public class DigifinexParentService extends BaseService {
 
         BigDecimal price1 = nN(price, Integer.valueOf(precision.get("pricePrecision").toString()));
         BigDecimal num = nN(amount, Integer.valueOf(precision.get("amountPrecision").toString()));
-        Double minTradeLimit = Double.valueOf(String.valueOf(precision.get("minTradeLimit")));
+        Map<String, String> param = new TreeMap<>();
+        param.put("symbol", exchange.get("market"));
+        param.put("type", type == 1 ? "buy" : "sell");
+        param.put("price", String.valueOf(price));
+        param.put("amount", String.valueOf(amount));
+        String payload = HMAC.splicingStr(param);
 
-        if (num.compareTo(BigDecimal.valueOf(minTradeLimit)) >= 0) {
-            Double numThreshold1 = Double.valueOf(exchange.get("numThreshold"));
-            if (price1.compareTo(BigDecimal.ZERO) > 0 && num.compareTo(BigDecimal.valueOf(numThreshold1)) < 1) {
-                if (num.compareTo(BigDecimal.valueOf(numThreshold1)) == 1) {
-                    num = BigDecimal.valueOf(numThreshold1);
-                }
-                Map<String, String> param = new TreeMap<>();
-                param.put("symbol", exchange.get("market"));
-                param.put("type", type == 1 ? "buy" : "sell");
-                param.put("price", String.valueOf(price));
-                param.put("amount", String.valueOf(amount));
-                String payload = HMAC.splicingStr(param);
-
-                HashMap<String, String> head = new HashMap<String, String>();
-                String apikey = exchange.get("apikey");
-                String sign = HMAC.sha256_HMAC(payload, exchange.get("tpass"));
-                String timestamp = getTimestamp();
-                head.put("ACCESS-KEY", apikey);
-                head.put("ACCESS-TIMESTAMP", timestamp);
-                head.put("ACCESS-SIGN", sign);
-                trade = httpUtil.post(baseUrl + "/spot/order/new", param, head);
-                setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
-                logger.info("robotId:" + id + "挂单成功结束：" + trade);
-            } else {
-                setTradeLog(id, "price[" + price1 + "] num[" + num + "]", 1);
-                logger.info("robotId:" + id + "挂单失败结束");
-            }
-        } else {
-            setTradeLog(id, "交易量最小为：" + precision.get("minTradeLimit"), 0);
-            logger.info("robotId:" + id + "挂单失败结束");
-        }
-
+        HashMap<String, String> head = new HashMap<String, String>();
+        String apikey = exchange.get("apikey");
+        String sign = HMAC.sha256_HMAC(payload, exchange.get("tpass"));
+        String timestamp = getTimestamp();
+        head.put("ACCESS-KEY", apikey);
+        head.put("ACCESS-TIMESTAMP", timestamp);
+        head.put("ACCESS-SIGN", sign);
+        trade = httpUtil.post(baseUrl + "/spot/order/new", param, head);
+        setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+        logger.info("robotId:" + id + "挂单成功结束：" + trade);
         return trade;
     }
 
@@ -211,16 +196,16 @@ public class DigifinexParentService extends BaseService {
 
                     if (jsonObject.getString("currency").equals(coinArr.get(0))) {
                         firstBalance = jsonObject.getDouble("free");
-                        firstBalance1=jsonObject.getDouble("total")-firstBalance;
+                        firstBalance1 = jsonObject.getDouble("total") - firstBalance;
                     } else if (jsonObject.getString("currency").equals(coinArr.get(1))) {
                         lastBalance = jsonObject.getDouble("free");
-                        lastBalance1=jsonObject.getDouble("total")-lastBalance;
+                        lastBalance1 = jsonObject.getDouble("total") - lastBalance;
                     }
                 }
                 HashMap<String, String> balances = new HashMap<>();
-                balances.put(coinArr.get(0), firstBalance+"_"+firstBalance1);
-                balances.put(coinArr.get(1), lastBalance+"_"+lastBalance1);
-                logger.info("获取余额:"+firstBalance+"_"+"lastBalance");
+                balances.put(coinArr.get(0), firstBalance + "_" + firstBalance1);
+                balances.put(coinArr.get(1), lastBalance + "_" + lastBalance1);
+                logger.info("获取余额:" + firstBalance + "_" + "lastBalance");
                 redisHelper.setBalanceParam(Constant.KEY_ROBOT_BALANCE + id, balances);
             } else {
                 logger.info("获取余额失败");
@@ -266,4 +251,38 @@ public class DigifinexParentService extends BaseService {
 
     }
 
+    @Override
+    public Map<String, String> submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
+        String orderId = "";
+        HashMap<String, String> hashMap = new HashMap<>();
+        String submitOrder = null;
+        try {
+            submitOrder = submitOrder(type, price, amount);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        if (StringUtils.isNotEmpty(submitOrder)) {
+            com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
+            if ("0".equals(jsonObject.getString("code"))) {
+                orderId = jsonObject.getJSONObject("data").getString("ordId");
+                hashMap.put("res", "true");
+                hashMap.put("orderId", orderId);
+            } else {
+                String msg = jsonObject.getString("message");
+                hashMap.put("res", "false");
+                hashMap.put("orderId", msg);
+            }
+        }
+        return hashMap;
+    }
+
+    @Override
+    public Map<String, Integer> selectOrderStr(String orderId) {
+        return null;
+    }
+
+    @Override
+    public String cancelTradeStr(String orderId) {
+        return null;
+    }
 }
