@@ -3,10 +3,12 @@ package top.suilian.aio.service.digifinex;
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.service.BaseService;
+import top.suilian.aio.service.RobotAction;
 
 import javax.crypto.Mac;
 import java.io.UnsupportedEncodingException;
@@ -14,7 +16,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.*;
 
-public class DigifinexParentService extends BaseService {
+public class DigifinexParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://openapi.digifinex.vip/v3";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
@@ -61,14 +63,15 @@ public class DigifinexParentService extends BaseService {
         String typeStr = type == 1 ? "买" : "卖";
         logger.info("robotId:" + id + "robotId:" + id + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
         String trade = null;
-        BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
+
+        BigDecimal price1 = nN(price, Integer.valueOf(precision.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.valueOf(precision.get("amountPrecision").toString()));
         Map<String, String> param = new TreeMap<>();
         param.put("symbol", exchange.get("market"));
         param.put("type", type == 1 ? "buy" : "sell");
         param.put("price", String.valueOf(price));
         param.put("amount", String.valueOf(amount));
-        String payload = HMAC.splice(param);
+        String payload = HMAC.splicingStr(param);
 
         HashMap<String, String> head = new HashMap<String, String>();
         String apikey = exchange.get("apikey");
@@ -80,7 +83,6 @@ public class DigifinexParentService extends BaseService {
         trade = httpUtil.post(baseUrl + "/spot/order/new", param, head);
         setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         logger.info("robotId:" + id + "挂单成功结束：" + trade);
-
         return trade;
     }
 
@@ -99,7 +101,7 @@ public class DigifinexParentService extends BaseService {
         String trade = null;
         Map<String, String> param = new TreeMap<>();
         param.put("order_id", orderId);
-        String payload = HMAC.splice(param);
+        String payload = HMAC.splicingStr(param);
         String sign = HMAC.sha256_HMAC(payload, exchange.get("tpass"));
         Map<String, String> head = new HashMap<String, String>();
         String apikey = exchange.get("apikey");
@@ -142,7 +144,7 @@ public class DigifinexParentService extends BaseService {
         String trade = null;
         Map<String, String> param = new TreeMap<>();
         param.put("order_id", orderId);
-        String payload = HMAC.splice(param);
+        String payload = HMAC.splicingStr(param);
         HashMap<String, String> head = new HashMap<String, String>();
         String apikey = exchange.get("apikey");
         String sign = HMAC.sha256_HMAC(payload, exchange.get("tpass"));
@@ -183,21 +185,27 @@ public class DigifinexParentService extends BaseService {
             JSONObject jsonObject1 = judgeRes(rt, "list", "getBalance");
             if (rt != null && "0".equals(jsonObject1.getString("code"))) {
                 JSONArray coinListss = jsonObject1.getJSONArray("list");
-                String firstBalance = null;
-                String lastBalance = null;
+                Double firstBalance = null;
+                Double firstBalance1 = null;
+                Double lastBalance = null;
+                Double lastBalance1 = null;
+
 
                 for (int i = 0; i < coinListss.size(); i++) {
                     JSONObject jsonObject = JSONObject.fromObject(coinListss.get(i));
 
                     if (jsonObject.getString("currency").equals(coinArr.get(0))) {
-                        firstBalance = jsonObject.getString("free");
+                        firstBalance = jsonObject.getDouble("free");
+                        firstBalance1 = jsonObject.getDouble("total") - firstBalance;
                     } else if (jsonObject.getString("currency").equals(coinArr.get(1))) {
-                        lastBalance = jsonObject.getString("free");
+                        lastBalance = jsonObject.getDouble("free");
+                        lastBalance1 = jsonObject.getDouble("total") - lastBalance;
                     }
                 }
                 HashMap<String, String> balances = new HashMap<>();
-                balances.put(coinArr.get(0), firstBalance);
-                balances.put(coinArr.get(1), lastBalance);
+                balances.put(coinArr.get(0), firstBalance + "_" + firstBalance1);
+                balances.put(coinArr.get(1), lastBalance + "_" + lastBalance1);
+                logger.info("获取余额:" + firstBalance + "_" + "lastBalance");
                 redisHelper.setBalanceParam(Constant.KEY_ROBOT_BALANCE + id, balances);
             } else {
                 logger.info("获取余额失败");
@@ -229,29 +237,10 @@ public class DigifinexParentService extends BaseService {
      * 交易规则获取
      */
     public boolean setPrecision() {
-        boolean falg = false;
-        String rt = httpUtil.get(baseUrl + "/markets");
-        JSONObject jsonObject1 = judgeRes(rt, "data", "setPrecision");
-        if (jsonObject1 != null && "0".equals(jsonObject1.getString("code"))) {
-            JSONArray jsonArray = jsonObject1.getJSONArray("data");
-            for (int i = 0; i < jsonArray.size(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                if (jsonObject.getString("market").equals(exchange.get("market"))) {
-                    String amountPrecision = jsonObject.getString("volume_precision");
-                    String pricePrecision = jsonObject.getString("price_precision");
-                    String minTradeLimit = "5";//平台接口错误   写死为5
-                    precision.put("amountPrecision", amountPrecision);
-                    precision.put("pricePrecision", pricePrecision);
-                    precision.put("minTradeLimit", minTradeLimit);
-                    falg = true;
-                    break;
-                }
-            }
-
-        } else {
-            setTradeLog(id, "获取交易规则异常", 0);
-        }
-        return falg;
+        precision.put("amountPrecision", exchange.get("amountPrecision"));
+        precision.put("pricePrecision", exchange.get("pricePrecision"));
+        precision.put("minTradeLimit", exchange.get("minTradeLimit"));
+        return true;
     }
 
 
@@ -262,4 +251,38 @@ public class DigifinexParentService extends BaseService {
 
     }
 
+    @Override
+    public Map<String, String> submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
+        String orderId = "";
+        HashMap<String, String> hashMap = new HashMap<>();
+        String submitOrder = null;
+        try {
+            submitOrder = submitOrder(type, price, amount);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        if (StringUtils.isNotEmpty(submitOrder)) {
+            com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
+            if ("0".equals(jsonObject.getString("code"))) {
+                orderId = jsonObject.getJSONObject("data").getString("ordId");
+                hashMap.put("res", "true");
+                hashMap.put("orderId", orderId);
+            } else {
+                String msg = jsonObject.getString("message");
+                hashMap.put("res", "false");
+                hashMap.put("orderId", msg);
+            }
+        }
+        return hashMap;
+    }
+
+    @Override
+    public Map<String, Integer> selectOrderStr(String orderId) {
+        return null;
+    }
+
+    @Override
+    public String cancelTradeStr(String orderId) {
+        return null;
+    }
 }
