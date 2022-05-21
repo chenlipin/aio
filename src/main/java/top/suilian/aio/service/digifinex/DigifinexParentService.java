@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Service;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.model.RobotArgs;
@@ -16,6 +18,9 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.*;
 
+
+@Service
+@DependsOn("beanContext")
 public class DigifinexParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://openapi.digifinex.vip/v3";
 
@@ -64,8 +69,8 @@ public class DigifinexParentService extends BaseService implements RobotAction {
         logger.info("robotId:" + id + "robotId:" + id + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
         String trade = null;
 
-        BigDecimal price1 = nN(price, Integer.valueOf(precision.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.valueOf(precision.get("amountPrecision").toString()));
+        BigDecimal price1 = nN(price, Integer.valueOf(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.valueOf(exchange.get("amountPrecision").toString()));
         Map<String, String> param = new TreeMap<>();
         param.put("symbol", exchange.get("market"));
         param.put("type", type == 1 ? "buy" : "sell");
@@ -264,13 +269,12 @@ public class DigifinexParentService extends BaseService implements RobotAction {
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
             if ("0".equals(jsonObject.getString("code"))) {
-                orderId = jsonObject.getJSONObject("data").getString("ordId");
+                orderId = jsonObject.getString("order_id");
                 hashMap.put("res", "true");
                 hashMap.put("orderId", orderId);
             } else {
-                String msg = jsonObject.getString("message");
                 hashMap.put("res", "false");
-                hashMap.put("orderId", msg);
+                hashMap.put("orderId", submitOrder);
             }
         }
         return hashMap;

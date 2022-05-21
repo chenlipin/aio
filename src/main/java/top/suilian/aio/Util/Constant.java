@@ -110,6 +110,8 @@ public class Constant {
 
 
     public static final int KEY_EXCHANGE_BITRUE=63; //bitrue
+
+    public static final int KEY_EXCHANGE_BIBOX=64; //bitrue
     //endregion
 
 
@@ -480,6 +482,8 @@ public class Constant {
      */
     public static final String KEY_LOG_PATH_CPINSTORE_KLINE = "coinstore/newkline";
 
+
+    public static final String KEY_LOG_PATH_BIBOX_KLINE = "bibox/newkline";
 
     public static final String KEY_LOG_PATH_CL_REFER_DEPTH ="basic/refer";
 
