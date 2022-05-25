@@ -292,6 +292,8 @@ public class KucoinParentService extends BaseService implements RobotAction {
             //获取余额
             JSONArray coinLists = null;
             String rt = getBalance();
+            logger.info("获取余额"+rt);
+
             if (rt != null) {
                 com.alibaba.fastjson.JSONObject jsonObject1 = com.alibaba.fastjson.JSONObject.parseObject(rt);
                 coinLists = JSONArray.fromObject(jsonObject1.getString("data"));

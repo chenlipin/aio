@@ -14,6 +14,7 @@ import top.suilian.aio.service.auxsto.AuxstoService;
 import top.suilian.aio.service.basic.BasicService;
 import top.suilian.aio.service.bbkx.BbkxService;
 import top.suilian.aio.service.bgoex.BgoService;
+import top.suilian.aio.service.bibox.BiboxService;
 import top.suilian.aio.service.bihu.BiHuService;
 import top.suilian.aio.service.biki.BikiService;
 import top.suilian.aio.service.bilian.BiLianService;
@@ -227,7 +228,8 @@ public class BaseController {
     BasicService basicService;
     @Autowired
     BitrueService bitrueService;
-
+    @Autowired
+    BiboxService biboxService;
     //endregion
 
     public int insertRobotLog(Integer robotId, String remark, Integer status) {

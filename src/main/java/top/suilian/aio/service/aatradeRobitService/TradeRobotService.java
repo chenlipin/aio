@@ -19,6 +19,7 @@ import top.suilian.aio.model.Robot;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.service.bibox.BiboxParentService;
 import top.suilian.aio.service.bision.BisionParentService;
 import top.suilian.aio.service.bithumb.BithumbParentService;
 import top.suilian.aio.service.bitmart.BitMartParentService;
@@ -28,6 +29,7 @@ import top.suilian.aio.service.bkex.coinnoe.BkexParentService;
 import top.suilian.aio.service.coinnoe.CoinnoeParentService;
 import top.suilian.aio.service.coinstore.CoinStoreParentService;
 import top.suilian.aio.service.coinstore.CoinStoreService;
+import top.suilian.aio.service.digifinex.DigifinexParentService;
 import top.suilian.aio.service.hoo.HooParentService;
 import top.suilian.aio.service.hotcoin.HotCoinParentService;
 import top.suilian.aio.service.kucoin.KucoinParentService;
@@ -190,6 +192,12 @@ public class TradeRobotService {
                 break;
             case Constant.KEY_EXCHANGE_BITRUE:
                 robotAction = new BitrueParentService();
+                break;
+            case Constant.KEY_EXCHANGE_DIGIFINEX:
+                robotAction = new DigifinexParentService();
+                break;
+            case Constant.KEY_EXCHANGE_BIBOX:
+                robotAction = new BiboxParentService();
                 break;
             default:
                 return null;
