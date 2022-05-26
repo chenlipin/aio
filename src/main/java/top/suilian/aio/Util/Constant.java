@@ -111,7 +111,9 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_BITRUE=63; //bitrue
 
-    public static final int KEY_EXCHANGE_BIBOX=64; //bitrue
+    public static final int KEY_EXCHANGE_BIBOX=64; //bibox
+
+    public static final int KEY_EXCHANGE_Citex=65; //citex
     //endregion
 
 

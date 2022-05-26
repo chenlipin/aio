@@ -223,6 +223,9 @@ public class ServiceController extends BaseController {
                     case Constant.KEY_EXCHANGE_BIBOX:             //bibox
                         biboxService.start(operationRequest.getId(), operationRequest.getType());
                         break;
+                    case Constant.KEY_EXCHANGE_Citex:             //citex
+                        citexService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
                 }
                 if (operationRequest.getCategory() == 1) {
                     insertRobotLog(operationRequest.getId(), "重启机器人", Constant.KEY_STATUS_RESTART);
@@ -427,6 +430,9 @@ public class ServiceController extends BaseController {
                 case Constant.KEY_EXCHANGE_BIBOX:             //bibox
                     biboxService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
+                case Constant.KEY_EXCHANGE_Citex:             //citex
+                    citexService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
             }
         } else {
             robotService.stopRobot(operationRequest.getId());
@@ -626,6 +632,9 @@ public class ServiceController extends BaseController {
                     break;
                 case Constant.KEY_EXCHANGE_BIBOX:             //bibox
                     biboxService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_Citex:             //citex
+                    citexService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {

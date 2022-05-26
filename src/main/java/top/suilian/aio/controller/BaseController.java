@@ -28,6 +28,7 @@ import top.suilian.aio.service.bitvictory.BitvictoryService;
 import top.suilian.aio.service.bkex.coinnoe.BkexService;
 import top.suilian.aio.service.bthex.BthexService;
 import top.suilian.aio.service.ceohk.CeohkService;
+import top.suilian.aio.service.citex.CitexService;
 import top.suilian.aio.service.coinnoe.CoinnoeService;
 import top.suilian.aio.service.coinstore.CoinStoreService;
 import top.suilian.aio.service.coinvv.CoinvvService;
@@ -230,6 +231,8 @@ public class BaseController {
     BitrueService bitrueService;
     @Autowired
     BiboxService biboxService;
+    @Autowired
+    CitexService citexService;
     //endregion
 
     public int insertRobotLog(Integer robotId, String remark, Integer status) {
