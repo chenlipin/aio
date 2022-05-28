@@ -303,7 +303,7 @@ public class BiboxParentService extends BaseService implements RobotAction {
     public Map<String, String> submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
         String orderId = "";
         HashMap<String, String> hashMap = new HashMap<>();
-        String submitOrder = submitTrade(type == 1 ? 1 : -1, price, amount);
+        String submitOrder = submitTrade(type == 1 ? 1 : 2, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
             if ("0".equals(jsonObject.getString("state"))) {
