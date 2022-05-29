@@ -43,7 +43,7 @@ public class CitexKline extends CitexParentService {
         super.httpUtil = httpUtil;
         super.redisHelper = redisHelper;
         super.id = id;
-        super.logger = getLogger(Constant.KEY_LOG_PATH_HOO_REFER_KLINE, id);
+        super.logger = getLogger("citex/newkline", id);
     }
 
     private BigDecimal intervalAmount = BigDecimal.ZERO;
@@ -78,14 +78,6 @@ public class CitexKline extends CitexParentService {
             setParam();
             setTransactionRatio();
             logger.info("设置机器人参数结束");
-            /**
-             * 深度
-             */
-            if ("1".equals(exchange.get("isdeepRobot"))) {
-                logger.info("深度机器人交易开始");
-                runHooRandomDepth.init(id + 1);
-            }
-
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本
@@ -224,34 +216,29 @@ public class CitexKline extends CitexParentService {
                 JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
                 if (jsonObject != null && jsonObject.getInt("code") == 0) {
-                    JSONObject data = jsonObject.getJSONObject("data");
-                    String tradeId = data.getString("order_id");
-                    orderIdOnetradeNo = data.getString("trade_no");
-                    orderIdOne = tradeId;
+                    orderIdOne = jsonObject.getString("data");
                     String resultJson1 = submitTrade(type == 1 ? -1 : 1, price, num);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
                     if (jsonObject1 != null && jsonObject1.getInt("code") == 0) {
-                        JSONObject data1 = jsonObject1.getJSONObject("data");
-                        orderIdTwo = data1.getString("order_id");
-                        orderIdTwotradeNo = data1.getString("trade_no");
+                        orderIdTwo = jsonObject1.getString("data");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
                         ordersleeptime = System.currentTimeMillis();
                     } else {
-                        String res = cancelTrade(tradeId, orderIdOnetradeNo);
-                        setTradeLog(id, "撤单[" + tradeId + "]=> " + res, 0, "000000");
+                        String res = cancelTrade(orderIdOne);
+                        setTradeLog(id, "撤单[" + orderIdOne + "]=> " + res, 0, "000000");
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
-                        setCancelOrder(cancelRes, res, tradeId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
+                        setCancelOrder(cancelRes, res, orderIdOne, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                     }
                 }
             } catch (Exception e) {
                 if (!orderIdOne.equals("0")) {
-                    String res = cancelTrade(orderIdOne, orderIdOnetradeNo);
+                    String res = cancelTrade(orderIdOne);
                     setTradeLog(id, "撤单[" + orderIdOne + "]=> " + res, 0, "000000");
                     logger.info("撤单" + orderIdOne + ":结果" + res);
                 }
                 if (!orderIdTwo.equals("0")) {
-                    String res = cancelTrade(orderIdTwo, orderIdTwotradeNo);
+                    String res = cancelTrade(orderIdTwo);
                     setTradeLog(id, "撤单[" + orderIdTwo + "]=> " + res, 0, "000000");
                     logger.info("撤单" + orderIdTwo + ":结果" + res);
                 }
@@ -292,7 +279,7 @@ public class CitexKline extends CitexParentService {
                     BigDecimal num = oldNum.multiply(new BigDecimal(transactionRatio));
 
                     BigDecimal price = sellPri.multiply(new BigDecimal("0.976"));
-                    String resultJson1 = submitTrade( 2, price, num);
+                    String resultJson1 = submitTrade( -1, price, num);
                     setTradeLog(id, "补盘口单子 买："+buyPri+"---卖："+sellPri +"---补单价格："+price, 1);
                     sleep(10 * 1000, Integer.parseInt(exchange.get("isMobileSwitch")));
                 }
@@ -397,9 +384,7 @@ public class CitexKline extends CitexParentService {
 
                                     JSONObject jsonObject = judgeRes(sellOrder, "code", "submitTrade");
                                     if (jsonObject != null && jsonObject.getInt("code") == 200) {
-                                        JSONObject datas = jsonObject.getJSONObject("data");
-                                        sellOrderId = datas.getString("order_id");
-                                        sellOrderIdtradeNo = data.getString("trade_no");
+                                        sellOrderId = jsonObject.getString("data");
                                     }
                                     return price;
                                 } catch (Exception e) {
@@ -428,9 +413,7 @@ public class CitexKline extends CitexParentService {
 
                                     JSONObject jsonObject = judgeRes(buyOrder, "code", "submitTrade");
                                     if (jsonObject != null && jsonObject.getInt("code") == 0) {
-                                        JSONObject datas = jsonObject.getJSONObject("data");
-                                        orderIdOne = datas.getString("order_id");
-                                        buyOrderIdtradeNo = data.getString("trade_no");
+                                        orderIdOne = jsonObject.getString("data");
                                     }
                                     return price;
                                 } catch (Exception e) {
@@ -541,13 +524,13 @@ public class CitexKline extends CitexParentService {
                 if (jsonObject != null && jsonObject.getInt("code") == 0) {
 
                     JSONObject data = jsonObject.getJSONObject("data");
-                    int status = data.getInt("status");
+                    int status = data.getInt("orderStatus");
                     if (status == 4) {
                         setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                     } else if (status == 6) {
                         setTradeLog(id, "订单id：" + orderId + "已撤单", 0, "#67c23a");
                     } else {
-                        String res = cancelTrade(orderId, orderIdtradeNo);
+                        String res = cancelTrade(orderId);
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                         setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");

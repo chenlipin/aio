@@ -54,6 +54,7 @@ import top.suilian.aio.service.kcoin.KcoinService;
 import top.suilian.aio.service.kucoin.KucoinParentService;
 import top.suilian.aio.service.kucoin.KucoinService;
 import top.suilian.aio.service.laex.LaexService;
+import top.suilian.aio.service.lbank.LbankService;
 import top.suilian.aio.service.loex.LoexService;
 import top.suilian.aio.service.mxc.MxcService;
 import top.suilian.aio.service.nine9ex.Nine9ExService;
@@ -67,6 +68,7 @@ import top.suilian.aio.service.senbit.SenbitService;
 import top.suilian.aio.service.skiesex.SkiesexService;
 import top.suilian.aio.service.test.TestService;
 import top.suilian.aio.service.wbfex.WbfexService;
+import top.suilian.aio.service.whitebit.WhitebitService;
 import top.suilian.aio.service.xoxoex.XoxoexService;
 import top.suilian.aio.service.xuebi.XuebiService;
 import top.suilian.aio.service.zb.ZbService;
@@ -233,6 +235,10 @@ public class BaseController {
     BiboxService biboxService;
     @Autowired
     CitexService citexService;
+    @Autowired
+    LbankService lbankService;
+    @Autowired
+    WhitebitService whitebitService;
     //endregion
 
     public int insertRobotLog(Integer robotId, String remark, Integer status) {

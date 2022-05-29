@@ -69,15 +69,21 @@ public class CitexParentService extends BaseService implements RobotAction {
     }
 
 
-
-    public String submitOrder(int type, BigDecimal price, BigDecimal amount){
+    /**
+     * {"code":0,"msg":"success","data":"1640614754619755"}
+     * @param type
+     * @param price
+     * @param amount
+     * @return
+     */
+    public String submitTrade(int type, BigDecimal price, BigDecimal amount){
         String time = gmtNow();
         String typeStr = type == 1 ? "买" : "卖";
         logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
         // 输出字符串
         String trade = null;
-        BigDecimal price1 = nN(price, Integer.parseInt(precision.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.parseInt(precision.get("amountPrecision").toString()));
+        BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
 
         String uri = "/v1/order/orders/place";
         String httpMethod = "POST";
@@ -90,24 +96,23 @@ public class CitexParentService extends BaseService implements RobotAction {
         params.put("Signature", Signature);
         String httpParams = splicing(params);
         TreeMap<String, Object> map = new TreeMap<>();
-        if (type == 1) {
-            map.put("type", "buy-limit");
-        } else {
-            map.put("type", "sell-limit");
-        }
-        map.put("account-id", getAccountId());
-        map.put("symbol", exchange.get("market"));
-        map.put("amount", num);
+        map.put("side", type==1?1:-1);
+        map.put("contractId", exchange.get("contractId"));
+        map.put("quantity", num);
         map.put("price", price1);
-        // map.put("source", "api");
+        map.put("orderType",1);
+        map.put("timeInForce",2);
         String order = splicing(map);
-
-
         logger.info("挂单参数" + order);
         try {
-            trade = HttpUtil.postes(baseUrl + uri + "?" + httpParams, map);
+            trade = HttpUtil.postesss(baseUrl + uri + "?" + httpParams, map,exchange.get("apikey"));
+            setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+        }
+        JSONObject object = JSONObject.fromObject(trade);
+        if(0!=object.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", object.getString("msg"));
         }
         logger.info("挂单结束："+trade);
         return trade;
@@ -116,32 +121,30 @@ public class CitexParentService extends BaseService implements RobotAction {
     /**
      * 查询订单详情
      *
-     * @param orderId
-     * @return{"code":0,"code_num":0,"msg":"ok","message":"ok","data":{"create_at":1648047858200,"fee":"0","match_amt":"0","match_price":"0","match_qty":"0","order_id":"34489150830","order_type":1,"price":"1.2920","quantity":"4.000","side":1,"status":2,"symbol":"FTM-USDT","ticker":"FTM-USDT","trade_no":"40522245595950224093911","trades":[]}}
-     * @throws UnsupportedEncodingException
+     * {"code":0,"msg":"success","data":{"timestamp":1653718349782047,"contractId":204,"symbol":"TRX-USDT","side":1,"price":"0.06","quantity":"200","orderType":1,"timeInForce":1,"orderStatus":2,"filledQuantity":"0","makerFeeRatio":"0.002","takerFeeRatio":"0.002"}}
      */
 
 
     public String selectOrder(String orderId){
-        Map<String,String> parms= new TreeMap<>();
-        parms.put("client_id",exchange.get("apikey"));
-        String timespace=getTimespace();
-        parms.put("ts",timespace);
-        parms.put("nonce",timespace);
-        String signs= null;
-        try {
-            signs = HMAC.splicingStr(parms);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        String sign=HMAC.sha256_HMAC(signs,exchange.get("tpass"));
-        String parm=signs+"&sign="+sign+"&symbol="+exchange.get("market")+"&order_id="+orderId;
-        String rt = httpUtil.get(baseUrl+"/open/v1/orders/detail?"+parm);
-        JSONObject object = JSONObject.fromObject(rt);
+        String time = gmtNow();
+        String uri = "/v1/order/orders/"+orderId;
+        String httpMethod = "GET";
+        Map<String, Object> params = new TreeMap<>();
+        params.put("AccessKeyId", exchange.get("apikey"));
+        params.put("SignatureVersion", 2);
+        params.put("SignatureMethod", "HmacSHA256");
+        params.put("Timestamp", new Date().getTime());
+        String Signature = getSignature(exchange.get("apikey"), exchange.get("tpass"), httpMethod, host, uri, params, time);
+        params.put("Signature", Signature);
+        String httpParams = splicing(params);
+        HashMap<String, String> headMap = new HashMap<>();
+        headMap.put("API-KEY",exchange.get("apikey"));
+        String trades = httpUtil.getAddHead(baseUrl + uri + "?" + httpParams,headMap);
+        JSONObject object = JSONObject.fromObject(trades);
         if(0!=object.getInt("code")) {
             setWarmLog(id, 3, "API接口错误", object.getString("msg"));
         }
-        return rt;
+        return trades;
 
     }
 
@@ -162,22 +165,7 @@ public class CitexParentService extends BaseService implements RobotAction {
     }
 
     public String getDepth(){
-        Map<String,Object> parms= new TreeMap<>();
-        parms.put("client_id",exchange.get("apikey"));
-        String timespace=getTimespace();
-        parms.put("ts",timespace);
-        parms.put("nonce",timespace);
-        String signs= null;
-        try {
-            signs = HMAC.splicing(parms);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        String sign=HMAC.sha256_HMAC(signs,exchange.get("tpass"));
-        String parm=signs+"&sign="+sign+"&symbol="+exchange.get("market");
-        String res = httpUtil.get(baseUrl+"/open/v1/depth?"+parm);
-        return res;
-
+        return httpUtil.get("https://api.citex.info/v1/common/snapshot/"+exchange.get("market"));
     }
 
 
@@ -187,54 +175,49 @@ public class CitexParentService extends BaseService implements RobotAction {
 
     protected String getBalance() {
 
-        Map<String,Object> parms= new TreeMap<>();
-        parms.put("client_id",exchange.get("apikey"));
-        String timespace=getTimespace();
-        parms.put("ts",timespace);
-        parms.put("nonce",timespace);
-        String signs= null;
-        try {
-            signs = HMAC.splicing(parms);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        String sign=HMAC.sha256_HMAC(signs,exchange.get("tpass"));
-        String parm=signs+"&sign="+sign;
-        String res = httpUtil.get(baseUrl+"/open/v1/balance?"+parm);
-        return res;
+        String time = gmtNow();
+        String uri = "/v1/account/balance";
+        String httpMethod = "GET";
+        Map<String, Object> params = new TreeMap<>();
+        params.put("AccessKeyId", exchange.get("apikey"));
+        params.put("SignatureVersion", 2);
+        params.put("SignatureMethod", "HmacSHA256");
+        params.put("Timestamp", new Date().getTime());
+        String Signature = getSignature(exchange.get("apikey"), exchange.get("tpass"), httpMethod, host, uri, params, time);
+        params.put("Signature", Signature);
+        String httpParams = splicing(params);
+        HashMap<String, String> headMap = new HashMap<>();
+        headMap.put("API-KEY",exchange.get("apikey"));
+        String trades = httpUtil.getAddHead(baseUrl + uri + "?" + httpParams,headMap);
+        JSONObject object = JSONObject.fromObject(trades);
+        return trades;
     }
 
     /**
      * 撤单
      *
-     * @param orderId
-     * @return {"code":0,"code_num":0,"msg":"ok","message":"ok","data":[]}
-     * @throws UnsupportedEncodingException
+     * {"code":0,"msg":"success","data":null}
      */
-    public String cancelTrade(String orderId,String tradeNo) {
-
-        Map<String, String> params = new TreeMap<String, String>();
-        params.put("client_id",exchange.get("apikey"));
-        String timespace=getTimespace();
-        params.put("ts",timespace);
-        params.put("nonce",timespace);
-        String signs= null;
-        try {
-            signs = HMAC.splicingStr(params);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        String sign=HMAC.sha256_HMAC(signs,exchange.get("tpass"));
-        params.put("sign",sign);
-        params.put("symbol",exchange.get("market"));
-        params.put("order_id",orderId);
-        params.put("trade_no",tradeNo);
-        HashMap<String, String> headMap = new HashMap<String, String>();
-        headMap.put("Content-Type", " application/x-www-form-urlencoded");
+    public String cancelTrade(String orderId) {
+        String time = gmtNow();
+        String uri = "/v1/order/orders/cancel";
+        String httpMethod = "post";
+        Map<String, Object> params = new TreeMap<>();
+        params.put("AccessKeyId", exchange.get("apikey"));
+        params.put("SignatureVersion", 2);
+        params.put("SignatureMethod", "HmacSHA256");
+        params.put("Timestamp", time);
+        String Signature = getSignature(exchange.get("apikey"), exchange.get("tpass"), httpMethod, host, uri, params, time);
+        params.put("Signature", Signature);
+        Map<String, Object> map = new TreeMap<>();
+        map.put("contractId", exchange.get("contractId"));
+        map.put("orderId", orderId);
+        String httpParams = splicing(params);
+        HttpUtil httpUtil = new HttpUtil();
         String res = null;
         try {
-            res = httpUtil.post(baseUrl + "/open/v1/orders/cancel",params, headMap);
-        } catch (Exception e) {
+            res = httpUtil.postesss(baseUrl+uri+"?"+httpParams,map,exchange.get("apikey"));
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         JSONObject object = JSONObject.fromObject(res);
@@ -277,12 +260,12 @@ public class CitexParentService extends BaseService implements RobotAction {
             if (obj != null&& obj.getInt("code")==0) {
                 JSONArray dataJson=obj.getJSONArray("data");
                 for(int i=0;i<dataJson.size();i++){
-                    if(dataJson.getJSONObject(i).getString("symbol").equals(coinArr.get(0))){
-                        firstBalance = dataJson.getJSONObject(i).getString("amount");
-                        firstBalance1 = dataJson.getJSONObject(i).getString("freeze");
-                    } else if(dataJson.getJSONObject(i).getString("symbol").equals(coinArr.get(1))){
-                        lastBalance = dataJson.getJSONObject(i).getString("amount");
-                        lastBalance1 = dataJson.getJSONObject(i).getString("freeze");
+                    if(dataJson.getJSONObject(i).getString("currencyName").equals(coinArr.get(0))){
+                        firstBalance = dataJson.getJSONObject(i).getString("available");
+                        firstBalance1 = dataJson.getJSONObject(i).getString("frozenForTrade");
+                    } else if(dataJson.getJSONObject(i).getString("currencyName").equals(coinArr.get(1))){
+                        lastBalance = dataJson.getJSONObject(i).getString("available");
+                        lastBalance1 = dataJson.getJSONObject(i).getString("frozenForTrade");
                     }
                 }
             }else {
@@ -331,11 +314,11 @@ public class CitexParentService extends BaseService implements RobotAction {
     public Map<String, String> submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
         String orderId = "";
         HashMap<String, String> hashMap = new HashMap<>();
-        String submitOrder = submitOrder(type == 1 ? 1 : -1, price, amount);
+        String submitOrder = submitTrade(type == 1 ? 1 : -1, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
             if ("0".equals(jsonObject.getString("code"))) {
-                orderId = jsonObject.getJSONObject("data").getString("order_id")+"_"+jsonObject.getJSONObject("data").getString("trade_no");
+                orderId = jsonObject.getString("data");
                 hashMap.put("res","true");
                 hashMap.put("orderId",orderId);
             }else {
@@ -430,8 +413,7 @@ public class CitexParentService extends BaseService implements RobotAction {
     @Override
     public String cancelTradeStr(String orderId) {
         String cancelTrade = "";
-            String[] split = orderId.split("_");
-            cancelTrade = cancelTrade(split[0],split[1]);
+            cancelTrade = cancelTrade(orderId);
         if (StringUtils.isNotEmpty(cancelTrade)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(cancelTrade);
             if ("0".equals(jsonObject.getString("code"))){
