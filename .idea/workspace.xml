@@ -6,10 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="cfb1701d-7cb8-43d7-985a-45484d47f39d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/HuoBiUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/HuoBiUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/BitMartService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/BitMartService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/ZGParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/ZGParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/BitMartParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/BitMartParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/depthRefer/BitmartRefer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/depthRefer/BitmartRefer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +75,8 @@
       <option name="presentableId" value="Default" />
       <updated>1653803394544</updated>
       <workItem from="1653803429348" duration="20494000" />
-      <workItem from="1653913741328" duration="8588000" />
+      <workItem from="1653913741328" duration="8977000" />
+      <workItem from="1653923417771" duration="3529000" />
     </task>
     <servers />
   </component>
@@ -136,8 +135,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/depthRefer/BitmartRefer.java</url>
-          <line>105</line>
-          <option name="timeStamp" value="50" />
+          <line>108</line>
+          <option name="timeStamp" value="51" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -104,7 +104,7 @@ public class BitmartRefer extends BitMartParentService {
             start = false;
         }
         refer = HotcoinUtils.getTrade(exchange.get("referMarket"));
-        logger.info(JSONObject.toJSONString(refer));
+//        logger.info(JSONObject.toJSONString(refer));
         depth = HotcoinUtils.getDepth(exchange.get("referMarket"));
         logger.info(JSONObject.toJSONString(depth));
         Integer deepNum = Integer.parseInt(exchange.get("deepNum"));
@@ -135,7 +135,7 @@ public class BitmartRefer extends BitMartParentService {
                 if (maxAmount.compareTo(amount) <= 0) {
                     continue;
                 }
-                String order = submitOrder(2, price, amount);
+                String order = submitOrder(1, price, amount);
                 JSONObject jsonObject = JSONObject.parseObject(order);
                 if (jsonObject.getInteger("code") == 1000){
                     JSONObject data = jsonObject.getJSONObject("data");
@@ -154,11 +154,11 @@ public class BitmartRefer extends BitMartParentService {
                     break;
                 }
                 BigDecimal price = new BigDecimal(key);
-                BigDecimal amount = new BigDecimal(bids.get(key)).multiply(amountPoint);
+                BigDecimal amount = new BigDecimal(asks.get(key)).multiply(amountPoint);
                 if (maxAmount.compareTo(amount) <= 0) {
                     continue;
                 }
-                String order = submitOrder(1, price, amount);
+                String order = submitOrder(2, price, amount);
                 JSONObject jsonObject = JSONObject.parseObject(order);
                 if (jsonObject.getInteger("code") == 1000){
                     JSONObject data = jsonObject.getJSONObject("data");
@@ -184,15 +184,14 @@ public class BitmartRefer extends BitMartParentService {
             //撤k线单子
             if (StringUtils.isNotEmpty(buyOrder)) {
                 String s = cancelTradeStr(buyOrder);
-                logger.info("深度k线单1 单号：" + buyOrder + "撤单结果：" + (s.equals("true") ? "成功" : "失败"));
+                logger.info("撤k线单1 单号：" + buyOrder + "撤单结果：" + (s.equals("true") ? "成功" : "失败"));
             }
             if (StringUtils.isNotEmpty(sellOrder)) {
                 String s1 = cancelTradeStr(sellOrder);
-                logger.info("深度k线单2 单号：" + sellOrder + "撤单结果：" + (s1.equals("true") ? "成功" : "失败"));
+                logger.info("撤k线单2 单号：" + sellOrder + "撤单结果：" + (s1.equals("true") ? "成功" : "失败"));
             }
             //挂k线单子
             BigDecimal priceKline = new BigDecimal(refer.getPrice());
-            priceKline = priceKline.multiply(buyPoint);
             BigDecimal amountKline = new BigDecimal(refer.getAmount()).multiply(amountPoint);
             if (maxAmount.compareTo(amountKline) > 0) {
                 String order1 = submitOrder(refer.getIsSell().equals("buy") ? 2 : 1, priceKline, amountKline);
