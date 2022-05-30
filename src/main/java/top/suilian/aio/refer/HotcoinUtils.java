@@ -2,20 +2,17 @@ package top.suilian.aio.refer;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.BaseHttp;
-import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.Refer;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 @Component
-public class HuoBiUtils extends BaseHttp {
+public class HotcoinUtils extends BaseHttp {
     /**
      * 获取最新成交
      * @param symbol
@@ -23,18 +20,17 @@ public class HuoBiUtils extends BaseHttp {
      */
     public static Refer getTrade(String symbol){
         Refer refer = new Refer();
-        String referSymbol=symbol.replaceAll("_","");
-        String resObject = get("https://api.huobi.pro/market/trade?symbol=" +referSymbol);
+        String resObject = get("https://api.hotcoinfin.com/v1/trade?count=1&symbol=" +symbol.toLowerCase());
         JSONObject resJson = JSONObject.fromObject(resObject);
-        if (resJson != null && "ok".equals(resJson.getString("status"))) {
-            JSONObject tickJson = resJson.getJSONObject("tick");
-            JSONArray dataJson = tickJson.getJSONArray("data");
+        if (resJson != null && "200".equals(resJson.getString("code"))) {
+            JSONObject tickJson = resJson.getJSONObject("data");
+            JSONArray dataJson = tickJson.getJSONArray("trades");
             JSONObject nearLog = dataJson.getJSONObject(0);
             refer.setAmount(nearLog.getString("amount"));
             refer.setPrice(nearLog.getString("price"));
             refer.setId(nearLog.getString("ts"));
             String type="buy";
-            if(nearLog.getString("direction").equals("sell")){
+            if(nearLog.getString("en_type").equals("ask")){
                 type="sell";
             }
             refer.setIsSell(type);
@@ -52,20 +48,23 @@ public class HuoBiUtils extends BaseHttp {
         HashMap<String, Map<String,String>> depth = new HashMap<>();
         Map<String,String> bids= new LinkedHashMap<>();
         Map<String,String> asks=new LinkedHashMap<>();
-        String referSymbol=symbol.replaceAll("_","");
 
-        String trades = get("https://api.huobi.pro/market/depth?symbol=" + referSymbol + "&depth=20&type=step0");
+        String trades = get("https://api.hotcoinfin.com/v1/depth?step=20&symbol=" +symbol.toLowerCase());
         JSONObject tradesObj = JSONObject.fromObject(trades);
+
         if (trades != null && !trades.isEmpty() && tradesObj != null) {
             JSONObject depthJson = tradesObj.getJSONObject("data").getJSONObject("depth");
             JSONArray bidsJson=depthJson.getJSONArray("bids");
             JSONArray asksJson=depthJson.getJSONArray("asks");
+
             for(int i=0;i<bidsJson.size();i++){
-                bids.put(String.valueOf(bidsJson.getJSONArray(i).get(0)),String.valueOf(bidsJson.getJSONArray(i).get(1)));
+                JSONArray jsonArray = bidsJson.getJSONArray(i);
+                bids.put(new BigDecimal(jsonArray.getString(0)).stripTrailingZeros().toPlainString(),jsonArray.getString(1));
             }
             depth.put("bids",bids);
             for(int i=0;i<asksJson.size();i++){
-                asks.put(String.valueOf(asksJson.getJSONArray(i).get(0)),String.valueOf(asksJson.getJSONArray(i).get(1)));
+                JSONArray jsonArray = asksJson.getJSONArray(i);
+                asks.put(new BigDecimal(jsonArray.getString(0)).stripTrailingZeros().toPlainString(),jsonArray.getString(1));
             }
             depth.put("asks",asks);
 

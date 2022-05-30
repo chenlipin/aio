@@ -21,7 +21,7 @@ import java.util.*;
 @DependsOn("beanContext")
 @Service
 public class ZGParentService extends BaseService implements RobotAction {
-    public String baseUrl = "https://www.ztb.im/api/v1";
+    public String baseUrl = "https://api-cloud.bitmart.com";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
