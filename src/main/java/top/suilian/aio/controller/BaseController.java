@@ -50,6 +50,7 @@ import top.suilian.aio.service.hoo.HooService;
 import top.suilian.aio.service.hotcoin.HotCoinService;
 import top.suilian.aio.service.hwanc.HwancService;
 import top.suilian.aio.service.idcm.IdcmService;
+import top.suilian.aio.service.iex.IexService;
 import top.suilian.aio.service.kcoin.KcoinService;
 import top.suilian.aio.service.kucoin.KucoinParentService;
 import top.suilian.aio.service.kucoin.KucoinService;
@@ -239,6 +240,8 @@ public class BaseController {
     LbankService lbankService;
     @Autowired
     WhitebitService whitebitService;
+    @Autowired
+    IexService iexService;
     //endregion
 
     public int insertRobotLog(Integer robotId, String remark, Integer status) {

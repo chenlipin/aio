@@ -56,8 +56,6 @@ public class BitmartRefer extends BitMartParentService {
     Map<String, String> asks = new LinkedHashMap<>();
     List<String> buyList=new ArrayList<>();
     List<String> sellList=new ArrayList<>();
-    BigDecimal buyPoint = null;
-    BigDecimal sellPoint = null;
 
     public void init() throws UnsupportedEncodingException {
 
@@ -142,7 +140,7 @@ public class BitmartRefer extends BitMartParentService {
                     String tradeId = data.getString("order_id");
                     logger.info("深度挂买单 单号：" + tradeId);
                     lhbuyPrices.add(tradeId);
-                    sleep(500, Integer.parseInt("1"));
+                    sleep(800, Integer.parseInt("1"));
                 }
             }
             for (String key : asks.keySet()) {
@@ -165,19 +163,19 @@ public class BitmartRefer extends BitMartParentService {
                     String tradeId = data.getString("order_id");
                     logger.info("深度挂卖单 单号：" + tradeId);
                     lhsellPrices.add(tradeId);
-                    sleep(500, Integer.parseInt("1"));
+                    sleep(800, Integer.parseInt("1"));
                 }
             }
             //撤单上一轮的深度单子
             for (String buyPrice : buyPrices) {
                 String s = cancelTradeStr(buyPrice);
                 logger.info("深度撤买单 单号：" + buyPrice + "撤单结果：" + (s.equals("true") ? "成功" : "失败"));
-                sleep(500, Integer.parseInt("1"));
+                sleep(800, Integer.parseInt("1"));
             }
             for (String sellPrices : sellPrices) {
                 String s = cancelTradeStr(sellPrices);
                 logger.info("深度撤卖单 单号：" + sellPrices + "撤单结果：" + (s.equals("true") ? "成功" : "失败"));
-                sleep(500, Integer.parseInt("1"));
+                sleep(800, Integer.parseInt("1"));
             }
             buyPrices = lhbuyPrices;
             sellPrices = lhsellPrices;
@@ -194,13 +192,13 @@ public class BitmartRefer extends BitMartParentService {
             BigDecimal priceKline = new BigDecimal(refer.getPrice());
             BigDecimal amountKline = new BigDecimal(refer.getAmount()).multiply(amountPoint);
             if (maxAmount.compareTo(amountKline) > 0) {
-                String order1 = submitOrder(refer.getIsSell().equals("buy") ? 2 : 1, priceKline, amountKline);
+                String order1 = submitOrder("buy".equals(refer.getIsSell()) ? 2 : 1, priceKline, amountKline);
                 JSONObject jsonObject = JSONObject.parseObject(order1);
                 if (jsonObject.getInteger("code") == 1000){
                     JSONObject data = jsonObject.getJSONObject("data");
                     buyOrder = data.getString("order_id");
                 }
-                String order2 = submitOrder(refer.getIsSell().equals("buy") ? 1 : 2, priceKline, amountKline);
+                String order2 = submitOrder("buy".equals(refer.getIsSell()) ? 1 : 2, priceKline, amountKline);
                 JSONObject jsonObject2 = JSONObject.parseObject(order2);
                 if (jsonObject2.getInteger("code") == 1000){
                     JSONObject data = jsonObject2.getJSONObject("data");
