@@ -119,6 +119,8 @@ public class Constant {
 
 
     public static final int KEY_EXCHANGE_WHITEBIT=67; //whitebit
+
+    public static final int KEY_EXCHANGE_IEX=68; //iex
     //endregion
 
 

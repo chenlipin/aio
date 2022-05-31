@@ -166,10 +166,7 @@ public class BitMartParentService extends BaseService implements RobotAction {
     //对标下单
     public String submitOrder(int type, BigDecimal price, BigDecimal amount) {
         String timestamp = String.valueOf(new Date().getTime());
-        String typeStr = type == 0 ? "买" : "卖";
-
-        logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
-
+        String typeStr = type == 1 ? "买" : "卖";
         // 输出字符串
         String trade = null;
         BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
@@ -187,7 +184,6 @@ public class BitMartParentService extends BaseService implements RobotAction {
         headMap.put("X-BM-TIMESTAMP", timestamp);
         headMap.put("X-BM-KEY", exchange.get("tpass"));
         headMap.put("X-BM-SIGN", sings);
-        System.out.println("headMap:" + JSONObject.toJSONString(headMap));
         try {
             trade = httpUtil.postByPackcoin(baseUrl + uri, params, headMap);
             net.sf.json.JSONObject jsonObjectss = net.sf.json.JSONObject.fromObject(trade);
@@ -197,7 +193,7 @@ public class BitMartParentService extends BaseService implements RobotAction {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+        setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         return trade;
     }
 

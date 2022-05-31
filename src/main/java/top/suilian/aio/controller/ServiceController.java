@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import top.suilian.aio.Util.CommonUtil;
 import top.suilian.aio.Util .Constant;
 import top.suilian.aio.model.request.OperationRequest;
 import org.apache.log4j.Logger;
@@ -28,7 +29,7 @@ public class ServiceController extends BaseController {
     @ResponseBody
     public void serviceStart(@RequestBody OperationRequest operationRequest) {
         logger.info("启动机器人===>" + operationRequest.toString());
-        if (commonUtil.getThreadByName(Constant.KEY_THREAD_KLINE + operationRequest.getId()) == null) {
+        if (CommonUtil.getThreadByName(Constant.KEY_THREAD_KLINE + operationRequest.getId()) == null) {
             if (robotService.setRobotStatus(operationRequest.getId(), Constant.KEY_ROBOT_STATUS_RUN) > 0) {
                 //判断交易所
                 switch (operationRequest.getCoin()) {
@@ -233,6 +234,9 @@ public class ServiceController extends BaseController {
                         whitebitService.start(operationRequest.getId(), operationRequest.getType());
                         break;
 
+                    case Constant.KEY_EXCHANGE_IEX:             //iex
+                        iexService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
                 }
                 if (operationRequest.getCategory() == 1) {
                     insertRobotLog(operationRequest.getId(), "重启机器人", Constant.KEY_STATUS_RESTART);
@@ -446,6 +450,9 @@ public class ServiceController extends BaseController {
                 case Constant.KEY_EXCHANGE_WHITEBIT:             //whitebit
                     whitebitService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
+                case Constant.KEY_EXCHANGE_IEX:             //iex
+                    iexService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
             }
         } else {
             robotService.stopRobot(operationRequest.getId());
@@ -462,7 +469,7 @@ public class ServiceController extends BaseController {
     @ResponseBody
     public void serviceKill(@RequestBody OperationRequest operationRequest) {
         logger.info("强杀机器人===>" + operationRequest.toString());
-        if (commonUtil.getThreadByName(Constant.KEY_THREAD_KLINE + operationRequest.getId()) != null) {
+        if (CommonUtil.getThreadByName(Constant.KEY_THREAD_KLINE + operationRequest.getId()) != null) {
             //判断交易所
             switch (operationRequest.getCoin()) {
                 case Constant.KEY_EXCHANGE_CEOHK:                //ceohk
@@ -655,6 +662,9 @@ public class ServiceController extends BaseController {
                 case Constant.KEY_EXCHANGE_WHITEBIT:             //whitebit
                     whitebitService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
+                case Constant.KEY_EXCHANGE_IEX:             //iex
+                    iexService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
             }
         } else {
             robotService.stopRobot(operationRequest.getId());
@@ -674,7 +684,7 @@ public class ServiceController extends BaseController {
     @RequestMapping(value = "/test")
     @ResponseBody
     public Map<String, String> test(@RequestBody OperationRequest operationRequest) {
-        Thread thread = commonUtil.getThreadByName(Constant.KEY_THREAD_KLINE + operationRequest.getId());
+        Thread thread = CommonUtil.getThreadByName(Constant.KEY_THREAD_KLINE + operationRequest.getId());
         Map<String, String> map = new HashMap<String, String>();
         if (thread == null) {
             map.put("status", "203");
