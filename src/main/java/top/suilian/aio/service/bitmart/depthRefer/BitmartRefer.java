@@ -222,20 +222,6 @@ public class BitmartRefer extends BitMartParentService {
 
     }
 
-    /**
-     * 获得数量
-     *
-     * @param pression
-     * @return
-     */
-    BigDecimal getOrderAmount(double pression) {
-        double mind = Double.parseDouble(exchange.get("numMinThreshold"));
-        double maxd = Double.parseDouble(exchange.get("numThreshold"));
-        long maxQty = (long) (maxd * Math.pow(10, pression));
-        long minty = (long) (mind * Math.pow(10, pression));
-        long randNumber = minty + (((long) (new Random().nextDouble() * (maxQty - minty))));
-        return new BigDecimal(String.valueOf(randNumber / Math.pow(10, pression)));
-    }
 
 
 }

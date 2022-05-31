@@ -138,7 +138,7 @@ public class IexParentService extends BaseService implements RobotAction {
             e.printStackTrace();
         }
         try {
-            trade = httpUtil.get(baseUrl+ "https://open-api.klex.org/spot/v1/order/query/detail/{id}/{apiKey}/{sign}/{ts}?symbol=TRX/USDT");
+            trade = httpUtil.get("https://api.iex.asia/spot-api-robot/v1/order/query/detail/"+orderId+"/"+exchange.get("apikey")+"/"+sign+"/"+time+"?symbol="+exchange.get("market"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -197,34 +197,18 @@ public class IexParentService extends BaseService implements RobotAction {
      */
     public String cancelTrade(String orderId) {
         String time = System.currentTimeMillis() + "";
-        String str = "123456789AAAHJSGIUAI" + time + RandomUtils.nextInt(50);
-        String uri = "/v2/cancel_order.do";
-        Map<String, String> params = new TreeMap<>();
-        params.put("api_key", exchange.get("apikey"));
-        params.put("symbol", exchange.get("market"));
-        params.put("order_id", orderId);
-        params.put("signature_method", "HmacSHA256");
-        params.put("timestamp", time);
-        params.put("echostr", str);
-
-        HashMap<String, String> head = new HashMap<>();
-        head.put("signature_method", "HmacSHA256");
-        head.put("timestamp", time);
-        head.put("echostr", str);
-        String order = splicing(params);
-        logger.info("撤单参数" + order);
-        String md5 = DigestUtils.md5Hex(order).toUpperCase();
-        String sign = HMAC.sha256_HMAC(md5, exchange.get("tpass"));
-        params.put("sign", sign);
         String trade = null;
+        String content = "ts=" + time + ",apiKey=" + exchange.get("apikey") + ",apiSecret=" + exchange.get("tpass");
+        String sign = null;
         try {
-            trade = HttpUtil.post(baseUrl + uri, params, head);
-        } catch (UnsupportedEncodingException e) {
+            sign = md5Digest(content);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        JSONObject object = JSONObject.fromObject(trade);
-        if (0 != object.getInt("error_code")) {
-            setWarmLog(id, 3, "API接口错误", object.getString("result"));
+        try {
+            trade = httpUtil.get(baseUrl+"/v1/order/"+orderId+"/submitcancel?apiKey="+exchange.get("apikey")+"&sign="+sign+"&ts="+time);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return trade;
 
@@ -321,12 +305,12 @@ public class IexParentService extends BaseService implements RobotAction {
         String submitOrder = submitTrade(type == 1 ? 1 : 2, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
-            if ("0".equals(jsonObject.getString("error_code"))) {
-                orderId = jsonObject.getJSONObject("data").getString("order_id");
+            if ("200".equals(jsonObject.getString("code"))) {
+                orderId = jsonObject.getJSONObject("data").getString("orderId");
                 hashMap.put("res", "true");
                 hashMap.put("orderId", orderId);
             } else {
-                String msg = jsonObject.getString("result");
+                String msg = jsonObject.getString("message");
                 hashMap.put("res", "false");
                 hashMap.put("orderId", msg);
             }
