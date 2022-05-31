@@ -114,6 +114,11 @@ public class Constant {
     public static final int KEY_EXCHANGE_BIBOX=64; //bibox
 
     public static final int KEY_EXCHANGE_Citex=65; //citex
+
+    public static final int KEY_EXCHANGE_LBANK=66; //LBANK
+
+
+    public static final int KEY_EXCHANGE_WHITEBIT=67; //whitebit
     //endregion
 
 

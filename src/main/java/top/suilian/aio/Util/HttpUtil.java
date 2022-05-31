@@ -317,7 +317,7 @@ public class HttpUtil {
     }
 
 
-    public String post(String url, Map<String, String> params, HashMap<String, String> headers) throws UnsupportedEncodingException {
+    public static String post(String url, Map<String, String> params, HashMap<String, String> headers) throws UnsupportedEncodingException {
         List<NameValuePair> list = new LinkedList<>();
         for (String key : params.keySet()) {
             BasicNameValuePair param1 = new BasicNameValuePair(key, String.valueOf(params.get(key)));
@@ -929,7 +929,50 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
         return null;
     }
 
-
+    public static String postesss(String url, Map<String, Object> params,String str) throws UnsupportedEncodingException {
+        List<NameValuePair> list = new ArrayList<>();
+        for (String key : params.keySet()) {
+            list.add(new BasicNameValuePair(key, params.get(key).toString()));
+        }
+        StringEntity s = new StringEntity(JSON.toJSONString(params), "utf-8");
+        String result = null;
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        RequestConfig config = RequestConfig.custom().setConnectTimeout(35000) //连接超时时间
+                .setConnectionRequestTimeout(35000) //从连接池中取的连接的最长时间
+                .setSocketTimeout(60000) //数据传输的超时时间
+                .build();
+        HttpPost post = new HttpPost(url);
+        post.setConfig(config);
+        post.setHeader("Content-Type", "application/json");
+        post.setHeader("Accept-Language","zh-cn");
+        post.setHeader("API-KEY",str);
+        post.setEntity(s);
+        CloseableHttpResponse response = null;
+        try {
+            response = httpClient.execute(post);
+            if (response != null) {
+                HttpEntity entity = response.getEntity();
+                result = entityToString(entity);
+            }
+            return result;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                httpClient.close();
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
 
     public String postByPackcoin(String url, Map<String, String> params, HashMap<String, String> headers) throws UnsupportedEncodingException {
         List<NameValuePair> list = new LinkedList<>();
@@ -997,12 +1040,12 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
             StringEntity s = new StringEntity(json, "utf-8");
             s.setContentEncoding("UTF-8");
             post.setHeader("Content-type", "application/json");
-            post.addHeader("X-BM-TIMESTAMP", map.get("X-BM-TIMESTAMP"));
-            post.addHeader("X-BM-KEY", map.get("X-BM-KEY"));
-            post.addHeader("X-BM-SIGN", map.get("X-BM-SIGN"));
+            for (String key : map.keySet()) {
+                post.addHeader(key, map.get(key));
+            }
             post.setEntity(s);
             response = httpclient.execute(post);
-            if (response != null && response.getStatusLine().getStatusCode() == 200) {
+            if (response != null && response.getStatusLine().getStatusCode() != 45) {
                 result = EntityUtils.toString(response.getEntity());// 返回json格式：
             } else {
                 result = EntityUtils.toString(response.getEntity());

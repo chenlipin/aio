@@ -26,6 +26,8 @@ import top.suilian.aio.service.bitmart.BitMartParentService;
 import top.suilian.aio.service.bitrue.BitrueParentService;
 import top.suilian.aio.service.bitterex.BitterexParentService;
 import top.suilian.aio.service.bkex.coinnoe.BkexParentService;
+import top.suilian.aio.service.citex.CitexParentService;
+import top.suilian.aio.service.citex.kline.CitexKline;
 import top.suilian.aio.service.coinnoe.CoinnoeParentService;
 import top.suilian.aio.service.coinstore.CoinStoreParentService;
 import top.suilian.aio.service.coinstore.CoinStoreService;
@@ -33,10 +35,13 @@ import top.suilian.aio.service.digifinex.DigifinexParentService;
 import top.suilian.aio.service.hoo.HooParentService;
 import top.suilian.aio.service.hotcoin.HotCoinParentService;
 import top.suilian.aio.service.kucoin.KucoinParentService;
+import top.suilian.aio.service.lbank.LbankParentService;
 import top.suilian.aio.service.loex.LoexParentService;
 import top.suilian.aio.service.mxc.MxcParentService;
 import top.suilian.aio.service.skiesex.SkiesexParentService;
 import top.suilian.aio.service.wbfex.WbfexParentService;
+import top.suilian.aio.service.whitebit.WhitebitParentService;
+import top.suilian.aio.service.whitebit.WhitebitService;
 import top.suilian.aio.service.zb.ZbParentService;
 import top.suilian.aio.service.zbg.ZbgParentService;
 import top.suilian.aio.service.zg.ZGParentService;
@@ -198,6 +203,15 @@ public class TradeRobotService {
                 break;
             case Constant.KEY_EXCHANGE_BIBOX:
                 robotAction = new BiboxParentService();
+                break;
+            case Constant.KEY_EXCHANGE_Citex:
+                robotAction = new CitexParentService();
+                break;
+            case Constant.KEY_EXCHANGE_LBANK:
+                robotAction = new LbankParentService();
+                break;
+            case Constant.KEY_EXCHANGE_WHITEBIT:
+                robotAction = new WhitebitParentService();
                 break;
             default:
                 return null;

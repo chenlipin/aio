@@ -1,4 +1,4 @@
-package top.suilian.aio.service.citex.kline;
+package top.suilian.aio.service.lbank.kline;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -8,7 +8,7 @@ import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.citex.CitexParentService;
+import top.suilian.aio.service.lbank.LbankParentService;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -20,8 +20,8 @@ import java.util.Random;
 
 import static java.math.BigDecimal.ROUND_DOWN;
 
-public class CitexKline extends CitexParentService {
-    public CitexKline(
+public class LbankKline extends LbankParentService {
+    public LbankKline(
             CancelExceptionService cancelExceptionService,
             CancelOrderService cancelOrderService,
             ExceptionMessageService exceptionMessageService,
@@ -78,6 +78,7 @@ public class CitexKline extends CitexParentService {
             setParam();
             setTransactionRatio();
             logger.info("设置机器人参数结束");
+
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本
@@ -102,13 +103,16 @@ public class CitexKline extends CitexParentService {
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-            if (tradesObj != null && tradesObj.getInteger("code") == 0) {
+            if (tradesObj != null && tradesObj.getInteger("error_code") == 0) {
                 com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
-                JSONArray bids = data.getJSONArray("bids");
-                JSONArray asks = data.getJSONArray("asks");
 
-                BigDecimal buyPri = new BigDecimal(bids.getJSONObject(0).getString("price"));
-                BigDecimal sellPri = new BigDecimal(asks.getJSONObject(0).getString("price"));
+                List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
+
+                List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
+
+                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
+
 
                 if (sellPri.compareTo(buyPri) == 0) {
                     //平台撮合功能失败
@@ -215,13 +219,13 @@ public class CitexKline extends CitexParentService {
                 String resultJson = submitTrade(type, price, num);
                 JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
-                if (jsonObject != null && jsonObject.getInt("code") == 0) {
-                    orderIdOne = jsonObject.getString("data");
+                if (jsonObject != null && jsonObject.getInt("error_code") == 0) {
+                    orderIdOne = jsonObject.getJSONObject("data").getString("order_id");
                     String resultJson1 = submitTrade(type == 1 ? -1 : 1, price, num);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
-                    if (jsonObject1 != null && jsonObject1.getInt("code") == 0) {
-                        orderIdTwo = jsonObject1.getString("data");
+                    if (jsonObject1 != null && jsonObject1.getInt("error_code") == 0) {
+                        orderIdTwo =jsonObject1.getJSONObject("data").getString("order_id");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
                         ordersleeptime = System.currentTimeMillis();
                     } else {
@@ -268,8 +272,8 @@ public class CitexKline extends CitexParentService {
                 BigDecimal sellPri = new BigDecimal(asks.getJSONObject(0).getString("price"));
                 BigDecimal subtract = sellPri.subtract(buyPri);
                 logger.info("补单 buy1："+buyPri +"-sell1:"+sellPri +"--subtract:"+subtract +"比例"+subtract.divide(sellPri,RoundingMode.HALF_UP).setScale(12,  RoundingMode.HALF_UP).toPlainString());
-                if (subtract.divide(sellPri,RoundingMode.HALF_UP).setScale(12,  RoundingMode.HALF_UP).compareTo(new BigDecimal("0.02"))>0){
-                    logger.info("补单开始0.02");
+                if (subtract.divide(sellPri,RoundingMode.HALF_UP).setScale(12,  RoundingMode.HALF_UP).compareTo(new BigDecimal("0.05"))>0){
+                    logger.info("补单开始0.05");
                     Double numThreshold1 = Double.valueOf(exchange.get("numThreshold"));
                     Double minNum = Double.valueOf(exchange.get("numMinThreshold"));
                     long max = (long) (numThreshold1 * Math.pow(10, Double.parseDouble(String.valueOf(exchange.get("amountPrecision")))));
@@ -278,7 +282,7 @@ public class CitexKline extends CitexParentService {
                     BigDecimal oldNum = new BigDecimal(String.valueOf(randNumber / Math.pow(10, Double.parseDouble(String.valueOf(exchange.get("amountPrecision"))))));
                     BigDecimal num = oldNum.multiply(new BigDecimal(transactionRatio));
 
-                    BigDecimal price = sellPri.multiply(new BigDecimal("0.976"));
+                    BigDecimal price = sellPri.multiply(new BigDecimal("0.95"));
                     String resultJson1 = submitTrade( -1, price, num);
                     setTradeLog(id, "补盘口单子 买："+buyPri+"---卖："+sellPri +"---补单价格："+price, 1);
                     sleep(10 * 1000, Integer.parseInt(exchange.get("isMobileSwitch")));
@@ -328,13 +332,15 @@ public class CitexKline extends CitexParentService {
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-            if (tradesObj != null && tradesObj.getInteger("code") == 0) {
+            if (tradesObj != null && tradesObj.getInteger("error_code") == 0) {
                 com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
-                JSONArray bids = data.getJSONArray("bids");
-                JSONArray asks = data.getJSONArray("asks");
 
-                BigDecimal buyPri = new BigDecimal(bids.getJSONObject(0).getString("price"));
-                BigDecimal sellPri = new BigDecimal(asks.getJSONObject(0).getString("price"));
+                List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
+
+                List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
+
+                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
                 long l = 1000 * 60 * 3 + (RandomUtils.nextInt(10) * 1000L);
                 logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
                 if (System.currentTimeMillis() - ordersleeptime > l) {
@@ -360,8 +366,8 @@ public class CitexKline extends CitexParentService {
                 if ("1".equals(exchange.get("isTradeCheck"))) {
 
                     //吃堵盘口的订单
-                    BigDecimal buyAmount = new BigDecimal(bids.getJSONObject(0).getString("quantity"));
-                    BigDecimal sellAmount = new BigDecimal(asks.getJSONObject(0).getString("quantity"));
+                    BigDecimal buyAmount =new BigDecimal(String.valueOf(buyPrices.get(0).get(1)));
+                    BigDecimal sellAmount = new BigDecimal(String.valueOf(sellPrices.get(0).get(1)));
                     BigDecimal minAmount = new BigDecimal(exchange.get("minTradeLimit").toString());
                     if (maxEatOrder == 0) {
                         logger.info("吃单上限功能未开启：maxEatOrder=" + maxEatOrder);
@@ -382,9 +388,9 @@ public class CitexKline extends CitexParentService {
                                     setTradeLog(id, "堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]", 0);
                                     logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
 
-                                    JSONObject jsonObject = judgeRes(sellOrder, "code", "submitTrade");
-                                    if (jsonObject != null && jsonObject.getInt("code") == 200) {
-                                        sellOrderId = jsonObject.getString("data");
+                                    JSONObject jsonObject = judgeRes(sellOrder, "error_code", "submitTrade");
+                                    if (jsonObject != null && jsonObject.getInt("error_code") == 200) {
+                                        sellOrderId = jsonObject.getJSONObject("data").getString("order_id");
                                     }
                                     return price;
                                 } catch (Exception e) {
@@ -411,9 +417,9 @@ public class CitexKline extends CitexParentService {
                                     setTradeLog(id, "堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]", 0);
                                     logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
 
-                                    JSONObject jsonObject = judgeRes(buyOrder, "code", "submitTrade");
-                                    if (jsonObject != null && jsonObject.getInt("code") == 0) {
-                                        orderIdOne = jsonObject.getString("data");
+                                    JSONObject jsonObject = judgeRes(buyOrder, "error_code", "submitTrade");
+                                    if (jsonObject != null && jsonObject.getInt("error_code") == 0) {
+                                        orderIdOne = jsonObject.getJSONObject("data").getString("order_id");
                                     }
                                     return price;
                                 } catch (Exception e) {
@@ -521,17 +527,17 @@ public class CitexKline extends CitexParentService {
             try {
                 String str = selectOrder(orderId);
                 JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
-                if (jsonObject != null && jsonObject.getInt("code") == 0) {
+                if (jsonObject != null && jsonObject.getInt("error_code") == 0) {
 
-                    JSONObject data = jsonObject.getJSONObject("data");
-                    int status = data.getInt("orderStatus");
-                    if (status == 4) {
+                    JSONObject data = jsonObject.getJSONArray("data").getJSONObject(0);
+                    int status = data.getInt("status");
+                    if (status == 2) {
                         setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
-                    } else if (status == 6) {
+                    } else if (status == -1) {
                         setTradeLog(id, "订单id：" + orderId + "已撤单", 0, "#67c23a");
                     } else {
                         String res = cancelTrade(orderId);
-                        JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
+                        JSONObject cancelRes = judgeRes(res, "error_code", "cancelTrade");
                         setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                         setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");
                         if (Integer.parseInt(exchange.get("orderSumSwitch")) == 1 && type == 1) {    //防褥羊毛开关
