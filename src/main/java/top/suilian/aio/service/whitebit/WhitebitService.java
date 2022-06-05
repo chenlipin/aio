@@ -4,11 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.service.whitebit.newKline.RunNewWhitebitKline;
+import top.suilian.aio.service.whitebit.replenish.RunWhitebitReplenish;
 
 @Component
 public class WhitebitService {
     @Autowired
     RunNewWhitebitKline runNewWhitebitKline;
+    @Autowired
+    RunWhitebitReplenish runWhitebitReplenish;
 
 
     /**
@@ -22,6 +25,9 @@ public class WhitebitService {
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewWhitebitKline.init(id);
                 break;
+            case 8:
+                runWhitebitReplenish.init(id);
+                break;
         }
     }
 
@@ -31,6 +37,9 @@ public class WhitebitService {
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewWhitebitKline.stopWork(id);
                 break;
+            case 8:
+                runWhitebitReplenish.stopWork(id);
+                break;
         }
     }
 
@@ -39,6 +48,9 @@ public class WhitebitService {
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewWhitebitKline.killWork(id);
 //                runHotcoinRandomDepth.killWork(id+1);
+                break;
+            case 8:
+                runWhitebitReplenish.killWork(id);
                 break;
         }
     }
