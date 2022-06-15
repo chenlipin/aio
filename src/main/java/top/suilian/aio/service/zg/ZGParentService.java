@@ -7,12 +7,14 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
+import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.service.zg.depth.RunZGDepth;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -21,7 +23,9 @@ import java.util.*;
 @DependsOn("beanContext")
 @Service
 public class ZGParentService extends BaseService implements RobotAction {
-    public String baseUrl = "https://api-cloud.bitmart.com";
+    public String baseUrl = "https://www.ztb.im/api/v1";
+    public RunZGDepth runZGDepth = BeanContext.getBean(RunZGDepth.class);
+
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
@@ -177,10 +181,7 @@ public class ZGParentService extends BaseService implements RobotAction {
 
         try {
             trade = httpUtil.post(baseUrl + "/private/trade/limit", (TreeMap<String, Object>) param);
-            JSONObject jsonObject = JSONObject.fromObject(trade);
-            if (0 != jsonObject.getInt("code")) {
-                setWarmLog(id, 3, "API接口错误", jsonObject.getString("message"));
-            }
+            logger.info("robotId" + id + "----" + "挂单结果：" + trade);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -242,9 +243,6 @@ public class ZGParentService extends BaseService implements RobotAction {
         param.put("sign", signature);
         String trades = httpUtil.post(baseUrl + "/private/trade/cancel", (TreeMap<String, Object>) param);
         JSONObject jsonObject = JSONObject.fromObject(trades);
-        if (0 != jsonObject.getInt("code")&&20010 != jsonObject.getInt("code")) {
-            setWarmLog(id, 3, "API接口错误", jsonObject.getString("message"));
-        }
         return trades;
     }
 
@@ -271,10 +269,10 @@ public class ZGParentService extends BaseService implements RobotAction {
      * 交易规则获取
      */
     public boolean setPrecision() {
-                precision.put("pricePrecision", exchange.get("pricePrecision"));
-                precision.put("amountPrecision", exchange.get("amountPrecision"));
-                precision.put("exRate", 0.002);
-                precision.put("minTradeLimit", exchange.get("minTradeLimit"));
+        precision.put("pricePrecision", exchange.get("pricePrecision"));
+        precision.put("amountPrecision", exchange.get("amountPrecision"));
+        precision.put("exRate", 0.002);
+        precision.put("minTradeLimit", exchange.get("minTradeLimit"));
 
         return true;
     }

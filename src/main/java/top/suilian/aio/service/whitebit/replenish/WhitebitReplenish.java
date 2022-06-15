@@ -318,13 +318,12 @@ public class WhitebitReplenish extends WhitebitParentService {
             logger.info("补盘口单+ "+(order.getType() == 1 ? "买" : "卖") +"价格："+order.getPrice()+ ": 数量" + order.getAmount());
             setTradeLog(id, "补单=》挂" + (order.getType() == 1 ? "买" : "卖") + "单[价格：" + order.getPrice() + ": 数量" + order.getAmount() + "]=>" + trade, 0, order.getType() == 1 ? "05cbc8" : "ff6224");
             JSONObject jsonObject = JSONObject.fromObject(trade);
-            if (200 == jsonObject.getInt("code")) {
+
                 if (order.type == 1) {
                     redisHelper.setSt("maxRightQty_" + id, maxRightQty_redis.add(order.getAmount()).toString());
                 } else {
                     redisHelper.setSt("maxLeftQty_" + id, maxLeftQty_redis.add(order.getAmount()).toString());
                 }
-            }
         }
         try {
             Thread.sleep(500);

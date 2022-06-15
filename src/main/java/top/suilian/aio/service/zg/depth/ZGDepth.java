@@ -2,6 +2,7 @@ package top.suilian.aio.service.zg.depth;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
@@ -10,6 +11,7 @@ import top.suilian.aio.service.zg.ZGParentService;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -41,7 +43,13 @@ public class ZGDepth extends ZGParentService {
     }
 
     boolean start = true;
-    public int depthCancelOrderNum=0;
+    public int depthCancelOrderNum = 0;
+    public String buyOrder1 = "";
+    public String buyOrder2 = "";
+    public String buyOrder3 = "";
+    public String sellOrder1 = "";
+    public String sellOrder2 = "";
+    public String sellOrder3 = "";
 
 
     public void init() {
@@ -58,190 +66,158 @@ public class ZGDepth extends ZGParentService {
             logger.info("设置机器人交易规则结束");
             start = false;
         }
+
         if (Integer.parseInt(exchange.get("depthCancelNum")) >= depthCancelOrderNum) {
             //获取深度
-            List<BigDecimal> depthPrice = getDepth();
-            logger.info("获取的随机的买卖单价格:" + depthPrice);
-            //买单数量
-            BigDecimal buyNum = getOrderAmount();
-            logger.info("深度买单价格:" + depthPrice.get(0));
-            logger.info("深度买单数量:" + buyNum);
+            String trades = httpUtil.get(baseUrl + "/depth?symbol=" + exchange.get("market") + "&size=10");
+            JSONObject tradesObj = judgeRes(trades, "bids", "getRandomPrice");
 
-            //卖单数量
-            BigDecimal sellNum = getOrderAmount();
-            logger.info("深度卖单价格:" + depthPrice.get(1));
-            logger.info("深度卖单数量:" + sellNum);
+            if (!trades.isEmpty() && tradesObj != null) {
 
+                List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
 
-            //挂买
-            try {
-                logger.info("挂买单");
-                String resultBuy = submitOrder(2, depthPrice.get(0), buyNum);
-                JSONObject buyResultObject = judgeRes(resultBuy, "code", "submitTrade");
-                if(resultBuy!=null&&buyResultObject.getInt("code")==0){
-                    setTradeLog(id, "买单价格："+depthPrice.get(0)+",数量："+buyNum+",挂单结果："+buyResultObject, 0, "05cbc8");
-                }else{
-                    setTradeLog(id, "买单价格："+depthPrice.get(0)+",数量："+buyNum+",挂单结果："+buyResultObject, 0, "05cbc8");
-                    sleep( 10000, Integer.parseInt(exchange.get("isMobileSwitch")));
+                List<List<String>> sellPrices = (List<List<String>>) tradesObj.get("asks");
+
+                BigDecimal buyPri = new BigDecimal(buyPrices.get(0).get(0));
+                BigDecimal buyPri1 = new BigDecimal(buyPrices.get(5).get(0));
+                BigDecimal sellPri = new BigDecimal(sellPrices.get(0).get(0));
+                BigDecimal sellPri1 = new BigDecimal(sellPrices.get(5).get(0));
+                if (sellPri.compareTo(buyPri) == 0) {
+                    //平台撮合功能失败
+                    setTradeLog(id, "交易平台无法撮合", 0, "FF111A");
+                    return;
                 }
-                JudegOrder(buyResultObject,buyNum);
-            } catch (UnsupportedEncodingException e) {
-                exceptionMessage = collectExceptionStackMsg(e);
-                setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
-                logger.info("robotId:" + id + exceptionMessage);
-            }
-            //挂卖
-            try {
-                logger.info("卖单");
-                String resultSell = submitOrder(1, depthPrice.get(1), sellNum);
-                JSONObject sellResultObject = judgeRes(resultSell, "code", "submitTrade");
-                if(resultSell!=null&&sellResultObject.getInt("code")==0){
-                    setTradeLog(id, "卖单价格："+depthPrice.get(1)+",数量："+sellNum+"，挂单结果："+sellResultObject, 0, "ff6224");
-                }else {
-                    setTradeLog(id, "卖单价格："+depthPrice.get(1)+",数量："+sellNum+"，挂单结果："+sellResultObject, 0, "ff6224");
-                    sleep( 10000, Integer.parseInt(exchange.get("isMobileSwitch")));
-                }
-                JudegOrder(sellResultObject,sellNum);
-            } catch (UnsupportedEncodingException e) {
-                exceptionMessage = collectExceptionStackMsg(e);
-                setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
-                logger.info("robotId:" + id + exceptionMessage);
-                e.printStackTrace();
-            }
-            setTradeLog(id, "已达撤单数" + depthCancelOrderNum, 0, "000000");
-            if (Integer.parseInt(exchange.get("depthCancelNum")) < depthCancelOrderNum) {
-                setTradeLog(id, "深度撤单达到上限,停止深度撤单", 0, "000000");
-                setRobotArgs(id, "depthSwitch", "0");
-            }
+                BigDecimal buy1 = getRandomRedPacketBetweenMinAndMax(buyPri1, buyPri);
+                BigDecimal sell1 = getRandomRedPacketBetweenMinAndMax(sellPri, sellPri1);
 
-        }
+                BigDecimal buy2 = getRandomRedPacketBetweenMinAndMax(buyPri1, buyPri);
+                BigDecimal sell2 = getRandomRedPacketBetweenMinAndMax(sellPri, sellPri1);
 
-        try {
-            setBalanceRedis();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        logger.info("\r\n------------------------------{" + id + "} 结束------------------------------\r\n");
+                BigDecimal buy3 = getRandomRedPacketBetweenMinAndMax(buyPri1, buyPri);
+                BigDecimal sell3 = getRandomRedPacketBetweenMinAndMax(sellPri, sellPri1);
 
-    }
+                try {
+                    String resultJson1 = submitOrder(2, buy1, getOrderAmount());
+                    JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
+                    if (jsonObject1 != null && jsonObject1.getInt("code") == 0) {
+                        buyOrder1 = jsonObject1.getJSONObject("result").getString("id");
+                    }
+                    setTradeLog(id, "深度挂买单1[" + buy1 + "]=> "+buyOrder1 , 0);
+                    Thread.sleep(200);
+                    /**-------------------------------------------------------------------------*/
+                    String resultJson2 = submitOrder(1, sell1, getOrderAmount());
+                    JSONObject jsonObject2 = judgeRes(resultJson2, "code", "submitTrade");
+                    if (jsonObject2 != null && jsonObject2.getInt("code") == 0) {
+                        sellOrder1 = jsonObject2.getJSONObject("result").getString("id");
+                    }
+                    setTradeLog(id, "深度挂卖单1[" + sell1 + "]=> "+sellOrder1 , 0);
+                    Thread.sleep(300);
+                    /**-------------------------------------------------------------------------*/
+                    String resultJson3 = submitOrder(2, buy2, getOrderAmount());
+                    JSONObject jsonObject3 = judgeRes(resultJson3, "code", "submitTrade");
+                    if (jsonObject3 != null && jsonObject3.getInt("code") == 0) {
+                        buyOrder2 = jsonObject3.getJSONObject("result").getString("id");
+                    }
+                    setTradeLog(id, "深度挂买单2[" + buy2 + "]=> "+buyOrder2 , 0);
+                    Thread.sleep(200);
+                    /**-------------------------------------------------------------------------*/
+                    String resultJson4 = submitOrder(1, sell2, getOrderAmount());
+                    JSONObject jsonObject4 = judgeRes(resultJson4, "code", "submitTrade");
+                    if (jsonObject4 != null && jsonObject4.getInt("code") == 0) {
+                        sellOrder2 = jsonObject4.getJSONObject("result").getString("id");
+                    }
+                    setTradeLog(id, "深度卖单2[" + sell2 + "]=> "+buyOrder2 , 0);
+                    /**-------------------------------------------------------------------------*/
+                    String resultJson5 = submitOrder(2, buy3, getOrderAmount());
+                    JSONObject jsonObject5 = judgeRes(resultJson5, "code", "submitTrade");
+                    if (jsonObject5 != null && jsonObject5.getInt("code") == 0) {
+                        buyOrder3 = jsonObject5.getJSONObject("result").getString("id");
+                    }
+                    setTradeLog(id, "深度挂买单2[" + buy3 + "]=> "+buyOrder2 , 0);
+                    Thread.sleep(200);
+                    /**-------------------------------------------------------------------------*/
+                    String resultJson6 = submitOrder(1, sell3, getOrderAmount());
+                    JSONObject jsonObject6 = judgeRes(resultJson6, "code", "submitTrade");
+                    if (jsonObject6 != null && jsonObject6.getInt("code") == 0) {
+                        sellOrder3 = jsonObject6.getJSONObject("result").getString("id");
+                    }
+                    setTradeLog(id, "深度挂卖单3[" + sell3 + "]=> "+sellOrder3 , 0);
+                    Thread.sleep(200);
+                    cancelTrade(buyOrder1);
+                    setTradeLog(id, "深度撤买单1", 0);
+                    Thread.sleep(500);
+                    cancelTrade(buyOrder2);
+                    setTradeLog(id, "深度撤买单2", 0);
+                    cancelTrade(buyOrder3);
+                    setTradeLog(id, "深度撤买单3", 0);
+                    Thread.sleep(200);
+                    cancelTrade(sellOrder1);
+                    setTradeLog(id, "深度撤卖单1", 0);
+                    Thread.sleep(300);
+                    cancelTrade(sellOrder2);
+                    setTradeLog(id, "深度撤卖单2", 0);
+                    cancelTrade(sellOrder3);
+                    setTradeLog(id, "深度撤卖单3", 0);
+                } catch (Exception e) {
 
-    public void JudegOrder(JSONObject object,BigDecimal orderAmount) throws UnsupportedEncodingException {
-        if (object != null &&object.getInt("code")==0) {
-            String tradeId = object.getJSONObject("result").getString("id");
-            int st = (int) (Math.random() * (Integer.parseInt(exchange.get("intervalTopLimit")) - Integer.parseInt(exchange.get("intervalLowerLimit"))) + Integer.parseInt(exchange.get("intervalLowerLimit")));
-            sleep(st * 1000, Integer.parseInt(exchange.get("isMobileSwitch")));
-            String str = selectOrder(tradeId);
-            JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
-            if (jsonObject != null && jsonObject.getInt("code") == 0) {
-
-
-                if (jsonObject != null && jsonObject.getInt("code") == 0) {
-                    BigDecimal oneAmount = BigDecimal.ZERO;
-                    JSONObject jsonArray = jsonObject.getJSONObject("result");
-
-                    String records = jsonArray.getString("records");
-
-                    if (records == null || records.equals("null")) {
-                        //订单未成交  ---- 撤单
-                        String res = cancelTrade(tradeId);
-                        JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
-                        setCancelOrder(cancelRes, res, tradeId + "_" + orderAmount, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
-                        setTradeLog(id, "撤单[" + tradeId + "]=>" + res, 0, "000000");
-
-                    } else {
-                        JSONArray recordsArray = JSONArray.fromObject(records);
-                        for (int i = 0; i < recordsArray.size(); i++) {
-                            System.out.println(recordsArray.size() + "长度:1" + i);
-                            JSONObject everyOrder = recordsArray.getJSONObject(i);
-                            BigDecimal everyOrderAmount = new BigDecimal(everyOrder.getString("amount"));
-                            oneAmount = oneAmount.add(everyOrderAmount);
+                    try {
+                        if (StringUtils.isNotEmpty(buyOrder1)) {
+                            cancelTrade(buyOrder1);
+                        }
+                        if (StringUtils.isNotEmpty(buyOrder2)) {
+                            cancelTrade(buyOrder2);
+                        }
+                        if (StringUtils.isNotEmpty(buyOrder3)) {
+                            cancelTrade(buyOrder3);
                         }
 
-                        logger.info("robotId" + id + "----订单挂单数量:" + orderAmount);
-                        logger.info("robotId" + id + "----订单成交数量:" + oneAmount);
-
-                        int result = orderAmount.compareTo(oneAmount);
-
-                        if (result == 0) {
-                            setTradeLog(id, "订单id：" + tradeId + "完全成交", 0, "000000");
-                            depthCancelOrderNum++;
-                        } else {
-                            String res = cancelTrade(tradeId);
-                            JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
-                            setCancelOrder(cancelRes, res, tradeId + "_" + orderAmount, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
-                            setTradeLog(id, "撤单[" + tradeId + "]=>" + res, 0, "000000");
-
+                        if (StringUtils.isNotEmpty(sellOrder1)) {
+                            cancelTrade(sellOrder1);
                         }
+                        if (StringUtils.isNotEmpty(sellOrder2)) {
+                            cancelTrade(sellOrder2);
+                        }
+                        if (StringUtils.isNotEmpty(sellOrder3)) {
+                            cancelTrade(sellOrder3);
+                        }
+
+                    } catch (UnsupportedEncodingException ex) {
+                        ex.printStackTrace();
 
                     }
-
+                    e.printStackTrace();
                 }
 
-            } else {
-                String res = cancelTrade(tradeId);
-                JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
-                setCancelOrder(cancelRes, res, tradeId + "_" + orderAmount, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
-                setTradeLog(id, "查询订单失败撤单[" + tradeId + "]=>" + res, 0, "000000");
-
             }
+
+            try {
+                setBalanceRedis();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            logger.info("\r\n------------------------------{" + id + "} 结束------------------------------\r\n");
+
         }
-    }
 
 
-    public List<BigDecimal> getDepth() {
-
-        List<BigDecimal> price = new ArrayList<BigDecimal>();
-        String trades = httpUtil.get(baseUrl + "/depth?symbol=" + exchange.get("market") + "&size=20");
-        JSONObject tradesObj = judgeRes(trades, "bids", "getRandomPrice");
-
-        if (!"".equals(trades) && trades != null && !trades.isEmpty() && tradesObj != null) {
-
-            List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
-
-            List<List<String>> sellPrices = (List<List<String>>) tradesObj.get("asks");
-
-
-            String depthOrderRange = exchange.get("depthOrderRange");
-
-            int fromDepth = Integer.valueOf(depthOrderRange.split("_")[0]) - 1;
-            int toDepth =   Integer.valueOf(depthOrderRange.split("_")[1]) - 1;
-
-
-            BigDecimal buyMinPri = new BigDecimal(buyPrices.get(fromDepth).get(0));
-            logger.info("买" + fromDepth + "价格:" + buyMinPri);
-
-            BigDecimal buyMaxPri = new BigDecimal(buyPrices.get(toDepth).get(0));
-            logger.info("买" + toDepth + "价格:" + buyMaxPri);
-
-            BigDecimal sellMinPri = new BigDecimal(sellPrices.get(fromDepth).get(0));
-            logger.info("卖" + fromDepth + "价格:" + sellMinPri);
-
-            BigDecimal sellMaxPri = new BigDecimal(sellPrices.get(toDepth).get(0));
-            logger.info("卖" + toDepth + "价格:" + sellMaxPri);
-
-            Integer newScale = Integer.parseInt(precision.get("pricePrecision").toString());
-            int maxBuy = buyMinPri.multiply(BigDecimal.valueOf(Math.pow(10, newScale))).intValue();
-            int minBuy = buyMaxPri.multiply(BigDecimal.valueOf(Math.pow(10, newScale))).intValue();
-            int minSell = sellMinPri.multiply(BigDecimal.valueOf(Math.pow(10, newScale))).intValue();
-            int maxSell = sellMaxPri.multiply(BigDecimal.valueOf(Math.pow(10, newScale))).intValue();
-            Random random = new Random();
-            BigDecimal randBuyPrice = new BigDecimal(random.nextInt(maxBuy - minBuy + 1) + minBuy).divide(BigDecimal.valueOf(Math.pow(10, newScale)));
-            BigDecimal randSellPrice = new BigDecimal(random.nextInt(maxSell - minSell + 1) + minSell).divide(BigDecimal.valueOf(Math.pow(10, newScale)));
-            logger.info("深度买单价格:" + randBuyPrice);
-            logger.info("深度卖单价格:" + randSellPrice);
-            price.add(randBuyPrice);
-            price.add(randSellPrice);
-        }
-        return price;
     }
 
     public BigDecimal getOrderAmount() {
-        Random random = new Random();
-        Integer newScale = Integer.parseInt(precision.get("amountPrecision").toString());
-        int minAmount = new BigDecimal(exchange.get("depthOrderLowerLimit")).multiply(BigDecimal.valueOf(Math.pow(10, newScale))).intValue();
-        int maxAmount = new BigDecimal(exchange.get("depthOrderTopLimit")).multiply(BigDecimal.valueOf(Math.pow(10, newScale))).intValue();
-        BigDecimal orderAmount = new BigDecimal(random.nextInt(maxAmount - minAmount + 1) + minAmount).divide(BigDecimal.valueOf(Math.pow(10, newScale)));
 
-        return orderAmount;
+        Integer newScale = Integer.parseInt(precision.get("amountPrecision").toString());
+        long minAmount = new BigDecimal(exchange.get("depthOrderLowerLimit")).multiply(BigDecimal.valueOf(Math.pow(10, newScale))).intValue();
+        long maxAmount = new BigDecimal(exchange.get("depthOrderTopLimit")).multiply(BigDecimal.valueOf(Math.pow(10, newScale))).intValue();
+        BigDecimal bigDecimal = getRandomRedPacketBetweenMinAndMax(new BigDecimal(exchange.get("depthOrderLowerLimit")), new BigDecimal(exchange.get("depthOrderTopLimit")));
+        return bigDecimal;
     }
+
+    public static BigDecimal getRandomRedPacketBetweenMinAndMax(BigDecimal min, BigDecimal max) {
+        float minF = min.floatValue();
+        float maxF = max.floatValue();
+        //生成随机数
+        BigDecimal db = new BigDecimal(Math.random() * (maxF - minF) + minF);
+        //返回保留6位小数的随机数。不进行四舍五入
+        return db.setScale(12, RoundingMode.DOWN);
+    }
+
 }

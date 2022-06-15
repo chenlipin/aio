@@ -123,7 +123,7 @@ public class RunZGDepth {
         @Override
         public void dowork() {
             Robot robot = redisHelper.getRobot(name);
-            if (robot != null && redisHelper.getRobot(name).getStatus() == Constant.KEY_ROBOT_STATUS_RUN) {
+            if (robot != null ) {
                 String key = "_exception";
                 try {
                     randomDepth.init();
