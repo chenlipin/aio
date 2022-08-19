@@ -261,6 +261,7 @@ public class IexKline extends IexParentService {
             }
             int st = (int) (Math.random() * (Integer.parseInt(exchange.get("endTime")) - Integer.parseInt(exchange.get("startTime"))) + Integer.parseInt(exchange.get("startTime")));
             setTradeLog(id, "暂停时间----------------------------->" + st + "秒", 0);
+            setBalanceRedis();
             if ("1".equals(exchange.get("sheetForm"))) {
                 runTime += (st);
                 setTradeLog(id, "累计周期时间----------------------------->" + runTime + "秒", 1);
@@ -322,7 +323,7 @@ public class IexKline extends IexParentService {
                     break;
             }
         }
-            setBalanceRedis();
+//            setBalanceRedis();
             clearLog();
             logger.info("\r\n------------------------------{" + id + "} 结束------------------------------\r\n");
         }

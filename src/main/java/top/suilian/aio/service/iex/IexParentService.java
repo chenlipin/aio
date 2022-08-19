@@ -250,7 +250,7 @@ public class IexParentService extends BaseService implements RobotAction {
                 overdue = true;
             }
         }
-        if (balance == null || overdue) {
+        if (balance == null ) {
             List<String> coinArr = Arrays.asList(coins.split("_"));
 
             String firstBalance = null;

@@ -103,7 +103,7 @@ public class WhitebitParentService extends BaseService implements RobotAction {
             setWarmLog(id, 3, "API接口错误", trade);
         }
 
-        setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+        setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         return trade;
     }
 

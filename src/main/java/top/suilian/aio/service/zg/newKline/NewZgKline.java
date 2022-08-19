@@ -86,6 +86,10 @@ public class NewZgKline extends ZGParentService {
                 return;
             }
             logger.info("设置机器人交易规则结束");
+            if ("1".equals(exchange.get("isdeepRobot"))) {
+                logger.info("深度机器人交易开始");
+                runZGDepth.init(id + 1);
+            }
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本

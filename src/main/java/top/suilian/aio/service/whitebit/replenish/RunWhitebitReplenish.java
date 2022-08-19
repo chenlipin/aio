@@ -1,4 +1,4 @@
-package top.suilian.aio.service.zg.depth;
+package top.suilian.aio.service.whitebit.replenish;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,15 +10,13 @@ import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.runnable.StopableTask;
 import top.suilian.aio.service.*;
 
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class RunZGDepth {
-
+public class RunWhitebitReplenish {
     //region    Service
     @Autowired
     CancelExceptionService cancelExceptionService;
@@ -55,7 +53,7 @@ public class RunZGDepth {
      */
     public void init(int id) {
         //实例化策略对象
-        ZGDepth randomDepth = new ZGDepth(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
+        WhitebitReplenish randomDepth = new WhitebitReplenish(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
         redisHelper.initRobot(id);
         work = new Work(randomDepth);
         works.add(work);
@@ -113,9 +111,9 @@ public class RunZGDepth {
     }
 
     class Work extends StopableTask<Work> {
-        ZGDepth randomDepth;
+        WhitebitReplenish randomDepth;
 
-        public Work(ZGDepth randomDepth) {
+        public Work(WhitebitReplenish randomDepth) {
             super(randomDepth.id);
             this.randomDepth = randomDepth;
         }
@@ -123,7 +121,7 @@ public class RunZGDepth {
         @Override
         public void dowork() {
             Robot robot = redisHelper.getRobot(name);
-            if (robot != null ) {
+            if (robot != null && redisHelper.getRobot(name).getStatus() == Constant.KEY_ROBOT_STATUS_RUN) {
                 String key = "_exception";
                 try {
                     randomDepth.init();

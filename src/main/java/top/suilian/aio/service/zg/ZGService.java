@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.service.eg.depthReferToZg.EgDepthToZg;
 import top.suilian.aio.service.zg.cancel.RunZGCancel;
+import top.suilian.aio.service.zg.depth.RunZGDepth;
 import top.suilian.aio.service.zg.depthReferToZg.ZgDepthToZg;
 import top.suilian.aio.service.zg.depthReferToZg.ZgRunDepthReferToZg;
 import top.suilian.aio.service.zg.kline.RunZGKline;
@@ -20,7 +21,7 @@ public class ZGService {
     ZgRunDepthReferToZg zgRunDepthReferToZg;
 
     @Autowired
-    RunZGCancel runZGCancel;
+    RunZGDepth runZGDepth;
 
     @Autowired
     RunNewZgKline runNewZgKline;
@@ -42,9 +43,9 @@ public class ZGService {
 
                 break;
             case Constant.KEY_STRATEGY_CANCEL:
-                runZGCancel.init(id);
                 break;
             case Constant.KEY_RANDOM_DEPTH:
+                runZGDepth.init(id);
                 break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewZgKline.init(id);
@@ -97,9 +98,11 @@ public class ZGService {
                 break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewZgKline.killWork(id);
+                runZGDepth.killWork(id+1);
                 break;
             case 8:
                 zgRunDepthReferToZg.killWork(id);
+                runZGDepth.killWork(id);
                 break;
         }
     }
