@@ -69,7 +69,7 @@ public class DigfinexNewKline extends DigifinexParentService {
     private String transactionRatio = "1";
     private int maxEatOrder = 0;
     private int timeSlot = 1;
-    long ordersleeptime=0;
+    long ordersleeptime = System.currentTimeMillis();
 
 
 
@@ -79,13 +79,6 @@ public class DigfinexNewKline extends DigifinexParentService {
             logger.info("设置机器人参数开始");
             setParam();
             setTransactionRatio();
-            String balance = submitOrder(1,new BigDecimal("0.000000001"),new BigDecimal("10000000000"));
-            System.out.println(balance);
-            try {
-                Thread.sleep(1000000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             logger.info("设置机器人参数结束");
 
             //判断走K线的方式

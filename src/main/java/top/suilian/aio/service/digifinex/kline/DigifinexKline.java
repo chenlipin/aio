@@ -57,6 +57,7 @@ public class DigifinexKline extends DigifinexParentService {
     private String buyOrderId = "0";
     private int eatOrder=0;//吃单数量
     private String transactionRatio="1";
+    long ordersleeptime = System.currentTimeMillis();
 
 
     public void init(){
@@ -71,7 +72,6 @@ public class DigifinexKline extends DigifinexParentService {
                 return;
             }
             logger.info("设置机器人交易规则结束");
-
             //随机交易区间
             while (randomNum == 1 || randomNum == Integer.parseInt(exchange.get("priceRange"))) {
                 randomNum = (int) Math.ceil(Math.random() * Integer.parseInt(exchange.get("priceRange")));
