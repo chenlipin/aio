@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import top.suilian.aio.BeanContext;
@@ -132,6 +131,8 @@ public class BaseService {
             warmLog.setType(status);
             warmLog.setWarmMsg(msg);
             warmLog.setWarmDetailMsg(warmDetailMsg);
+        warmLog.setUpdateTime(new Date());
+        warmLog.setCreatTime(new Date());
             tradeLogService.insertWarmLog(warmLog);
         logger.info("setWarmLog：" + JSON.toJSONString(warmLog));
         return 0;

@@ -15,6 +15,7 @@ import top.suilian.aio.service.basic.BasicService;
 import top.suilian.aio.service.bbkx.BbkxService;
 import top.suilian.aio.service.bgoex.BgoService;
 import top.suilian.aio.service.bibox.BiboxService;
+import top.suilian.aio.service.bifinance.BifinanceService;
 import top.suilian.aio.service.bihu.BiHuService;
 import top.suilian.aio.service.biki.BikiService;
 import top.suilian.aio.service.bilian.BiLianService;
@@ -32,6 +33,7 @@ import top.suilian.aio.service.citex.CitexService;
 import top.suilian.aio.service.coinnoe.CoinnoeService;
 import top.suilian.aio.service.coinstore.CoinStoreService;
 import top.suilian.aio.service.coinvv.CoinvvService;
+import top.suilian.aio.service.coinw.CoinwService;
 import top.suilian.aio.service.digifinex.DigifinexService;
 import top.suilian.aio.service.e9ex.E9exService;
 import top.suilian.aio.service.eg.EgService;
@@ -41,6 +43,7 @@ import top.suilian.aio.service.exxvip.ExxvipService;
 import top.suilian.aio.service.fbsex.FbsexService;
 import top.suilian.aio.service.fchain.FChainService;
 import top.suilian.aio.service.fubt.FubtService;
+import top.suilian.aio.service.gate.GateService;
 import top.suilian.aio.service.goko.GokoService;
 import top.suilian.aio.service.golden.GoldenService;
 import top.suilian.aio.service.gwet.GwetService;
@@ -52,7 +55,6 @@ import top.suilian.aio.service.hwanc.HwancService;
 import top.suilian.aio.service.idcm.IdcmService;
 import top.suilian.aio.service.iex.IexService;
 import top.suilian.aio.service.kcoin.KcoinService;
-import top.suilian.aio.service.kucoin.KucoinParentService;
 import top.suilian.aio.service.kucoin.KucoinService;
 import top.suilian.aio.service.laex.LaexService;
 import top.suilian.aio.service.lbank.LbankService;
@@ -74,7 +76,6 @@ import top.suilian.aio.service.xoxoex.XoxoexService;
 import top.suilian.aio.service.xuebi.XuebiService;
 import top.suilian.aio.service.zb.ZbService;
 import top.suilian.aio.service.zbg.ZbgService;
-import top.suilian.aio.service.zg.ZGService;
 import top.suilian.aio.service.zg.ZGService;
 
 import javax.annotation.Resource;
@@ -242,6 +243,12 @@ public class BaseController {
     WhitebitService whitebitService;
     @Autowired
     IexService iexService;
+    @Autowired
+    GateService  gateService;
+    @Autowired
+    BifinanceService bifinanceService;
+    @Autowired
+    CoinwService coinwService;
     //endregion
 
     public int insertRobotLog(Integer robotId, String remark, Integer status) {

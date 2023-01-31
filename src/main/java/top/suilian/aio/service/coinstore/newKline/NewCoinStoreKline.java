@@ -120,7 +120,7 @@ public class NewCoinStoreKline extends CoinStoreParentService {
 
                 List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
 
-                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(4).get(0)));
+                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
                 BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
                 if (sellPri.compareTo(buyPri) == 0) {
                     //平台撮合功能失败
@@ -314,9 +314,10 @@ public class NewCoinStoreKline extends CoinStoreParentService {
 
         String trades = httpUtil.get("https://api.coinstore.com/v2/public/orderbook/market_pair?level=3&depth=5&market_pair="+exchange.get("market"));
 
+        //获取深度 判断平台撮合是否成功
         com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-        if (tradesObj != null && 0==tradesObj.getInteger("code")) {
+        if (tradesObj != null && 0==tradesObj.getInteger("code") ) {
 
             com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
 
@@ -324,7 +325,7 @@ public class NewCoinStoreKline extends CoinStoreParentService {
 
             List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
 
-            BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(4).get(0)));
+            BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
             BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
 

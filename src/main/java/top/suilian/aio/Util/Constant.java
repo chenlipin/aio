@@ -121,6 +121,13 @@ public class Constant {
     public static final int KEY_EXCHANGE_WHITEBIT=67; //whitebit
 
     public static final int KEY_EXCHANGE_IEX=68; //iex
+
+    public static final int KEY_EXCHANGE_GATE=69; //gate
+
+    public static final int KEY_EXCHANGE_BIFINANCE=70; //bifinance
+
+    public static final int KEY_EXCHANGE_COINW=71; //coinw
+
     //endregion
 
 
@@ -478,6 +485,8 @@ public class Constant {
     public static final String KEY_LOG_PATH_BTXEX_KLINE = "bthex/kline";           //playcoin日志路径 Kline 日志路径
 
     public static final String KEY_LOG_PATH_ZBG_KLINE = "zbg/kline";           //zbg日志路径 Kline 日志路径
+
+    public static final String KEY_LOG_PATH_COINW_KLINE = "coinw/kline";
 
     /**
      * bitmart 日志路径

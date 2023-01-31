@@ -78,7 +78,6 @@ public class LbankKline extends LbankParentService {
             setParam();
             setTransactionRatio();
             logger.info("设置机器人参数结束");
-
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本
@@ -346,6 +345,7 @@ public class LbankKline extends LbankParentService {
                 if (System.currentTimeMillis() - ordersleeptime > l) {
                     logger.info("开始补单子");
                     boolean type = RandomUtils.nextBoolean();
+                    ordersleeptime = System.currentTimeMillis();
                     String resultJson = submitTrade(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
                     JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
                     if (jsonObject != null && jsonObject.getInt("code") == 0) {
@@ -517,9 +517,7 @@ public class LbankKline extends LbankParentService {
                 sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
                 price = null;
             }
-
             removeSmsRedis(Constant.KEY_SMS_SMALL_INTERVAL);
-
             return price;
         }
 

@@ -10,12 +10,9 @@ import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
-import top.suilian.aio.model.WarmLog;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
-import top.suilian.aio.service.hotcoin.kline.RunHotCoinKline;
-import top.suilian.aio.service.loex.LoexParentService;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -24,7 +21,6 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @DependsOn("beanContext")

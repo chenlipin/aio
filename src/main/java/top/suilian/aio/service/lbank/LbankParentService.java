@@ -1,6 +1,5 @@
 package top.suilian.aio.service.lbank;
 
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
@@ -71,7 +70,7 @@ public class LbankParentService extends BaseService implements RobotAction {
 
 
     /**
-     * {"result":true,"data":{"order_id":"cbaa1888-d7d5-4b50-88cb-19851cd329d2"},"error_code":0,"ts":1653745632183}
+     * {"result":true,"data":{"order_id":"7166d504-8264-43d4-95fb-0dd85b1a1b76"},"error_code":0,"ts":1675057250877}
      *
      * @param type
      * @param price
@@ -452,42 +451,6 @@ public class LbankParentService extends BaseService implements RobotAction {
         return "false";
     }
 
-    public boolean setPrecision() {
-        //为client_id, ts, nonce, sign
-        boolean falg = false;
-        Map<String, String> parms = new TreeMap<>();
-        parms.put("client_id", exchange.get("apikey"));
-        String timespace = getTimespace();
-        parms.put("ts", timespace);
-        parms.put("nonce", timespace);
-        String signs = null;
-        try {
-            signs = HMAC.splicingStr(parms);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        String sign = HMAC.sha256_HMAC(signs, exchange.get("tpass"));
-        String parm = signs + "&sign=" + sign;
-        String rt = httpUtil.get(baseUrl + "/open/v1/tickers?" + parm);
-
-        JSONObject rtObj = judgeRes(rt, "code", "setPrecision");
-
-        if (!rt.equals("") && rtObj != null && rtObj.getInt("code") == 0) {
-            JSONArray jsonArray = rtObj.getJSONArray("data");
-            for (int i = 0; i < jsonArray.size(); i++) {
-                if (jsonArray.getJSONObject(i).getString("symbol").equals(exchange.get("market"))) {
-                    precision.put("amountPrecision", jsonArray.getJSONObject(i).getString("qty_num"));
-                    precision.put("pricePrecision", jsonArray.getJSONObject(i).getString("amt_num"));
-                    precision.put("minTradeLimit", exchange.get("minTradeLimit"));
-                    falg = true;
-                }
-            }
-
-        } else {
-            setTradeLog(id, "精度接口异常：" + rt, 0, "000000");
-        }
-        return falg;
-    }
 
     long epochNow() {
         return Instant.now().getEpochSecond();
