@@ -134,10 +134,11 @@ public class RunLbankKline {
                     StringWriter sw = new StringWriter();
                     e.printStackTrace(new PrintWriter(sw, true));
                     String strs = sw.toString();
+                    e.printStackTrace();
                     redisHelper.setParam("Exception_" + kline.id, strs);                    //长时间异常，发送短信给我
                     if (redisHelper.getParam(kline.id + key) == null) {
                         redisHelper.setParam(kline.id + key, String.valueOf(System.currentTimeMillis()));
-                    } else if (System.currentTimeMillis() - Long.valueOf(redisHelper.getParam(kline.id + key)) > Constant.KEY_SNS_INTERFACE_ERROR_TIME && redisHelper.getParam(kline.id + key + "_true") == null) {
+                    } else if (System.currentTimeMillis() - Long.parseLong(redisHelper.getParam(kline.id + key)) > Constant.KEY_SNS_INTERFACE_ERROR_TIME && redisHelper.getParam(kline.id + key + "_true") == null) {
                         redisHelper.setParam(kline.id + key + "_true", "true");
                         String name = redisHelper.getRobot(kline.id).getName();
                         commonUtil.sendSms(name + "异常机器人停止");

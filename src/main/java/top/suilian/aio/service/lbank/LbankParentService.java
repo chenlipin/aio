@@ -163,6 +163,43 @@ public class LbankParentService extends BaseService implements RobotAction {
     }
 
 
+    public String selectOrderS() {
+        String time = System.currentTimeMillis() + "";
+        String str = "123456789AAAHJSGIUAI" + time + RandomUtils.nextInt(50);
+        String uri = "/v2/orders_info_history.do";
+        Map<String, String> params = new TreeMap<>();
+        params.put("api_key", exchange.get("apikey"));
+        params.put("symbol", exchange.get("market"));
+        params.put("current_page", "1");
+        params.put("page_length", "+199");
+        params.put("status", "0");
+        params.put("signature_method", "HmacSHA256");
+        params.put("timestamp", time);
+        params.put("echostr", str);
+        HashMap<String, String> head = new HashMap<>();
+        head.put("signature_method", "HmacSHA256");
+        head.put("timestamp", time);
+        head.put("echostr", str);
+        String order = splicing(params);
+        logger.info("查询订单参数" + order);
+        String md5 = DigestUtils.md5Hex(order).toUpperCase();
+        String sign = HMAC.sha256_HMAC(md5, exchange.get("tpass"));
+        params.put("sign", sign);
+        String trade = null;
+        try {
+            trade = HttpUtil.post(baseUrl + uri, params, head);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        JSONObject object = JSONObject.fromObject(trade);
+        if (0 != object.getInt("error_code")) {
+            setWarmLog(id, 3, "API接口错误", object.getString("result"));
+        }
+        return trade;
+
+    }
+
+
     protected String getTradeOrders() {
         Map<String, String> parms = new TreeMap<>();
         parms.put("client_id", exchange.get("apikey"));

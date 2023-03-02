@@ -1,7 +1,6 @@
 package top.suilian.aio.service.lbank.kline;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.Constant;
@@ -259,34 +258,6 @@ public class LbankKline extends LbankParentService {
 
             sleep(st * 1000, Integer.parseInt(exchange.get("isMobileSwitch")));
         } else {
-            String trades = getDepth();
-            //获取深度 判断平台撮合是否成功
-            com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
-
-            if (tradesObj != null && tradesObj.getInteger("code") == 0) {
-                com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
-                JSONArray bids = data.getJSONArray("bids");
-                JSONArray asks = data.getJSONArray("asks");
-                BigDecimal buyPri = new BigDecimal(bids.getJSONObject(0).getString("price"));
-                BigDecimal sellPri = new BigDecimal(asks.getJSONObject(0).getString("price"));
-                BigDecimal subtract = sellPri.subtract(buyPri);
-                logger.info("补单 buy1："+buyPri +"-sell1:"+sellPri +"--subtract:"+subtract +"比例"+subtract.divide(sellPri,RoundingMode.HALF_UP).setScale(12,  RoundingMode.HALF_UP).toPlainString());
-                if (subtract.divide(sellPri,RoundingMode.HALF_UP).setScale(12,  RoundingMode.HALF_UP).compareTo(new BigDecimal("0.05"))>0){
-                    logger.info("补单开始0.05");
-                    Double numThreshold1 = Double.valueOf(exchange.get("numThreshold"));
-                    Double minNum = Double.valueOf(exchange.get("numMinThreshold"));
-                    long max = (long) (numThreshold1 * Math.pow(10, Double.parseDouble(String.valueOf(exchange.get("amountPrecision")))));
-                    long min = (long) (minNum * Math.pow(10, Double.parseDouble(String.valueOf(exchange.get("amountPrecision")))));
-                    long randNumber = min + (((long) (new Random().nextDouble() * (max - min))));
-                    BigDecimal oldNum = new BigDecimal(String.valueOf(randNumber / Math.pow(10, Double.parseDouble(String.valueOf(exchange.get("amountPrecision"))))));
-                    BigDecimal num = oldNum.multiply(new BigDecimal(transactionRatio));
-
-                    BigDecimal price = sellPri.multiply(new BigDecimal("0.95"));
-                    String resultJson1 = submitTrade( -1, price, num);
-                    setTradeLog(id, "补盘口单子 买："+buyPri+"---卖："+sellPri +"---补单价格："+price, 1);
-                    sleep(10 * 1000, Integer.parseInt(exchange.get("isMobileSwitch")));
-                }
-            }
             runTime = 0;
             List<Integer> string = new ArrayList<>();
             string.add(1);
@@ -340,6 +311,13 @@ public class LbankKline extends LbankParentService {
 
                 BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
                 BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
+                BigDecimal subtract = sellPri.subtract(buyPri);
+                if (subtract.divide(buyPri,8, RoundingMode.HALF_UP).compareTo(new BigDecimal("0.05"))>0){
+                    logger.info("差价过大补单:buyPri："+buyPri+"sellPri:"+sellPri );
+                    BigDecimal multiply = buyPri.multiply(BigDecimal.ONE.add(new BigDecimal("0.02")));
+                    String resultJson = submitTrade( -1, multiply, new BigDecimal(exchange.get("minTradeLimit")));
+                    setTradeLog(id, "差价过大补单:" + com.alibaba.fastjson.JSONObject.toJSONString(resultJson), 0);
+                }
                 long l = 1000 * 60 * 3 + (RandomUtils.nextInt(10) * 1000L);
                 logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
                 if (System.currentTimeMillis() - ordersleeptime > l) {
