@@ -1,4 +1,4 @@
-package top.suilian.aio.service.lbank.kline;
+package top.suilian.aio.service.bifinance.kline;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,9 +14,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
 @Component
-public class RunLbankKline {
+public class RunbifinanceKline {
     //region    Service
     @Autowired
     CancelExceptionService cancelExceptionService;
@@ -53,7 +52,7 @@ public class RunLbankKline {
      */
     public void init(int id) {
         //实例化策略对象
-        LbankKline kline = new LbankKline(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
+        bifinanceKline kline = new bifinanceKline(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
         redisHelper.initRobot(id);
         work = new Work(kline);
         works.add(work);
@@ -111,9 +110,9 @@ public class RunLbankKline {
     }
 
     class Work extends StopableTask<Work> {
-        LbankKline kline;
+        bifinanceKline kline;
 
-        public Work(LbankKline kline) {
+        public Work(bifinanceKline kline) {
             super(kline.id);
             this.kline = kline;
         }
@@ -134,11 +133,10 @@ public class RunLbankKline {
                     StringWriter sw = new StringWriter();
                     e.printStackTrace(new PrintWriter(sw, true));
                     String strs = sw.toString();
-                    e.printStackTrace();
                     redisHelper.setParam("Exception_" + kline.id, strs);                    //长时间异常，发送短信给我
                     if (redisHelper.getParam(kline.id + key) == null) {
                         redisHelper.setParam(kline.id + key, String.valueOf(System.currentTimeMillis()));
-                    } else if (System.currentTimeMillis() - Long.parseLong(redisHelper.getParam(kline.id + key)) > Constant.KEY_SNS_INTERFACE_ERROR_TIME && redisHelper.getParam(kline.id + key + "_true") == null) {
+                    } else if (System.currentTimeMillis() - Long.valueOf(redisHelper.getParam(kline.id + key)) > Constant.KEY_SNS_INTERFACE_ERROR_TIME && redisHelper.getParam(kline.id + key + "_true") == null) {
                         redisHelper.setParam(kline.id + key + "_true", "true");
                         String name = redisHelper.getRobot(kline.id).getName();
                         commonUtil.sendSms(name + "异常机器人停止");

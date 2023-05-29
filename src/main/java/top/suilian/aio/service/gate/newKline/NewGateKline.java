@@ -1,4 +1,4 @@
-package top.suilian.aio.service.kucoin.newKline;
+package top.suilian.aio.service.gate.newKline;
 
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
@@ -6,21 +6,19 @@ import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.kucoin.KucoinParentService;
+import top.suilian.aio.service.gate.GateParentService;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.math.RoundingMode;
+import java.util.*;
 
 import static java.math.BigDecimal.ROUND_DOWN;
 
 
 
-public class NewKucoinKline extends KucoinParentService {
-    public NewKucoinKline(
+public class NewGateKline extends GateParentService {
+    public NewGateKline(
             CancelExceptionService cancelExceptionService,
             CancelOrderService cancelOrderService,
             ExceptionMessageService exceptionMessageService,
@@ -63,8 +61,6 @@ public class NewKucoinKline extends KucoinParentService {
     private int timeSlot = 1;
     private BigDecimal tradeRatio = new BigDecimal(5);
 
-
-
     public void init() throws UnsupportedEncodingException {
 
         if (start) {
@@ -72,23 +68,10 @@ public class NewKucoinKline extends KucoinParentService {
             setParam();
             setTransactionRatio();
             if (exchange.get("tradeRatio") != null || !"0".equals(exchange.get("tradeRatio"))) {
-                Double ratio = 10 * (1 / (1 + Double.valueOf(exchange.get("tradeRatio"))));
-                tradeRatio = new BigDecimal(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
+                Double ratio = 10 * (1 / (1 + Double.parseDouble(exchange.get("tradeRatio"))));
+                tradeRatio = new BigDecimal(ratio).setScale(2, RoundingMode.HALF_UP);
             }
             logger.info("设置机器人参数结束");
-
-            logger.info("设置机器人交易规则开始");
-//            setPrecision();
-            logger.info("设置机器人交易规则结束");
-
-            /**
-             * 深度
-             */
-            if ("1".equals(exchange.get("isdeepRobot"))) {
-                logger.info("深度机器人交易开始");
-//                runHotcoinRandomDepth.init(id + 1);
-            }
-
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本
@@ -101,7 +84,7 @@ public class NewKucoinKline extends KucoinParentService {
             maxEatOrder = Integer.parseInt(exchange.get("maxEatOrder"));//吃单成交上限数
             start = false;
         }
-        int index = Integer.valueOf(new Date().getHours());
+        int index = new Date().getHours();
         //获取当前小时内的单量百分比
         transactionRatio = transactionArr[index];
         if (transactionRatio.equals("0") || transactionRatio.equals("")) {
@@ -110,20 +93,20 @@ public class NewKucoinKline extends KucoinParentService {
         logger.info("当前时间段单量百分比：" + transactionRatio);
 
         if (runTime < timeSlot) {
-            String trades = httpUtil.get(baseUrl + "/api/v1/market/orderbook/level2_5?symbol=" + exchange.get("market"));
+
+            String trades = httpUtil.get("https://data.gateapi.io/api2/1/orderBook/"+exchange.get("market") );
+
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
-            if (tradesObj != null && tradesObj.getInteger("code") == 200) {
 
+            if (tradesObj != null && "true".equals(tradesObj.getString("result")) ) {
 
-                com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
+                List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
 
-                List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
-
-                List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
+                List<List<String>> sellPrices = (List<List<String>>) tradesObj.get("asks");
 
                 BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
-                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
+                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(sellPrices.size()-1).get(0)));
 
                 if (sellPri.compareTo(buyPri) == 0) {
                     //平台撮合功能失败
@@ -201,7 +184,7 @@ public class NewKucoinKline extends KucoinParentService {
 
             setTradeLog(id, "撤单数为" + orderNum, 0, "000000");
 
-            if (Integer.valueOf(exchange.get("orderSumSwitch")) == 1) {    //防褥羊毛开关
+            if (Integer.parseInt(exchange.get("orderSumSwitch")) == 1) {    //防褥羊毛开关
                 setTradeLog(id, "停止量化撤单数设置为：" + exchange.get("orderSum"), 0, "000000");
             }
             BigDecimal price = getRandomPrice();
@@ -229,29 +212,39 @@ public class NewKucoinKline extends KucoinParentService {
 
 
             try {
-                String resultJson = submitTrade(type, price, num);
+                String resultJson = submitOrder(type, price, num);
                 JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
-                if (jsonObject != null && jsonObject.getInt("code") == 200000) {
+                if (jsonObject != null && jsonObject.getInt("code") == 0) {
 
-                    orderIdOne = jsonObject.getJSONObject("data").getString("orderId");
-                    String resultJson1 = submitTrade(type == 1 ? 2 : 1, price, num);
+                    String tradeId = jsonObject.getString("orderNumber");
+
+                    orderIdOne = tradeId;
+                    String resultJson1 = submitOrder(type == 1 ? 2 : 1, price, num);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
-                    if (jsonObject1 != null && jsonObject1.getInt("code") == 200000) {
-                        orderIdTwo = jsonObject1.getJSONObject("data").getString("orderId");
+                    if (jsonObject1 != null && jsonObject1.getInt("code") == 0) {
+                        orderIdTwo = jsonObject1.getString("orderNumber");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
 
                     } else {
-                        String res = cancelTrade(orderIdOne);
-                        setTradeLog(id, "撤单[" + orderIdOne + "]=> " + res, 0, "000000");
+                        String res = cancelTrade(tradeId);
+                        setTradeLog(id, "撤单[" + tradeId + "]=> " + res, 0, "000000");
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
-                        setCancelOrder(cancelRes, res, orderIdOne, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
+                        setCancelOrder(cancelRes, res, tradeId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                     }
-
-
                 }
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
+                if (!orderIdOne.equals("0")) {
+                    String res = cancelTrade(orderIdOne);
+                    setTradeLog(id, "撤单[" + orderIdOne + "]=> " + res, 0, "000000");
+                    logger.info("撤单" + orderIdOne + ":结果" + res);
+                }
+                if (!orderIdTwo.equals("0")) {
+                    String res = cancelTrade(orderIdTwo);
+                    setTradeLog(id, "撤单[" + orderIdTwo + "]=> " + res, 0, "000000");
+                    logger.info("撤单" + orderIdTwo + ":结果" + res);
+                }
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                 logger.info("robotId" + id + "----" + exceptionMessage);
@@ -297,7 +290,7 @@ public class NewKucoinKline extends KucoinParentService {
         }
         try {
             setBalanceRedis();
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         clearLog();
@@ -313,20 +306,16 @@ public class NewKucoinKline extends KucoinParentService {
     public BigDecimal getRandomPrice() throws UnsupportedEncodingException {
         BigDecimal price = null;
 
-        String trades = httpUtil.get(baseUrl + "/api/v1/market/orderbook/level2_20?symbol=" + exchange.get("market"));
-
-
+        String trades = httpUtil.get("https://data.gateapi.io/api2/1/orderBook/"+exchange.get("market") );
         JSONObject tradesObj = judgeRes(trades, "bids", "getRandomPrice");
 
-        if (tradesObj != null && tradesObj.getInt("code") == 200000) {
+        if (tradesObj != null && "true".equals(tradesObj.getString("result")) ) {
+            List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
 
-            JSONObject data = tradesObj.getJSONObject("data");
-            List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
-
-            List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
+            List<List<String>> sellPrices = (List<List<String>>) tradesObj.get("asks");
 
             BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
-            BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
+            BigDecimal sellPri =new BigDecimal(String.valueOf(sellPrices.get(sellPrices.size()-1).get(0)));
 
 
             BigDecimal intervalPrice = sellPri.subtract(buyPri);
@@ -339,8 +328,8 @@ public class NewKucoinKline extends KucoinParentService {
 
                 //吃堵盘口的订单
                 BigDecimal buyAmount = new BigDecimal(String.valueOf(buyPrices.get(0).get(1)));
-                BigDecimal sellAmount = new BigDecimal(String.valueOf(sellPrices.get(0).get(1)));
-                BigDecimal minAmount = new BigDecimal(exchange.get("minTradeLimit").toString());
+                BigDecimal sellAmount = new BigDecimal(String.valueOf(sellPrices.get(sellPrices.size()-1).get(1)));
+                BigDecimal minAmount = new BigDecimal(precision.get("minTradeLimit").toString());
                 if (maxEatOrder == 0) {
                     logger.info("吃单上限功能未开启：maxEatOrder=" + maxEatOrder);
                 } else if (maxEatOrder <= eatOrder) {
@@ -356,17 +345,16 @@ public class NewKucoinKline extends KucoinParentService {
                                 buyAmount = minAmount;
                             }
                             try {
-                                String sellOrder = submitTrade(2, buyPri, buyAmount);
+                                String sellOrder = submitOrder(2, buyPri, buyAmount);
                                 setTradeLog(id, "堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]", 0);
                                 logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
 
                                 JSONObject jsonObject = judgeRes(sellOrder, "code", "submitTrade");
-                                if (jsonObject != null && jsonObject.getInt("code") == 200000) {
-                                    JSONObject datas = jsonObject.getJSONObject("data");
-                                    sellOrderId = datas.getString("orderId");
+                                if (jsonObject != null && jsonObject.getInt("code") == 0) {
+                                    sellOrderId = jsonObject.getString("orderNumber");
                                 }
                                 return price;
-                            } catch (UnsupportedEncodingException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -388,17 +376,16 @@ public class NewKucoinKline extends KucoinParentService {
                                 sellAmount = minAmount;
                             }
                             try {
-                                String buyOrder = submitTrade(1, sellPri, sellAmount);
+                                String buyOrder = submitOrder(1, sellPri, sellAmount);
                                 setTradeLog(id, "堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]", 0);
                                 logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
 
                                 JSONObject jsonObject = judgeRes(buyOrder, "code", "submitTrade");
-                                if (jsonObject != null && jsonObject.getInt("code") == 200000) {
-                                    JSONObject datas = jsonObject.getJSONObject("data");
-                                    buyOrderId = datas.getString("orderId");
+                                if (jsonObject != null && jsonObject.getInt("code") == 0) {
+                                    buyOrder = jsonObject.getString("orderNumber");
                                 }
                                 return price;
-                            } catch (UnsupportedEncodingException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -412,22 +399,7 @@ public class NewKucoinKline extends KucoinParentService {
                 }
             }
 
-            if (Integer.parseInt(exchange.get("isOpenIntervalSwitch")) == 1 && intervalPrice.compareTo(new BigDecimal(exchange.get("openIntervalFromPrice"))) < 1) {
-                //刷开区间
-                if ("0".equals(exchange.get("openIntervalAllAmount")) || exchange.get("openIntervalAllAmount").trim() == null) {
-                    //刷开区间
-                    String msg = "您的" + getRobotName(this.id) + "刷开量化机器人已开启,将不计成本的刷开区间!";
-                    sendSms(msg, exchange.get("mobile"));
-                    openInterval(sellPri, buyPrices, new BigDecimal(exchange.get("openIntervalPrice")));
-                } else if (new BigDecimal(exchange.get("openIntervalAllAmount")).compareTo(intervalAmount) < 0) {
-                    setRobotArgs(id, "isOpenIntervalSwitch", "0");
-                    setTradeLog(id, "刷开区间的数量已达到最大值,停止刷开区间", 0, "000000");
-                } else {
-                    //刷开区间
 
-                    openInterval(sellPri, buyPrices, new BigDecimal(exchange.get("openIntervalPrice")));
-                }
-            }
 
             if ((buyPrice == BigDecimal.ZERO && sellPrice == BigDecimal.ZERO) || runTime == 0) {
                 buyPrice = buyPri;
@@ -519,79 +491,20 @@ public class NewKucoinKline extends KucoinParentService {
     }
 
 
-    public void openInterval(BigDecimal sellPrice, List<List<String>> allBids, BigDecimal openIntervalPrice) {
-
-        BigDecimal price;
-        for (List<String> bid : allBids) {
-
-            price = new BigDecimal(String.valueOf(bid.get(0)));
-            if (price.compareTo(sellPrice.subtract(openIntervalPrice)) < 0) {
-                break;
-            }
-            if ("0".equals(exchange.get("openIntervalAllAmount")) || exchange.get("openIntervalAllAmount") == null) {
-                logger.info("不计成本刷开区间中");
-            } else if (new BigDecimal(exchange.get("openIntervalAllAmount")).compareTo(intervalAmount.add(new BigDecimal(bid.get(1).toString()))) < 0) {
-                setRobotArgs(id, "isOpenIntervalSwitch", "0");
-                setTradeLog(id, "刷开区间的数量已达到最大值,停止刷开区间", 0, "#67c23a");
-                break;
-            }
-            //开始挂单
-            startOpenInterval(new BigDecimal(String.valueOf(bid.get(0))), new BigDecimal(String.valueOf(bid.get(1))));
-        }
-    }
-
-    private void startOpenInterval(BigDecimal buyPri, BigDecimal buyAmount) {
-        try {
-            String resultJson = submitTrade(2, buyPri, buyAmount);
-            JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
-            if (resultJson != null && jsonObject.getInt("code") == 200000) {
-                JSONObject data = jsonObject.getJSONObject("data");
-                String tradeId = data.getString("orderId");
-//                setTradeLog(id, "买一卖一区间过小，刷开区间-------------->卖单[" + buyPri + "]数量[" + buyAmount + "]", 0);
-                //查看订单详情
-                sleep(200, Integer.parseInt(exchange.get("isMobileSwitch")));
 
 
-                String str = selectOrder(tradeId);
-                JSONObject jsonObject1 = judgeRes(str, "code", "selectOrder");
-                if (jsonObject1 != null && jsonObject1.getInt("code") == 200000) {
 
-                    JSONObject data1 = jsonObject.getJSONObject("data");
-                    String  status = data.getString("isActive");
-                    if ("false".equals(status)) {
-                        setTradeLog(id, "刷开区间订单id：" + tradeId + "完全成交", 0, "#67c23a");
-                    } else if ("true".equals(status)) {
-                        setTradeLog(id, "刷开区间订单id：" + tradeId + "已撤单", 0, "#67c23a");
-                    } else {
-
-                        sleep(200, Integer.parseInt(exchange.get("isMobileSwitch")));
-                        String res = cancelTrade(tradeId);
-                        JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
-                        setCancelOrder(cancelRes, res, tradeId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
-                        setTradeLog(id, "刷开区间撤单[" + tradeId + "]=>" + res, 0, "#67c23a");
-
-                    }
-                }
-
-                intervalAmount = intervalAmount.add(buyAmount);
-                setTradeLog(id, "已使用刷开区间币量:" + intervalAmount, 0, "#67c23a");
-            }
-        } catch (UnsupportedEncodingException e) {
-            exceptionMessage = collectExceptionStackMsg(e);
-            setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
-        }
-    }
 
 
     public void selectOrderDetail(String orderId, int type) {
         try {
             String str = selectOrder(orderId);
             JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
-            if (jsonObject != null && jsonObject.getInt("code") == 200000) {
+            if (jsonObject != null && jsonObject.getInt("code") == 0) {
 
-                JSONObject data = jsonObject.getJSONObject("data");
-              String status = data.getString("isActive");
-                if ("false".equals(status)) {
+                JSONObject data = jsonObject.getJSONObject("order");
+                String status = data.getString("status");
+                if ("closed".equals(status)) {
                     setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                 } else {
                     String res = cancelTrade(orderId);

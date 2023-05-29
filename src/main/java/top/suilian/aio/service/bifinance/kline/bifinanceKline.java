@@ -1,17 +1,17 @@
-package top.suilian.aio.service.lbank.kline;
+package top.suilian.aio.service.bifinance.kline;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.lbank.LbankParentService;
+import top.suilian.aio.service.bifinance.BifinanceParentService;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,8 +19,8 @@ import java.util.Random;
 
 import static java.math.BigDecimal.ROUND_DOWN;
 
-public class LbankKline extends LbankParentService {
-    public LbankKline(
+public class bifinanceKline extends BifinanceParentService {
+    public bifinanceKline(
             CancelExceptionService cancelExceptionService,
             CancelOrderService cancelOrderService,
             ExceptionMessageService exceptionMessageService,
@@ -42,7 +42,7 @@ public class LbankKline extends LbankParentService {
         super.httpUtil = httpUtil;
         super.redisHelper = redisHelper;
         super.id = id;
-        super.logger = getLogger("citex/newkline", id);
+        super.logger = getLogger(Constant.KEY_LOG_PATH_HOO_REFER_KLINE, id);
     }
 
     private BigDecimal intervalAmount = BigDecimal.ZERO;
@@ -61,6 +61,7 @@ public class LbankKline extends LbankParentService {
 
     private String sellOrderId = "0";
     private String buyOrderId = "0";
+    private BigDecimal ordAmount;
     private String sellOrderIdtradeNo = "0";
     private String buyOrderIdtradeNo = "0";
     private int eatOrder = 0;//吃单数量
@@ -101,16 +102,13 @@ public class LbankKline extends LbankParentService {
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-            if (tradesObj != null && tradesObj.getInteger("error_code") == 0) {
+            if (tradesObj != null && tradesObj.getInteger("code") == 1) {
                 com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
+                JSONArray bids = data.getJSONArray("bids");
+                JSONArray asks = data.getJSONArray("asks");
 
-                List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
-
-                List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
-
-                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
-                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
-
+                BigDecimal buyPri = new BigDecimal(bids.getJSONObject(0).getString("trustPrice"));
+                BigDecimal sellPri = new BigDecimal(asks.getJSONObject(0).getString("trustPrice"));
 
                 if (sellPri.compareTo(buyPri) == 0) {
                     //平台撮合功能失败
@@ -147,10 +145,10 @@ public class LbankKline extends LbankParentService {
 
             if (!"0".equals(orderIdOne) && !"0".equals(orderIdTwo)) {
 
-                selectOrderDetail(orderIdOne, 1, orderIdOnetradeNo);
+                selectOrderDetail(orderIdOne, 1, null);
 
                 orderIdOne = "0";
-                selectOrderDetail(orderIdTwo, 1, orderIdTwotradeNo);
+                selectOrderDetail(orderIdTwo, 1, null);
                 orderIdTwo = "0";
 
                 String msg = "";
@@ -217,17 +215,18 @@ public class LbankKline extends LbankParentService {
                 String resultJson = submitTrade(type, price, num);
                 JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
-                if (jsonObject != null && jsonObject.getInt("error_code") == 0) {
-                    orderIdOne = jsonObject.getJSONObject("data").getString("order_id");
+                if (jsonObject != null && jsonObject.getInt("code") == 1) {
+                    orderIdOne= jsonObject.getString("data");
+                    ordAmount=num;
                     String resultJson1 = submitTrade(type == 1 ? -1 : 1, price, num);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
-                    if (jsonObject1 != null && jsonObject1.getInt("error_code") == 0) {
-                        orderIdTwo =jsonObject1.getJSONObject("data").getString("order_id");
+                    if (jsonObject1 != null && jsonObject1.getInt("code") == 1) {
+                        orderIdTwo= jsonObject1.getString("data");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
                         ordersleeptime = System.currentTimeMillis();
                     } else {
-                        String res = cancelTrade(orderIdOne);
+                        String res = cancelTrade(orderIdOne, null);
                         setTradeLog(id, "撤单[" + orderIdOne + "]=> " + res, 0, "000000");
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, orderIdOne, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
@@ -235,12 +234,12 @@ public class LbankKline extends LbankParentService {
                 }
             } catch (Exception e) {
                 if (!orderIdOne.equals("0")) {
-                    String res = cancelTrade(orderIdOne);
+                    String res = cancelTrade(orderIdOne, null);
                     setTradeLog(id, "撤单[" + orderIdOne + "]=> " + res, 0, "000000");
                     logger.info("撤单" + orderIdOne + ":结果" + res);
                 }
                 if (!orderIdTwo.equals("0")) {
-                    String res = cancelTrade(orderIdTwo);
+                    String res = cancelTrade(orderIdTwo, null);
                     setTradeLog(id, "撤单[" + orderIdTwo + "]=> " + res, 0, "000000");
                     logger.info("撤单" + orderIdTwo + ":结果" + res);
                 }
@@ -302,22 +301,13 @@ public class LbankKline extends LbankParentService {
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-            if (tradesObj != null && tradesObj.getInteger("error_code") == 0) {
+            if (tradesObj != null && tradesObj.getInteger("code") ==1) {
                 com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
+                JSONArray bids = data.getJSONArray("bids");
+                JSONArray asks = data.getJSONArray("asks");
 
-                List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
-
-                List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
-
-                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
-                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
-                BigDecimal subtract = sellPri.subtract(buyPri);
-                if (subtract.divide(buyPri,8, RoundingMode.HALF_UP).compareTo(new BigDecimal("0.05"))>0){
-                    logger.info("差价过大补单:buyPri："+buyPri+"sellPri:"+sellPri );
-                    BigDecimal multiply = buyPri.multiply(BigDecimal.ONE.add(new BigDecimal("0.02")));
-                    String resultJson = submitTrade( -1, multiply, new BigDecimal(exchange.get("minTradeLimit")));
-                    setTradeLog(id, "差价过大补单:" + com.alibaba.fastjson.JSONObject.toJSONString(resultJson), 0);
-                }
+                BigDecimal buyPri = new BigDecimal(bids.getJSONObject(0).getString("trustPrice"));
+                BigDecimal sellPri = new BigDecimal(asks.getJSONObject(0).getString("trustPrice"));
                 long l = 1000 * 60 * 3 + (RandomUtils.nextInt(10) * 1000L);
                 logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
                 if (System.currentTimeMillis() - ordersleeptime > l) {
@@ -326,12 +316,8 @@ public class LbankKline extends LbankParentService {
                     ordersleeptime = System.currentTimeMillis();
                     String resultJson = submitTrade(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
                     JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
-                    if (jsonObject != null && jsonObject.getInt("code") == 0) {
-                        JSONObject data1 = jsonObject.getJSONObject("data");
-                        orderIdTwo = data1.getString("order_id");
-                        orderIdTwotradeNo = data1.getString("trade_no");
+                    if (jsonObject != null && jsonObject.getInt("code") == 1) {
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
-                        ordersleeptime = System.currentTimeMillis();
                         logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
                     }
                 }
@@ -344,8 +330,8 @@ public class LbankKline extends LbankParentService {
                 if ("1".equals(exchange.get("isTradeCheck"))) {
 
                     //吃堵盘口的订单
-                    BigDecimal buyAmount =new BigDecimal(String.valueOf(buyPrices.get(0).get(1)));
-                    BigDecimal sellAmount = new BigDecimal(String.valueOf(sellPrices.get(0).get(1)));
+                    BigDecimal buyAmount = new BigDecimal(bids.getJSONObject(0).getString("lastNumber"));
+                    BigDecimal sellAmount = new BigDecimal(asks.getJSONObject(0).getString("lastNumber"));
                     BigDecimal minAmount = new BigDecimal(exchange.get("minTradeLimit").toString());
                     if (maxEatOrder == 0) {
                         logger.info("吃单上限功能未开启：maxEatOrder=" + maxEatOrder);
@@ -366,9 +352,10 @@ public class LbankKline extends LbankParentService {
                                     setTradeLog(id, "堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]", 0);
                                     logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
 
-                                    JSONObject jsonObject = judgeRes(sellOrder, "error_code", "submitTrade");
-                                    if (jsonObject != null && jsonObject.getInt("error_code") == 200) {
-                                        sellOrderId = jsonObject.getJSONObject("data").getString("order_id");
+                                    JSONObject jsonObject = judgeRes(sellOrder, "code", "submitTrade");
+                                    if (jsonObject != null && jsonObject.getInt("code") == 1) {
+                                        sellOrderId = jsonObject.getString("data");
+
                                     }
                                     return price;
                                 } catch (Exception e) {
@@ -391,13 +378,14 @@ public class LbankKline extends LbankParentService {
                                     sellAmount = minAmount;
                                 }
                                 try {
-                                    String buyOrder = submitTrade(1, sellPri, sellAmount);
+                                    String buyOrders = submitTrade(1, sellPri, sellAmount);
                                     setTradeLog(id, "堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]", 0);
                                     logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
 
-                                    JSONObject jsonObject = judgeRes(buyOrder, "error_code", "submitTrade");
-                                    if (jsonObject != null && jsonObject.getInt("error_code") == 0) {
-                                        orderIdOne = jsonObject.getJSONObject("data").getString("order_id");
+                                    JSONObject jsonObject = judgeRes(buyOrders, "code", "submitTrade");
+                                    if (jsonObject != null && jsonObject.getInt("code") == 1) {
+                                        buyOrderId = jsonObject.getString("data");
+
                                     }
                                     return price;
                                 } catch (Exception e) {
@@ -495,25 +483,20 @@ public class LbankKline extends LbankParentService {
                 sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
                 price = null;
             }
+
             removeSmsRedis(Constant.KEY_SMS_SMALL_INTERVAL);
+
             return price;
         }
 
         public void selectOrderDetail (String orderId,int type, String orderIdtradeNo){
             try {
-                String str = selectOrder(orderId);
-                JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
-                if (jsonObject != null && jsonObject.getInt("error_code") == 0) {
-
-                    JSONObject data = jsonObject.getJSONArray("data").getJSONObject(0);
-                    int status = data.getInt("status");
-                    if (status == 2) {
+                BigDecimal bigDecimal = selectOrder(orderId);
+                if (bigDecimal .compareTo(ordAmount)>=0) {
                         setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
-                    } else if (status == -1) {
-                        setTradeLog(id, "订单id：" + orderId + "已撤单", 0, "#67c23a");
-                    } else {
-                        String res = cancelTrade(orderId);
-                        JSONObject cancelRes = judgeRes(res, "error_code", "cancelTrade");
+                    }  else {
+                        String res = cancelTrade(orderId, null);
+                        JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                         setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");
                         if (Integer.parseInt(exchange.get("orderSumSwitch")) == 1 && type == 1) {    //防褥羊毛开关
@@ -522,8 +505,6 @@ public class LbankKline extends LbankParentService {
                         }
                     }
 
-
-                }
             } catch (Exception e) {
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));

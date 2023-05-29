@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import top.suilian.aio.Util.CommonUtil;
-import top.suilian.aio.Util .Constant;
+import top.suilian.aio.Util.Constant;
 import top.suilian.aio.model.request.OperationRequest;
-import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -237,6 +236,15 @@ public class ServiceController extends BaseController {
                     case Constant.KEY_EXCHANGE_IEX:             //iex
                         iexService.start(operationRequest.getId(), operationRequest.getType());
                         break;
+                    case Constant.KEY_EXCHANGE_GATE:             //gate
+                        gateService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
+                    case Constant.KEY_EXCHANGE_BIFINANCE:             //bifinance
+                        bifinanceService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
+                    case Constant.KEY_EXCHANGE_COINW:             //coinw
+                        coinwService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
                 }
                 if (operationRequest.getCategory() == 1) {
                     insertRobotLog(operationRequest.getId(), "重启机器人", Constant.KEY_STATUS_RESTART);
@@ -450,8 +458,14 @@ public class ServiceController extends BaseController {
                 case Constant.KEY_EXCHANGE_WHITEBIT:             //whitebit
                     whitebitService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
-                case Constant.KEY_EXCHANGE_IEX:             //iex
-                    iexService.stop(operationRequest.getId(), operationRequest.getType());
+                case Constant.KEY_EXCHANGE_GATE:             //gate
+                    gateService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_BIFINANCE:             //gate
+                    bifinanceService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_COINW:             //coinw
+                    coinwService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {
@@ -664,6 +678,15 @@ public class ServiceController extends BaseController {
                     break;
                 case Constant.KEY_EXCHANGE_IEX:             //iex
                     iexService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_GATE:             //gate
+                    gateService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_BIFINANCE:             //gate
+                    bifinanceService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_COINW:             //coinw
+                    coinwService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {

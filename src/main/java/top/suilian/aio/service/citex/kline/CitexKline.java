@@ -336,21 +336,6 @@ public class CitexKline extends CitexParentService {
                 BigDecimal buyPri = new BigDecimal(bids.getJSONObject(0).getString("price"));
                 BigDecimal sellPri = new BigDecimal(asks.getJSONObject(0).getString("price"));
                 long l = 1000 * 60 * 3 + (RandomUtils.nextInt(10) * 1000L);
-                logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
-                if (System.currentTimeMillis() - ordersleeptime > l) {
-                    logger.info("开始补单子");
-                    boolean type = RandomUtils.nextBoolean();
-                    String resultJson = submitTrade(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
-                    JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
-                    if (jsonObject != null && jsonObject.getInt("code") == 0) {
-                        JSONObject data1 = jsonObject.getJSONObject("data");
-                        orderIdTwo = data1.getString("order_id");
-                        orderIdTwotradeNo = data1.getString("trade_no");
-                        removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
-                        ordersleeptime = System.currentTimeMillis();
-                        logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
-                    }
-                }
                 BigDecimal intervalPrice = sellPri.subtract(buyPri);
 
                 logger.info("robotId" + id + "----" + "最新买一：" + buyPri + "，最新卖一：" + sellPri);

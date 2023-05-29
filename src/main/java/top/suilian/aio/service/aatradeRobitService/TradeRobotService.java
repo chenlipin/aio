@@ -16,10 +16,10 @@ import top.suilian.aio.dao.RobotMapper;
 import top.suilian.aio.model.ApitradeLog;
 import top.suilian.aio.model.Member;
 import top.suilian.aio.model.Robot;
-import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.bibox.BiboxParentService;
+import top.suilian.aio.service.bifinance.BifinanceParentService;
 import top.suilian.aio.service.bision.BisionParentService;
 import top.suilian.aio.service.bithumb.BithumbParentService;
 import top.suilian.aio.service.bitmart.BitMartParentService;
@@ -27,11 +27,11 @@ import top.suilian.aio.service.bitrue.BitrueParentService;
 import top.suilian.aio.service.bitterex.BitterexParentService;
 import top.suilian.aio.service.bkex.coinnoe.BkexParentService;
 import top.suilian.aio.service.citex.CitexParentService;
-import top.suilian.aio.service.citex.kline.CitexKline;
 import top.suilian.aio.service.coinnoe.CoinnoeParentService;
 import top.suilian.aio.service.coinstore.CoinStoreParentService;
-import top.suilian.aio.service.coinstore.CoinStoreService;
+import top.suilian.aio.service.coinw.CoinwParentService;
 import top.suilian.aio.service.digifinex.DigifinexParentService;
+import top.suilian.aio.service.gate.GateParentService;
 import top.suilian.aio.service.hoo.HooParentService;
 import top.suilian.aio.service.hotcoin.HotCoinParentService;
 import top.suilian.aio.service.iex.IexParentService;
@@ -42,7 +42,6 @@ import top.suilian.aio.service.mxc.MxcParentService;
 import top.suilian.aio.service.skiesex.SkiesexParentService;
 import top.suilian.aio.service.wbfex.WbfexParentService;
 import top.suilian.aio.service.whitebit.WhitebitParentService;
-import top.suilian.aio.service.whitebit.WhitebitService;
 import top.suilian.aio.service.zb.ZbParentService;
 import top.suilian.aio.service.zbg.ZbgParentService;
 import top.suilian.aio.service.zg.ZGParentService;
@@ -217,6 +216,15 @@ public class TradeRobotService {
             case Constant.KEY_EXCHANGE_IEX:
                 robotAction = new IexParentService();
                 break;
+            case Constant.KEY_EXCHANGE_GATE:
+                robotAction = new GateParentService();
+                break;
+            case Constant.KEY_EXCHANGE_BIFINANCE:
+                robotAction = new BifinanceParentService();
+                break;
+            case Constant.KEY_EXCHANGE_COINW:
+                robotAction=new CoinwParentService();
+                break;
             default:
                 return null;
         }
@@ -233,7 +241,6 @@ public class TradeRobotService {
         if (!checkSignature) {
 //            throw new RuntimeException("Signature失败");
         }
-
         map.remove(req.getRobotId());
     }
 

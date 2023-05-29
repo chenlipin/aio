@@ -1,47 +1,91 @@
     package top.suilian.aio.Util;
 
 
-import com.alibaba.fastjson.JSON;
-import net.sf.json.JSONObject;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import java.net.HttpURLConnection;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.*;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.CharArrayBuffer;
-import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Component;
+    import com.alibaba.fastjson.JSON;
+    import net.sf.json.JSONObject;
+    import org.apache.http.*;
+    import org.apache.http.client.ClientProtocolException;
+    import org.apache.http.client.config.RequestConfig;
+    import org.apache.http.client.entity.UrlEncodedFormEntity;
+    import org.apache.http.client.methods.*;
+    import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+    import org.apache.http.entity.ContentType;
+    import org.apache.http.entity.StringEntity;
+    import org.apache.http.entity.mime.HttpMultipartMode;
+    import org.apache.http.entity.mime.MultipartEntityBuilder;
+    import org.apache.http.entity.mime.content.StringBody;
+    import org.apache.http.impl.client.CloseableHttpClient;
+    import org.apache.http.impl.client.DefaultHttpClient;
+    import org.apache.http.impl.client.HttpClientBuilder;
+    import org.apache.http.impl.client.HttpClients;
+    import org.apache.http.message.BasicNameValuePair;
+    import org.apache.http.util.CharArrayBuffer;
+    import org.apache.http.util.EntityUtils;
+    import org.apache.log4j.Logger;
+    import org.springframework.stereotype.Component;
 
-import java.net.URLEncoder;
-import java.security.cert.X509Certificate;
-
-import javax.net.ssl.X509TrustManager;
-import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.util.*;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import java.util.Map.Entry;
-import javax.net.ssl.X509TrustManager;
-import org.apache.http.client.config.RequestConfig;
+    import javax.net.ssl.SSLContext;
+    import javax.net.ssl.TrustManager;
+    import javax.net.ssl.X509TrustManager;
+    import java.io.*;
+    import java.net.HttpURLConnection;
+    import java.net.URL;
+    import java.net.URLConnection;
+    import java.net.URLEncoder;
+    import java.security.KeyManagementException;
+    import java.security.NoSuchAlgorithmException;
+    import java.security.cert.X509Certificate;
+    import java.util.*;
+    import java.util.Map.Entry;
 
 @Component
 public class HttpUtil {
     private static Logger logger = Logger.getLogger(HttpUtil.class);
+
+
+    public static String doPostFormData(String url, Map<String, String> paramMap) {
+        // 创建Http实例
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        // 创建HttpPost实例
+        HttpPost httpPost = new HttpPost(url);
+
+        // 请求参数配置
+        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(60000).setConnectTimeout(60000)
+                .setConnectionRequestTimeout(10000).build();
+        httpPost.setConfig(requestConfig);
+
+        try {
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.setCharset(java.nio.charset.Charset.forName("UTF-8"));
+            builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+            for(Map.Entry<String, String> entry: paramMap.entrySet()) {
+                builder.addPart(entry.getKey(),new StringBody(entry.getValue(), ContentType.create("text/plain", Consts.UTF_8)));
+            }
+
+            HttpEntity entity = builder.build();
+            httpPost.setEntity(entity);
+            HttpResponse response = httpClient.execute(httpPost);// 执行提交
+
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                // 返回
+                String res = EntityUtils.toString(response.getEntity(), java.nio.charset.Charset.forName("UTF-8"));
+                return res;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("调用HttpPost失败！" + e.toString());
+        } finally {
+            if (httpClient != null) {
+                try {
+                    httpClient.close();
+                } catch (IOException e) {
+                    logger.error("关闭HttpPost连接失败！");
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * post请求，参数为json字符串
@@ -333,7 +377,7 @@ public class HttpUtil {
         post.setConfig(config);
         UrlEncodedFormEntity entityParam = new UrlEncodedFormEntity(list, "UTF-8");
         post.setEntity(entityParam);
-        post.addHeader("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.6)");
+//        post.addHeader("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.6)");
         boolean contentType = true;
         for (String key : headers.keySet()) {
             if ("Content-Type".equals(key)) {
@@ -494,6 +538,50 @@ public class HttpUtil {
             post.setHeader("Content-type", "application/x-www-form-urlencoded");
             post.setHeader("User-Agent","Mozilla/5.0(Windows;U;Windows NT 5.1;en-US;rv:0.9.4)");
             post.addHeader("X-MBX-APIKEY", apiKey);
+            post.setEntity(s);
+            response = httpclient.execute(post);
+            if (response != null && response.getStatusLine().getStatusCode() == 200) {
+                result = EntityUtils.toString(response.getEntity());// 返回json格式：
+            } else {
+                result = EntityUtils.toString(response.getEntity());
+            }
+            return result;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                httpclient.close();
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+    public String doPostgate(String url, String json,  HashMap<String, String> headers) {
+        CloseableHttpClient httpclient = HttpClientBuilder.create().build();
+        RequestConfig config = RequestConfig.custom().setConnectTimeout(35000) //连接超时时间
+                .setConnectionRequestTimeout(35000) //从连接池中取的连接的最长时间
+                .setSocketTimeout(60000) //数据传输的超时时间
+                .build();
+        HttpPost post = new HttpPost(url);
+        post.setConfig(config);
+        String result = null;
+        CloseableHttpResponse response = null;
+        try {
+            StringEntity s = new StringEntity(json, "utf-8");
+            s.setContentEncoding("UTF-8");
+            post.setHeader("Content-type", "application/x-www-form-urlencoded");
+            post.setHeader("User-Agent","Mozilla/5.0(Windows;U;Windows NT 5.1;en-US;rv:0.9.4)");
+            for (String key : headers.keySet()) {
+                post.addHeader(key, headers.get(key));
+            }
             post.setEntity(s);
             response = httpclient.execute(post);
             if (response != null && response.getStatusLine().getStatusCode() == 200) {
@@ -993,6 +1081,60 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
         post.setEntity(body);
         post.addHeader("Content-Type", "application/json");
         boolean contentType = true;
+        if (headers!=null) {
+            for (String key : headers.keySet()) {
+                if ("Content-Type".equals(key)) {
+                    contentType = false;
+                }
+                post.addHeader(key, headers.get(key));
+            }
+        }
+        CloseableHttpResponse response = null;
+        try {
+            response = httpClient.execute(post);
+            if (response != null && response.getStatusLine().getStatusCode() != 2000) {
+                HttpEntity entity = response.getEntity();
+                result = entityToString(entity);
+            }
+            return result;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                httpClient.close();
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public String postByPackcoin1(String url, Map<String, Object> params, HashMap<String, String> headers) throws UnsupportedEncodingException {
+        List<NameValuePair> list = new LinkedList<>();
+        for (String key : params.keySet()) {
+            BasicNameValuePair param1 = new BasicNameValuePair(key, String.valueOf(params.get(key)));
+            list.add(param1);
+        }
+        StringEntity body = new StringEntity(JSON.toJSONString(params), "utf-8");
+        String result = null;
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        RequestConfig config = RequestConfig.custom().setConnectTimeout(35000) //连接超时时间
+                .setConnectionRequestTimeout(35000) //从连接池中取的连接的最长时间
+                .setSocketTimeout(60000) //数据传输的超时时间
+                .build();
+        HttpPost post = new HttpPost(url);
+        post.setConfig(config);
+        // UrlEncodedFormEntity entityParam = new UrlEncodedFormEntity(list, "UTF-8");
+        post.setEntity(body);
+        post.addHeader("Content-Type", "application/json");
+        boolean contentType = true;
         for (String key : headers.keySet()) {
             if ("Content-Type".equals(key)) {
                 contentType = false;
@@ -1025,6 +1167,7 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
         }
         return null;
     }
+
 
     public String doPostMart(String url, String json,Map<String,String> map) {
         CloseableHttpClient httpclient = HttpClientBuilder.create().build();

@@ -2,8 +2,8 @@ package top.suilian.aio.service.bitmart.newKline;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.serializer.SerializeFilter;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.context.annotation.DependsOn;
 import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
@@ -15,7 +15,10 @@ import top.suilian.aio.service.bitmart.RandomDepth.RunBitMartRandomDepth;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 import static java.math.BigDecimal.ROUND_DOWN;
 
@@ -65,6 +68,7 @@ public class NewBitMartKline extends BitMartParentService {
     private BigDecimal tradeRatio=new BigDecimal(5);
 
     public RunBitMartRandomDepth runBitMartRandomDepth = BeanContext.getBean(RunBitMartRandomDepth.class);
+    long ordersleeptime = System.currentTimeMillis();
 
     public void init() throws UnsupportedEncodingException {
 
@@ -228,7 +232,6 @@ public class NewBitMartKline extends BitMartParentService {
 
                     JSONObject data = jsonObject.getJSONObject("data");
                     String tradeId = data.getString("order_id");
-
                     orderIdOne = tradeId;
                     String resultJson1 = submitTrade(type == 1 ? 2 : 1, price, num);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
@@ -237,7 +240,7 @@ public class NewBitMartKline extends BitMartParentService {
                         JSONObject data1 = jsonObject1.getJSONObject("data");
                         orderIdTwo = data1.getString("order_id");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
-
+                        ordersleeptime = System.currentTimeMillis();
                     } else {
                         String res = cancelTrade(tradeId);
                         setTradeLog(id, "撤单[" + tradeId + "]=> " + res, 0, "000000");
@@ -322,12 +325,38 @@ public class NewBitMartKline extends BitMartParentService {
             BigDecimal buyPri = new BigDecimal(JSONObject.fromObject(buys).getString("price"));
             BigDecimal sellPri = new BigDecimal(JSONObject.fromObject(sell).getString("price"));
 
-
+            long l = 1000 * 60 * 3 + (RandomUtils.nextInt(10) * 1000L);
+            logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
+            if (System.currentTimeMillis() - ordersleeptime > l) {
+                logger.info("开始补单子");
+                boolean type = RandomUtils.nextBoolean();
+                ordersleeptime = System.currentTimeMillis();
+                String resultJson = submitTrade(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
+                JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
+                if (jsonObject != null && jsonObject.getInt("code") == 1000) {
+                    JSONObject data1 = jsonObject.getJSONObject("data");
+                    data1.getString("order_id");
+                    removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
+                    logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
+                }
+            }
             BigDecimal intervalPrice = sellPri.subtract(buyPri);
 
             logger.info("robotId" + id + "----" + "最新买一：" + buyPri + "，最新卖一：" + sellPri);
             logger.info("robotId" + id + "----" + "当前买一卖一差值：" + intervalPrice);
-
+            if(intervalPrice.compareTo(buyPri.multiply(new BigDecimal("0.02")))>0){
+                logger.info("补单子，当前买一"+buyPri+"卖一"+sellPri+"当前买一卖一差值:"+intervalPrice);
+                BigDecimal multiply = buyPri.multiply(new BigDecimal("1.015"));
+                Double numThreshold1 = Double.valueOf(exchange.get("numThreshold"));
+                Double minNum = Double.valueOf(exchange.get("numMinThreshold"));
+                long max = (long) (numThreshold1 * Math.pow(10, Double.parseDouble(String.valueOf(precision.get("amountPrecision")))));
+                long min = (long) (minNum * Math.pow(10, Double.parseDouble(String.valueOf(precision.get("amountPrecision")))));
+                long randNumber = min + (((long) (new Random().nextDouble() * (max - min))));
+                BigDecimal oldNum = new BigDecimal(String.valueOf(randNumber / Math.pow(10, Double.parseDouble(String.valueOf(precision.get("amountPrecision"))))));
+                String resultJson = submitTrade(-1, multiply, oldNum);
+                setTradeLog(id, "补盘口单子-----------------价格>" + multiply + "数量：oldNum", 1);
+                return null;
+            }
             //判断盘口买卖检测开关是否开启
             if ("1".equals(exchange.get("isTradeCheck"))) {
 
