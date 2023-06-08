@@ -61,6 +61,7 @@ import top.suilian.aio.service.lbank.LbankService;
 import top.suilian.aio.service.loex.LoexService;
 import top.suilian.aio.service.mxc.MxcService;
 import top.suilian.aio.service.nine9ex.Nine9ExService;
+import top.suilian.aio.service.ok.OkService;
 import top.suilian.aio.service.pcas.PcasService;
 import top.suilian.aio.service.pickcoin.PickcoinService;
 import top.suilian.aio.service.playcoin.PlayCoinService;
@@ -249,6 +250,10 @@ public class BaseController {
     BifinanceService bifinanceService;
     @Autowired
     CoinwService coinwService;
+
+
+    @Autowired
+    OkService okService;
     //endregion
 
     public int insertRobotLog(Integer robotId, String remark, Integer status) {

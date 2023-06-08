@@ -1,10 +1,8 @@
 package top.suilian.aio.service.pickcoin;
 
 import com.alibaba.fastjson.JSON;
-import com.mysql.cj.xdevapi.JsonArray;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.commons.codec.digest.DigestUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.model.RobotArgs;
@@ -12,7 +10,9 @@ import top.suilian.aio.service.BaseService;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class PickcoinParentService extends BaseService {
@@ -64,8 +64,8 @@ public class PickcoinParentService extends BaseService {
         logger.info("robotId:" + id + "robotId:" + id + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
         String trade = null;
 
-        BigDecimal price1 = nN(price, Integer.valueOf(precision.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.valueOf(precision.get("amountPrecision").toString()));
+        BigDecimal price1 = nN(price, Integer.parseInt(precision.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.parseInt(precision.get("amountPrecision").toString()));
         Double minTradeLimit = Double.valueOf(String.valueOf(precision.get("minTradeLimit")));
 
         if (num.compareTo(BigDecimal.valueOf(minTradeLimit)) >= 0) {
@@ -355,13 +355,8 @@ public class PickcoinParentService extends BaseService {
         return time;
     }
     public String gettime(){
-        String res = httpUtil.get(baseUrl + "/api/general/v3/time");
-        JSONObject jsonObject = judgeRes(res, "iso", "gettime");
-        if(jsonObject!=null ) {
-            return jsonObject.getString("iso");
-        }else {
-            return null;
-        }
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        return now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
     }
 
     public String getPrecision(String num) {

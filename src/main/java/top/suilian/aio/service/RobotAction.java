@@ -2,7 +2,6 @@
 package top.suilian.aio.service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -14,7 +13,7 @@ public interface RobotAction {
      * @param amount 数量
      * @return 单号
      */
-    Map<String,String>  submitOrderStr(int type, BigDecimal price, BigDecimal amount);
+    Map<String,String>  submitOrderStr(int type, BigDecimal price, BigDecimal amount)  ;
 
 
     /**

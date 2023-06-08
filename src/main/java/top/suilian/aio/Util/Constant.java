@@ -128,6 +128,8 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_COINW=71; //coinw
 
+    public static final int KEY_EXCHANGE_OK=72; //ok
+
     //endregion
 
 

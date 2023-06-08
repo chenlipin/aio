@@ -90,6 +90,28 @@ public class CoinwParentService extends BaseService implements RobotAction {
     }
 
 
+    public String noOreder() {
+        String trade = null;
+        Map<String, String> params = new TreeMap<String, String>();
+        params.put("api_key", exchange.get("apikey"));
+        params.put("currencyPair", exchange.get("market"));
+        String sign = sign(params);
+        params.put("sign", sign);
+        logger.info("robotId" + id + "----" + "撤去所有订单响应：" + params);
+        try {
+            trade = HttpUtil.doPostFormData(url + "private?command=cancelAllOrder", params);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        JSONObject rt = JSONObject.fromObject(trade);
+        if (200 != rt.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", rt.getString("msg"));
+            logger.info("robotId" + id + "----" + "撤去所有订单响应：" + trade);
+        }
+        return trade;
+    }
+
+
     /**
      * 查询订单详情
      *
