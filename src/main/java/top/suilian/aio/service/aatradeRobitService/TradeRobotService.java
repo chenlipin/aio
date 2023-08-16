@@ -39,6 +39,7 @@ import top.suilian.aio.service.kucoin.KucoinParentService;
 import top.suilian.aio.service.lbank.LbankParentService;
 import top.suilian.aio.service.loex.LoexParentService;
 import top.suilian.aio.service.mxc.MxcParentService;
+import top.suilian.aio.service.ok.OkParentService;
 import top.suilian.aio.service.skiesex.SkiesexParentService;
 import top.suilian.aio.service.wbfex.WbfexParentService;
 import top.suilian.aio.service.whitebit.WhitebitParentService;
@@ -224,6 +225,9 @@ public class TradeRobotService {
                 break;
             case Constant.KEY_EXCHANGE_COINW:
                 robotAction=new CoinwParentService();
+                break;
+            case Constant.KEY_EXCHANGE_OK:
+                robotAction=new OkParentService();
                 break;
             default:
                 return null;

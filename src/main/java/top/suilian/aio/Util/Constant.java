@@ -419,6 +419,9 @@ public class Constant {
     public static final String KEY_LOG_PATH_MXC_KLINE = "mxc/kline";           //mxc日志路径 Kline 日志路径
     public static final String KEY_LOG_PATH_MXC_DEPTH = "mxc/depth";
     public static final String KEY_LOG_PATH_MXC_REPLENLISGH = "mxc/replenish";
+
+
+    public static final String KEY_LOG_PATH_GTE_REPLENLISGH = "gate/replenish";
     /**
      * 99ex日志路径
      */

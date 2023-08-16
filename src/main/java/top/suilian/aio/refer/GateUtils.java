@@ -38,7 +38,7 @@ public class GateUtils extends BaseHttp {
      * @return
      */
 
-    public static HashMap<String, Map<String,String>> getDepth(String symbol) {
+    public static HashMap<String, Map<String,String>> getDepth(String symbol,int deepNum) {
         HashMap<String, Map<String,String>> depth = new HashMap<>();
         Map<String,String> bids= new LinkedHashMap<>();
        Map<String,String> asks= new LinkedHashMap<>();
@@ -46,7 +46,32 @@ public class GateUtils extends BaseHttp {
         String trades = get("https://data.gateio.life/api2/1/orderBook/" +symbol);
         JSONObject tradesObj = JSONObject.fromObject(trades);
 
-        if (!"".equals(trades) && trades != null && !trades.isEmpty() && tradesObj != null) {
+        if (trades != null && !trades.isEmpty() && tradesObj != null) {
+            JSONArray bidsJson=tradesObj.getJSONArray("bids");
+            JSONArray asksJson=tradesObj.getJSONArray("asks");
+            for(int i=0;i<bidsJson.size()&&i<deepNum;i++){
+                bids.put(String.valueOf(bidsJson.getJSONArray(i).get(0)),String.valueOf(bidsJson.getJSONArray(i).get(1)));
+            }
+            depth.put("bids",bids);
+
+            for(int i=asksJson.size()-1,j=0;i>-1&&j<deepNum;i--,j++){
+                asks.put(String.valueOf(asksJson.getJSONArray(i).get(0)),String.valueOf(asksJson.getJSONArray(i).get(1)));
+            }
+            depth.put("asks",asks);
+
+        }
+        return depth;
+    }
+
+    public static HashMap<String, Map<String,String>> getDepth(String symbol) {
+        HashMap<String, Map<String,String>> depth = new HashMap<>();
+        Map<String,String> bids= new LinkedHashMap<>();
+        Map<String,String> asks= new LinkedHashMap<>();
+
+        String trades = get("https://data.gateio.life/api2/1/orderBook/" +symbol);
+        JSONObject tradesObj = JSONObject.fromObject(trades);
+
+        if (trades != null && !trades.isEmpty() && tradesObj != null) {
             JSONArray bidsJson=tradesObj.getJSONArray("bids");
             JSONArray asksJson=tradesObj.getJSONArray("asks");
             for(int i=0;i<bidsJson.size();i++){
@@ -54,7 +79,7 @@ public class GateUtils extends BaseHttp {
             }
             depth.put("bids",bids);
 
-            for(int i=asksJson.size()-1;i>-1;i--){
+            for(int i=asksJson.size()-1,j=0;i>-1;i--,j++){
                 asks.put(String.valueOf(asksJson.getJSONArray(i).get(0)),String.valueOf(asksJson.getJSONArray(i).get(1)));
             }
             depth.put("asks",asks);

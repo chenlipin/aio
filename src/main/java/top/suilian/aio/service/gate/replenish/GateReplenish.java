@@ -1,4 +1,4 @@
-package top.suilian.aio.service.mxc.replenish;
+package top.suilian.aio.service.gate.replenish;
 
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
@@ -9,17 +9,16 @@ import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.Util.RandomUtilsme;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.mxc.MxcParentService;
+import top.suilian.aio.service.gate.GateParentService;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class MxcReplenish extends MxcParentService {
-    public MxcReplenish(
+public class GateReplenish extends GateParentService {
+    public GateReplenish(
             CancelExceptionService cancelExceptionService,
             CancelOrderService cancelOrderService,
             ExceptionMessageService exceptionMessageService,
@@ -41,7 +40,7 @@ public class MxcReplenish extends MxcParentService {
         super.httpUtil = httpUtil;
         super.redisHelper = redisHelper;
         super.id = id;
-        super.logger = getLogger(Constant.KEY_LOG_PATH_MXC_REPLENLISGH, id);
+        super.logger = getLogger(Constant.KEY_LOG_PATH_GTE_REPLENLISGH, id);
     }
 
     boolean start = true;
@@ -70,27 +69,19 @@ public class MxcReplenish extends MxcParentService {
         }
         int i1 = RandomUtils.nextInt(5);
         if(2==i1){
-            try {
-                setBalanceRedis();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            setBalanceRedis();
         }
         String trades = getDepth();
-        JSONObject tradesObj = judgeRes(trades, "code", "getRandomPrice");
+        JSONObject tradesObj = judgeRes(trades, "result", "getRandomPrice");
 
-        if (trades != null && !trades.isEmpty() && tradesObj != null) {
+        if (trades != null && !trades.isEmpty() && tradesObj != null&&"true".equals(tradesObj.getString("result"))) {
 
-            JSONObject result = tradesObj.getJSONObject("data");
+            List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
 
-            List<JSONObject> buyPrices = (List<JSONObject>) result.get("bids");
+            List<List<String>> sellPrices = (List<List<String>>) tradesObj.get("asks");
 
-            List<JSONObject> sellPrices = (List<JSONObject>) result.get("asks");
-
-            BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).getString("price")));
-            BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).getString("price")));
-
-
+            BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+            BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(sellPrices.size()-1).get(0)));
 
             if (sellPri.compareTo(buyPri) <= 0) {
                 //平台撮合功能失败
@@ -133,7 +124,7 @@ public class MxcReplenish extends MxcParentService {
                     if (orderType == 1) {
                         logger.info("-----都补买单-------");
                         //买单
-                        BigDecimal oneRange = needRange.divide(new BigDecimal(relishOrderQty), pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
+                        BigDecimal oneRange = needRange.divide(new BigDecimal(relishOrderQty), pricePrecision.intValue(), RoundingMode.HALF_DOWN);
                         for (int i = 0; i < relishOrderQty; i++) {
                             Order order = new Order();
                             Double random = RandomUtilsme.getRandom(Double.parseDouble(oneRange.toString()), pricePrecision.intValue());
@@ -151,7 +142,7 @@ public class MxcReplenish extends MxcParentService {
                     } else {
                         //卖单
                         logger.info("-----都补卖单-------");
-                        BigDecimal oneRange = needRange.divide(new BigDecimal(relishOrderQty), pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
+                        BigDecimal oneRange = needRange.divide(new BigDecimal(relishOrderQty), pricePrecision.intValue(), RoundingMode.HALF_DOWN);
                         for (int i = 0; i < relishOrderQty; i++) {
                             Order order = new Order();
                             Double random = RandomUtilsme.getRandom(Double.parseDouble(oneRange.toString()), pricePrecision.intValue());
@@ -178,7 +169,7 @@ public class MxcReplenish extends MxcParentService {
                     }
                 } else {
                     logger.info("-----买卖单都补-------");
-                    BigDecimal oneRange = needRange.divide(new BigDecimal(relishOrderQty), pricePrecision.intValue(), RoundingMode.HALF_DOWN);
+                    BigDecimal oneRange = needRange.divide(new BigDecimal(relishOrderQty), pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
                     for (int i = 0; i < relishOrderQty / 2; i++) {
                         Order order = new Order();
                         Order order1 = new Order();
@@ -188,9 +179,9 @@ public class MxcReplenish extends MxcParentService {
                         if(i==relishOrderQty / 2-1){
                             random=Double.parseDouble(oneRange.toString());
                         }
-                        logger.info("一个区间的价格：" + oneRange.toPlainString() + "---随机的价格" + random.toString());
-                        BigDecimal orderPrice = sellPri.subtract(oneRange.multiply(new BigDecimal(i))).subtract(new BigDecimal(random.toString())).setScale(pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
-                        BigDecimal orderPrice1 = buyPri.add(oneRange.multiply(new BigDecimal(i))).add(new BigDecimal(random.toString())).setScale(pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
+                        logger.info("一个区间的价格：" + oneRange + "---随机的价格" + random);
+                        BigDecimal orderPrice = sellPri.subtract(oneRange.multiply(new BigDecimal(i))).subtract(new BigDecimal(random.toString())).setScale(pricePrecision.intValue(), RoundingMode.HALF_DOWN);
+                        BigDecimal orderPrice1 = buyPri.add(oneRange.multiply(new BigDecimal(i))).add(new BigDecimal(random.toString())).setScale(pricePrecision.intValue(), RoundingMode.HALF_DOWN);
                         if(i==relishOrderQty / 2-1){
                             orderPrice1=orderPrice1.add(oneRange);
                         }
@@ -224,6 +215,12 @@ public class MxcReplenish extends MxcParentService {
                     e.printStackTrace();
                 }
             }
+        }else {
+            int i2 = RandomUtils.nextInt(3);
+            if(2==i2){
+                setTradeLog(id, "获取深度失败", 0, "1cd66c");
+            }
+
         }
 
 
@@ -271,7 +268,7 @@ public class MxcReplenish extends MxcParentService {
             String trade = submitOrder(order.getType(), order.getPrice(), order.getAmount());
             setTradeLog(id, "补单=》挂" + (order.getType() == 1 ? "买" : "卖") + "单[价格：" + order.getPrice() + ": 数量" + order.getAmount() + "]=>" + trade, 0, order.getType() == 1 ? "05cbc8" : "ff6224");
             JSONObject jsonObject = JSONObject.fromObject(trade);
-            if (200 == jsonObject.getInt("code")) {
+            if ("true" .equals(jsonObject.getString("result"))) {
                 if (order.type == 1) {
                     redisHelper.setSt("maxRightQty_" + id, maxRightQty_redis.add(order.getAmount()).toString());
                 } else {

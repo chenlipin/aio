@@ -22,7 +22,6 @@ import java.util.*;
 @DependsOn("beanContext")
 public class GateParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://data.gateapi.io/api2/1";
-    public String host = "api.hotcoinfin.com";
     public RunHotcoinRandomDepth runHotcoinRandomDepth = BeanContext.getBean(RunHotcoinRandomDepth.class);
 
     public Map<String, Object> precision = new HashMap<String, Object>();
@@ -60,6 +59,12 @@ public class GateParentService extends BaseService implements RobotAction {
         }
     }
 
+
+
+    public  String getDepth(){
+        String trades = httpUtil.get("https://data.gateapi.io/api2/1/orderBook/"+exchange.get("market") );
+        return trades;
+    }
 
     /**
      * {

@@ -71,13 +71,16 @@ public class CitexKline extends CitexParentService {
     long ordersleeptime = System.currentTimeMillis();
 
 
-    public void init() throws UnsupportedEncodingException {
+    public void init() throws UnsupportedEncodingException, InterruptedException {
 
         if (start) {
             logger.info("设置机器人参数开始");
             setParam();
             setTransactionRatio();
             logger.info("设置机器人参数结束");
+
+            setBalanceRedis();
+
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本
@@ -503,35 +506,6 @@ public class CitexKline extends CitexParentService {
         }
 
         public void selectOrderDetail (String orderId,int type, String orderIdtradeNo){
-            try {
-                String str = selectOrder(orderId);
-                JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
-                if (jsonObject != null && jsonObject.getInt("code") == 0) {
-
-                    JSONObject data = jsonObject.getJSONObject("data");
-                    int status = data.getInt("orderStatus");
-                    if (status == 4) {
-                        setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
-                    } else if (status == 6) {
-                        setTradeLog(id, "订单id：" + orderId + "已撤单", 0, "#67c23a");
-                    } else {
-                        String res = cancelTrade(orderId);
-                        JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
-                        setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
-                        setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");
-                        if (Integer.parseInt(exchange.get("orderSumSwitch")) == 1 && type == 1) {    //防褥羊毛开关
-                            orderNum++;
-                            setWarmLog(id, 2, "订单{" + orderId + "}撤单,撞单数为" + orderNum, "");
-                        }
-                    }
-
-
-                }
-            } catch (Exception e) {
-                exceptionMessage = collectExceptionStackMsg(e);
-                setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
-                e.printStackTrace();
-            }
         }
 
         public static void main (String[]args){
