@@ -23,7 +23,7 @@ import top.suilian.aio.service.bifinance.BifinanceParentService;
 import top.suilian.aio.service.bision.BisionParentService;
 import top.suilian.aio.service.bithumb.BithumbParentService;
 import top.suilian.aio.service.bitmart.BitMartParentService;
-import top.suilian.aio.service.bitrue.BitrueParentService;
+import top.suilian.aio.service.bitrue.BitureParentService;
 import top.suilian.aio.service.bitterex.BitterexParentService;
 import top.suilian.aio.service.bkex.coinnoe.BkexParentService;
 import top.suilian.aio.service.citex.CitexParentService;
@@ -197,7 +197,7 @@ public class TradeRobotService {
                 robotAction = new HooParentService();
                 break;
             case Constant.KEY_EXCHANGE_BITRUE:
-                robotAction = new BitrueParentService();
+                robotAction = new BitureParentService();
                 break;
             case Constant.KEY_EXCHANGE_DIGIFINEX:
                 robotAction = new DigifinexParentService();

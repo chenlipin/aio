@@ -1,6 +1,5 @@
 package top.suilian.aio.service.bitrue;
 
-import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -18,7 +17,7 @@ import java.util.*;
 
 @Service
 @DependsOn("beanContext")
-public class BitrueParentService extends BaseService implements RobotAction {
+public class BitureParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://openapi.bitrue.com";
 
     public Map<String, Object> precision = new HashMap<String, Object>();

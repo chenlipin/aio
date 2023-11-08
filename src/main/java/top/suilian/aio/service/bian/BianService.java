@@ -1,14 +1,13 @@
-package top.suilian.aio.service.bitrue;
+package top.suilian.aio.service.bian;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import top.suilian.aio.Util.Constant;
-import top.suilian.aio.service.bitrue.newKline.RunBitrueKline;
+import top.suilian.aio.service.bian.newKline.RunBianKline;
 
 @Component
-public class BitrueService {
+public class BianService {
     @Autowired
-    RunBitrueKline bitrueKline;
+    RunBianKline runBianKline;
 
     /**
      * 开启机器人
@@ -18,24 +17,24 @@ public class BitrueService {
      */
     public void start(Integer id, Integer type) {
         switch (type) {
-            case Constant.KEY_STRATEGY_NEW_KLINE:
-                bitrueKline.init(id);
+            case 10:
+                runBianKline.init(id);
                 break;
         }
     }
 
     public void stop(Integer id, Integer type){
         switch (type) {
-            case Constant.KEY_STRATEGY_NEW_KLINE:
-                bitrueKline.stopWork(id);
+            case 10:
+                runBianKline.stopWork(id);
                 break;
         }
     }
 
     public void kill(Integer id, Integer type){
         switch (type) {
-            case Constant.KEY_STRATEGY_NEW_KLINE:
-                bitrueKline.killWork(id);
+            case 10:
+                runBianKline.killWork(id);
                 break;
         }
     }

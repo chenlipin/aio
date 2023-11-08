@@ -1,4 +1,4 @@
-package top.suilian.aio.service.bitrue.newKline;
+package top.suilian.aio.service.bian.newKline;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class RunBitrueKline {
+public class RunBianKline {
     //region    Service
     @Autowired
     CancelExceptionService cancelExceptionService;
@@ -53,7 +53,7 @@ public class RunBitrueKline {
      */
     public void init(int id) {
         //实例化策略对象
-        NewBitrueKline kline = new NewBitrueKline(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
+        NewBianKline kline = new NewBianKline(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
         redisHelper.initRobot(id);
         work = new Work(kline);
         works.add(work);
@@ -111,9 +111,9 @@ public class RunBitrueKline {
     }
 
     class Work extends StopableTask<Work> {
-        NewBitrueKline kline;
+        NewBianKline kline;
 
-        public Work(NewBitrueKline kline) {
+        public Work(NewBianKline kline) {
             super(kline.id);
             this.kline = kline;
         }
