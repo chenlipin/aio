@@ -55,6 +55,8 @@ public class NewBianKline extends BianParentService {
             logger.info("设置机器人交易规则结束");
             start = false;
         }
+
+        setBalanceRedis();
         String min = exchange.get("numMinThreshold");
         String max =exchange.get("numThreshold");
 
@@ -72,7 +74,7 @@ public class NewBianKline extends BianParentService {
         BigDecimal sellPriceMax = new BigDecimal(exchange.get("sellPriceMax"));
 
         //获取行情
-        String trade = httpUtil.get(baseUrl + "/api/v3/depth?symbol="+ exchange.get("market")+"&limit="+5 );
+        String trade = httpUtil.get(baseUrl + "/api/v3/depth?symbol="+ exchange.get("market")+"&limit="+5000 );
         if (StringUtils.isEmpty(trade)){
             return;
         }
@@ -96,7 +98,8 @@ public class NewBianKline extends BianParentService {
                     continue;
                 }
                 setTradeLog(id, "补买盘深单价格[" + price + "],数量[" + orderAmount +"]" ,0, "a61b12");
-                String submitTrade = submitTrade(1, price, orderAmount);
+//                String submitTrade = submitTrade(1, price, orderAmount);
+                String submitTrade = "X";
                 if(StringUtils.isNotEmpty(submitTrade)){
                     JSONObject jsonObject1 = JSONObject.parseObject(submitTrade);
                     if (StringUtils.isNotEmpty(jsonObject1.getString("clientOrderId"))) {
@@ -122,7 +125,8 @@ public class NewBianKline extends BianParentService {
                     continue;
                 }
                 setTradeLog(id, "补卖盘深单价格[" + price + "],数量[" + orderAmount +"]" ,0, "a61b12");
-                String submitTrade = submitTrade(2, price, orderAmount);
+//                String submitTrade = submitTrade(2, price, orderAmount);
+                String submitTrade = "X";
                 if(StringUtils.isNotEmpty(submitTrade)){
                     JSONObject jsonObject1 = JSONObject.parseObject(submitTrade);
                     if (StringUtils.isNotEmpty(jsonObject1.getString("clientOrderId"))) {
@@ -137,11 +141,14 @@ public class NewBianKline extends BianParentService {
             }
         }
 
+
+        logger.info("--------------------------------------------结束---------------------------------------------");
         try {
-            Thread.sleep(30*1000L);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            setBalanceRedis();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
+        sleep(30000, Integer.parseInt("1"));
     }
 
     public static BigDecimal getRandomRedPacketBetweenMinAndMax(BigDecimal min, BigDecimal max,int scale){

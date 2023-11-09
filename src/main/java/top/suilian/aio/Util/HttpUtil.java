@@ -645,6 +645,54 @@ public class HttpUtil {
         }
         return null;
     }
+
+
+
+    public static String doDeletes(String url,HashMap<String,String> header) {
+
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpDelete httpDelete = new HttpDelete(url);
+        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(35000).setConnectionRequestTimeout(35000).setSocketTimeout(60000).build();
+        httpDelete.setConfig(requestConfig);
+        httpDelete.setHeader("Content-type", "application/json");
+        Iterator<Map.Entry<String, String>> it = header.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, String> entry = it.next();
+            httpDelete.addHeader(entry.getKey(),entry.getValue());
+        }
+        CloseableHttpResponse httpResponse = null;
+        try {
+            httpResponse = httpClient.execute(httpDelete);
+            HttpEntity entity = httpResponse.getEntity();
+            String result = EntityUtils.toString(entity);
+            return result;
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            if (httpResponse != null) {
+                try {
+                    httpResponse.close();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            if (null != httpClient) {
+                try {
+                    httpClient.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+
     public String delete(String url,HashMap<String,String> header) {
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -656,6 +704,7 @@ public class HttpUtil {
             Map.Entry<String, String> entry = it.next();
             httpDelete.addHeader(entry.getKey(),entry.getValue());
         }
+        httpDelete.setHeader("Content-type", "application/json");
         CloseableHttpResponse httpResponse = null;
         try {
             httpResponse = httpClient.execute(httpDelete);

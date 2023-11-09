@@ -1,5 +1,6 @@
 package top.suilian.aio.service.bian;
 
+import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -60,7 +61,7 @@ public class BianParentService extends BaseService implements RobotAction {
     }
 
     /**
-     * {"symbol":"TRXUSDT","orderId":10630294817,"clientOrderId":null,"transactTime":1650200801929,"orderStatus":"INIT"}
+     * {"symbol":"ORNUSDT","orderId":329274707,"orderListId":-1,"clientOrderId":"SSS1699529531865","transactTime":1699529533754}
      * @param type
      * @param price
      * @param amount
@@ -152,19 +153,17 @@ public class BianParentService extends BaseService implements RobotAction {
             Map<String, String> param = new LinkedHashMap<>();
             param.put("timestamp",System.currentTimeMillis()+"");
             param.put("recvWindow", "60000");
-
             String queryString = splicingStr(param);
-            logger.info("未签名参数："+queryString);
             String signature = HMAC.sha256_HMAC(queryString, exchange.get("tpass"));
-            logger.info("签名："+signature);
             param.put("signature",signature);
+            String queryString1 = splicingStr(param);
             HashMap<String, String> head = new HashMap<String, String>();
             String apikey = exchange.get("apikey");
             head.put("X-MBX-APIKEY", apikey);
             String trade=null;
             try {
-                trade = httpUtil.postByPackcoin(baseUrl + "/api/v3/account", param, head);
-            } catch (UnsupportedEncodingException e) {
+                trade = httpUtil.getAddHead(baseUrl + "/api/v3/account?"+queryString1,  head);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             logger.info("robotId:" + id + "查询余额成功结束：" + trade);
@@ -197,12 +196,13 @@ public class BianParentService extends BaseService implements RobotAction {
         String queryString = splicingStr(param);
         logger.info("未签名参数："+queryString);
         String signature = HMAC.sha256_HMAC(queryString, exchange.get("tpass"));
+        param.put("signature",signature);
         String queryString1 = splicingStr(param);
         HashMap<String, String> head = new HashMap<String, String>();
         String apikey = exchange.get("apikey");
         head.put("X-MBX-APIKEY", apikey);
         try {
-            trade = httpUtil.postByPackcoin2(baseUrl + "/api/v3/openOrders?"+queryString1,  head);
+            trade = httpUtil.doDeletes(baseUrl + "/api/v3/order?"+queryString1,  head);
             logger.info("撤销订单:" + id + "参数：" + queryString1);
         } catch (Exception e) {
             setTradeLog(id, "撤销订单:"+orderId+"失败"+trade, 0,"ff6224" );
@@ -249,7 +249,7 @@ public class BianParentService extends BaseService implements RobotAction {
 
                     if (jsonObject.getString("asset").equals(coinArr.get(0))) {
                         firstBalance = jsonObject.getString("free") + "_" +jsonObject.getString("locked") ;
-                    } else if (jsonObject.getString("currency").equals(coinArr.get(1))) {
+                    } else if (jsonObject.getString("asset").equals(coinArr.get(1))) {
                         lastBalance =  jsonObject.getString("free") + "_" +jsonObject.getString("locked") ;
                     }
                 }
@@ -257,6 +257,7 @@ public class BianParentService extends BaseService implements RobotAction {
                 balances.put(coinArr.get(0), firstBalance);
                 balances.put(coinArr.get(1), lastBalance);
                 redisHelper.setBalanceParam(Constant.KEY_ROBOT_BALANCE + id, balances);
+                logger.info("获取余额:"+ JSON.toJSONString(balances));
             } else {
                 logger.info("获取余额失败");
             }
@@ -310,7 +311,7 @@ public class BianParentService extends BaseService implements RobotAction {
         String apikey = exchange.get("apikey");
         head.put("X-MBX-APIKEY", apikey);
         try {
-            trade = httpUtil.postByPackcoin2(baseUrl + "/api/v3/openOrders?"+queryString1,  head);
+            trade = httpUtil.getAddHead(baseUrl + "/api/v3/openOrders?"+queryString1,  head);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -348,7 +349,11 @@ public class BianParentService extends BaseService implements RobotAction {
         ArrayList<String> strings = new ArrayList<>();
         List<getAllOrderPonse> getAllOrderPonses = selectOrder();
         for (getAllOrderPonse getAllOrderPons : getAllOrderPonses) {
-            if (Objects.equals(getAllOrderPons.getMyself(), type) && Objects.equals(tradeType, getAllOrderPons.getType())) {
+
+            if (Objects.equals(tradeType, getAllOrderPons.getType())) {
+                if( type==1 && getAllOrderPons.getMyself()==0 ){
+                    continue;
+                }
                 logger.info("一键撤单详情:订单方向:" + getAllOrderPons.getMyself() + ":单号:" + getAllOrderPons.getOrderId());
                 String s = cancelTrade(getAllOrderPons.getOrderId());
                 strings.add(getAllOrderPons.getOrderId());
@@ -380,6 +385,7 @@ public class BianParentService extends BaseService implements RobotAction {
             getAllOrderPonse.setType(object.getString("side").equals("BUY")?1:2);
             getAllOrderPonse.setStatus(1);
             getAllOrderPonse.setCreatedAt(object.getString("workingTime"));
+            orderPonses.add(getAllOrderPonse);
         }
         return orderPonses;
     }

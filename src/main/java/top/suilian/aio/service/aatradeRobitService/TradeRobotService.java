@@ -18,6 +18,7 @@ import top.suilian.aio.model.Member;
 import top.suilian.aio.model.Robot;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.service.bian.BianParentService;
 import top.suilian.aio.service.bibox.BiboxParentService;
 import top.suilian.aio.service.bifinance.BifinanceParentService;
 import top.suilian.aio.service.bision.BisionParentService;
@@ -230,6 +231,9 @@ public class TradeRobotService {
             case Constant.KEY_EXCHANGE_OK:
                 robotAction=new OkParentService();
                 break;
+            case Constant.KEY_EXCHANGE_BIAN:
+                robotAction=new BianParentService();
+                break;
             default:
                 return null;
         }
@@ -264,16 +268,20 @@ public class TradeRobotService {
      */
     public List<getAllOrderPonse> getAllOrder(CancalAllOrder req) {
         Member user = redisHelper.getUser(req.getToken());
-        if (user == null || !user.getMemberId().equals(req.getUserId())) {
-            throw new RuntimeException("用户身份校验失败");
-        }
-        boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
-        if (!checkSignature) {
+//        if (user == null || !user.getMemberId().equals(req.getUserId())) {
+//            throw new RuntimeException("用户身份校验失败");
+//        }
+//        boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
+//        if (!checkSignature) {
 //            throw new RuntimeException("Signature失败");
-        }
+//        }
         RobotAction robotAction = getRobotAction(req.getRobotId());
         if (req.getRobotId()==17){
-            return  robotAction.selectOrder();
+            List<getAllOrderPonse> getAllOrderPonses = robotAction.selectOrder();
+            if ("113".equals(req.getType())){
+                return getAllOrderPonses;
+            }
+            return getAllOrderPonses.stream().filter(e->e.getMyself()==1).collect(Collectors.toList());
         }
         List<getAllOrderPonse> list = apitradeLogMapper.selectByRobotId(req.getRobotId());
         Map<String, Integer> map = robotAction.selectOrderStr(list.stream().filter(e -> e.getStatus().equals(0) || e.getStatus().equals(1)).map(getAllOrderPonse::getOrderId).collect(Collectors.joining(",", "", "")));
@@ -310,19 +318,19 @@ public class TradeRobotService {
      * @param req
      */
     public ResponseEntity cancalAllOrder(CancalAllOrder req) {
-        Member user = redisHelper.getUser(req.getToken());
-        if (user == null || !user.getMemberId().equals(req.getUserId())) {
-            throw new RuntimeException("用户身份校验失败");
-        }
-
-        boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
-        if (!checkSignature) {
-//            throw new RuntimeException("Signature失败");
-        }
+//        Member user = redisHelper.getUser(req.getToken());
+//        if (user == null || !user.getMemberId().equals(req.getUserId())) {
+//            throw new RuntimeException("用户身份校验失败");
+//        }
+//
+//        boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
+//        if (!checkSignature) {
+////            throw new RuntimeException("Signature失败");
+//        }
         RobotAction robotAction = getRobotAction(req.getRobotId());
         if (req.getRobotId()==17){
-            robotAction.cancelAllOrder(Integer.parseInt(req.getType()),req.getTradeType());
-            return ResponseEntity.success();
+            List<String> strings = robotAction.cancelAllOrder(Integer.parseInt(req.getType()), req.getTradeType());
+            return ResponseEntity.success(strings);
         }
         FastCancalTradeM fastCancalTradeM = new FastCancalTradeM(robotAction, req);
         executor.execute(fastCancalTradeM);
@@ -339,9 +347,9 @@ public class TradeRobotService {
      */
     public void cancalByOrderId(CancalOrderReq req) {
         Member user = redisHelper.getUser(req.getToken());
-//        if (user == null || !user.getMemberId().equals(req.getUserId())) {
-//            throw new RuntimeException("用户身份校验失败");
-//        }
+        if (user == null || !user.getMemberId().equals(req.getUserId())) {
+            throw new RuntimeException("用户身份校验失败");
+        }
 //        boolean checkSignature = checkSignature((JSONObject) JSONObject.toJSON(req), req.getSignature());
 //        if (!checkSignature) {
 ////            throw new RuntimeException("Signature失败");
@@ -441,22 +449,31 @@ public class TradeRobotService {
                 Double amountPrecision = RandomUtilsme.getRandom(fastTradeReq.getMaxAmount() - fastTradeReq.getMinAmount(), Integer.parseInt(param.get("amountPrecision")));
                 BigDecimal amount = new BigDecimal(fastTradeReq.getMinAmount() + amountPrecision).setScale(Integer.parseInt(param.get("amountPrecision")), BigDecimal.ROUND_HALF_UP);
 
-                /**
-                 * 买单区间差价
-                 */
-                double buyRange = fastTradeReq.getBuyorderRangePrice1() - fastTradeReq.getBuyorderRangePrice();
-                /**
-                 * 买单一个区间差价
-                 */
-                double buyOneRange = buyRange / fastTradeReq.getBuyOrdermun();
-                /**
-                 * 卖单区间差价
-                 */
-                double sellRange = fastTradeReq.getSellorderRangePrice1() - fastTradeReq.getSellorderRangePrice();
-                /**
-                 * 卖单一个区间差价
-                 */
-                double sellOneRange = buyRange / fastTradeReq.getBuyOrdermun();
+                double buyRange=0;
+                double buyOneRange=0;
+                if (fastTradeReq.getBuyOrdermun()>0) {
+                    /**
+                     * 买单区间差价
+                     */
+                    buyRange = fastTradeReq.getBuyorderRangePrice1() - fastTradeReq.getBuyorderRangePrice();
+                    /**
+                     * 买单一个区间差价
+                     */
+                    buyOneRange = buyRange / fastTradeReq.getBuyOrdermun();
+                }
+
+                double sellRange=0;
+                double sellOneRange=0;
+                if (fastTradeReq.getSellOrdermun()>0) {
+                    /**
+                     * 卖单区间差价
+                     */
+                    sellRange = fastTradeReq.getSellorderRangePrice1() - fastTradeReq.getSellorderRangePrice();
+                    /**
+                     * 卖单一个区间差价
+                     */
+                    sellOneRange = buyRange / fastTradeReq.getBuyOrdermun();
+                }
 
                 //决定是挂买单还是卖单
                 boolean type = true;
