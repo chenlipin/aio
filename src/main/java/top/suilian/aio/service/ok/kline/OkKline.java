@@ -1,14 +1,13 @@
-package top.suilian.aio.service.bifinance.kline;
+package top.suilian.aio.service.ok.kline;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.bifinance.BifinanceParentService;
+import top.suilian.aio.service.ok.OkParentService;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -19,8 +18,8 @@ import java.util.Random;
 
 import static java.math.BigDecimal.ROUND_DOWN;
 
-public class bifinanceKline extends BifinanceParentService {
-    public bifinanceKline(
+public class OkKline extends OkParentService {
+    public OkKline(
             CancelExceptionService cancelExceptionService,
             CancelOrderService cancelOrderService,
             ExceptionMessageService exceptionMessageService,
@@ -42,7 +41,7 @@ public class bifinanceKline extends BifinanceParentService {
         super.httpUtil = httpUtil;
         super.redisHelper = redisHelper;
         super.id = id;
-        super.logger = getLogger(Constant.KEY_LOG_PATH_HOO_REFER_KLINE, id);
+        super.logger = getLogger("ok/newkline", id);
     }
 
     private BigDecimal intervalAmount = BigDecimal.ZERO;
@@ -61,7 +60,6 @@ public class bifinanceKline extends BifinanceParentService {
 
     private String sellOrderId = "0";
     private String buyOrderId = "0";
-    private BigDecimal ordAmount;
     private String sellOrderIdtradeNo = "0";
     private String buyOrderIdtradeNo = "0";
     private int eatOrder = 0;//吃单数量
@@ -71,7 +69,7 @@ public class bifinanceKline extends BifinanceParentService {
     long ordersleeptime = System.currentTimeMillis();
 
 
-    public void init() throws UnsupportedEncodingException {
+    public void init() throws UnsupportedEncodingException, InterruptedException {
 
         if (start) {
             logger.info("设置机器人参数开始");
@@ -102,13 +100,16 @@ public class bifinanceKline extends BifinanceParentService {
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-            if (tradesObj != null && tradesObj.getInteger("code") == 1) {
-                com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
-                JSONArray bids = data.getJSONArray("bids");
-                JSONArray asks = data.getJSONArray("asks");
+            if (tradesObj != null && tradesObj.getInteger("code") == 0) {
+                com.alibaba.fastjson.JSONObject data = tradesObj.getJSONArray("data").getJSONObject(0);
 
-                BigDecimal buyPri = new BigDecimal(bids.getJSONObject(0).getString("trustPrice"));
-                BigDecimal sellPri = new BigDecimal(asks.getJSONObject(0).getString("trustPrice"));
+                List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
+
+                List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
+
+                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
+
 
                 if (sellPri.compareTo(buyPri) == 0) {
                     //平台撮合功能失败
@@ -145,10 +146,10 @@ public class bifinanceKline extends BifinanceParentService {
 
             if (!"0".equals(orderIdOne) && !"0".equals(orderIdTwo)) {
 
-                selectOrderDetail(orderIdOne, 1, null);
+                selectOrderDetail(orderIdOne, 1, orderIdOnetradeNo);
 
                 orderIdOne = "0";
-                selectOrderDetail(orderIdTwo, 1, null);
+                selectOrderDetail(orderIdTwo, 1, orderIdTwotradeNo);
                 orderIdTwo = "0";
 
                 String msg = "";
@@ -215,18 +216,17 @@ public class bifinanceKline extends BifinanceParentService {
                 String resultJson = submitTrade(type, price, num);
                 JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
-                if (jsonObject != null && jsonObject.getInt("code") == 1) {
-                    orderIdOne= jsonObject.getString("data");
-                    ordAmount=num;
+                if (jsonObject != null && jsonObject.getInt("code") == 0) {
+                    orderIdOne = jsonObject.getJSONArray("data").getJSONObject(0).getString("ordId");
                     String resultJson1 = submitTrade(type == 1 ? -1 : 1, price, num);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
-                    if (jsonObject1 != null && jsonObject1.getInt("code") == 1) {
-                        orderIdTwo= jsonObject1.getString("data");
+                    if (jsonObject1 != null && jsonObject1.getInt("code") == 0) {
+                        orderIdTwo =jsonObject1.getJSONArray("data").getJSONObject(0).getString("ordId");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
                         ordersleeptime = System.currentTimeMillis();
                     } else {
-                        String res = cancelTrade(orderIdOne, null);
+                        String res = cancelTrade(orderIdOne);
                         setTradeLog(id, "撤单[" + orderIdOne + "]=> " + res, 0, "000000");
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, orderIdOne, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
@@ -234,12 +234,12 @@ public class bifinanceKline extends BifinanceParentService {
                 }
             } catch (Exception e) {
                 if (!orderIdOne.equals("0")) {
-                    String res = cancelTrade(orderIdOne, null);
+                    String res = cancelTrade(orderIdOne);
                     setTradeLog(id, "撤单[" + orderIdOne + "]=> " + res, 0, "000000");
                     logger.info("撤单" + orderIdOne + ":结果" + res);
                 }
                 if (!orderIdTwo.equals("0")) {
-                    String res = cancelTrade(orderIdTwo, null);
+                    String res = cancelTrade(orderIdTwo);
                     setTradeLog(id, "撤单[" + orderIdTwo + "]=> " + res, 0, "000000");
                     logger.info("撤单" + orderIdTwo + ":结果" + res);
                 }
@@ -301,32 +301,37 @@ public class bifinanceKline extends BifinanceParentService {
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-            if (tradesObj != null && tradesObj.getInteger("code") ==1) {
-                com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
-                JSONArray bids = data.getJSONArray("bids");
-                JSONArray asks = data.getJSONArray("asks");
+            if (tradesObj != null && tradesObj.getInteger("code") == 0) {
+                com.alibaba.fastjson.JSONObject data = tradesObj.getJSONArray("data").getJSONObject(0);
 
-                BigDecimal buyPri = new BigDecimal(bids.getJSONObject(0).getString("trustPrice"));
-                BigDecimal sellPri = new BigDecimal(asks.getJSONObject(0).getString("trustPrice"));
+                List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
+
+                List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
+
+                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
+                BigDecimal subtract = sellPri.subtract(buyPri);
+//                if (subtract.divide(buyPri,8, RoundingMode.HALF_UP).compareTo(new BigDecimal("0.05"))>0){
+//                    logger.info("差价过大补单:buyPri："+buyPri+"sellPri:"+sellPri );
+//                    BigDecimal multiply = buyPri.multiply(BigDecimal.ONE.add(new BigDecimal("0.02")));
+//                    String resultJson = submitTrade( -1, multiply, new BigDecimal(exchange.get("minTradeLimit")));
+//                    setTradeLog(id, "差价过大补单:" + com.alibaba.fastjson.JSONObject.toJSONString(resultJson), 0);
+//                }
                 long l = 1000 * 60 * 3 + (RandomUtils.nextInt(10) * 1000L);
                 logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
                 if (System.currentTimeMillis() - ordersleeptime > l) {
                     logger.info("开始补单子");
+                    ordersleeptime = System.currentTimeMillis();
                     boolean type = RandomUtils.nextBoolean();
                     ordersleeptime = System.currentTimeMillis();
                     String resultJson = submitTrade(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
                     JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
-                    if (jsonObject != null && jsonObject.getInt("code") == 1) {
+                    if (jsonObject != null && jsonObject.getInt("code") == 0) {
+                        JSONObject data1 = jsonObject.getJSONArray("data").getJSONObject(0);
+                        orderIdTwo = data1.getString("ordId");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
-                        logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
-                        try {
-                            Thread.sleep(5000);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                        String orderIdOnedd= jsonObject.getString("data");
-                        cancelTrade(orderIdOnedd, null);
 
+                        logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
                     }
                 }
                 BigDecimal intervalPrice = sellPri.subtract(buyPri);
@@ -338,8 +343,8 @@ public class bifinanceKline extends BifinanceParentService {
                 if ("1".equals(exchange.get("isTradeCheck"))) {
 
                     //吃堵盘口的订单
-                    BigDecimal buyAmount = new BigDecimal(bids.getJSONObject(0).getString("lastNumber"));
-                    BigDecimal sellAmount = new BigDecimal(asks.getJSONObject(0).getString("lastNumber"));
+                    BigDecimal buyAmount =new BigDecimal(String.valueOf(buyPrices.get(0).get(1)));
+                    BigDecimal sellAmount = new BigDecimal(String.valueOf(sellPrices.get(0).get(1)));
                     BigDecimal minAmount = new BigDecimal(exchange.get("minTradeLimit").toString());
                     if (maxEatOrder == 0) {
                         logger.info("吃单上限功能未开启：maxEatOrder=" + maxEatOrder);
@@ -356,14 +361,13 @@ public class bifinanceKline extends BifinanceParentService {
                                     buyAmount = minAmount;
                                 }
                                 try {
-                                    String sellOrder = submitTrade(-1, buyPri, buyAmount);
+                                    String sellOrder = submitTrade(2, buyPri, buyAmount);
                                     setTradeLog(id, "堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]", 0);
                                     logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
 
                                     JSONObject jsonObject = judgeRes(sellOrder, "code", "submitTrade");
-                                    if (jsonObject != null && jsonObject.getInt("code") == 1) {
-                                        sellOrderId = jsonObject.getString("data");
-
+                                    if (jsonObject != null && jsonObject.getInt("code") == 0) {
+                                        sellOrderId = jsonObject.getJSONArray("data").getJSONObject(0).getString("ordId");
                                     }
                                     return price;
                                 } catch (Exception e) {
@@ -386,14 +390,13 @@ public class bifinanceKline extends BifinanceParentService {
                                     sellAmount = minAmount;
                                 }
                                 try {
-                                    String buyOrders = submitTrade(1, sellPri, sellAmount);
+                                    String buyOrder = submitTrade(1, sellPri, sellAmount);
                                     setTradeLog(id, "堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]", 0);
                                     logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
 
-                                    JSONObject jsonObject = judgeRes(buyOrders, "code", "submitTrade");
-                                    if (jsonObject != null && jsonObject.getInt("code") == 1) {
-                                        buyOrderId = jsonObject.getString("data");
-
+                                    JSONObject jsonObject = judgeRes(buyOrder, "code", "submitTrade");
+                                    if (jsonObject != null && jsonObject.getInt("code") == 0) {
+                                        orderIdOne = jsonObject.getJSONArray("data").getJSONObject(0).getString("ordId");
                                     }
                                     return price;
                                 } catch (Exception e) {
@@ -491,19 +494,24 @@ public class bifinanceKline extends BifinanceParentService {
                 sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
                 price = null;
             }
-
             removeSmsRedis(Constant.KEY_SMS_SMALL_INTERVAL);
-
             return price;
         }
 
         public void selectOrderDetail (String orderId,int type, String orderIdtradeNo){
             try {
-                BigDecimal bigDecimal = selectOrder(orderId);
-                if (bigDecimal .compareTo(ordAmount)>=0) {
+                String str = selectOrder(orderId);
+                JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
+                if (jsonObject != null && jsonObject.getInt("code") == 0) {
+
+                    JSONObject data = jsonObject.getJSONArray("data").getJSONObject(0);
+                    String status = data.getString("state");
+                    if (status .equals("filled") ) {
                         setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
-                    }  else {
-                        String res = cancelTrade(orderId, null);
+                    } else if (status .equals("canceled")) {
+                        setTradeLog(id, "订单id：" + orderId + "已撤单", 0, "#67c23a");
+                    } else {
+                        String res = cancelTrade(orderId);
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                         setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");
@@ -512,7 +520,7 @@ public class bifinanceKline extends BifinanceParentService {
                             setWarmLog(id, 2, "订单{" + orderId + "}撤单,撞单数为" + orderNum, "");
                         }
                     }
-
+                }
             } catch (Exception e) {
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));

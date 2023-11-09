@@ -11,7 +11,7 @@ import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.hoo.RandomDepth.RunHooRandomDepth;
-import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -22,6 +22,17 @@ public class HooParentService extends BaseService implements RobotAction {
     public RunHooRandomDepth runHooRandomDepth = BeanContext.getBean(RunHooRandomDepth.class);
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
+
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
+    }
+
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
+    }
+
     public boolean isTest = true;
     public boolean submitCnt = true;
     public int valid = 1;

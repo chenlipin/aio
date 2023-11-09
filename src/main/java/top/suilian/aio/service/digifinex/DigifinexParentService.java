@@ -1,6 +1,5 @@
 package top.suilian.aio.service.digifinex;
 
-import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -11,11 +10,10 @@ import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.vo.getAllOrderPonse;
 
-import javax.crypto.Mac;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.net.URLEncoder;
 import java.util.*;
 
 
@@ -161,6 +159,16 @@ public class DigifinexParentService extends BaseService implements RobotAction {
         return trade;
     }
 
+
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
+    }
+
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
+    }
 
     /**
      * 获取余额

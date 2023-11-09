@@ -5,7 +5,6 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
-import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.Util.HttpUtil;
@@ -13,6 +12,7 @@ import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -27,6 +27,16 @@ import java.util.*;
 public class BitterexParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://api.bittrex.com/v3";
     public String host="";
+
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
+    }
+
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
+    }
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;

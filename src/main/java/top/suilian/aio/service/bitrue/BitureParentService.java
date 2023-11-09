@@ -1,6 +1,5 @@
 package top.suilian.aio.service.bitrue;
 
-import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -11,6 +10,7 @@ import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -18,12 +18,23 @@ import java.util.*;
 
 @Service
 @DependsOn("beanContext")
-public class BitrueParentService extends BaseService implements RobotAction {
+public class BitureParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://openapi.bitrue.com";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
     public boolean isTest = true;
+
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
+    }
+
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
+    }
+
     public boolean submitCnt = true;
     public int valid = 1;
     public String exceptionMessage = null;

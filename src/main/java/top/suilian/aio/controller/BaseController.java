@@ -14,6 +14,7 @@ import top.suilian.aio.service.auxsto.AuxstoService;
 import top.suilian.aio.service.basic.BasicService;
 import top.suilian.aio.service.bbkx.BbkxService;
 import top.suilian.aio.service.bgoex.BgoService;
+import top.suilian.aio.service.bian.BianService;
 import top.suilian.aio.service.bibox.BiboxService;
 import top.suilian.aio.service.bifinance.BifinanceService;
 import top.suilian.aio.service.bihu.BiHuService;
@@ -23,7 +24,7 @@ import top.suilian.aio.service.bision.BisionService;
 import top.suilian.aio.service.bitai.BiTaiService;
 import top.suilian.aio.service.bithumb.BithumbService;
 import top.suilian.aio.service.bitmart.BitMartService;
-import top.suilian.aio.service.bitrue.BitrueService;
+import top.suilian.aio.service.bitrue.BitureService;
 import top.suilian.aio.service.bitterex.BitterexService;
 import top.suilian.aio.service.bitvictory.BitvictoryService;
 import top.suilian.aio.service.bkex.coinnoe.BkexService;
@@ -61,6 +62,7 @@ import top.suilian.aio.service.lbank.LbankService;
 import top.suilian.aio.service.loex.LoexService;
 import top.suilian.aio.service.mxc.MxcService;
 import top.suilian.aio.service.nine9ex.Nine9ExService;
+import top.suilian.aio.service.ok.OkService;
 import top.suilian.aio.service.pcas.PcasService;
 import top.suilian.aio.service.pickcoin.PickcoinService;
 import top.suilian.aio.service.playcoin.PlayCoinService;
@@ -232,7 +234,7 @@ public class BaseController {
     @Autowired
     BasicService basicService;
     @Autowired
-    BitrueService bitrueService;
+    BitureService bitureService;
     @Autowired
     BiboxService biboxService;
     @Autowired
@@ -249,6 +251,10 @@ public class BaseController {
     BifinanceService bifinanceService;
     @Autowired
     CoinwService coinwService;
+    @Autowired
+    BianService bianService;
+    @Autowired
+    OkService okService;
     //endregion
 
     public int insertRobotLog(Integer robotId, String remark, Integer status) {

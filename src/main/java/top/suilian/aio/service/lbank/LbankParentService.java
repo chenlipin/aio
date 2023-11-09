@@ -13,6 +13,7 @@ import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.hoo.RandomDepth.RunHooRandomDepth;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -68,6 +69,16 @@ public class LbankParentService extends BaseService implements RobotAction {
         }
     }
 
+
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
+    }
+
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
+    }
 
     /**
      * {"result":true,"data":{"order_id":"7166d504-8264-43d4-95fb-0dd85b1a1b76"},"error_code":0,"ts":1675057250877}

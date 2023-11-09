@@ -1,6 +1,5 @@
 package top.suilian.aio.service.bithumb;
 
-import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
@@ -8,12 +7,12 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
-import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -31,6 +30,17 @@ import java.util.*;
 public class BithumbParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://api.bithumb.com";
     public String host = "";
+
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
+    }
+
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
+    }
+
     public RunHotcoinRandomDepth runHotcoinRandomDepth = BeanContext.getBean(RunHotcoinRandomDepth.class);
 
     public Map<String, Object> precision = new HashMap<String, Object>();

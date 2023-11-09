@@ -13,6 +13,7 @@ import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -22,12 +23,22 @@ import java.util.*;
 @DependsOn("beanContext")
 public class GateParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://data.gateapi.io/api2/1";
-    public String host = "api.hotcoinfin.com";
     public RunHotcoinRandomDepth runHotcoinRandomDepth = BeanContext.getBean(RunHotcoinRandomDepth.class);
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
     public boolean isTest = true;
+
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
+    }
+
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
+    }
+
     public boolean submitCnt = true;
     public int valid = 1;
     public String exceptionMessage = null;
@@ -60,6 +71,12 @@ public class GateParentService extends BaseService implements RobotAction {
         }
     }
 
+
+
+    public  String getDepth(){
+        String trades = httpUtil.get("https://data.gateapi.io/api2/1/orderBook/"+exchange.get("market") );
+        return trades;
+    }
 
     /**
      * {

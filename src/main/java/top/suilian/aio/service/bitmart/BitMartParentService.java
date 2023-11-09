@@ -7,11 +7,11 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
-import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -27,6 +27,17 @@ public class BitMartParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://api-cloud.bitmart.com";
     public String host = "api.hotcoinfin.com";
     public Map<String, Object> precision = new HashMap<String, Object>();
+
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
+    }
+
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
+    }
+
     public int cnt = 0;
     public boolean isTest = true;
     public boolean submitCnt = true;

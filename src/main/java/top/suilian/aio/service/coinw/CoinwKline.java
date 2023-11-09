@@ -72,6 +72,7 @@ public class CoinwKline extends CoinwParentService {
             setParam();
             setTransactionRatio();
             logger.info("设置机器人参数结束");
+            logger.info("查询当前订单：" + noOreder());
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本

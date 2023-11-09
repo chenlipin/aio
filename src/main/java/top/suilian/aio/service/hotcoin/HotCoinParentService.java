@@ -13,6 +13,7 @@ import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -25,6 +26,11 @@ import java.util.*;
 @Service
 @DependsOn("beanContext")
 public class HotCoinParentService extends BaseService implements RobotAction {
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
+    }
+
     public String baseUrl = "https://api.hotcoinfin.com";
     public String host = "api.hotcoinfin.com";
     public RunHotcoinRandomDepth runHotcoinRandomDepth = BeanContext.getBean(RunHotcoinRandomDepth.class);
@@ -513,6 +519,11 @@ public class HotCoinParentService extends BaseService implements RobotAction {
             }
         }
         return hashMap;
+    }
+
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
     }
 
     @Override

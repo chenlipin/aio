@@ -1,7 +1,6 @@
 package top.suilian.aio.service.zg;
 
 import com.alibaba.fastjson.JSON;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
@@ -9,12 +8,12 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
-import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.zg.depth.RunZGDepth;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -22,7 +21,7 @@ import java.util.*;
 
 @DependsOn("beanContext")
 @Service
-public class ZGParentService extends BaseService implements RobotAction {
+public class ZGParentService extends BaseService implements RobotAction  {
     public String baseUrl = "https://www.ztb.im/api/v1";
     public RunZGDepth runZGDepth = BeanContext.getBean(RunZGDepth.class);
 
@@ -404,6 +403,16 @@ public class ZGParentService extends BaseService implements RobotAction {
             map.put(s, TradeEnum.NOTRADE.getStatus());
         }
         return map;
+    }
+
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
+    }
+
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
     }
 
     @Override

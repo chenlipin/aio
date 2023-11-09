@@ -1169,6 +1169,52 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
     }
 
 
+    public String postByPackcoin2(String url, Map<String, String> headers) throws UnsupportedEncodingException {
+        List<NameValuePair> list = new LinkedList<>();
+        String result = null;
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        RequestConfig config = RequestConfig.custom().setConnectTimeout(35000) //连接超时时间
+                .setConnectionRequestTimeout(35000) //从连接池中取的连接的最长时间
+                .setSocketTimeout(60000) //数据传输的超时时间
+                .build();
+        HttpPost post = new HttpPost(url);
+        post.setConfig(config);
+        post.addHeader("Content-Type", "application/json");
+        boolean contentType = true;
+        for (String key : headers.keySet()) {
+            if ("Content-Type".equals(key)) {
+                contentType = false;
+            }
+            post.addHeader(key, headers.get(key));
+        }
+        CloseableHttpResponse response = null;
+        try {
+            response = httpClient.execute(post);
+            if (response != null && response.getStatusLine().getStatusCode() != 2000) {
+                HttpEntity entity = response.getEntity();
+                result = entityToString(entity);
+            }
+            return result;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                httpClient.close();
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+
     public String doPostMart(String url, String json,Map<String,String> map) {
         CloseableHttpClient httpclient = HttpClientBuilder.create().build();
         RequestConfig config = RequestConfig.custom().setConnectTimeout(35000) //连接超时时间

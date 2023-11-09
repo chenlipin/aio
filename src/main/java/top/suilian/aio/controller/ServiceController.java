@@ -218,7 +218,7 @@ public class ServiceController extends BaseController {
                         skiesexService.start(operationRequest.getId(), operationRequest.getType());
                         break;
                     case Constant.KEY_EXCHANGE_BITRUE:             //basic
-                        bitrueService.start(operationRequest.getId(), operationRequest.getType());
+                        bitureService.start(operationRequest.getId(), operationRequest.getType());
                         break;
                     case Constant.KEY_EXCHANGE_BIBOX:             //bibox
                         biboxService.start(operationRequest.getId(), operationRequest.getType());
@@ -244,6 +244,9 @@ public class ServiceController extends BaseController {
                         break;
                     case Constant.KEY_EXCHANGE_COINW:             //coinw
                         coinwService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
+                    case Constant.KEY_EXCHANGE_BIAN:
+                        bianService.start(operationRequest.getId(), operationRequest.getType());
                         break;
                 }
                 if (operationRequest.getCategory() == 1) {
@@ -444,7 +447,7 @@ public class ServiceController extends BaseController {
                     basicService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
                 case Constant.KEY_EXCHANGE_BITRUE:             //basic
-                    bitrueService.stop(operationRequest.getId(), operationRequest.getType());
+                    bitureService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
                 case Constant.KEY_EXCHANGE_BIBOX:             //bibox
                     biboxService.stop(operationRequest.getId(), operationRequest.getType());
@@ -466,6 +469,12 @@ public class ServiceController extends BaseController {
                     break;
                 case Constant.KEY_EXCHANGE_COINW:             //coinw
                     coinwService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_OK:             //ok
+                    okService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_BIAN:
+                    bianService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {
@@ -662,7 +671,7 @@ public class ServiceController extends BaseController {
                     basicService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
                 case Constant.KEY_EXCHANGE_BITRUE:             //basic
-                    bitrueService.kill(operationRequest.getId(), operationRequest.getType());
+                    bitureService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
                 case Constant.KEY_EXCHANGE_BIBOX:             //bibox
                     biboxService.kill(operationRequest.getId(), operationRequest.getType());
@@ -687,6 +696,12 @@ public class ServiceController extends BaseController {
                     break;
                 case Constant.KEY_EXCHANGE_COINW:             //coinw
                     coinwService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_OK:             //ok
+                    okService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_BIAN:
+                    bianService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {

@@ -14,6 +14,7 @@ import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.hoo.RandomDepth.RunHooRandomDepth;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -30,8 +31,19 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class IexParentService extends BaseService implements RobotAction {
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
+    }
+
     private final static String[] hexDigits = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D",
             "E", "F"};
+
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
+    }
+
     public String baseUrl = "https://api.iex.asia/spot-api-robot";
     public RunHooRandomDepth runHooRandomDepth = BeanContext.getBean(RunHooRandomDepth.class);
     public Map<String, Object> precision = new HashMap<String, Object>();

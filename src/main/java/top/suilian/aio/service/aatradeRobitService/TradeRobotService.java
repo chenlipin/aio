@@ -23,7 +23,7 @@ import top.suilian.aio.service.bifinance.BifinanceParentService;
 import top.suilian.aio.service.bision.BisionParentService;
 import top.suilian.aio.service.bithumb.BithumbParentService;
 import top.suilian.aio.service.bitmart.BitMartParentService;
-import top.suilian.aio.service.bitrue.BitrueParentService;
+import top.suilian.aio.service.bitrue.BitureParentService;
 import top.suilian.aio.service.bitterex.BitterexParentService;
 import top.suilian.aio.service.bkex.coinnoe.BkexParentService;
 import top.suilian.aio.service.citex.CitexParentService;
@@ -39,6 +39,7 @@ import top.suilian.aio.service.kucoin.KucoinParentService;
 import top.suilian.aio.service.lbank.LbankParentService;
 import top.suilian.aio.service.loex.LoexParentService;
 import top.suilian.aio.service.mxc.MxcParentService;
+import top.suilian.aio.service.ok.OkParentService;
 import top.suilian.aio.service.skiesex.SkiesexParentService;
 import top.suilian.aio.service.wbfex.WbfexParentService;
 import top.suilian.aio.service.whitebit.WhitebitParentService;
@@ -114,6 +115,7 @@ public class TradeRobotService {
      * @return
      */
     public ResponseEntity fastTrade(FastTradeReq req) {
+        redisHelper.setParam("fastTrade_"+req.getRobotId(),JSONObject.toJSONString(req));
         Member user = redisHelper.getUser(req.getToken());
 //        if (user == null || !user.getMemberId().equals(req.getUserId())) {
 //            throw new RuntimeException("用户身份校验失败");
@@ -196,7 +198,7 @@ public class TradeRobotService {
                 robotAction = new HooParentService();
                 break;
             case Constant.KEY_EXCHANGE_BITRUE:
-                robotAction = new BitrueParentService();
+                robotAction = new BitureParentService();
                 break;
             case Constant.KEY_EXCHANGE_DIGIFINEX:
                 robotAction = new DigifinexParentService();
@@ -224,6 +226,9 @@ public class TradeRobotService {
                 break;
             case Constant.KEY_EXCHANGE_COINW:
                 robotAction=new CoinwParentService();
+                break;
+            case Constant.KEY_EXCHANGE_OK:
+                robotAction=new OkParentService();
                 break;
             default:
                 return null;
@@ -267,6 +272,9 @@ public class TradeRobotService {
 //            throw new RuntimeException("Signature失败");
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
+        if (req.getRobotId()==17){
+            return  robotAction.selectOrder();
+        }
         List<getAllOrderPonse> list = apitradeLogMapper.selectByRobotId(req.getRobotId());
         Map<String, Integer> map = robotAction.selectOrderStr(list.stream().filter(e -> e.getStatus().equals(0) || e.getStatus().equals(1)).map(getAllOrderPonse::getOrderId).collect(Collectors.joining(",", "", "")));
         for (getAllOrderPonse order : list) {
@@ -312,6 +320,10 @@ public class TradeRobotService {
 //            throw new RuntimeException("Signature失败");
         }
         RobotAction robotAction = getRobotAction(req.getRobotId());
+        if (req.getRobotId()==17){
+            robotAction.cancelAllOrder(Integer.parseInt(req.getType()),req.getTradeType());
+            return ResponseEntity.success();
+        }
         FastCancalTradeM fastCancalTradeM = new FastCancalTradeM(robotAction, req);
         executor.execute(fastCancalTradeM);
         return ResponseEntity.success();
@@ -368,6 +380,15 @@ public class TradeRobotService {
             redisHelper.remove("maxLeftQty_" + req.getRobotId());
         } else {
             redisHelper.remove("maxRightQty_" + req.getRobotId());
+        }
+    }
+
+    public JSONObject fastTradePam(CancalAllOrder req) {
+        String s = redisHelper.get("fastTrade_" + req.getRobotId());
+        if (StringUtils.isEmpty(s)){
+            return null;
+        }else{
+           return JSONObject.parseObject(s);
         }
     }
 

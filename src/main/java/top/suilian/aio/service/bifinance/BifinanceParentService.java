@@ -11,6 +11,7 @@ import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.hoo.RandomDepth.RunHooRandomDepth;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -23,6 +24,17 @@ public class BifinanceParentService extends BaseService implements RobotAction {
     public boolean isTest = true;
     public boolean submitCnt = true;
     public int valid = 1;
+
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
+    }
+
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
+    }
+
     public String exceptionMessage = null;
     public String[] transactionArr = new String[24];
 

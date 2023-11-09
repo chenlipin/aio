@@ -12,6 +12,7 @@ import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.wbfex.randomDepth.RunWebfexRandomDepth;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -24,6 +25,17 @@ public class WbfexParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://openapi.wbfex.biz";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
+
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
+    }
+
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
+    }
+
     public int cnt = 0;
     public boolean isTest = true;
     public boolean submitCnt = true;

@@ -1,6 +1,5 @@
 package top.suilian.aio.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,6 +13,10 @@ public class getAllOrderPonse implements Serializable {
     private String amount;
     private Integer status;
     private String  orderId;
-
+    /**
+     * 0 全局
+     * 1:机器的单子
+     */
+    private Integer  myself;
     private String createdAt;
 }

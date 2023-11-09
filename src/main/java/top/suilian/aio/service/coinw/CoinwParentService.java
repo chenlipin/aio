@@ -9,6 +9,7 @@ import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -22,6 +23,17 @@ public class CoinwParentService extends BaseService implements RobotAction {
     public int valid = 1;
     public String exceptionMessage = null;
     public String[] transactionArr = new String[24];
+
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
+    }
+
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
+    }
+
     public String url = "https://api.coinw.com/api/v1/";
 
     //设置交易量百分比
@@ -85,6 +97,28 @@ public class CoinwParentService extends BaseService implements RobotAction {
         } else {
             setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
             logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
+        }
+        return trade;
+    }
+
+
+    public String noOreder() {
+        String trade = null;
+        Map<String, String> params = new TreeMap<String, String>();
+        params.put("api_key", exchange.get("apikey"));
+        params.put("currencyPair", exchange.get("market"));
+        String sign = sign(params);
+        params.put("sign", sign);
+        logger.info("robotId" + id + "----" + "撤去所有订单响应：" + params);
+        try {
+            trade = HttpUtil.doPostFormData(url + "private?command=cancelAllOrder", params);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        JSONObject rt = JSONObject.fromObject(trade);
+        if (200 != rt.getInt("code")) {
+            setWarmLog(id, 3, "API接口错误", rt.getString("msg"));
+            logger.info("robotId" + id + "----" + "撤去所有订单响应：" + trade);
         }
         return trade;
     }

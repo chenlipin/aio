@@ -54,6 +54,15 @@ public class RobotController {
 
     }
 
+    @PostMapping(value = "/fastTradePam")
+    @ResponseBody
+    public ResponseEntity fastTradePam(@Valid @RequestBody CancalAllOrder req) {
+        log.info("获取一键挂单的历史参数"+ JSONObject.toJSONString(req));
+        JSONObject jsonObject = tradeRobotService.fastTradePam(req);
+        return ResponseEntity.success(jsonObject);
+
+    }
+
     /**
      * 取消一键挂单
      *

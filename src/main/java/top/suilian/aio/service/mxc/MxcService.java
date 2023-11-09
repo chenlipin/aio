@@ -3,6 +3,7 @@ package top.suilian.aio.service.mxc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
+import top.suilian.aio.service.mxc.depthRefer.RunMxcRefer;
 import top.suilian.aio.service.mxc.kline.RunMxcKline;
 import top.suilian.aio.service.mxc.newKline.RunNewMxcKline;
 import top.suilian.aio.service.mxc.randomDepth.RunMxcDepth;
@@ -18,6 +19,8 @@ public class MxcService {
     RunMxcDepth runMxcDepth;
     @Autowired
     RunMxcReplenish runMxcReplenish;
+    @Autowired
+    RunMxcRefer mxcRefer;
 
     /**
      * 开启机器人
@@ -47,6 +50,9 @@ public class MxcService {
             case Constant.KEY_STRATEGY_REPLENISH:
                 runMxcReplenish.init(id);
                 break;
+            case 9:
+                mxcRefer.init(id);
+                break;
         }
     }
 
@@ -72,6 +78,9 @@ public class MxcService {
             case Constant.KEY_STRATEGY_REPLENISH:
                 runMxcReplenish.stopWork(id);
                 break;
+            case 9:
+                mxcRefer.stopWork(id);
+                break;
         }
     }
 
@@ -96,6 +105,9 @@ public class MxcService {
                 break;
             case Constant.KEY_STRATEGY_REPLENISH:
                 runMxcReplenish.killWork(id);
+                break;
+            case 9:
+                mxcRefer.killWork(id);
                 break;
         }
     }

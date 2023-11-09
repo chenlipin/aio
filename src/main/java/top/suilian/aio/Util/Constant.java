@@ -128,6 +128,10 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_COINW=71; //coinw
 
+    public static final int KEY_EXCHANGE_OK=72; //ok
+
+    public static final int KEY_EXCHANGE_BIAN=73; //bian
+
     //endregion
 
 
@@ -224,6 +228,9 @@ public class Constant {
     public static final String KEY_LOG_PATH_HOTCOIN_REFER_DEPTH = "hotcoin/referDepth";           //HOTCOIN 对标深度日志路径
     public static final String KEY_LOG_PATH_HOTCOIN_REFER_KLINE = "hotcoin/referKline";         //HOTCOIN 对标k线日志路径
     public static final String KEY_LOG_PATH_HOTCOIN_DEPTH="hotcoin/depth";
+
+
+    public static final String KEY_LOG_PATH_BIAN_KLINE = "bian/kline";
 
     /**
      * AUXSTO日志路径
@@ -417,6 +424,9 @@ public class Constant {
     public static final String KEY_LOG_PATH_MXC_KLINE = "mxc/kline";           //mxc日志路径 Kline 日志路径
     public static final String KEY_LOG_PATH_MXC_DEPTH = "mxc/depth";
     public static final String KEY_LOG_PATH_MXC_REPLENLISGH = "mxc/replenish";
+
+
+    public static final String KEY_LOG_PATH_GTE_REPLENLISGH = "gate/replenish";
     /**
      * 99ex日志路径
      */

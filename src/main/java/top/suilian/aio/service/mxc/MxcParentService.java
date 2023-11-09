@@ -1,19 +1,17 @@
 package top.suilian.aio.service.mxc;
 
-import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
-import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -169,10 +167,20 @@ public class MxcParentService extends BaseService implements RobotAction {
 
     }
 
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        return null;
+    }
+
+    @Override
+    public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        return null;
+    }
+
     //下单
     protected String submitOrder(int type, BigDecimal price, BigDecimal amount) {
-        BigDecimal price1 = nN(price, Integer.valueOf(exchange.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.valueOf(exchange.get("amountPrecision").toString()));
+        BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
         String timestamp = getSecondTimestamp(new Date());
 
         Map<String, Object> params = new TreeMap<String, Object>();
@@ -186,7 +194,6 @@ public class MxcParentService extends BaseService implements RobotAction {
         params.put("quantity", num);
         params.put("price", price1);
         String toSign = "POST" + '\n' + "/open/api/v2/order/place" + '\n' + "api_key=" + exchange.get("apikey") + "&recv_window=20" + "&req_time=" + timestamp;
-        logger.info("签名参数：" + toSign);
         String sign = HMAC.sha256_HMAC(toSign, exchange.get("tpass"));
         logger.info("下单参数：" + params);
         String trade = null;
@@ -200,7 +207,6 @@ public class MxcParentService extends BaseService implements RobotAction {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        logger.info("下单返回值：" + trade);
 
         return trade;
     }
@@ -336,7 +342,7 @@ public class MxcParentService extends BaseService implements RobotAction {
 
     public String getDepth() {
 
-        String trade = httpUtil.get(baseUrl + "/open/api/v2/market/depth?depth=10&symbol=" + exchange.get("market"));
+        String trade = httpUtil.get(baseUrl + "/open/api/v2/market/depth?depth=20&symbol=" + exchange.get("market"));
         logger.info("当前深度：" + trade);
         return trade;
     }
@@ -349,9 +355,7 @@ public class MxcParentService extends BaseService implements RobotAction {
         String s = baseUrl + "/open/api/v2/market/symbols";
         System.out.println("----" + s);
         String rt = httpUtil.get(s);
-
         JSONObject rtObj = JSONObject.fromObject(rt);
-        logger.info("获取交易规则：" + rtObj);
         if (rtObj != null && rtObj.getInt("code") == 200) {
             JSONArray jsonArray = rtObj.getJSONArray("data");
             for (Object o : jsonArray) {
@@ -476,14 +480,14 @@ public class MxcParentService extends BaseService implements RobotAction {
 
     @Override
     public String cancelTradeStr(String orderId) {
-        String cancelTrade = cancelTrade(orderId);
-        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(cancelTrade);
-        if(jsonObject.getInteger("code")==200){
-            return "true";
-        }else {
-            return "false";
-        }
-
+//        String cancelTrade = cancelTrade(orderId);
+//        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(cancelTrade);
+//        if(jsonObject.getInteger("code")==200){
+//            return "true";
+//        }else {
+//            return "false";
+//        }
+        return "true";
     }
 
     public TradeEnum getTradeEnum(String status) {

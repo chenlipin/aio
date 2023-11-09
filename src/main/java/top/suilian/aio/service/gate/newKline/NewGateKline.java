@@ -40,7 +40,7 @@ public class NewGateKline extends GateParentService {
         super.httpUtil = httpUtil;
         super.redisHelper = redisHelper;
         super.id = id;
-        super.logger = getLogger(Constant.KEY_LOG_PATH_HOTCOIN_KLINE, id);
+        super.logger = getLogger("gate/kline", id);
     }
 
     private BigDecimal intervalAmount = BigDecimal.ZERO;

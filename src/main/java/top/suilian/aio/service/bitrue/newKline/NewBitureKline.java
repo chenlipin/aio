@@ -1,6 +1,5 @@
 package top.suilian.aio.service.bitrue.newKline;
 
-import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
@@ -8,7 +7,7 @@ import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.bitrue.BitrueParentService;
+import top.suilian.aio.service.bitrue.BitureParentService;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -20,8 +19,8 @@ import java.util.Random;
 import static java.math.BigDecimal.ROUND_DOWN;
 
 
-public class NewBitrueKline extends BitrueParentService {
-    public NewBitrueKline(
+public class NewBitureKline extends BitureParentService {
+    public NewBitureKline(
             CancelExceptionService cancelExceptionService,
             CancelOrderService cancelOrderService,
             ExceptionMessageService exceptionMessageService,
