@@ -2,9 +2,6 @@
 package top.suilian.aio.Util;
 
 import java.math.BigDecimal;
-import java.util.Random;
-
-
 
 public class RandomUtilsme {
 
@@ -15,12 +12,13 @@ public class RandomUtilsme {
      * @return
      */
     public static Double getRandom(double num, Integer precision) {
-        double v1 = Double.parseDouble(new BigDecimal(num).setScale(6, BigDecimal.ROUND_HALF_UP).toString());
-        int maxNum = new Double((Math.pow(10, precision) * v1)).intValue();
-        double v = 0;
-            int i = new Random().nextInt(maxNum);
-            v = i / Math.pow(10, precision);
-        return v;
+        precision=8;
+        double randomNum = Math.floor(Math.random() * Math.pow(10, precision)) / Math.pow(10, precision);
+
+        while (randomNum >= num) {
+            randomNum = Math.floor(Math.random() * Math.pow(10, precision)) / Math.pow(10, precision);
+        }
+        return randomNum;
     }
 
 
@@ -75,6 +73,6 @@ public class RandomUtilsme {
 
 
     public static void main(String[] args) {
-        System.out.println(  org.apache.commons.lang.math.RandomUtils.nextInt(10));
+        System.out.println(  new BigDecimal(getRandom(0.00000056,2)).toPlainString());
     }
 }

@@ -9,11 +9,11 @@ import javax.validation.constraints.NotNull;
 @Data
 public class FastTradeReq {
     /** 买单挂单档位*/
-    @NotNull(message = "buyOrdermun不能为空")
+
     private Integer buyOrdermun;
 
     /** 卖单挂单档位*/
-    @NotNull(message = "sellOrdermun不能为空")
+
     private Integer sellOrdermun;
 
     /**时间范围最小值*/
@@ -41,19 +41,17 @@ public class FastTradeReq {
     private Double sellorderBasePrice;
 
     /**买单比基准价低的范围 */
-    @NotNull(message = "buyorderRangePrice不能为空")
+
     private Double buyorderRangePrice;
 
     /**买单比基准价低的范围 */
-    @NotNull(message = "buyorderRangePrice1不能为空")
+
     private Double buyorderRangePrice1;
 
     /**卖单比基准价高的范围 */
-    @NotNull(message = "sellorderRangePrice不能为空")
     private Double sellorderRangePrice;
 
     /**卖单比基准价高的范围 */
-    @NotNull(message = "sellorderRangePrice1不能为空")
     private Double sellorderRangePrice1;
 
     /**机器人id*/

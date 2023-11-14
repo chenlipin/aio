@@ -426,99 +426,112 @@ public class TradeRobotService {
             //当前已经挂卖单个数
             int newSellOrder = 0;
             int timeChange = fastTradeReq.getMaxTime() - fastTradeReq.getMinTime();
-            String uuid = UUID.randomUUID().toString().substring(0, 8);
-            boolean first = true;
-            while ((newBuyOrder + newSellOrder) < (fastTradeReq.getBuyOrdermun() + fastTradeReq.getSellOrdermun()) && "运行中".equals(map.get(fastTradeReq.getRobotId()))) {
-                //当基础买卖价为null就去拿盘口价格
-                if (fastTradeReq.getBuyorderBasePrice() == null || fastTradeReq.getBuyorderBasePrice() <= 0 ||
-                        fastTradeReq.getSellorderBasePrice() == null || fastTradeReq.getSellorderBasePrice() <= 0) {
-                    String sellPriceStr = redisHelper.get("kile_sell_" + fastTradeReq.getRobotId());
+            if (fastTradeReq.getBuyOrdermun()==null){
+                fastTradeReq.setBuyOrdermun(0);
+            }
 
-                    String buyPriceStr = redisHelper.get("kile_buy_" + fastTradeReq.getRobotId());
+            if (fastTradeReq.getSellOrdermun()==null){
+                fastTradeReq.setSellOrdermun(0);
+            }
+            try {
 
-                    if (StringUtils.isEmpty(buyPriceStr)) {
-                        Double sellPrice = Double.valueOf(sellPriceStr);
-                        fastTradeReq.setSellorderBasePrice(sellPrice);
+                String uuid = UUID.randomUUID().toString().substring(0, 8);
+                boolean first = true;
+                while ((newBuyOrder + newSellOrder) < (fastTradeReq.getBuyOrdermun() + fastTradeReq.getSellOrdermun()) && "运行中".equals(map.get(fastTradeReq.getRobotId()))) {
+                    //当基础买卖价为null就去拿盘口价格
+                    if (fastTradeReq.getBuyorderBasePrice() == null || fastTradeReq.getBuyorderBasePrice() <= 0 ||
+                            fastTradeReq.getSellorderBasePrice() == null || fastTradeReq.getSellorderBasePrice() <= 0) {
+                        String sellPriceStr = redisHelper.get("kile_sell_" + fastTradeReq.getRobotId());
+
+                        String buyPriceStr = redisHelper.get("kile_buy_" + fastTradeReq.getRobotId());
+
+                        if (StringUtils.isEmpty(buyPriceStr)) {
+                            Double sellPrice = Double.valueOf(sellPriceStr);
+                            fastTradeReq.setSellorderBasePrice(sellPrice);
+                        }
+                        if (StringUtils.isEmpty(buyPriceStr)) {
+                            Double buyPrice = Double.valueOf(buyPriceStr);
+                            fastTradeReq.setBuyorderBasePrice(buyPrice);
+                        }
                     }
-                    if (StringUtils.isEmpty(buyPriceStr)) {
-                        Double buyPrice = Double.valueOf(buyPriceStr);
-                        fastTradeReq.setBuyorderBasePrice(buyPrice);
+                    //计算挂单数量
+                    Double amountPrecision = RandomUtilsme.getRandom(fastTradeReq.getMaxAmount() - fastTradeReq.getMinAmount(), Integer.parseInt(param.get("amountPrecision")));
+                    BigDecimal amount = new BigDecimal(fastTradeReq.getMinAmount() + amountPrecision).setScale(Integer.parseInt(param.get("amountPrecision")), BigDecimal.ROUND_HALF_UP);
+
+                    double buyRange = 0;
+                    double buyOneRange = 0;
+                    if (fastTradeReq.getBuyOrdermun() > 0) {
+                        /**
+                         * 买单区间差价
+                         */
+                        buyRange = fastTradeReq.getBuyorderRangePrice1() - fastTradeReq.getBuyorderRangePrice();
+                        /**
+                         * 买单一个区间差价
+                         */
+                        buyOneRange = buyRange / fastTradeReq.getBuyOrdermun();
+                    }
+
+                    double sellRange = 0;
+                    double sellOneRange = 0D;
+                    if (fastTradeReq.getSellOrdermun() > 0) {
+                        /**
+                         * 卖单区间差价
+                         */
+                        sellRange = fastTradeReq.getSellorderRangePrice1() - fastTradeReq.getSellorderRangePrice();
+                        /**
+                         * 卖单一个区间差价
+                         */
+                        sellOneRange = sellRange / fastTradeReq.getSellOrdermun();
+                    }
+
+                    //决定是挂买单还是卖单
+                    boolean type = true;
+                    boolean typeTrade = true;
+                    BigDecimal price = BigDecimal.ZERO;
+                    if (type && newBuyOrder < fastTradeReq.getBuyOrdermun()) {
+                        //计算买价
+                        Double pricePrecision = RandomUtilsme.getRandom(buyOneRange, Integer.parseInt(param.get("pricePrecision")));
+                        Double pricePrecision1 = (fastTradeReq.getBuyorderRangePrice() + pricePrecision + buyOneRange * newBuyOrder);
+                        price = new BigDecimal(fastTradeReq.getBuyorderBasePrice() - pricePrecision1).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
+                        //挂买单
+                        newBuyOrder++;
+                    } else {
+                        //计算卖价
+                        Double pricePrecision = RandomUtilsme.getRandom(sellOneRange, Integer.parseInt(param.get("pricePrecision")));
+                        Double pricePrecision1 = (fastTradeReq.getSellorderRangePrice() + pricePrecision + sellOneRange * newSellOrder);
+                        price = new BigDecimal(fastTradeReq.getSellorderBasePrice() + pricePrecision1).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
+                        //挂卖单
+                        typeTrade = false;
+                        newSellOrder++;
+                    }
+                    System.out.println("一键挂单"+"------类型"+typeTrade+"---价格："+price+"----数量："+amount);
+                    Map<String, String> stringStringMap = robotAction.submitOrderStr(typeTrade ? 1 : 2, price, amount);
+                    ApitradeLog apitradeLog = new ApitradeLog();
+                    apitradeLog.setAmount(amount);
+                    apitradeLog.setPrice(price);
+                    apitradeLog.setRobotId(fastTradeReq.getRobotId());
+                    apitradeLog.setMemberId(fastTradeReq.getUserId());
+                    apitradeLog.setType(type ? 1 : 2);
+                    apitradeLog.setTradeType(1);
+                    apitradeLog.setStatus(0);
+                    apitradeLog.setMemo(uuid);
+                    apitradeLog.setOrderId(stringStringMap.get("orderId"));
+                    apitradeLog.setCreatedAt(new Date());
+                    if (first) {
+                        apitradeLog.setMemo(uuid + "_" + JSON.toJSONString(fastTradeReq));
+                        first = false;
+                    }
+                    apitradeLogMapper.insert(apitradeLog);
+                    //挂单间隔时间
+                    int randomTime = fastTradeReq.getMinTime() + RandomUtils.nextInt(timeChange == 0 ? 1 : timeChange);
+                    try {
+                        Thread.sleep(randomTime * 1000L);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
-                //计算挂单数量
-                Double amountPrecision = RandomUtilsme.getRandom(fastTradeReq.getMaxAmount() - fastTradeReq.getMinAmount(), Integer.parseInt(param.get("amountPrecision")));
-                BigDecimal amount = new BigDecimal(fastTradeReq.getMinAmount() + amountPrecision).setScale(Integer.parseInt(param.get("amountPrecision")), BigDecimal.ROUND_HALF_UP);
-
-                double buyRange=0;
-                double buyOneRange=0;
-                if (fastTradeReq.getBuyOrdermun()>0) {
-                    /**
-                     * 买单区间差价
-                     */
-                    buyRange = fastTradeReq.getBuyorderRangePrice1() - fastTradeReq.getBuyorderRangePrice();
-                    /**
-                     * 买单一个区间差价
-                     */
-                    buyOneRange = buyRange / fastTradeReq.getBuyOrdermun();
-                }
-
-                double sellRange=0;
-                double sellOneRange=0;
-                if (fastTradeReq.getSellOrdermun()>0) {
-                    /**
-                     * 卖单区间差价
-                     */
-                    sellRange = fastTradeReq.getSellorderRangePrice1() - fastTradeReq.getSellorderRangePrice();
-                    /**
-                     * 卖单一个区间差价
-                     */
-                    sellOneRange = buyRange / fastTradeReq.getBuyOrdermun();
-                }
-
-                //决定是挂买单还是卖单
-                boolean type = true;
-                boolean typeTrade = true;
-                BigDecimal price = BigDecimal.ZERO;
-                if (type && newBuyOrder < fastTradeReq.getBuyOrdermun()) {
-                    //计算买价
-                    Double pricePrecision = RandomUtilsme.getRandom(buyOneRange, Integer.parseInt(param.get("pricePrecision")));
-                    Double pricePrecision1 = (fastTradeReq.getBuyorderRangePrice() + pricePrecision + buyOneRange * newBuyOrder);
-                    price = new BigDecimal(fastTradeReq.getBuyorderBasePrice() - pricePrecision1).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
-                    //挂买单
-                    newBuyOrder++;
-                } else {
-                    //计算卖价
-                    Double pricePrecision = RandomUtilsme.getRandom(sellOneRange, Integer.parseInt(param.get("pricePrecision")));
-                    Double pricePrecision1 = (fastTradeReq.getSellorderRangePrice() + pricePrecision + sellOneRange * newSellOrder);
-                    price = new BigDecimal(fastTradeReq.getSellorderBasePrice() + pricePrecision1).setScale(Integer.parseInt(param.get("pricePrecision")), BigDecimal.ROUND_HALF_UP);
-                    //挂卖单
-                    typeTrade = false;
-                    newSellOrder++;
-                }
-                Map<String, String> stringStringMap = robotAction.submitOrderStr(typeTrade ? 1 : 2, price, amount);
-                ApitradeLog apitradeLog = new ApitradeLog();
-                apitradeLog.setAmount(amount);
-                apitradeLog.setPrice(price);
-                apitradeLog.setRobotId(fastTradeReq.getRobotId());
-                apitradeLog.setMemberId(fastTradeReq.getUserId());
-                apitradeLog.setType(type ? 1 : 2);
-                apitradeLog.setTradeType(1);
-                apitradeLog.setStatus(0);
-                apitradeLog.setMemo(uuid);
-                apitradeLog.setOrderId(stringStringMap.get("orderId"));
-                apitradeLog.setCreatedAt(new Date());
-                if (first) {
-                    apitradeLog.setMemo(uuid + "_" + JSON.toJSONString(fastTradeReq));
-                    first = false;
-                }
-                apitradeLogMapper.insert(apitradeLog);
-                //挂单间隔时间
-                int randomTime = fastTradeReq.getMinTime() + RandomUtils.nextInt(timeChange == 0 ? 1 : timeChange);
-                try {
-                    Thread.sleep(randomTime * 1000L);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
             map.remove(fastTradeReq.getRobotId());
         }

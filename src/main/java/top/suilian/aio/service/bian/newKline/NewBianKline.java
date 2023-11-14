@@ -3,6 +3,7 @@ package top.suilian.aio.service.bian.newKline;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
@@ -86,7 +87,10 @@ public class NewBianKline extends BianParentService {
 
         String buyPrice = buy.getJSONArray(0).getString(0);
         String sellPrice = asks.getJSONArray(0).getString(0);
-        setTradeLog(id, "买一[" + buyPrice + "],卖一[" + sellPrice + "],买盘单数:" + buy.size() + ";卖盘单数："+asks.size(), 0, "a61b12");
+        boolean b = RandomUtils.nextBoolean();
+        if (b){
+            setTradeLog(id, "买一[" + buyPrice + "],卖一[" + sellPrice + "],买盘单数:" + buy.size() + ";卖盘单数："+asks.size(), 0, "a61b12");
+        }
         if (buy.size()<buysDeepNum){
             int buyOrderTotal = buysDeepNum - buy.size();
             setWarmLog(id, 2, "买盘当前深度单数为:"+  buy.size() +"低于警戒值:"+buysDeepNum+";开始补单", "");
@@ -148,7 +152,7 @@ public class NewBianKline extends BianParentService {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        sleep(30000, Integer.parseInt("1"));
+        sleep(15000, Integer.parseInt("1"));
     }
 
     public static BigDecimal getRandomRedPacketBetweenMinAndMax(BigDecimal min, BigDecimal max,int scale){

@@ -166,7 +166,7 @@ public class BianParentService extends BaseService implements RobotAction {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            logger.info("robotId:" + id + "查询余额成功结束：" + trade);
+//            logger.info("robotId:" + id + "查询余额成功结束：" + trade);
 //        JSONObject jsonObject = JSONObject.fromObject(trade);
             return trade;
 
@@ -232,6 +232,7 @@ public class BianParentService extends BaseService implements RobotAction {
                 overdue = true;
             }
         }
+        overdue = true;
         if (balance == null || overdue) {
             List<String> coinArr = Arrays.asList(coins.split("_"));
 
@@ -371,8 +372,8 @@ public class BianParentService extends BaseService implements RobotAction {
     public List<getAllOrderPonse> selectOrder() {
         List<getAllOrderPonse> orderPonses = new ArrayList<>();
         JSONArray jsonArray = openOrders();
-        getAllOrderPonse getAllOrderPonse = new getAllOrderPonse();
         for (int i = 0; i < jsonArray.size(); i++) {
+            getAllOrderPonse getAllOrderPonse = new getAllOrderPonse();
             JSONObject object = jsonArray.getJSONObject(i);
             if (!object.getString("clientOrderId").contains("SS")){
                 getAllOrderPonse.setMyself(0);
@@ -397,7 +398,8 @@ public class BianParentService extends BaseService implements RobotAction {
 
     @Override
     public String cancelTradeStr(String orderId) {
-        return null;
+        String s = cancelTrade(orderId);
+        return "true";
     }
 
 
