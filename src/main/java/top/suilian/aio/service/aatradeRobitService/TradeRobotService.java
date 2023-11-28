@@ -455,8 +455,11 @@ public class TradeRobotService {
                         }
                     }
                     //计算挂单数量
-                    Double amountPrecision = RandomUtilsme.getRandom(fastTradeReq.getMaxAmount() - fastTradeReq.getMinAmount(), Integer.parseInt(param.get("amountPrecision")));
-                    BigDecimal amount = new BigDecimal(fastTradeReq.getMinAmount() + amountPrecision).setScale(Integer.parseInt(param.get("amountPrecision")), BigDecimal.ROUND_HALF_UP);
+                    Double amountPrecision = RandomUtilsme.getRandomAmount(fastTradeReq.getMaxAmount() , fastTradeReq.getMinAmount());
+                    BigDecimal amount = new BigDecimal(amountPrecision);
+                    if (amount.compareTo(BigDecimal.valueOf(fastTradeReq.getMaxAmount()))>0||amount.compareTo(BigDecimal.valueOf(fastTradeReq.getMinAmount()))<0){
+                        continue;
+                    }
 
                     double buyRange = 0;
                     double buyOneRange = 0;

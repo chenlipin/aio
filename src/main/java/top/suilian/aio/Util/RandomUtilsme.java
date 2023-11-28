@@ -21,6 +21,11 @@ public class RandomUtilsme {
         return randomNum;
     }
 
+    public static Double getRandomAmount(double min,double max) {
+
+        return min + Math.random() * (max - min);
+    }
+
 
     /**
      * 获得一个比num小的整数
@@ -73,6 +78,6 @@ public class RandomUtilsme {
 
 
     public static void main(String[] args) {
-        System.out.println(  new BigDecimal(getRandom(0.00000056,2)).toPlainString());
+        System.out.println(  new BigDecimal(getRandomAmount(800,1200)).toPlainString());
     }
 }

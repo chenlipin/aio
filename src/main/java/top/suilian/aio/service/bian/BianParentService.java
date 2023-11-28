@@ -79,8 +79,8 @@ public class BianParentService extends BaseService implements RobotAction {
         param.put("side", type == 1 ? "BUY" : "SELL");
         param.put("type", "LIMIT");
         param.put("timeInForce", "GTC");
-        param.put("quantity", String.valueOf(amount));
-        param.put("price", String.valueOf(price));
+        param.put("quantity", String.valueOf(num));
+        param.put("price", String.valueOf(price1));
         param.put("recvWindow","10000");
         param.put("timestamp",time+"");
         param.put("newClientOrderId", "SSS" + time);
