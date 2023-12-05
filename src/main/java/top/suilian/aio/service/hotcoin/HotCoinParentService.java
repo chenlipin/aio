@@ -401,22 +401,25 @@ public class HotCoinParentService extends BaseService implements RobotAction {
 
             String firstBalance = null;
             String lastBalance = null;
-
+            String firstBalancefrozen = null;
+            String lastBalancefrozen = null;
 
             for (int i = 0; i < wallet.size(); i++) {
                 JSONObject jsonObject = wallet.getJSONObject(i);
                 if (jsonObject.getString("shortName").equals(coinArr.get(0).toUpperCase())) {
                     firstBalance = jsonObject.getString("total");
+                    firstBalancefrozen = jsonObject.getString("frozen");
                 } else if (jsonObject.getString("shortName").equals(coinArr.get(1).toUpperCase())) {
                     lastBalance = jsonObject.getString("total");
+                    lastBalancefrozen=jsonObject.getString("frozen");
                     if(Double.parseDouble(lastBalance)<10){
                         setWarmLog(id,0,"余额不足",coinArr.get(1).toUpperCase()+"余额为:"+lastBalance);
                     }
                 }
             }
             HashMap<String, String> balances = new HashMap<>();
-            balances.put(coinArr.get(0), firstBalance);
-            balances.put(coinArr.get(1), lastBalance);
+            balances.put(coinArr.get(0),  firstBalance+"_"+firstBalancefrozen);
+            balances.put(coinArr.get(1), lastBalance+"_"+lastBalancefrozen);
             redisHelper.setBalanceParam(Constant.KEY_ROBOT_BALANCE + id, balances);
         }
     }

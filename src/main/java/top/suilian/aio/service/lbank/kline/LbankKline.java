@@ -11,7 +11,6 @@ import top.suilian.aio.service.lbank.LbankParentService;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -312,29 +311,6 @@ public class LbankKline extends LbankParentService {
                 BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
                 BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
                 BigDecimal subtract = sellPri.subtract(buyPri);
-                if (subtract.divide(buyPri,8, RoundingMode.HALF_UP).compareTo(new BigDecimal("0.05"))>0){
-                    logger.info("差价过大补单:buyPri："+buyPri+"sellPri:"+sellPri );
-                    BigDecimal multiply = buyPri.multiply(BigDecimal.ONE.add(new BigDecimal("0.02")));
-                    String resultJson = submitTrade( -1, multiply, new BigDecimal(exchange.get("minTradeLimit")));
-                    setTradeLog(id, "差价过大补单:" + com.alibaba.fastjson.JSONObject.toJSONString(resultJson), 0);
-                }
-                long l = 1000 * 60 * 3 + (RandomUtils.nextInt(10) * 1000L);
-                logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
-                if (System.currentTimeMillis() - ordersleeptime > l) {
-                    logger.info("开始补单子");
-                    boolean type = RandomUtils.nextBoolean();
-                    ordersleeptime = System.currentTimeMillis();
-                    String resultJson = submitTrade(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
-                    JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
-                    if (jsonObject != null && jsonObject.getInt("code") == 0) {
-                        JSONObject data1 = jsonObject.getJSONObject("data");
-                        orderIdTwo = data1.getString("order_id");
-                        orderIdTwotradeNo = data1.getString("trade_no");
-                        removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
-                        ordersleeptime = System.currentTimeMillis();
-                        logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
-                    }
-                }
                 BigDecimal intervalPrice = sellPri.subtract(buyPri);
 
                 logger.info("robotId" + id + "----" + "最新买一：" + buyPri + "，最新卖一：" + sellPri);
