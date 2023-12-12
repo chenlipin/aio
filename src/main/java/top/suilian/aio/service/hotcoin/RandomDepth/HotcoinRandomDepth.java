@@ -228,10 +228,13 @@ public class HotcoinRandomDepth extends HotCoinParentService {
     public BigDecimal getOrderAmount() {
         Random random = new Random();
         Integer newScale = Integer.parseInt(precision.get("amountPrecision").toString());
-        int minAmount = new BigDecimal(exchange.get("depthOrderLowerLimit")).multiply(BigDecimal.valueOf(Math.pow(10, newScale))).intValue();
-        int maxAmount = new BigDecimal(exchange.get("depthOrderTopLimit")).multiply(BigDecimal.valueOf(Math.pow(10, newScale))).intValue();
-        BigDecimal orderAmount = new BigDecimal(random.nextInt(maxAmount - minAmount + 1) + minAmount).divide(BigDecimal.valueOf(Math.pow(10, newScale)));
+        double minAmount = Double.parseDouble(exchange.get("depthOrderLowerLimit"));
+        Double maxAmount = Double.valueOf(exchange.get("depthOrderTopLimit"));
+        return BigDecimal.valueOf(getRandomAmount(minAmount, maxAmount));
+    }
 
-        return orderAmount;
+    public static Double getRandomAmount(double min,double max) {
+
+        return min + Math.random() * (max - min);
     }
 }
