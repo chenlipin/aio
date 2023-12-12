@@ -1,11 +1,13 @@
 package top.suilian.aio.service.bian.newKline;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
+import top.suilian.aio.Util.RandomUtilsme;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
 import top.suilian.aio.service.bian.BianParentService;
@@ -13,7 +15,10 @@ import top.suilian.aio.service.bian.BianParentService;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 
 public class NewBianKline extends BianParentService {
@@ -61,18 +66,19 @@ public class NewBianKline extends BianParentService {
         String min = exchange.get("numMinThreshold");
         String max =exchange.get("numThreshold");
 
-        int buysDeepNum = Integer.parseInt(exchange.get("bidsDeepNum"));
-        int sellDeepNum = Integer.parseInt(exchange.get("asksDeepNum"));
-
 
         int pricePrecision = Integer.parseInt(exchange.get("pricePrecision"));
         int amountPrecision = Integer.parseInt(exchange.get("amountPrecision"));
 
         BigDecimal buyPriceMin = new BigDecimal(exchange.get("buyPriceMin"));
         BigDecimal buyPriceMax = new BigDecimal(exchange.get("buyPriceMax"));
+        Integer buyOrderTotal = Integer.parseInt(exchange.get("buyOrderTotal"));
 
         BigDecimal sellPriceMin = new BigDecimal(exchange.get("sellPriceMin"));
         BigDecimal sellPriceMax = new BigDecimal(exchange.get("sellPriceMax"));
+        Integer sellOrderTotal = Integer.parseInt(exchange.get("sellOrderTotal"));
+
+
 
         //获取行情
         String trade = httpUtil.get(baseUrl + "/api/v3/depth?symbol="+ exchange.get("market")+"&limit="+5000 );
@@ -91,60 +97,50 @@ public class NewBianKline extends BianParentService {
         if (b){
             setTradeLog(id, "买一[" + buyPrice + "],卖一[" + sellPrice + "],买盘单数:" + buy.size() + ";卖盘单数："+asks.size(), 0, "a61b12");
         }
-        if (buy.size()<buysDeepNum){
-            int buyOrderTotal = buysDeepNum - buy.size();
-            setWarmLog(id, 2, "买盘当前深度单数为:"+  buy.size() +"低于警戒值:"+buysDeepNum+";开始补单", "");
-            for (int i = 0; i < buyOrderTotal; i++) {
-                BigDecimal orderAmount = getOrderAmount(min, max, 10D);
-                BigDecimal price = getRandomRedPacketBetweenMinAndMax(buyPriceMin, buyPriceMax,pricePrecision);
-                if (price.compareTo(new BigDecimal(sellPrice))>=0){
-                    setTradeLog(id, "卖一[" + sellPrice + "],高于当前补买单价格:" + price + ";补单失败”", 0, "a61b12");
-                    continue;
-                }
-                setTradeLog(id, "补买盘深单价格[" + price + "],数量[" + orderAmount +"]" ,0, "a61b12");
-//                String submitTrade = submitTrade(1, price, orderAmount);
-                String submitTrade = "X";
-                if(StringUtils.isNotEmpty(submitTrade)){
-                    JSONObject jsonObject1 = JSONObject.parseObject(submitTrade);
-                    if (StringUtils.isNotEmpty(jsonObject1.getString("clientOrderId"))) {
-                        setTradeLog(id, "补买盘深单价格[" + price + "],数量[" + orderAmount + "],成功：单号：" +jsonObject1.getString("clientOrderId"), 0, "a61b12");
-                    }
-                }
-                try {
-                    Thread.sleep(100L);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+        ArrayList<BigDecimal> allBuyOrderPrice = new ArrayList<>();
+        ArrayList<BigDecimal> allsellOrderPrice = new ArrayList<>();
+        net.sf.json.JSONArray allOpenOrder = openOrders();
+        for (int i = 0; i < allOpenOrder.size(); i++) {
+            net.sf.json.JSONObject object = allOpenOrder.getJSONObject(i);
+            if(object.getString("side").equals("BUY")){
+                allBuyOrderPrice.add(new BigDecimal(object.getString("price")));
+            }else {
+                allsellOrderPrice.add(new BigDecimal(object.getString("price")));
             }
         }
 
-        if (asks.size()<sellDeepNum){
-            int sellOrderTotal = sellDeepNum - asks.size();
-            setWarmLog(id, 2, "，卖盘当前深度单数为:"+  buy.size() +"低于警戒值:"+buysDeepNum+";开始补单", "");
-            for (int i = 0; i < sellOrderTotal; i++) {
-                BigDecimal orderAmount = getOrderAmount(min, max, 10D);
-                BigDecimal price = getRandomRedPacketBetweenMinAndMax(sellPriceMin, sellPriceMax,pricePrecision);
-                if (price.compareTo(new BigDecimal(buyPrice))<=0){
-                    setTradeLog(id, "买一[" + buyPrice + "],高于当前补买单价格:" + price + ";补单失败”", 0, "ff6c37");
-                    continue;
-                }
-                setTradeLog(id, "补卖盘深单价格[" + price + "],数量[" + orderAmount +"]" ,0, "a61b12");
-//                String submitTrade = submitTrade(2, price, orderAmount);
-                String submitTrade = "X";
-                if(StringUtils.isNotEmpty(submitTrade)){
-                    JSONObject jsonObject1 = JSONObject.parseObject(submitTrade);
-                    if (StringUtils.isNotEmpty(jsonObject1.getString("clientOrderId"))) {
-                        setTradeLog(id, "补卖盘深单价格[" + price + "],数量[" + orderAmount + "],成功：单号：" +jsonObject1.getString("clientOrderId"), 0, "a61b12");
-                    }
-                }
-                try {
-                    Thread.sleep(100L);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+        //买单集合
+        logger.info("自有买单集合:"+ JSON.toJSONString(allBuyOrderPrice));
+        //卖单-集合
+        logger.info("自有卖单集合:"+ JSON.toJSONString(allsellOrderPrice));
+        List<BigDecimal> collectSell = allBuyOrderPrice.stream().filter(e -> {
+             return e.compareTo(sellPriceMin) >= 0 && e.compareTo(sellPriceMax) <= 0;
+        }).collect(Collectors.toList());
+
+        List<BigDecimal> collectBuy = allBuyOrderPrice.stream().filter(e -> {
+            return e.compareTo(buyPriceMin) >= 0 && e.compareTo(buyPriceMax) <= 0;
+        }).collect(Collectors.toList());
+        logger.info("符合条件买单集合:"+ JSON.toJSONString(collectBuy) );
+        logger.info("符合条件卖单集合:"+ JSON.toJSONString(collectSell));
+        if (collectBuy.size() <= buyOrderTotal ) {
+            setTradeLog(id, "开始补单:买盘区间[" + buyPriceMin + "~~" + buyPriceMin + "],区间期望数量:" + buyOrderTotal + ";实际单数："+collectBuy.size(), 0, "a61b12");
+            int needTrade = buyOrderTotal - collectBuy.size();
+            for (int i = 1; i <= needTrade; i++) {
+                Double amount = RandomUtilsme.getRandomAmount(Double.parseDouble(min) ,Double.parseDouble(max));
+                Double price = RandomUtilsme.getRandomAmount(Double.parseDouble(buyPriceMin.toString()) ,Double.parseDouble(buyPriceMin.toString()));
+                logger.info("补卖单:"+ JSON.toJSONString(price+"==="+amount) );
             }
         }
 
+        if (collectSell.size() <= buyOrderTotal ) {
+            setTradeLog(id, "开始补单:卖盘区间[" + sellPriceMin + "~~" + sellPriceMax + "],区间期望数量:" + sellOrderTotal + ";实际单数："+collectSell.size(), 0, "a61b12");
+            int needTrade = buyOrderTotal - collectBuy.size();
+            for (int i = 1; i <= needTrade; i++) {
+                Double amount = RandomUtilsme.getRandomAmount(Double.parseDouble(min) ,Double.parseDouble(max));
+                Double price = RandomUtilsme.getRandomAmount(Double.parseDouble(sellPriceMin.toString()) ,Double.parseDouble(sellPriceMin.toString()));
+                logger.info("补卖单:"+ JSON.toJSONString(price+"==="+amount) );
+            }
+        }
 
         logger.info("--------------------------------------------结束---------------------------------------------");
         try {
