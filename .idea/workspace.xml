@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8dae05f0-b6db-417c-bcc4-f0db5175b02a" name="Default Changelist" comment="Merge branch 'master' of github.com:chenlipin/aio">
+    <list default="true" id="d75be7ea-6133-404a-b2fc-c8205f50dd92" name="Changes" comment="0000">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/HotCoinParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/HotCoinParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/lbank/kline/LbankKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/lbank/kline/LbankKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bian/newKline/NewBianKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bian/newKline/NewBianKline.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -15,29 +14,8 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="CodeInsightWorkspaceSettings">
-    <option name="optimizeImportsOnTheFly" value="true" />
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Class" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="GitSEFilterConfiguration">
-    <file-type-list>
-      <filtered-out-file-type name="LOCAL_BRANCH" />
-      <filtered-out-file-type name="REMOTE_BRANCH" />
-      <filtered-out-file-type name="TAG" />
-      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
-    </file-type-list>
-  </component>
-  <component name="GitToolBoxStore">
-    <option name="projectConfigVersion" value="5" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -45,14 +23,11 @@
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
-        <option name="localRepository" value="D:\mavenRepository" />
-        <option name="mavenHome" value="$PROJECT_DIR$/../../../../apache-maven-3.2(1).3" />
         <option name="useMavenConfig" value="true" />
-        <option name="userSettingsFile" value="D:\apache-maven-3.2(1).3\conf\settings.xml" />
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProjectId" id="29uvxFpFUvIHG2yz81dGbMOTzkj" />
+  <component name="ProjectId" id="2ZAdo3ffeMrsCfYchKWkrtGoMTa" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
   </component>
@@ -62,230 +37,45 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/桌面/rt_wd/java/aio/src/main/java/top/suilian/aio/service/hotcoin&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.completion&quot;,
-    &quot;spring.configuration.checksum&quot;: &quot;144066ff0da09361c9fe2b8fd900c61f&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+    &quot;spring.configuration.checksum&quot;: &quot;144066ff0da09361c9fe2b8fd900c61f&quot;
   }
 }</component>
-  <component name="ReactorSettings">
-    <option name="notificationShown" value="true" />
-  </component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\桌面\rt_wd\java\aio\src\main\java\top\suilian\aio\service\hotcoin" />
-      <recent name="C:\javawork\aio\src\main\java\top\suilian\aio\service\bian" />
-      <recent name="C:\javawork\aio\src\main\java\top\suilian\aio\service\mxc" />
-      <recent name="C:\javawork\aio\src\main\java\top\suilian\aio\service\gate" />
-      <recent name="C:\javawork\aio\src\main\java\top\suilian\aio\service\newCitex" />
-    </key>
-  </component>
-  <component name="RunManager" selected="Application.RandomUtilsme">
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="AioApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="top.suilian.aio.AioApplication" />
-      <module name="aio" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="top.suilian.aio.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="OkParentService" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="top.suilian.aio.service.ok.OkParentService" />
-      <module name="aio" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="top.suilian.aio.service.ok.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="RandomUtilsme" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="top.suilian.aio.Util.RandomUtilsme" />
-      <module name="aio" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="top.suilian.aio.Util.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="JetRunConfigurationType">
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <option name="filePath" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager">
     <configuration name="AioApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-      <option name="ACTIVE_PROFILES" />
-      <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <module name="aio" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="top.suilian.aio.AioApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Application.RandomUtilsme" />
-        <item itemvalue="Application.AioApplication" />
-        <item itemvalue="Application.OkParentService" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="8dae05f0-b6db-417c-bcc4-f0db5175b02a" name="Default Changelist" comment="" />
-      <created>1653976030070</created>
+      <changelist id="d75be7ea-6133-404a-b2fc-c8205f50dd92" name="Changes" comment="" />
+      <created>1701868991866</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1653976030070</updated>
-      <workItem from="1653976035380" duration="7543000" />
-      <workItem from="1654086748862" duration="2362000" />
-      <workItem from="1654419176673" duration="13812000" />
-      <workItem from="1654782365854" duration="3298000" />
-      <workItem from="1655122579317" duration="2657000" />
-      <workItem from="1655208941677" duration="14221000" />
-      <workItem from="1655299667446" duration="185000" />
-      <workItem from="1655642611049" duration="1218000" />
-      <workItem from="1656073200687" duration="5551000" />
-      <workItem from="1656251022650" duration="13414000" />
-      <workItem from="1656517728402" duration="998000" />
-      <workItem from="1659962641334" duration="16000" />
-      <workItem from="1659962785885" duration="48000" />
-      <workItem from="1659962951367" duration="58000" />
-      <workItem from="1659963110826" duration="22000" />
-      <workItem from="1659963150309" duration="13000" />
-      <workItem from="1662986741528" duration="721000" />
-      <workItem from="1663069385583" duration="1651000" />
-      <workItem from="1663076219904" duration="110000" />
-      <workItem from="1663076337833" duration="599000" />
-      <workItem from="1663246312680" duration="304000" />
-      <workItem from="1663591361902" duration="361000" />
-      <workItem from="1663591731702" duration="591000" />
-      <workItem from="1667038292236" duration="4655000" />
-      <workItem from="1667206545113" duration="29000" />
-      <workItem from="1670036453503" duration="15736000" />
-      <workItem from="1670205643666" duration="23000" />
-      <workItem from="1670235033112" duration="1065000" />
-      <workItem from="1670503123511" duration="1860000" />
-      <workItem from="1670809913542" duration="581000" />
-      <workItem from="1674280841196" duration="18860000" />
-      <workItem from="1675006000567" duration="328000" />
-      <workItem from="1675040356552" duration="6070000" />
-      <workItem from="1675174191054" duration="827000" />
-      <workItem from="1676288690710" duration="3090000" />
-      <workItem from="1676635711672" duration="2654000" />
-      <workItem from="1677756961508" duration="2807000" />
-      <workItem from="1677761175763" duration="2493000" />
-      <workItem from="1678966832601" duration="19000" />
-      <workItem from="1679194557632" duration="989000" />
-      <workItem from="1679398948302" duration="884000" />
-      <workItem from="1681533672129" duration="364000" />
-      <workItem from="1684585678385" duration="312000" />
-      <workItem from="1686224811865" duration="18188000" />
-      <workItem from="1686575577178" duration="772000" />
-      <workItem from="1689939055729" duration="9230000" />
-      <workItem from="1690629787794" duration="24143000" />
-      <workItem from="1692023666145" duration="6681000" />
-      <workItem from="1699443773410" duration="18534000" />
-      <workItem from="1699528111862" duration="9720000" />
-      <workItem from="1699863920165" duration="175000" />
-      <workItem from="1699864120391" duration="376000" />
-      <workItem from="1701047386395" duration="2158000" />
-      <workItem from="1701149553841" duration="3116000" />
-      <workItem from="1701322563403" duration="556000" />
-      <workItem from="1701340851831" duration="1759000" />
-      <workItem from="1701761940088" duration="2317000" />
+      <updated>1701868991866</updated>
+      <workItem from="1701868993939" duration="316000" />
+      <workItem from="1702123681716" duration="605000" />
+      <workItem from="1702382887343" duration="3655000" />
     </task>
-    <task id="LOCAL-00001" summary="111">
-      <created>1677764839217</created>
+    <task id="LOCAL-00001" summary="0000">
+      <created>1702383162499</created>
       <option name="number" value="00001" />
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
-      <updated>1677764839217</updated>
+      <updated>1702383162499</updated>
     </task>
-    <task id="LOCAL-00002" summary="OK">
-      <created>1686238823774</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1686238823774</updated>
-    </task>
-    <task id="LOCAL-00003" summary="OK">
-      <created>1692189222334</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1692189222334</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Merge branch 'master' of github.com:chenlipin/aio">
-      <created>1701152591142</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1701152591142</updated>
-    </task>
-    <option name="localTasksCounter" value="5" />
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="Vcs.Log.History.Properties">
-    <option name="COLUMN_ID_ORDER">
-      <list>
-        <option value="Default.Root" />
-        <option value="Default.Author" />
-        <option value="Default.Date" />
-        <option value="Default.Subject" />
-        <option value="Space.CommitStatus" />
-      </list>
-    </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -297,148 +87,15 @@
         </entry>
         <entry key="b77e27d1-a883-4d18-847e-74d0bdf00e32">
           <value>
-            <State>
-              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
-              <option name="FILTERS">
-                <map>
-                  <entry key="branch">
-                    <value>
-                      <list>
-                        <option value="HEAD" />
-                      </list>
-                    </value>
-                  </entry>
-                  <entry key="roots">
-                    <value>
-                      <list>
-                        <option value="$PROJECT_DIR$" />
-                      </list>
-                    </value>
-                  </entry>
-                </map>
-              </option>
-            </State>
+            <State />
           </value>
         </entry>
       </map>
     </option>
-    <option name="OPEN_GENERIC_TABS">
-      <map>
-        <entry key="b77e27d1-a883-4d18-847e-74d0bdf00e32" value="TOOL_WINDOW" />
-      </map>
-    </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="111" />
-    <MESSAGE value="OK" />
-    <MESSAGE value="BIAN" />
-    <MESSAGE value="Merge branch 'master' of github.com:chenlipin/aio" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'master' of github.com:chenlipin/aio" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/iex/kline/IexKline.java</url>
-          <line>79</line>
-          <option name="timeStamp" value="59" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/whitebit/replenish/WhitebitReplenish.java</url>
-          <line>71</line>
-          <option name="timeStamp" value="60" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/whitebit/WhitebitParentService.java</url>
-          <line>239</line>
-          <option name="timeStamp" value="62" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/depth/ZGDepth.java</url>
-          <line>55</line>
-          <option name="timeStamp" value="64" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/depth/ZGDepth.java</url>
-          <line>99</line>
-          <option name="timeStamp" value="70" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zg/depth/ZGDepth.java</url>
-          <line>101</line>
-          <option name="timeStamp" value="71" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/gate/newKline/NewGateKline.java</url>
-          <line>189</line>
-          <option name="timeStamp" value="84" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bifinance/kline/bifinanceKline.java</url>
-          <line>501</line>
-          <option name="timeStamp" value="90" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bifinance/BifinanceParentService.java</url>
-          <line>176</line>
-          <option name="timeStamp" value="94" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bifinance/BifinanceParentService.java</url>
-          <line>92</line>
-          <option name="timeStamp" value="95" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bifinance/kline/bifinanceKline.java</url>
-          <line>297</line>
-          <option name="timeStamp" value="96" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/citex/kline/CitexKline.java</url>
-          <line>84</line>
-          <option name="timeStamp" value="101" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/gate/replenish/GateReplenish.java</url>
-          <line>61</line>
-          <option name="timeStamp" value="102" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/depthRefer/MxcRefer.java</url>
-          <line>57</line>
-          <option name="timeStamp" value="104" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/GateUtils.java</url>
-          <line>17</line>
-          <option name="timeStamp" value="106" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bian/BianParentService.java</url>
-          <line>348</line>
-          <option name="timeStamp" value="118" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bian/BianParentService.java</url>
-          <line>351</line>
-          <option name="timeStamp" value="120" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bian/BianParentService.java</url>
-          <line>204</line>
-          <option name="timeStamp" value="121" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bian/BianParentService.java</url>
-          <line>164</line>
-          <option name="timeStamp" value="124" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
-  <component name="XSLT-Support.FileAssociations.UIState">
-    <expand />
-    <select />
+    <MESSAGE value="0000" />
+    <option name="LAST_COMMIT_MESSAGE" value="0000" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/aio$AioApplication.ic" NAME="AioApplication Coverage Results" MODIFIED="1674284664525" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />

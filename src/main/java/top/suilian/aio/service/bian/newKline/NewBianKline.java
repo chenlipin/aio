@@ -113,32 +113,34 @@ public class NewBianKline extends BianParentService {
         logger.info("自有买单集合:"+ JSON.toJSONString(allBuyOrderPrice));
         //卖单-集合
         logger.info("自有卖单集合:"+ JSON.toJSONString(allsellOrderPrice));
-        List<BigDecimal> collectSell = allBuyOrderPrice.stream().filter(e -> {
-             return e.compareTo(sellPriceMin) >= 0 && e.compareTo(sellPriceMax) <= 0;
-        }).collect(Collectors.toList());
+        List<BigDecimal> collectSell = allsellOrderPrice.stream().filter(e -> e.compareTo(sellPriceMin) >= 0 && e.compareTo(sellPriceMax) <= 0).collect(Collectors.toList());
 
-        List<BigDecimal> collectBuy = allBuyOrderPrice.stream().filter(e -> {
-            return e.compareTo(buyPriceMin) >= 0 && e.compareTo(buyPriceMax) <= 0;
-        }).collect(Collectors.toList());
+        List<BigDecimal> collectBuy = allBuyOrderPrice.stream().filter(e -> e.compareTo(buyPriceMin) >= 0 && e.compareTo(buyPriceMax) <= 0).collect(Collectors.toList());
         logger.info("符合条件买单集合:"+ JSON.toJSONString(collectBuy) );
         logger.info("符合条件卖单集合:"+ JSON.toJSONString(collectSell));
-        if (collectBuy.size() <= buyOrderTotal ) {
+        if (collectBuy.size() < buyOrderTotal ) {
             setTradeLog(id, "开始补单:买盘区间[" + buyPriceMin + "~~" + buyPriceMin + "],区间期望数量:" + buyOrderTotal + ";实际单数："+collectBuy.size(), 0, "a61b12");
             int needTrade = buyOrderTotal - collectBuy.size();
             for (int i = 1; i <= needTrade; i++) {
                 Double amount = RandomUtilsme.getRandomAmount(Double.parseDouble(min) ,Double.parseDouble(max));
-                Double price = RandomUtilsme.getRandomAmount(Double.parseDouble(buyPriceMin.toString()) ,Double.parseDouble(buyPriceMin.toString()));
-                logger.info("补卖单:"+ JSON.toJSONString(price+"==="+amount) );
+                Double price = RandomUtilsme.getRandomAmount(Double.parseDouble(buyPriceMin.toString()) ,Double.parseDouble(buyPriceMax.toString()));
+                logger.info("补买单:"+ JSON.toJSONString(price+"==="+amount) );
+                if (new BigDecimal(price).compareTo(new BigDecimal(sellPrice))>=0){
+                    continue;
+                }
             }
         }
 
-        if (collectSell.size() <= buyOrderTotal ) {
+        if (collectSell.size() < sellOrderTotal ) {
             setTradeLog(id, "开始补单:卖盘区间[" + sellPriceMin + "~~" + sellPriceMax + "],区间期望数量:" + sellOrderTotal + ";实际单数："+collectSell.size(), 0, "a61b12");
-            int needTrade = buyOrderTotal - collectBuy.size();
+            int needTrade = sellOrderTotal - collectBuy.size();
             for (int i = 1; i <= needTrade; i++) {
                 Double amount = RandomUtilsme.getRandomAmount(Double.parseDouble(min) ,Double.parseDouble(max));
-                Double price = RandomUtilsme.getRandomAmount(Double.parseDouble(sellPriceMin.toString()) ,Double.parseDouble(sellPriceMin.toString()));
+                Double price = RandomUtilsme.getRandomAmount(Double.parseDouble(sellPriceMin.toString()) ,Double.parseDouble(sellPriceMax.toString()));
                 logger.info("补卖单:"+ JSON.toJSONString(price+"==="+amount) );
+                if (new BigDecimal(price).compareTo(new BigDecimal(buyPrice))<=0){
+                    continue;
+                }
             }
         }
 
