@@ -43,6 +43,7 @@ import top.suilian.aio.service.euexReferbibox.EuexReferBiboxService;
 import top.suilian.aio.service.exxvip.ExxvipService;
 import top.suilian.aio.service.fbsex.FbsexService;
 import top.suilian.aio.service.fchain.FChainService;
+import top.suilian.aio.service.feltpex.FeltpexService;
 import top.suilian.aio.service.fubt.FubtService;
 import top.suilian.aio.service.gate.GateService;
 import top.suilian.aio.service.goko.GokoService;
@@ -255,6 +256,9 @@ public class BaseController {
     BianService bianService;
     @Autowired
     OkService okService;
+
+    @Autowired
+    FeltpexService  feltpexService;
     //endregion
 
     public int insertRobotLog(Integer robotId, String remark, Integer status) {

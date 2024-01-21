@@ -128,6 +128,8 @@ public class NewBianKline extends BianParentService {
                 if (new BigDecimal(price).compareTo(new BigDecimal(sellPrice))>=0){
                     continue;
                 }
+                super.submitTrade(1,new BigDecimal(price),new BigDecimal(amount));
+                setTradeLog(id, "补买单:价格===》"+price+"====数量====》"+amount, 0, "a41a11");
             }
         }
 
@@ -141,6 +143,8 @@ public class NewBianKline extends BianParentService {
                 if (new BigDecimal(price).compareTo(new BigDecimal(buyPrice))<=0){
                     continue;
                 }
+                String s = super.submitTrade(2, new BigDecimal(price), new BigDecimal(amount));
+                setTradeLog(id, "补卖单:价格===》"+price+"====数量====》"+amount, 0, "18d56b");
             }
         }
 

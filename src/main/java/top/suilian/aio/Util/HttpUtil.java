@@ -481,7 +481,7 @@ public class HttpUtil {
         return result;
     }
 
-    public String doGet(String url, String apikey) {
+    public static  String doGet(String url, String apikey) {
         String result = null;
         HttpClientBuilder builder = HttpClients.custom();
         builder.setUserAgent("Mozilla/5.0(Windows;U;Windows NT 5.1;en-US;rv:0.9.4)");
@@ -978,7 +978,7 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
         }
         return null;
     }
-    public String getAddHead(String url,Map<String,String> map) {
+    public static String getAddHead(String url, Map<String, String> map) {
         String result = null;
         HttpClientBuilder builder = HttpClients.custom();
         builder.setUserAgent("Mozilla/5.0(Windows;U;Windows NT 5.1;en-US;rv:0.9.4)");

@@ -248,6 +248,9 @@ public class ServiceController extends BaseController {
                     case Constant.KEY_EXCHANGE_BIAN:
                         bianService.start(operationRequest.getId(), operationRequest.getType());
                         break;
+                    case Constant.KEY_EXCHANGE_FELTPEX:
+                        feltpexService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
                 }
                 if (operationRequest.getCategory() == 1) {
                     insertRobotLog(operationRequest.getId(), "重启机器人", Constant.KEY_STATUS_RESTART);
@@ -476,6 +479,9 @@ public class ServiceController extends BaseController {
                 case Constant.KEY_EXCHANGE_BIAN:
                     bianService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
+                case Constant.KEY_EXCHANGE_FELTPEX:
+                    feltpexService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
             }
         } else {
             robotService.stopRobot(operationRequest.getId());
@@ -702,6 +708,9 @@ public class ServiceController extends BaseController {
                     break;
                 case Constant.KEY_EXCHANGE_BIAN:
                     bianService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_FELTPEX:
+                    feltpexService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {
