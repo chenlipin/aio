@@ -76,6 +76,7 @@ import top.suilian.aio.service.test.TestService;
 import top.suilian.aio.service.wbfex.WbfexService;
 import top.suilian.aio.service.whitebit.WhitebitService;
 import top.suilian.aio.service.xoxoex.XoxoexService;
+import top.suilian.aio.service.xt.XtService;
 import top.suilian.aio.service.xuebi.XuebiService;
 import top.suilian.aio.service.zb.ZbService;
 import top.suilian.aio.service.zbg.ZbgService;
@@ -259,6 +260,9 @@ public class BaseController {
 
     @Autowired
     FeltpexService  feltpexService;
+
+    @Autowired
+    XtService xtService;
     //endregion
 
     public int insertRobotLog(Integer robotId, String remark, Integer status) {

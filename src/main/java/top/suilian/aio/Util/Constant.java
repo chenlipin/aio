@@ -134,6 +134,8 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_FELTPEX=74; //FELTPEX
 
+    public static final int KEY_EXCHANGE_XT=75; //XT
+
     //endregion
 
 

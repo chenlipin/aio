@@ -46,6 +46,8 @@ import top.suilian.aio.service.ok.OkParentService;
 import top.suilian.aio.service.skiesex.SkiesexParentService;
 import top.suilian.aio.service.wbfex.WbfexParentService;
 import top.suilian.aio.service.whitebit.WhitebitParentService;
+import top.suilian.aio.service.xt.XtKline;
+import top.suilian.aio.service.xt.XtParentService;
 import top.suilian.aio.service.zb.ZbParentService;
 import top.suilian.aio.service.zbg.ZbgParentService;
 import top.suilian.aio.service.zg.ZGParentService;
@@ -239,6 +241,9 @@ public class TradeRobotService {
             case Constant.KEY_EXCHANGE_FELTPEX:
                 robotAction=new FeltpexParentService();
                 break;
+            case Constant.KEY_EXCHANGE_XT:
+                robotAction=new XtParentService();
+                break;
             default:
                 return null;
         }
@@ -287,6 +292,12 @@ public class TradeRobotService {
                 return getAllOrderPonses;
             }
             return getAllOrderPonses.stream().filter(e->e.getMyself()==1).collect(Collectors.toList());
+        }
+
+        if (req.getRobotId()==49){
+
+            return robotAction.selectOrder();
+
         }
         List<getAllOrderPonse> list = apitradeLogMapper.selectByRobotId(req.getRobotId());
         Map<String, Integer> map = robotAction.selectOrderStr(list.stream().filter(e -> e.getStatus().equals(0) || e.getStatus().equals(1)).map(getAllOrderPonse::getOrderId).collect(Collectors.joining(",", "", "")));

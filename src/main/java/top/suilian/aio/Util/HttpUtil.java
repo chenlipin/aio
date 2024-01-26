@@ -648,7 +648,7 @@ public class HttpUtil {
 
 
 
-    public static String doDeletes(String url,HashMap<String,String> header) {
+    public static String doDeletes(String url,Map<String,String> header) {
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpDelete httpDelete = new HttpDelete(url);
@@ -1264,7 +1264,7 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
     }
 
 
-    public String doPostMart(String url, String json,Map<String,String> map) {
+    public static String doPostMart(String url, String json, Map<String, String> map) {
         CloseableHttpClient httpclient = HttpClientBuilder.create().build();
         RequestConfig config = RequestConfig.custom().setConnectTimeout(35000) //连接超时时间
                 .setConnectionRequestTimeout(35000) //从连接池中取的连接的最长时间
