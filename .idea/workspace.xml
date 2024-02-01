@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d75be7ea-6133-404a-b2fc-c8205f50dd92" name="Changes" comment="felt">
+    <list default="true" id="8dae05f0-b6db-417c-bcc4-f0db5175b02a" name="Default Changelist" comment="Merge branch 'master' of github.com:chenlipin/aio">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/HttpUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/HttpUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/xt/XtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/xt/XtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,6 +23,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="projectConfigVersion" value="5" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -54,8 +54,12 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/javawork/aio/src/main/java/top/suilian/aio/service/xt",
-    "spring.configuration.checksum": "144066ff0da09361c9fe2b8fd900c61f"
+    "last_opened_file_path": "D:/桌面/rt_wd/java/aio/src/main/java/top/suilian/aio/service/xt/replenish",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "spring.configuration.checksum": "144066ff0da09361c9fe2b8fd900c61f",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="ReactorSettings">
@@ -63,6 +67,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\桌面\rt_wd\java\aio\src\main\java\top\suilian\aio\service\xt\replenish" />
       <recent name="C:\javawork\aio\src\main\java\top\suilian\aio\service\xt" />
       <recent name="C:\javawork\aio\src\main\java\top\suilian\aio\service\feltpex" />
     </key>
@@ -79,7 +84,6 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="d75be7ea-6133-404a-b2fc-c8205f50dd92" name="Changes" comment="" />
       <created>1701868991866</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -95,6 +99,7 @@
       <workItem from="1705726788723" duration="11039000" />
       <workItem from="1705837971147" duration="2745000" />
       <workItem from="1706267831162" duration="15364000" />
+      <workItem from="1706753560446" duration="2804000" />
     </task>
     <task id="LOCAL-00001" summary="0000">
       <created>1702383162499</created>
