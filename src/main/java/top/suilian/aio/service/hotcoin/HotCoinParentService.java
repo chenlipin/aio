@@ -193,8 +193,8 @@ public class HotCoinParentService extends BaseService implements RobotAction {
 
         // 输出字符串
         String trade = null;
-        BigDecimal price1 = nN(price, Integer.valueOf(exchange.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.valueOf(exchange.get("amountPrecision").toString()));
+        BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
         String uri = "/v1/order/place";
         String httpMethod = "GET";
         Map<String, Object> params = new TreeMap<>();

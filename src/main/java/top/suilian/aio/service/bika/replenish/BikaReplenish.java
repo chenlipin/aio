@@ -1,7 +1,6 @@
-package top.suilian.aio.service.hotcoin.replenish;
+package top.suilian.aio.service.bika.replenish;
 
 import com.alibaba.fastjson.JSON;
-import io.netty.util.internal.MathUtil;
 import lombok.Data;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.math.RandomUtils;
@@ -10,15 +9,18 @@ import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.Util.RandomUtilsme;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.hotcoin.HotCoinParentService;
+import top.suilian.aio.service.bika.BikaaParentService;
+import top.suilian.aio.service.mxc.MxcParentService;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
-public class HotcoinReplenish extends HotCoinParentService {
-    public HotcoinReplenish(
+public class BikaReplenish extends BikaaParentService {
+    public BikaReplenish(
             CancelExceptionService cancelExceptionService,
             CancelOrderService cancelOrderService,
             ExceptionMessageService exceptionMessageService,
@@ -40,7 +42,7 @@ public class HotcoinReplenish extends HotCoinParentService {
         super.httpUtil = httpUtil;
         super.redisHelper = redisHelper;
         super.id = id;
-        super.logger = getLogger("hotcoin/replenish", id);
+        super.logger = getLogger("bika/replenish", id);
     }
 
     boolean start = true;
@@ -56,7 +58,7 @@ public class HotcoinReplenish extends HotCoinParentService {
      * orderType         补单 1:买单 2:卖单  3：买卖单
      */
 
-    public void init()  {
+    public void init() {
         logger.info("\r\n------------------------------{" + id + "} 开始------------------------------\r\n");
         if (start) {
             logger.info("补单策略设置机器人参数开始");
@@ -76,96 +78,29 @@ public class HotcoinReplenish extends HotCoinParentService {
             }
         }
 
-        String uri = "/v1/depth";
-        String httpMethod = "GET";
-        Map<String, Object> params = new TreeMap<>();
-        params.put("AccessKeyId", exchange.get("apikey"));
-        params.put("SignatureVersion", 2);
-        params.put("SignatureMethod", "HmacSHA256");
-        params.put("Timestamp", new Date().getTime());
-        params.put("symbol", exchange.get("market"));
-        params.put("step", 3060);
-
-        String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
-        params.put("Signature", Signature);
-        String httpParams = null;
-        try {
-            httpParams = splicing(params);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        String trades = httpUtil.get(baseUrl + uri + "?" + httpParams);
+        String trades = httpUtil.get(baseUrl +"/sapi/v1/depth?symbol="+exchange.get("market").toUpperCase());
 
 
         //获取深度 判断平台撮合是否成功
         com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
-        if (tradesObj != null && tradesObj.getInteger("code") == 200) {
 
-            com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
+        if (tradesObj != null ) {
 
-            com.alibaba.fastjson.JSONObject tick = data.getJSONObject("depth");
-            List<List<String>> buyPrices = (List<List<String>>) tick.get("bids");
+            List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
 
-            List<List<String>> sellPrices = (List<List<String>>) tick.get("asks");
+            List<List<String>> sellPrices = (List<List<String>>) tradesObj.get("asks");
 
             BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
-            BigDecimal buyPriLast = new BigDecimal(String.valueOf(buyPrices.get(buyPrices.size()-1).get(0)));
-
             BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
-            BigDecimal sellPriLast = new BigDecimal(String.valueOf(sellPrices.get(sellPrices.size()-1).get(0)));
 
 
-
-            if (sellPri.compareTo(buyPri) == 0) {
+            if (sellPri.compareTo(buyPri) <= 0) {
                 //平台撮合功能失败
                 setTradeLog(id, "交易平台无法撮合", 0, "FF111A");
                 return;
             }
             String relishMin = exchange.get("relishMin");
             String relishMax = exchange.get("relishMax");
-
-            //最小深度
-            int minDeepNum = Integer.parseInt(exchange.get("minDeepNum"));
-            if (buyPrices.size()<minDeepNum){
-                setTradeLog(id, "买盘深度" + buyPrices.size() + ";目标深度："+minDeepNum+"====开始补单", 0, "a61b12");
-                int abs = Math.abs(minDeepNum - buyPrices.size());
-                for (int i = 0; i < abs; i++) {
-                    Double randomAmount = RandomUtilsme.getRandomAmount(Double.parseDouble(relishMin), Double.parseDouble(relishMax));
-                    Double price = RandomUtilsme.getRandomAmount(Double.parseDouble(buyPriLast.toString()), Double.parseDouble(buyPri.toString()));
-                    String trade = submitOrder(1, new BigDecimal(price),new BigDecimal(randomAmount));
-                    setTradeLog(id, "买盘小于指定深度开始补单，价格："+price+"=数量："+randomAmount, 0, "a61b12");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }else {
-                logger.info("买盘深度" + buyPrices.size() + ";目标深度："+minDeepNum+"====正常");
-            }
-
-            if (sellPrices.size()<minDeepNum){
-                setTradeLog(id, "卖盘深度" + sellPrices.size() + ";目标深度："+minDeepNum+"====开始补单", 0, "a61b12");
-                int abs = Math.abs(minDeepNum - sellPrices.size());
-                for (int i = 0; i < abs; i++) {
-                    Double randomAmount = RandomUtilsme.getRandomAmount(Double.parseDouble(relishMin), Double.parseDouble(relishMax));
-                    Double price = RandomUtilsme.getRandomAmount(Double.parseDouble(sellPri.toString()), Double.parseDouble(sellPriLast.toString()));
-                    String trade = submitOrder(2, new BigDecimal(price),new BigDecimal(randomAmount));
-                    setTradeLog(id, "卖盘小于指定深度开始补单，价格："+price+"=数量："+randomAmount, 0, "a61b12");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }else {
-                logger.info("卖盘深度" + sellPrices.size() + ";目标深度："+minDeepNum+"====正常");
-            }
-
-
-
             //待挂单集合
             List<Order> orderList = new ArrayList<Order>();
             //补单方案
@@ -186,9 +121,9 @@ public class HotcoinReplenish extends HotCoinParentService {
                 logger.info("买一[" + buyPri + "],卖一[" + sellPri + "],差值" + nowRange + ";大于:" + maxrange);
                 BigDecimal bigDecimal1 = new BigDecimal(Math.pow(10, pricePrecision) + "");
 
-                BigDecimal bigDecimal = BigDecimal.ONE.divide(bigDecimal1, pricePrecision.intValue(), RoundingMode.HALF_DOWN);
+                BigDecimal bigDecimal = BigDecimal.ONE.divide(bigDecimal1, pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
                 //可以挂单的区间数
-                BigDecimal ranggeInt = needRange.divide(bigDecimal, 0, RoundingMode.HALF_DOWN);
+                BigDecimal ranggeInt = needRange.divide(bigDecimal, 0, BigDecimal.ROUND_HALF_DOWN);
                 //可以挂单的次数
                 int relishOrderQty = Math.min(Integer.parseInt(ranggeInt.toString()), Integer.parseInt(exchange.get("relishOrderQty")));
                 logger.info("可以挂单的区间数==》" + Integer.parseInt(ranggeInt.toString()));

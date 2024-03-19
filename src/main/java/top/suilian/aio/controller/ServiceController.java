@@ -254,6 +254,9 @@ public class ServiceController extends BaseController {
                     case Constant.KEY_EXCHANGE_XT:
                         xtService.start(operationRequest.getId(), operationRequest.getType());
                         break;
+                    case Constant.KEY_EXCHANGE_BIKA:
+                        bikaService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
                 }
                 if (operationRequest.getCategory() == 1) {
                     insertRobotLog(operationRequest.getId(), "重启机器人", Constant.KEY_STATUS_RESTART);
@@ -488,6 +491,10 @@ public class ServiceController extends BaseController {
                 case Constant.KEY_EXCHANGE_XT:
                     xtService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
+
+                case Constant.KEY_EXCHANGE_BIKA:
+                    bikaService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
             }
         } else {
             robotService.stopRobot(operationRequest.getId());
@@ -720,6 +727,10 @@ public class ServiceController extends BaseController {
                     break;
                 case Constant.KEY_EXCHANGE_XT:
                     xtService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+
+                case Constant.KEY_EXCHANGE_BIKA:
+                    bikaService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {

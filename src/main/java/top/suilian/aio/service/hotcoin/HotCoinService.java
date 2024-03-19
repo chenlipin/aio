@@ -8,6 +8,7 @@ import top.suilian.aio.service.hotcoin.depthReferToZg.RunDepthHotcoinReferToZg;
 import top.suilian.aio.service.hotcoin.kline.RunHotCoinKline;
 import top.suilian.aio.service.hotcoin.klineReferToZg.RunKlineHotcoinReferToZg;
 import top.suilian.aio.service.hotcoin.newKline.RunNewHotcoinKline;
+import top.suilian.aio.service.hotcoin.replenish.RunhotcoinReplenish;
 
 @Component
 public class HotCoinService {
@@ -21,6 +22,8 @@ public class HotCoinService {
     RunNewHotcoinKline runNewHotcoinKline;
     @Autowired
     RunHotcoinRandomDepth runHotcoinRandomDepth;
+    @Autowired
+    RunhotcoinReplenish replenish;
 
     /**
      * 开启机器人
@@ -46,6 +49,9 @@ public class HotCoinService {
                 break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewHotcoinKline.init(id);
+                break;
+            case Constant.KEY_STRATEGY_REPLENISH:
+                replenish.init(id);
                 break;
         }
     }
@@ -91,6 +97,9 @@ public class HotCoinService {
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewHotcoinKline.killWork(id);
                 runHotcoinRandomDepth.killWork(id+1);
+                break;
+            case Constant.KEY_STRATEGY_REPLENISH:
+                replenish.killWork(id);
                 break;
         }
     }

@@ -136,6 +136,8 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_XT=75; //XT
 
+    public static final int KEY_EXCHANGE_BIKA=76; //BIKA
+
     //endregion
 
 

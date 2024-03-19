@@ -21,6 +21,7 @@ import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.bian.BianParentService;
 import top.suilian.aio.service.bibox.BiboxParentService;
 import top.suilian.aio.service.bifinance.BifinanceParentService;
+import top.suilian.aio.service.bika.BikaaParentService;
 import top.suilian.aio.service.bision.BisionParentService;
 import top.suilian.aio.service.bithumb.BithumbParentService;
 import top.suilian.aio.service.bitmart.BitMartParentService;
@@ -243,6 +244,10 @@ public class TradeRobotService {
                 break;
             case Constant.KEY_EXCHANGE_XT:
                 robotAction=new XtParentService();
+                break;
+
+            case Constant.KEY_EXCHANGE_BIKA:
+                robotAction=new BikaaParentService();
                 break;
             default:
                 return null;
