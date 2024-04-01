@@ -224,7 +224,7 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         if(200!=jsonObject.getInt("code")){
             setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
         }
-        setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+        setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         return trade;
     }
 
@@ -396,7 +396,7 @@ public class HotCoinParentService extends BaseService implements RobotAction {
             }
             JSONObject tradesJson = JSONObject.fromObject(trades);
             JSONObject data = tradesJson.getJSONObject("data");
-            logger.info("获取余额"+trades);
+
             JSONArray wallet = data.getJSONArray("wallet");
 
             String firstBalance = null;
@@ -420,6 +420,7 @@ public class HotCoinParentService extends BaseService implements RobotAction {
             HashMap<String, String> balances = new HashMap<>();
             balances.put(coinArr.get(0),  firstBalance+"_"+firstBalancefrozen);
             balances.put(coinArr.get(1), lastBalance+"_"+lastBalancefrozen);
+            logger.info("获取余额"+balances);
             redisHelper.setBalanceParam(Constant.KEY_ROBOT_BALANCE + id, balances);
         }
     }
