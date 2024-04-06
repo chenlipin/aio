@@ -3,6 +3,7 @@ package top.suilian.aio.service.bika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
+import top.suilian.aio.service.bika.deepChange.RunBikaDeep;
 import top.suilian.aio.service.bika.newKline.RunNewBikaKline;
 import top.suilian.aio.service.bika.replenish.RunBikaReplenish;
 
@@ -14,6 +15,9 @@ public class BikaService {
 //    RunBitterRandomDepth runBitterRandomDepth;
     @Autowired
     RunBikaReplenish replenish;
+
+    @Autowired
+    RunBikaDeep runBikaDeep;
 
     /**
      * 开启机器人
@@ -34,6 +38,9 @@ public class BikaService {
 
             case Constant.KEY_STRATEGY_REPLENISH:
                 replenish.init(id);
+                break;
+            case Constant.KEY_STRA_9:
+                runBikaDeep.init(id);
                 break;
         }
     }
@@ -70,6 +77,10 @@ public class BikaService {
 
             case Constant.KEY_STRATEGY_REPLENISH:
                 replenish.killWork(id);
+                break;
+
+            case Constant.KEY_STRA_9:
+                runBikaDeep.killWork(id);
                 break;
         }
     }

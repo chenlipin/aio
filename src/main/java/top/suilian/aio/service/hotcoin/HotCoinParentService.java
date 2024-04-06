@@ -193,7 +193,7 @@ public class HotCoinParentService extends BaseService implements RobotAction {
 
         // 输出字符串
         String trade = null;
-        BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
+        BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision")));
         BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
         String uri = "/v1/order/place";
         String httpMethod = "GET";
@@ -317,9 +317,6 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         HttpUtil httpUtil = new HttpUtil();
         String res = httpUtil.get("https://" + host + uri + "?" + httpParams);
         JSONObject jsonObject = JSONObject.fromObject(res);
-        if(200!=jsonObject.getInt("code")){
-            setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
-        }
         return res;
     }
 
@@ -339,9 +336,9 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         params.put("SignatureMethod", "HmacSHA256");
         params.put("Timestamp", new Date().getTime());
         params.put("symbol", exchange.get("market"));
-        params.put("type", 0);
+        params.put("type", 1);
         params.put("page", 1);
-        params.put("count", 500);
+        params.put("count", 100);
         String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
         params.put("Signature", Signature);
         String httpParams = null;
@@ -527,7 +524,21 @@ public class HotCoinParentService extends BaseService implements RobotAction {
 
     @Override
     public List<getAllOrderPonse> selectOrder() {
-        return null;
+        ArrayList<getAllOrderPonse> getAllOrderPonses = new ArrayList<>();
+        String trade = getTrade();
+        JSONObject jsonObject = JSONObject.fromObject(trade);
+        JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("entrutsCur");
+        for (int i = 0; i < jsonArray.size(); i++) {
+            getAllOrderPonse getAllOrderPonse = new getAllOrderPonse();
+            JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+            getAllOrderPonse.setOrderId(jsonObject1.getString("id"));
+            getAllOrderPonse.setCreatedAt(jsonObject1.getString("time"));
+            getAllOrderPonse.setPrice(jsonObject1.getString("types")+"-"+jsonObject1.getString("price"));
+            getAllOrderPonse.setStatus(0);
+            getAllOrderPonse.setAmount(jsonObject1.getString("count"));
+            getAllOrderPonses.add(getAllOrderPonse);
+        }
+        return getAllOrderPonses;
     }
 
     @Override
@@ -583,6 +594,8 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         }
         return "false";
     }
+
+
 
 
     public TradeEnum getTradeEnum(Integer integer) {

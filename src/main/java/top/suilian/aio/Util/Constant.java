@@ -542,6 +542,8 @@ public class Constant {
     public static final int KEY_STRATEGY_NEW_KLINE = 7;            //K线新策略
     public static final int KEY_STRATEGY_REPLENISH = 8;            //补单
 
+    public static final int KEY_STRA_9 = 9;            //补单
+
 
     //endregion
 

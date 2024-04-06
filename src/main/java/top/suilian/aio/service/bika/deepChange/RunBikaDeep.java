@@ -1,4 +1,4 @@
-package top.suilian.aio.service.hotcoin.refToOk;
+package top.suilian.aio.service.bika.deepChange;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class RunhotcoinRep2Ok {
+public class RunBikaDeep {
     //region    Service
     @Autowired
     CancelExceptionService cancelExceptionService;
@@ -53,7 +53,7 @@ public class RunhotcoinRep2Ok {
      */
     public void init(int id) {
         //实例化策略对象
-        HotcoinRep2Ok randomDepth = new HotcoinRep2Ok(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
+        BikaDeep randomDepth = new BikaDeep(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
         redisHelper.initRobot(id);
         work = new Work(randomDepth);
         works.add(work);
@@ -111,9 +111,9 @@ public class RunhotcoinRep2Ok {
     }
 
     class Work extends StopableTask<Work> {
-        HotcoinRep2Ok randomDepth;
+        BikaDeep randomDepth;
 
-        public Work(HotcoinRep2Ok randomDepth) {
+        public Work(BikaDeep randomDepth) {
             super(randomDepth.id);
             this.randomDepth = randomDepth;
         }
@@ -130,12 +130,6 @@ public class RunhotcoinRep2Ok {
                         redisHelper.removeParent(randomDepth.id + key);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
-                    }
                     StringWriter sw = new StringWriter();
                     e.printStackTrace(new PrintWriter(sw, true));
                     String strs = sw.toString();

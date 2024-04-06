@@ -299,6 +299,11 @@ public class TradeRobotService {
             return getAllOrderPonses.stream().filter(e->e.getMyself()==1).collect(Collectors.toList());
         }
 
+        if (req.getRobotId()==556){
+            List<getAllOrderPonse> getAllOrderPonses = robotAction.selectOrder();
+                return getAllOrderPonses;
+        }
+
         if (req.getRobotId()==49){
 
             return robotAction.selectOrder();

@@ -108,7 +108,7 @@ public class HotCoinService {
                 replenish.killWork(id);
                 break;
             case 9:
-                replenish.killWork(id);
+                runhotcoinRep2Ok.killWork(id);
                 break;
         }
     }

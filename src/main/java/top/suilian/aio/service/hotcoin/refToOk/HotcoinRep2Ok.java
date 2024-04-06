@@ -50,6 +50,9 @@ public class HotcoinRep2Ok extends HotCoinParentService {
     List<String> lastOrderList = new ArrayList<>();
     BigDecimal point=null;
 
+    boolean up=true;
+    int time=0;
+
     /**
      * range              同步深度数量
      * relishMax          同步深度交易数量最大值值
@@ -136,59 +139,90 @@ public class HotcoinRep2Ok extends HotCoinParentService {
                 String market = httpUtil.get("https://api.hotcoinfin.com/v1/trade?count=1&symbol=" + exchange.get("market"));
                 JSONObject jsonObject = JSONObject.fromObject(market).getJSONObject("data").getJSONArray("trades").getJSONObject(0);
                 BigDecimal price = new BigDecimal(jsonObject.getString("price"));
-                BigDecimal amount = new BigDecimal(jsonObject.getString("amount"));
-                int type = jsonObject.getString("type").equals("买入") ? 1 : 2;
+
+                String kline = httpUtil.get("https://api.hotcoinfin.com/v1/ticker?step=1&symbol=" + exchange.get("market"));
+                //1分钟的开盘价
+                BigDecimal minPrice = new BigDecimal(JSONObject.fromObject(kline).getJSONArray("data").getJSONArray(0).getString(1));
 
                 List<DeepVo> history = BianUtils.getHistory(relishMark);
-                DeepVo HisOrderOk = history.get(0);
                 Map<String, List<DeepVo>> okDepp = BianUtils.getdeep(relishMark);
-                BigDecimal priceOk = HisOrderOk.getPrice();
+                BigDecimal okDeepSellPrice = okDepp.get("deepSellList").get(0).getPrice();
+
                 //计算价格比例
                 if (point == null) {
-                    point = price.divide(priceOk, 6, BigDecimal.ROUND_HALF_UP);
+                    point = sellPri.divide(okDeepSellPrice, 6, BigDecimal.ROUND_HALF_UP);
                 }
-                logger.info("hotcoin-价格：" + price + "--OK价格：" + priceOk + "--比例：" + point);
-                //同步深度
+                logger.info("hotcoin-价格：" + sellPri + "--OK价格：" + okDeepSellPrice + "--比例：" + point);
                 ArrayList<Order> list = new ArrayList<>();
-                for (int i = 0; i < okDepp.get("deepBuyList").size() && i <= range; i++) {
+
+                int pricePrecision = Integer.parseInt(exchange.get("pricePrecision").toString());
+
+                double pow = Math.pow(10, pricePrecision);
+                BigDecimal change = new BigDecimal("1").divide(new BigDecimal(pow), pricePrecision, BigDecimal.ROUND_HALF_UP);
+
+
+                // 同步k线
+                 BigDecimal klinePrice=null;
+                for (DeepVo deepVo : history) {
+                    boolean b = RandomUtils.nextBoolean();
+                    //同步交易
+                    Order order = new Order();
+                    BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, 5);
+                    order.setType(b?1:2);
+                    BigDecimal relishAmount = deepVo.getAmount().multiply(new BigDecimal(exchange.get("relishAmountPoint")));
+                    BigDecimal multiply = deepVo.getPrice().multiply(point).setScale(Integer.parseInt(exchange.get("pricePrecision")), RoundingMode.HALF_UP);
+                    order.setPrice(multiply);
+                    if (order.getPrice().compareTo(minPrice)==0){
+                        continue;
+                    }
+                    order.setAmount(relishAmount.compareTo(new BigDecimal(relishMax)) > 0 ? orderAmount : relishAmount);
+                    logger.info("买--Kline对标-ok价格：" + deepVo.getPrice() + "---对标价格" + order.getPrice() + "平台数量：" + deepVo.getAmount() + "---实际数量：" + order.getAmount());
+                    list.add(order);
+                    Order order1 = new Order();
+                    order1.setType(b?2:1);
+                    order1.setPrice(multiply);
+                    order1.setAmount(relishAmount.compareTo(new BigDecimal(relishMax)) > 0 ? orderAmount : relishAmount);
+                    logger.info("买--Kline对标-ok价格：" + deepVo.getPrice() + "---对标价格" + order1.getPrice() + "平台数量：" + deepVo.getAmount() + "---实际数量：" + order1.getAmount());
+                    list.add(order1);
+                    klinePrice=order1.getPrice();
+                    break;
+                }
+
+                //同步深度
+                for (int i = 0,j=0; i < okDepp.get("deepBuyList").size() && j < range; i++) {
                     BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, 5);
                     DeepVo deepBuy = okDepp.get("deepBuyList").get(i);
                     Order order = new Order();
                     order.setType(1);
                     order.setPrice(deepBuy.getPrice().multiply(point));
+                    if (klinePrice!=null&&order.getPrice().compareTo(klinePrice)==0){
+                        continue;
+                    }
                     BigDecimal relishAmount = deepBuy.getAmount().multiply(new BigDecimal(exchange.get("relishAmountPoint")));
                     order.setAmount(relishAmount.compareTo(new BigDecimal(relishMax)) > 0 ? orderAmount : relishAmount);
                     logger.info("买--对标-ok价格：" + deepBuy.getPrice() + "---对标价格" + order.getPrice() + "平台数量：" + deepBuy.getAmount() + "---实际数量：" + order.getAmount());
+                    j++;
                     list.add(order);
                 }
 
-                for (int i = 0; i < okDepp.get("deepSellList").size() && i <= range; i++) {
+                for (int i = 0,j=0; i < okDepp.get("deepSellList").size() &&  j< range; i++) {
                     BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, 5);
                     DeepVo deepBuy = okDepp.get("deepSellList").get(i);
                     Order order = new Order();
                     order.setType(2);
                     order.setPrice(deepBuy.getPrice().multiply(point));
+                    if (klinePrice!=null&&order.getPrice().compareTo(klinePrice)==0){
+                        continue;
+                    }
                     BigDecimal relishAmount = deepBuy.getAmount().multiply(new BigDecimal(exchange.get("relishAmountPoint")));
                     order.setAmount(relishAmount.compareTo(new BigDecimal(relishMin)) > 0 ? orderAmount : relishAmount);
                     logger.info("卖--对标-ok价格：" + deepBuy.getPrice() + "---对标价格" + order.getPrice() + "平台数量：" + deepBuy.getAmount() + "---实际数量：" + order.getAmount());
+                    j++;
                     list.add(order);
                 }
+                Collections.shuffle(list);
 
-                //同步交易
-                Order order = new Order();
-                BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, 5);
-                order.setType(HisOrderOk.getType());
-                BigDecimal relishAmount = HisOrderOk.getAmount().multiply(new BigDecimal(exchange.get("relishAmountPoint")));
-                order.setPrice(HisOrderOk.getPrice().multiply(point));
-                order.setAmount(relishAmount.compareTo(new BigDecimal(relishMax)) > 0 ? orderAmount : relishAmount);
-                logger.info("买--Kline对标-ok价格：" + HisOrderOk.getPrice() + "---对标价格" + order.getPrice() + "平台数量：" + HisOrderOk.getAmount() + "---实际数量：" + order.getAmount());
-                list.add(order);
-                Order order1 = new Order();
-                order1.setType(HisOrderOk.getType() == 1 ? 2 : 1);
-                order1.setPrice(HisOrderOk.getPrice().multiply(point));
-                order1.setAmount(relishAmount.compareTo(new BigDecimal(relishMax)) > 0 ? orderAmount : relishAmount);
-                logger.info("买--Kline对标-ok价格：" + HisOrderOk.getPrice() + "---对标价格" + order1.getPrice() + "平台数量：" + HisOrderOk.getAmount() + "---实际数量：" + order1.getAmount());
-                list.add(order1);
+
                 //开始挂单
                 for (Order order2 : list) {
                     Thread.sleep(1000);

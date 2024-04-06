@@ -85,9 +85,8 @@ public class BikaaParentService extends BaseService implements RobotAction {
     //对标下单
     public String submitOrder(int type, BigDecimal price, BigDecimal amount) {
         String timestamp = System.currentTimeMillis() + "";
-        String typeStr = type == 0 ? "买" : "卖";
+        String typeStr = type == 1 ? "买" : "卖";
 
-        logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
 
         // 输出字符串
         String trade = null;
@@ -115,13 +114,23 @@ public class BikaaParentService extends BaseService implements RobotAction {
         String signature = HMAC.sha256_HMAC(s, exchange.get("tpass"));
 
         header.put("X-CH-SIGN", signature);
-
+        String orderId="";
         try {
             trade = httpUtil.postByPackcoin(baseUrl + uri, params, header);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        setTradeLog(id, "挂" + (type == 0 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+        JSONObject jsonObject = judgeRes(trade, "code", "submitTrade");
+        if (jsonObject != null && jsonObject.getString("origQty") != null) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+             orderId = jsonObject.getJSONArray("orderId").getString(0);
+
+        }
+        setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + orderId, 0, type == 1 ? "05cbc8" : "ff6224");
         return trade;
     }
 
