@@ -2,6 +2,7 @@
 package top.suilian.aio.Util;
 
 import java.math.BigDecimal;
+import java.util.Random;
 
 public class RandomUtilsme {
 
@@ -12,7 +13,7 @@ public class RandomUtilsme {
      * @return
      */
     public static Double getRandom(double num, Integer precision) {
-        precision=8;
+        precision=12;
         double randomNum = Math.floor(Math.random() * Math.pow(10, precision)) / Math.pow(10, precision);
 
         while (randomNum >= num) {
@@ -20,6 +21,31 @@ public class RandomUtilsme {
         }
         return randomNum;
     }
+
+    private static final Random RANDOM = new Random();
+
+    public static double generateRandomDecimalLessThan(double num, int precision) {
+        // 确保 precision 是非负整数
+        if (precision < 0) {
+            throw new IllegalArgumentException("Precision must be a non-negative integer.");
+        }
+
+        // 生成 [0, num) 范围内的随机数，向下取整到小数点后 precision 位
+        double lowerBound = 0;
+        double upperBoundExclusive = Math.pow(10, precision) * num;
+        Random random = new Random();
+
+        // 使用 nextDouble() 生成 [0, 1) 区间内的随机浮点数
+        double randomFraction = random.nextDouble();
+        // 将其放大到所需的精度范围，并向下取整
+        double scaledRandom = Math.floor(randomFraction * upperBoundExclusive);
+
+        // 将结果除以 10^precision，得到所需精度的小数
+        double result = scaledRandom / Math.pow(10, precision);
+        BigDecimal bigDecimal = new BigDecimal(result).setScale(precision, BigDecimal.ROUND_HALF_UP);
+        return bigDecimal.doubleValue();
+    }
+
 
     public static Double getRandomAmount(double min,double max) {
 
@@ -78,6 +104,6 @@ public class RandomUtilsme {
 
 
     public static void main(String[] args) {
-        System.out.println(  new BigDecimal(getRandomAmount(800,1200)).toPlainString());
+        System.out.println(  new BigDecimal(generateRandomDecimalLessThan(0.000000009,9)).toPlainString());
     }
 }

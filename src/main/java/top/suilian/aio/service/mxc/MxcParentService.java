@@ -5,12 +5,14 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
+import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.service.mxc.randomDepth.RunMxcDeep;
 import top.suilian.aio.vo.getAllOrderPonse;
 
 import java.io.UnsupportedEncodingException;
@@ -30,6 +32,7 @@ public class MxcParentService extends BaseService implements RobotAction {
     public int valid = 1;
     public String exceptionMessage = null;
     public String[] transactionArr = new String[24];
+    public RunMxcDeep runMxcDeep = BeanContext.getBean(RunMxcDeep.class);
 
     //设置交易量百分比
     public void setTransactionRatio() {

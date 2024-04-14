@@ -10,14 +10,13 @@ import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.runnable.StopableTask;
 import top.suilian.aio.service.*;
 
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class RunMxcDepth {
+public class RunMxcDeep {
     //region    Service
     @Autowired
     CancelExceptionService cancelExceptionService;
@@ -54,7 +53,7 @@ public class RunMxcDepth {
      */
     public void init(int id) {
         //实例化策略对象
-        MxcDepth randomDepth = new MxcDepth(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
+        MxcDeep randomDepth = new MxcDeep(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
         redisHelper.initRobot(id);
         work = new Work(randomDepth);
         works.add(work);
@@ -112,9 +111,9 @@ public class RunMxcDepth {
     }
 
     class Work extends StopableTask<Work> {
-        MxcDepth randomDepth;
+        MxcDeep randomDepth;
 
-        public Work(MxcDepth randomDepth) {
+        public Work(MxcDeep randomDepth) {
             super(randomDepth.id);
             this.randomDepth = randomDepth;
         }

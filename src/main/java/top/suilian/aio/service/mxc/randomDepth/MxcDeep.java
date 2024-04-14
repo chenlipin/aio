@@ -1,29 +1,27 @@
-package top.suilian.aio.service.bika.deepChange;
+package top.suilian.aio.service.mxc.randomDepth;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import lombok.Data;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.HttpUtil;
-import top.suilian.aio.Util.RandomUtilsme;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.basic.OrderVO;
 import top.suilian.aio.service.bika.BikaaParentService;
+import top.suilian.aio.service.mxc.MxcParentService;
 import top.suilian.aio.vo.Order;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class BikaDeep extends BikaaParentService {
-    public BikaDeep(
+public class MxcDeep extends MxcParentService {
+    public MxcDeep(
             CancelExceptionService cancelExceptionService,
             CancelOrderService cancelOrderService,
             ExceptionMessageService exceptionMessageService,
@@ -72,6 +70,15 @@ public class BikaDeep extends BikaaParentService {
             logger.info("深度变化设置机器人交易规则结束");
             start = false;
         }
+        Map<String, String> paramKline = getParamKline();
+        if (!"1".equals(paramKline.get("isdeepRobot"))){
+            try {
+                Thread.sleep(60*1000);
+                return;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         int i1 = RandomUtils.nextInt(5);
         if (2 == i1) {
             try {
@@ -82,13 +89,13 @@ public class BikaDeep extends BikaaParentService {
         }
         if (orderVOSLast.size() >= 10) {
             try {
-                Thread.sleep(10000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             logger.info("orderVOSLast错误-------------");
         }
-        System.out.println("------------"+JSON.toJSONString(orderVOSLast));
+
         //撤掉盘口单子
         if (orderVOSLast.size() > 0) {
             List<Order> collect = orderVOSLast.stream().filter(Order::getFirstCancle).collect(Collectors.toList());
@@ -98,37 +105,39 @@ public class BikaDeep extends BikaaParentService {
                 if (order.getOrderId() != null) {
                     try {
                         cancelTrade(order.getOrderId());
-                    } catch (UnsupportedEncodingException e) {
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }
             }
         }
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        String trades = httpUtil.get(baseUrl + "/sapi/v1/depth?symbol=" + exchange.get("market").toUpperCase());
-        String relishMin = exchange.get("relishMin");
-        String relishMax = exchange.get("relishMax");
 
-        //获取深度 判断平台撮合是否成功
-        com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
+        String relishMin = exchange.get("depthOrderLowerLimit");
+        String relishMax = exchange.get("depthOrderTopLimit");
 
-        if (tradesObj != null) {
+        String trades = getDepth();
+        JSONObject tradesObj = judgeRes(trades, "code", "getRandomPrice");
 
-            List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
+        if (trades != null && !trades.isEmpty() && tradesObj != null) {
 
-            List<List<String>> sellPrices = (List<List<String>>) tradesObj.get("asks");
+            JSONObject result = tradesObj.getJSONObject("data");
 
-            int range = Integer.parseInt(exchange.get("range").toString());
+            List<JSONObject> buyPrices = (List<JSONObject>) result.get("bids");
 
-            BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
-            BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
+            List<JSONObject> sellPrices = (List<JSONObject>) result.get("asks");
 
-            BigDecimal buyPriRange = new BigDecimal(String.valueOf(buyPrices.get(range).get(0)));
-            BigDecimal sellPriRange = new BigDecimal(String.valueOf(sellPrices.get(range).get(0)));
+            BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).getString("price")));
+            BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).getString("price")));
+
+            BigDecimal buyPriRange = new BigDecimal(String.valueOf(buyPrices.get(5).getString("price")));
+
+
+            BigDecimal sellPriRange =new BigDecimal(String.valueOf(sellPrices.get(5).getString("price")));
 
             if (sellPri.compareTo(buyPri) <= 0) {
                 //平台撮合功能失败
@@ -145,7 +154,6 @@ public class BikaDeep extends BikaaParentService {
             if (randomRange1 == 0) {
                 randomRange1 = 1;
             }
-            int amountPrecision = Integer.parseInt(exchange.get("amountPrecision").toString());
             int pricePrecision = Integer.parseInt(exchange.get("pricePrecision").toString());
 
             double pow = Math.pow(10, pricePrecision);
@@ -154,7 +162,6 @@ public class BikaDeep extends BikaaParentService {
 
             BigDecimal change1 = new BigDecimal("1").divide(new BigDecimal(pow), pricePrecision, BigDecimal.ROUND_HALF_UP);
             change1 = change1.multiply(new BigDecimal(randomRange1));
-
 
             for (int i = 0; i < 2; i++) {
                 Order orderBuy = new Order();
@@ -182,19 +189,14 @@ public class BikaDeep extends BikaaParentService {
                 for (Order orderVO : orderVOS) {
                     String resultJson = submitOrder(orderVO.getType(), orderVO.getPrice(), orderVO.getAmount());
                     JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
-                    if (jsonObject != null && jsonObject.getString("origQty") != null) {
+                    if (jsonObject != null && "200".equals(jsonObject.getString("code"))) {
                         try {
                             Thread.sleep(200);
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
-                        String orderId = jsonObject.getJSONArray("orderId").getString(0);
+                        String orderId = jsonObject.getString("data");
                         orderVO.setOrderId(orderId);
-                    }
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
                     }
                 }
                 logger.info("补单详情" + com.alibaba.fastjson.JSONObject.toJSONString(orderVOS));

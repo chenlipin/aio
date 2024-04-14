@@ -62,6 +62,15 @@ public class BaseService {
         }
     }
 
+    public Map<String,String> getParamKline() {
+        List<RobotArgs> robotArgsList = robotArgsService.findAll(id-1);
+        HashMap<String, String> stringStringHashMap = new HashMap<>();
+        for (RobotArgs robotArgs : robotArgsList) {
+            stringStringHashMap.put(String.valueOf(robotArgs.getVariable()), robotArgs.getValue());
+        }
+        return stringStringHashMap;
+    }
+
     /**
      * 设置机器人参数
      */

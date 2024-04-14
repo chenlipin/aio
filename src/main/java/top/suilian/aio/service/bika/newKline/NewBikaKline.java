@@ -63,8 +63,13 @@ public class NewBikaKline extends BikaaParentService {
         private int eatOrder = 0;//吃单数量
         private String transactionRatio = "1";
         private int maxEatOrder = 0;
+
+        private String orderIdBu="0";
         private int timeSlot = 1;
+
         private BigDecimal tradeRatio = new BigDecimal(5);
+
+        long ordersleeptime = System.currentTimeMillis();
 
 
 
@@ -237,6 +242,7 @@ public class NewBikaKline extends BikaaParentService {
                         if (jsonObject1 != null && jsonObject1.getString("origQty")!=null) {
                             orderIdTwo = jsonObject1.getJSONArray("orderId").getString(0);
                             removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
+                            ordersleeptime = System.currentTimeMillis();
 
                         } else {
                             String res = cancelTrade(orderIdOne);
@@ -323,6 +329,22 @@ public class NewBikaKline extends BikaaParentService {
 
                 BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
                 BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
+
+                long l = 1000 * 60 * 2 + (RandomUtils.nextInt(10) * 1000L);
+                logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
+                if (System.currentTimeMillis() - ordersleeptime > l) {
+                    logger.info("开始补单子");
+                    boolean type = RandomUtils.nextBoolean();
+                    String resultJson = submitOrder(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
+                    JSONObject jsonObject1 = judgeRes(resultJson, "code", "submitTrade");
+
+                    if (jsonObject1 != null && jsonObject1.getString("origQty")!=null) {
+                        orderIdBu = jsonObject1.getJSONArray("orderId").getString(0);
+                        removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
+                        ordersleeptime = System.currentTimeMillis();
+                        logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
+                    }
+                }
 
 
                 BigDecimal intervalPrice = sellPri.subtract(buyPri);

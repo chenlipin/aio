@@ -6,7 +6,7 @@ import top.suilian.aio.Util.Constant;
 import top.suilian.aio.service.mxc.depthRefer.RunMxcRefer;
 import top.suilian.aio.service.mxc.kline.RunMxcKline;
 import top.suilian.aio.service.mxc.newKline.RunNewMxcKline;
-import top.suilian.aio.service.mxc.randomDepth.RunMxcDepth;
+import top.suilian.aio.service.mxc.randomDepth.RunMxcDeep;
 import top.suilian.aio.service.mxc.replenish.RunMxcReplenish;
 
 @Component
@@ -16,7 +16,7 @@ public class MxcService {
     @Autowired
     RunNewMxcKline runNewMxcKline;
     @Autowired
-    RunMxcDepth runMxcDepth;
+    RunMxcDeep runMxcDepth;
     @Autowired
     RunMxcReplenish runMxcReplenish;
     @Autowired
@@ -46,6 +46,7 @@ public class MxcService {
                 break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewMxcKline.init(id);
+                runMxcDepth.init(id+1);
                 break;
             case Constant.KEY_STRATEGY_REPLENISH:
                 runMxcReplenish.init(id);
@@ -102,6 +103,7 @@ public class MxcService {
                 break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewMxcKline.killWork(id);
+                runNewMxcKline.killWork(id+1);
                 break;
             case Constant.KEY_STRATEGY_REPLENISH:
                 runMxcReplenish.killWork(id);
