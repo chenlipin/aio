@@ -133,8 +133,8 @@ public class BaseController {
     GokoService gokoService;
     @Autowired
     BiLianService biLianService;
-    @Autowired
-    HotCoinService hotCoinService;
+//    @Autowired
+//    HotCoinService hotCoinService;
 
     @Autowired
     LaexService laexService;

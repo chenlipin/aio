@@ -102,6 +102,8 @@ public class NewBikaKline extends BikaaParentService {
                 maxEatOrder = Integer.parseInt(exchange.get("maxEatOrder"));//吃单成交上限数
                 start = false;
             }
+
+            logger.info("开始");
             int index = Integer.valueOf(new Date().getHours());
             //获取当前小时内的单量百分比
             transactionRatio = transactionArr[index];

@@ -4,19 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d75be7ea-6133-404a-b2fc-c8205f50dd92" name="Changes" comment="bika">
+    <list default="true" id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/RandomUtilsme.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/RandomUtilsme.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/BaseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/BaseService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bika/deepChange/BikaDeep.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bika/deepChange/BikaDeep.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bika/newKline/NewBikaKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bika/newKline/NewBikaKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/NewHotcoinKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/NewHotcoinKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/MxcParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/MxcParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/MxcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/MxcService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/newKline/NewMxcKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/newKline/NewMxcKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/randomDepth/MxcDepth.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/randomDepth/RunMxcDepth.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/citex/CitexParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/citex/CitexParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/citex/kline/CitexKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/citex/kline/CitexKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/HotCoinService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/HotCoinService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,27 +18,13 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Class" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="MavenImportPreferences">
-    <option name="generalSettings">
-      <MavenGeneralSettings>
-        <option name="useMavenConfig" value="true" />
-      </MavenGeneralSettings>
-    </option>
-  </component>
-  <component name="ProjectId" id="2ZAdo3ffeMrsCfYchKWkrtGoMTa" />
+  <component name="ProjectId" id="2fVUr6x7qNwvNDFz2KzE9FfibyL" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
   </component>
@@ -54,208 +34,46 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/javawork/aio/src/main/java/top/suilian/aio/service/mxc/randomDepth",
-    "nodejs_package_manager_path": "npm",
     "spring.configuration.checksum": "144066ff0da09361c9fe2b8fd900c61f"
   }
 }]]></component>
-  <component name="ReactorSettings">
-    <option name="notificationShown" value="true" />
-  </component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\javawork\aio\src\main\java\top\suilian\aio\service\mxc\randomDepth" />
-      <recent name="C:\javawork\aio\src\main\java\top\suilian\aio\service\bika\deepChange" />
-      <recent name="C:\javawork\aio\src\main\java\top\suilian\aio\service\hotcoin\refToOk" />
-      <recent name="C:\javawork\aio\src\main\java\top\suilian\aio\service\bika" />
-      <recent name="C:\javawork\aio\src\main\java\top\suilian\aio\service\xt" />
-    </key>
-  </component>
-  <component name="RunManager" selected="Spring Boot.AioApplication">
-    <configuration name="BianUtils" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="top.suilian.aio.refer.BianUtils" />
-      <module name="aio" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="top.suilian.aio.refer.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="RandomUtilsme" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="top.suilian.aio.Util.RandomUtilsme" />
-      <module name="aio" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="top.suilian.aio.Util.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="AioApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+  <component name="RunManager">
+    <configuration name="AioApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
       <module name="aio" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="top.suilian.aio.AioApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="top.suilian.aio.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.RandomUtilsme" />
-        <item itemvalue="Application.BianUtils" />
+        <item itemvalue="Spring Boot.AioApplication" />
       </list>
     </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="d75be7ea-6133-404a-b2fc-c8205f50dd92" name="Changes" comment="" />
-      <created>1701868991866</created>
+      <changelist id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="" />
+      <created>1713885936149</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1701868991866</updated>
-      <workItem from="1701868993939" duration="316000" />
-      <workItem from="1702123681716" duration="605000" />
-      <workItem from="1702382887343" duration="3655000" />
-      <workItem from="1702473624751" duration="303000" />
-      <workItem from="1702650930081" duration="639000" />
-      <workItem from="1703418080528" duration="373000" />
-      <workItem from="1703418467065" duration="290000" />
-      <workItem from="1704372966085" duration="1633000" />
-      <workItem from="1705726788723" duration="11039000" />
-      <workItem from="1705837971147" duration="2745000" />
-      <workItem from="1706267831162" duration="15364000" />
-      <workItem from="1706357946821" duration="599000" />
-      <workItem from="1706714817542" duration="613000" />
-      <workItem from="1708343868850" duration="4233000" />
-      <workItem from="1710160402044" duration="2840000" />
-      <workItem from="1710333767891" duration="2947000" />
-      <workItem from="1710414980568" duration="1844000" />
-      <workItem from="1710501185188" duration="12040000" />
-      <workItem from="1710855304157" duration="2542000" />
-      <workItem from="1711986295243" duration="11034000" />
-      <workItem from="1712149767733" duration="3513000" />
-      <workItem from="1712306770979" duration="37368000" />
-      <workItem from="1712924963963" duration="7888000" />
-      <workItem from="1713016774693" duration="12632000" />
+      <updated>1713885936149</updated>
+      <workItem from="1713885939050" duration="367000" />
     </task>
-    <task id="LOCAL-00001" summary="0000">
-      <created>1702383162499</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1702383162499</updated>
-    </task>
-    <task id="LOCAL-00002" summary="felt">
-      <created>1705843121827</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1705843121827</updated>
-    </task>
-    <task id="LOCAL-00003" summary="bika">
-      <created>1710858101400</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1710858101400</updated>
-    </task>
-    <task id="LOCAL-00004" summary="bika">
-      <created>1711997741264</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1711997741264</updated>
-    </task>
-    <task id="LOCAL-00005" summary="bika">
-      <created>1712390560843</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1712390560843</updated>
-    </task>
-    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="Vcs.Log.History.Properties">
-    <option name="COLUMN_ID_ORDER">
-      <list>
-        <option value="Default.Root" />
-        <option value="Default.Author" />
-        <option value="Default.Date" />
-        <option value="Default.Subject" />
-        <option value="Space.CommitStatus" />
-      </list>
-    </option>
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-        <entry key="b77e27d1-a883-4d18-847e-74d0bdf00e32">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="0000" />
-    <MESSAGE value="felt" />
-    <MESSAGE value="bika" />
-    <option name="LAST_COMMIT_MESSAGE" value="bika" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bika/BikaaParentService.java</url>
-          <line>232</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bika/deepChange/BikaDeep.java</url>
-          <line>92</line>
-          <option name="timeStamp" value="13" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bika/deepChange/BikaDeep.java</url>
-          <line>138</line>
-          <option name="timeStamp" value="14" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java</url>
-          <line>525</line>
-          <option name="timeStamp" value="16" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java</url>
-          <line>451</line>
-          <option name="timeStamp" value="18" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/aio$AioApplication.ic" NAME="AioApplication Coverage Results" MODIFIED="1674284664525" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />

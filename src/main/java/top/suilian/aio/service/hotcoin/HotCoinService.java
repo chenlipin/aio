@@ -3,6 +3,7 @@ package top.suilian.aio.service.hotcoin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
+import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinDeep;
 import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
 import top.suilian.aio.service.hotcoin.depthReferToZg.RunDepthHotcoinReferToZg;
 import top.suilian.aio.service.hotcoin.kline.RunHotCoinKline;
@@ -23,6 +24,8 @@ public class HotCoinService {
     RunNewHotcoinKline runNewHotcoinKline;
     @Autowired
     RunHotcoinRandomDepth runHotcoinRandomDepth;
+    @Autowired
+    RunHotcoinDeep runHotcoinDeep;
     @Autowired
     RunhotcoinReplenish replenish;
     @Autowired
@@ -48,13 +51,14 @@ public class HotCoinService {
             case Constant.KEY_STRATEGY_CANCEL:
                 break;
             case Constant.KEY_RANDOM_DEPTH:
-                runHotcoinRandomDepth.init(id);
+                runHotcoinDeep.init(id);
                 break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewHotcoinKline.init(id);
                 break;
             case Constant.KEY_STRATEGY_REPLENISH:
                 replenish.init(id);
+                runHotcoinDeep.init(id+1);
                 break;
             case 9:
                 runhotcoinRep2Ok.init(id);
@@ -76,7 +80,7 @@ public class HotCoinService {
             case Constant.KEY_STRATEGY_CANCEL:
                 break;
             case Constant.KEY_RANDOM_DEPTH:
-                runHotcoinRandomDepth.stopWork(id);
+                runHotcoinDeep.stopWork(id);
                 break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewHotcoinKline.stopWork(id);
@@ -98,11 +102,11 @@ public class HotCoinService {
             case Constant.KEY_STRATEGY_CANCEL:
                 break;
             case Constant.KEY_RANDOM_DEPTH:
-                runHotcoinRandomDepth.killWork(id);
+                runHotcoinDeep.killWork(id);
                 break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewHotcoinKline.killWork(id);
-                runHotcoinRandomDepth.killWork(id+1);
+                runHotcoinDeep.killWork(id+1);
                 break;
             case Constant.KEY_STRATEGY_REPLENISH:
                 replenish.killWork(id);

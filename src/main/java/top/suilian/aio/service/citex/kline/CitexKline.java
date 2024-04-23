@@ -79,6 +79,15 @@ public class CitexKline extends CitexParentService {
             setTransactionRatio();
             logger.info("设置机器人参数结束");
 
+
+          try {
+              String s = submitTrade(2, new BigDecimal("1"), new BigDecimal("5"));
+              System.out.println(s);
+              Thread.sleep(100000L);
+          }catch (Exception e){
+              Thread.sleep(100000L);
+          }
+
             setBalanceRedis();
 
             //判断走K线的方式

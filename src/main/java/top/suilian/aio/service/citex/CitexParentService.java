@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class CitexParentService extends BaseService implements RobotAction {
-    public String baseUrl = "https://openapi.citex.info";
+    public String baseUrl = "https://openapi.citex.io/spot";
     public String host = "api.citex.io";
     public RunHooRandomDepth runHooRandomDepth = BeanContext.getBean(RunHooRandomDepth.class);
     public Map<String, Object> precision = new HashMap<String, Object>();
@@ -93,27 +93,30 @@ public class CitexParentService extends BaseService implements RobotAction {
         String typeStr = type == 1 ? "买" : "卖";
         logger.info("robotId:" + id + "robotId:" + id + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
         String trade = null;
-
+        String apikey = exchange.get("apikey");
+        String tpass = exchange.get("tpass");
+        long time = System.currentTimeMillis();
         BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
         BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
+        // 签名过程
+        String pattern = "ts=%s,apiKey=%s,apiSecret=%s";
+        // ts有时效性，超过10秒则无效
+        String data = String.format(pattern, time, apikey, tpass);
+        // 使用MD5工具对数据进行加密，生成32位的十六进制字符串（不区分大小写）
+        String sign =HMAC.MD5(data);
+
         Map<String, String> param = new TreeMap<>();
-        param.put("newClientOrderId", "XXH" + String.valueOf(new Date().getTime()));
-        param.put("type", "LIMIT");
-        param.put("side", type == 1 ? "BUY" : "SELL");
+        param.put("side", type == 1 ? "0" : "1");
+        param.put("orderType", "0");
+        param.put("priceType", "1");
         param.put("symbol", exchange.get("market"));
         param.put("price", String.valueOf(price1));
-        param.put("volume", String.valueOf(num));
-        String body = JSON.toJSONString(param);
+        param.put("orderQty", String.valueOf(num));
         HashMap<String, String> head = new HashMap<String, String>();
-        String apikey = exchange.get("apikey");
-        String timestamp = System.currentTimeMillis() + "";
-        String method = "POST";
-        String requestPath = "/sapi/v1/order";
-        head.put("X-CH-APIKEY", apikey);
-        head.put("X-CH-TS", timestamp);
-        String payload = (timestamp + method + requestPath + body);
-        String sign = HMAC.sha256_HMAC(payload, exchange.get("tpass"));
-        head.put("X-CH-SIGN", sign);
+        String requestPath = "/order/place";
+        head.put("apiKey", apikey);
+        head.put("ts", time+"");
+        head.put("sign", sign);
         try {
             trade = httpUtil.postByPackcoin(baseUrl + requestPath, param, head);
         } catch (UnsupportedEncodingException e) {
