@@ -3,6 +3,7 @@ package top.suilian.aio.service.hotcoin.RandomDepth;
 import net.sf.json.JSONObject;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
+import top.suilian.aio.model.Robot;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
 import top.suilian.aio.service.hotcoin.HotCoinParentService;
@@ -55,6 +56,11 @@ public class HotcoinRandomDepth extends HotCoinParentService {
 
             logger.info("设置深度机器人交易规则结束");
             start = false;
+        }
+
+        Robot robot = robotService.findById(id-1);
+        if(robot==null||robot.getStatus()==0){
+            return;
         }
         if (Integer.parseInt(exchange.get("depthCancelNum")) >= depthCancelOrderNum) {
             //获取深度

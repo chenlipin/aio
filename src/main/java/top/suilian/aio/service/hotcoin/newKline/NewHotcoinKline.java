@@ -82,6 +82,9 @@ public class NewHotcoinKline extends HotCoinParentService {
             setPrecision();
             logger.info("设置机器人交易规则结束");
 
+            /**
+             * 深度
+             */
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本

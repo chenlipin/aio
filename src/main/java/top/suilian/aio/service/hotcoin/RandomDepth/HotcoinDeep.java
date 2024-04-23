@@ -69,16 +69,16 @@ public class HotcoinDeep extends HotCoinParentService {
             logger.info("深度变化设置机器人交易规则结束");
             start = false;
         }
-        Map<String, String> paramKline = getParamKline();
-        if (!"1".equals(paramKline.get("isdeepRobot"))) {
-            try {
-                logger.info("没开启深度机器人  返回-------------");
-                Thread.sleep(60 * 1000);
-                return;
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
+//        Map<String, String> paramKline = getParamKline();
+//        if (!"1".equals(paramKline.get("isdeepRobot"))) {
+//            try {
+//                logger.info("没开启深度机器人  返回-------------");
+//                Thread.sleep(60 * 1000);
+//                return;
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
         int i1 = RandomUtils.nextInt(5);
         if (2 == i1) {
             try {
@@ -205,16 +205,16 @@ public class HotcoinDeep extends HotCoinParentService {
                 orderBuy.setType(1);
                 orderBuy.setAmount(orderAmount);
                 orderBuy.setPrice(orderPrice.setScale(pricePrecision, RoundingMode.HALF_UP));
-                logger.info("- 买-开始深度单-深度价格：" + buyPriRange + "~~" + buyPri + "--补价格" + orderBuy.getPrice());
+                logger.info("- 买-开始深度单-深度价格：" + buyPriRange + "~~" + buyPriDeep1 + "--补价格" + orderBuy.getPrice());
                 orderVOS.add(orderBuy);
 
                 Order orderSell = new Order();
                 BigDecimal orderAmountSell = getOrderAmount(relishMin, relishMax, 5);
-                BigDecimal orderPriceSell = getOrderAmount(sellPriDeep2.toString(), sellPriRange.toString(), 5);
+                BigDecimal orderPriceSell = getOrderAmount(sellPriDeep2.toString(), sellPriRange.toString(), pricePrecision);
                 orderSell.setType(2);
                 orderSell.setAmount(orderAmountSell);
                 orderSell.setPrice(orderPriceSell.setScale(pricePrecision, RoundingMode.HALF_UP));
-                logger.info("- 卖-开始深度单-深度价格：" + sellPri + "~~" + sellPriRange + "--补价格" + orderSell.getPrice());
+                logger.info("- 卖-开始深度单-深度价格：" + sellPriDeep2 + "~~" + sellPriRange + "--补价格" + orderSell.getPrice());
                 orderVOS.add(orderSell);
             }
 
@@ -228,7 +228,7 @@ public class HotcoinDeep extends HotCoinParentService {
                     if (jsonObject != null && jsonObject.getInt("code") == 200) {
                         String orderId = jsonObject.getJSONObject("data").getString("ID");
                         try {
-                            Thread.sleep(200);
+                            Thread.sleep(1000);
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
@@ -261,8 +261,9 @@ public class HotcoinDeep extends HotCoinParentService {
                                     setWarmLog(id,2,"闪单撞单,订单{"+order.getOrderId()+"}撤单,撞单数为"+tradeNum,"");
                                 }
                             }
-                            Thread.sleep(100);
-                            cancelTrade(order.getOrderId());
+                            Thread.sleep(1000);
+                            String s = cancelTrade(order.getOrderId());
+                            logger.info("撤单--" + order.getOrderId()+"结果："+s);
                         } catch (Exception e) {
                             logger.info("-----------------失败-------------------" + e.getMessage());
                         }
@@ -273,7 +274,7 @@ public class HotcoinDeep extends HotCoinParentService {
             orderVOS.clear();
             logger.info("-----------------撤单结束-------------------");
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

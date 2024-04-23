@@ -55,10 +55,10 @@ public class HotCoinService {
                 break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewHotcoinKline.init(id);
+
                 break;
             case Constant.KEY_STRATEGY_REPLENISH:
                 replenish.init(id);
-                runHotcoinDeep.init(id+1);
                 break;
             case 9:
                 runhotcoinRep2Ok.init(id);

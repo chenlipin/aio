@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import top.suilian.aio.Util.CommonUtil;
 import top.suilian.aio.Util.Constant;
+import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.request.OperationRequest;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -85,7 +87,12 @@ public class ServiceController extends BaseController {
                         biLianService.start(operationRequest.getId(), operationRequest.getType());
                         break;
                     case Constant.KEY_EXCHANGE_HOTCOIN:                //hotcoin
+
                         hotCoinService.start(operationRequest.getId(), operationRequest.getType());
+//                        RobotArgs isdeepRobot = robotArgsService.findOne(operationRequest.getId(), "isdeepRobot");
+//                        if (isdeepRobot!=null && isdeepRobot.getValue().equals("1")){
+//                            hotCoinService.start(operationRequest.getId()+1, 5);
+//                        }
                         break;
                     case Constant.KEY_EXCHANGE_WBFEX:                //wbfex
                         wbfexService.start(operationRequest.getId(), operationRequest.getType());
@@ -568,6 +575,10 @@ public class ServiceController extends BaseController {
                     break;
                 case Constant.KEY_EXCHANGE_HOTCOIN:                //xoxoex
                     hotCoinService.kill(operationRequest.getId(), operationRequest.getType());
+                    if (operationRequest.getType()==7){
+                        hotCoinService.kill(operationRequest.getId()+1, 5);
+                    }
+
                     break;
                 case Constant.KEY_EXCHANGE_WBFEX:                //wbfex
                     wbfexService.kill(operationRequest.getId(), operationRequest.getType());

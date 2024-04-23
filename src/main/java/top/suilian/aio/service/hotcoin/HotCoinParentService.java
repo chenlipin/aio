@@ -12,6 +12,7 @@ import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinDeep;
 import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
 import top.suilian.aio.vo.getAllOrderPonse;
 
@@ -34,6 +35,7 @@ public class HotCoinParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://api.hotcoinfin.com";
     public String host = "api.hotcoinfin.com";
     public RunHotcoinRandomDepth runHotcoinRandomDepth = BeanContext.getBean(RunHotcoinRandomDepth.class);
+    public RunHotcoinDeep runHotcoinDeep = BeanContext.getBean(RunHotcoinDeep.class);
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
