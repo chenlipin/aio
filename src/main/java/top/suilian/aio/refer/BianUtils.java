@@ -60,14 +60,12 @@ public class BianUtils extends BaseHttp {
 
     public static List<DeepVo> getHistory(String symbol) {
         List<DeepVo> deepVos = new ArrayList<>();
-        String trades = get(uri + "/api/v3/trades?limit=30" +
-                "" +
-                "&symbol=" + symbol.toUpperCase());
+        String trades = get(uri + "/api/v3/trades?limit=30&symbol=" + symbol.toUpperCase());
         JSONArray jsonArray = JSONArray.fromObject(trades);
         for (int i = 0; i < jsonArray.size(); i+=3) {
             DeepVo deepVo = new DeepVo();
             JSONObject jsonObject = jsonArray.getJSONObject(i);
-            BigDecimal price = new BigDecimal(jsonObject.getString("price")).setScale(4, RoundingMode.HALF_UP);
+            BigDecimal price = new BigDecimal(jsonObject.getString("price")).setScale(5, RoundingMode.HALF_UP);
             boolean b = deepVos.stream().anyMatch(e -> e.getPrice().compareTo(price) == 0);
             if (b){
                 continue;

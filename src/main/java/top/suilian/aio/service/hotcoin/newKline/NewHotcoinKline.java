@@ -2,6 +2,7 @@ package top.suilian.aio.service.hotcoin.newKline;
 
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import top.suilian.aio.BeanContext;
@@ -59,10 +60,13 @@ public class NewHotcoinKline extends HotCoinParentService {
     private String sellOrderId = "0";
     private String buyOrderId = "0";
     private int eatOrder = 0;//吃单数量
+
+    private int eatOrderPd = 0;//吃单数量 没盘口吃单
     private String transactionRatio = "1";
     private int maxEatOrder = 0;
     private int timeSlot = 1;
     private BigDecimal tradeRatio = new BigDecimal(5);
+    long ordersleeptime = System.currentTimeMillis();
 
 
 
@@ -259,6 +263,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
                     if (jsonObject1 != null && jsonObject1.getInt("code") == 200) {
+                        ordersleeptime = System.currentTimeMillis();
                         JSONObject data1 = jsonObject1.getJSONObject("data");
                         orderIdTwo = data1.getString("ID");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
@@ -363,6 +368,26 @@ public class NewHotcoinKline extends HotCoinParentService {
             BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
             BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
+
+            long l = 1000 * 60 * 2 + (RandomUtils.nextInt(10) * 1000L);
+            logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
+            if (System.currentTimeMillis() - ordersleeptime > l ) {
+
+                if (eatOrderPd<20) {
+                    logger.info("开始补单子");
+                    boolean type = RandomUtils.nextBoolean();
+                    String resultJson = submitOrder(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
+                    JSONObject jsonObject1 = judgeRes(resultJson, "code", "submitTrade");
+
+                    if (jsonObject1 != null && jsonObject1.getInt("code") == 200) {
+                        eatOrderPd++;
+                        ordersleeptime = System.currentTimeMillis();
+                        logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
+                    }
+                }else {
+                    setWarmLog(id,2,"吃盘口单数达到上限(" + eatOrderPd + ")=吃单成交上限数(" + eatOrderPd + "),吃单上限，停止吃单","");
+                }
+            }
 
             BigDecimal intervalPrice = sellPri.subtract(buyPri);
 
@@ -507,7 +532,8 @@ public class NewHotcoinKline extends HotCoinParentService {
                     setWarmLog(id,4,"买一卖一区间过小，无法量化卖1[" + sellPri + "]买1[" + buyPri + "]","");
                     setTradeLog(id, "买一卖一区间过小，无法量化------------------->卖1[" + sellPri + "]买1[" + buyPri + "]", 0, "FF111A");
                     logger.info("robotId" + id + "----" + "买一卖一区间过小，无法量化------------------->卖1[" + sellPri + "]买1[" + buyPri + "]");
-                    sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
+                    int i = RandomUtils.nextInt(20);
+                    sleep(i*10000, Integer.parseInt(exchange.get("isMobileSwitch")));
                     buyPrice = BigDecimal.ZERO;
                     sellPrice = BigDecimal.ZERO;
                     logger.info("robotId" + id + "----" + "旧版本回调获取价格");

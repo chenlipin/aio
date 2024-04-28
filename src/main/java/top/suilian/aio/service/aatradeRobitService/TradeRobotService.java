@@ -293,6 +293,7 @@ public class TradeRobotService {
 //        if (!checkSignature) {
 //            throw new RuntimeException("Signature失败");
 //        }
+        Robot robot = robotMapper.selectByPrimaryKey(req.getRobotId());
         RobotAction robotAction = getRobotAction(req.getRobotId());
         if (req.getRobotId()==17){
             List<getAllOrderPonse> getAllOrderPonses = robotAction.selectOrder();
@@ -302,16 +303,21 @@ public class TradeRobotService {
             return getAllOrderPonses.stream().filter(e->e.getMyself()==1).collect(Collectors.toList());
         }
 
+
         if (req.getRobotId()==556){
             List<getAllOrderPonse> getAllOrderPonses = robotAction.selectOrder();
                 return getAllOrderPonses;
         }
 
         if (req.getRobotId()==49){
-
             return robotAction.selectOrder();
 
         }
+        if (robot.getStrategyId()==18){
+            return robotAction.selectOrder();
+
+        }
+
         List<getAllOrderPonse> list = apitradeLogMapper.selectByRobotId(req.getRobotId());
         Map<String, Integer> map = robotAction.selectOrderStr(list.stream().filter(e -> e.getStatus().equals(0) || e.getStatus().equals(1)).map(getAllOrderPonse::getOrderId).collect(Collectors.joining(",", "", "")));
         for (getAllOrderPonse order : list) {

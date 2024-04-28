@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.Constant;
+import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
@@ -13,10 +14,7 @@ import top.suilian.aio.service.citex.CitexParentService;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static java.math.BigDecimal.ROUND_DOWN;
 
@@ -78,16 +76,6 @@ public class CitexKline extends CitexParentService {
             setParam();
             setTransactionRatio();
             logger.info("设置机器人参数结束");
-
-
-          try {
-              String s = submitTrade(2, new BigDecimal("1"), new BigDecimal("5"));
-              System.out.println(s);
-              Thread.sleep(100000L);
-          }catch (Exception e){
-              Thread.sleep(100000L);
-          }
-
             setBalanceRedis();
 
             //判断走K线的方式
@@ -101,6 +89,8 @@ public class CitexKline extends CitexParentService {
 
             maxEatOrder = Integer.parseInt(exchange.get("maxEatOrder"));//吃单成交上限数
             start = false;
+            submitTrade(1,new BigDecimal("0.1"),new BigDecimal("100"));
+            submitTrade(2,new BigDecimal("0.2"),new BigDecimal("100"));
         }
         int index = new Date().getHours();
         //获取当前小时内的单量百分比
@@ -114,7 +104,7 @@ public class CitexKline extends CitexParentService {
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-            if (tradesObj != null && tradesObj.getInteger("code") == 0) {
+            if (tradesObj != null && tradesObj.getInteger("code") == 200) {
                 com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
                 JSONArray bids = data.getJSONArray("bids");
                 JSONArray asks = data.getJSONArray("asks");
@@ -131,7 +121,7 @@ public class CitexKline extends CitexParentService {
 
 
             if (!"0".equals(sellOrderId)) {
-                selectOrderDetail(sellOrderId, 0, sellOrderIdtradeNo);
+                selectOrderDetail(sellOrderId);
                 sellOrderId = "0";
                 if (maxEatOrder != 0) {
                     eatOrder++;
@@ -141,7 +131,7 @@ public class CitexKline extends CitexParentService {
 
 
             if (!"0".equals(buyOrderId)) {
-                selectOrderDetail(buyOrderId, 0, buyOrderIdtradeNo);
+                selectOrderDetail(buyOrderId);
                 buyOrderId = "0";
                 if (maxEatOrder != 0) {
                     eatOrder++;
@@ -151,16 +141,16 @@ public class CitexKline extends CitexParentService {
 
 
             if (!"0".equals(sleepOrder)) {
-                selectOrderDetail(sleepOrder, 2, sleepOrdertradeNo);
+                selectOrderDetail(sleepOrder);
                 sleepOrder = "0";
             }
 
             if (!"0".equals(orderIdOne) && !"0".equals(orderIdTwo)) {
 
-                selectOrderDetail(orderIdOne, 1, orderIdOnetradeNo);
+                selectOrderDetail(orderIdOne);
 
                 orderIdOne = "0";
-                selectOrderDetail(orderIdTwo, 1, orderIdTwotradeNo);
+                selectOrderDetail(orderIdTwo);
                 orderIdTwo = "0";
 
                 String msg = "";
@@ -227,13 +217,13 @@ public class CitexKline extends CitexParentService {
                 String resultJson = submitTrade(type, price, num);
                 JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
-                if (jsonObject != null && jsonObject.getInt("code") == 0) {
-                    orderIdOne = jsonObject.getString("data");
-                    String resultJson1 = submitTrade(type == 1 ? -1 : 1, price, num);
+                if (jsonObject != null && jsonObject.getInt("code") == 200) {
+                    orderIdOne = jsonObject.getJSONObject("data").getString("orderId");
+                    String resultJson1 = submitTrade(type == 1 ? 1 : 2, price, num);
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
                     if (jsonObject1 != null && jsonObject1.getInt("code") == 0) {
-                        orderIdTwo = jsonObject1.getString("data");
+                        orderIdTwo = jsonObject1.getJSONObject("data").getString("orderId");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
                         ordersleeptime = System.currentTimeMillis();
                     } else {
@@ -272,15 +262,15 @@ public class CitexKline extends CitexParentService {
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-            if (tradesObj != null && tradesObj.getInteger("code") == 0) {
+            if (tradesObj != null && tradesObj.getInteger("code") == 200) {
                 com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
                 JSONArray bids = data.getJSONArray("bids");
                 JSONArray asks = data.getJSONArray("asks");
                 BigDecimal buyPri = new BigDecimal(bids.getJSONObject(0).getString("price"));
                 BigDecimal sellPri = new BigDecimal(asks.getJSONObject(0).getString("price"));
                 BigDecimal subtract = sellPri.subtract(buyPri);
-                logger.info("补单 buy1："+buyPri +"-sell1:"+sellPri +"--subtract:"+subtract +"比例"+subtract.divide(sellPri,RoundingMode.HALF_UP).setScale(12,  RoundingMode.HALF_UP).toPlainString());
-                if (subtract.divide(sellPri,RoundingMode.HALF_UP).setScale(12,  RoundingMode.HALF_UP).compareTo(new BigDecimal("0.02"))>0){
+                logger.info("补单 buy1：" + buyPri + "-sell1:" + sellPri + "--subtract:" + subtract + "比例" + subtract.divide(sellPri, RoundingMode.HALF_UP).setScale(12, RoundingMode.HALF_UP).toPlainString());
+                if (subtract.divide(sellPri, RoundingMode.HALF_UP).setScale(12, RoundingMode.HALF_UP).compareTo(new BigDecimal("0.02")) > 0) {
                     logger.info("补单开始0.02");
                     Double numThreshold1 = Double.valueOf(exchange.get("numThreshold"));
                     Double minNum = Double.valueOf(exchange.get("numMinThreshold"));
@@ -291,8 +281,8 @@ public class CitexKline extends CitexParentService {
                     BigDecimal num = oldNum.multiply(new BigDecimal(transactionRatio));
 
                     BigDecimal price = sellPri.multiply(new BigDecimal("0.976"));
-                    String resultJson1 = submitTrade( -1, price, num);
-                    setTradeLog(id, "补盘口单子 买："+buyPri+"---卖："+sellPri +"---补单价格："+price, 1);
+                    String resultJson1 = submitTrade(-1, price, num);
+                    setTradeLog(id, "补盘口单子 买：" + buyPri + "---卖：" + sellPri + "---补单价格：" + price, 1);
                     sleep(10 * 1000, Integer.parseInt(exchange.get("isMobileSwitch")));
                 }
             }
@@ -322,207 +312,170 @@ public class CitexKline extends CitexParentService {
                     break;
             }
         }
-            setBalanceRedis();
-            clearLog();
-            logger.info("\r\n------------------------------{" + id + "} 结束------------------------------\r\n");
-        }
-
-
-        /**
-         * 获得随机价格
-         *
-         * @return
-         */
-        public BigDecimal getRandomPrice () throws UnsupportedEncodingException {
-            BigDecimal price = null;
-
-            String trades = getDepth();
-            //获取深度 判断平台撮合是否成功
-            com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
-
-            if (tradesObj != null && tradesObj.getInteger("code") == 0) {
-                com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
-                JSONArray bids = data.getJSONArray("bids");
-                JSONArray asks = data.getJSONArray("asks");
-
-                BigDecimal buyPri = new BigDecimal(bids.getJSONObject(0).getString("price"));
-                BigDecimal sellPri = new BigDecimal(asks.getJSONObject(0).getString("price"));
-                long l = 1000 * 60 * 3 + (RandomUtils.nextInt(10) * 1000L);
-                BigDecimal intervalPrice = sellPri.subtract(buyPri);
-
-                logger.info("robotId" + id + "----" + "最新买一：" + buyPri + "，最新卖一：" + sellPri);
-                logger.info("robotId" + id + "----" + "当前买一卖一差值：" + intervalPrice);
-
-                //判断盘口买卖检测开关是否开启
-                if ("1".equals(exchange.get("isTradeCheck"))) {
-
-                    //吃堵盘口的订单
-                    BigDecimal buyAmount = new BigDecimal(bids.getJSONObject(0).getString("quantity"));
-                    BigDecimal sellAmount = new BigDecimal(asks.getJSONObject(0).getString("quantity"));
-                    BigDecimal minAmount = new BigDecimal(exchange.get("minTradeLimit").toString());
-                    if (maxEatOrder == 0) {
-                        logger.info("吃单上限功能未开启：maxEatOrder=" + maxEatOrder);
-                    } else if (maxEatOrder <= eatOrder) {
-                        setWarmLog(id, 2, "已吃堵盘口单总数(" + eatOrder + ")=吃单成交上限数(" + maxEatOrder + "),吃单上限，停止吃单", "");
-                        setTradeLog(id, "已吃堵盘口单总数(" + eatOrder + ")=吃单成交上限数(" + maxEatOrder + "),吃单上限，停止吃单", 0);
-                    }
-
-                    //吃买单
-                    if ("1".equals(exchange.get("isTradeCheck")) && buyAmount.compareTo(new BigDecimal(exchange.get("buyMinLimitAmount"))) < 1 && "1".equals(exchange.get("isBuyMinLimitAmount"))) {
-                        if ("0".equals(exchange.get("isSuspendTrade"))) {
-                            if (maxEatOrder == 0 || maxEatOrder > eatOrder) {
-                                if (buyAmount.compareTo(minAmount) == -1) {
-                                    buyAmount = minAmount;
-                                }
-                                try {
-                                    String sellOrder = submitTrade(-1, buyPri, buyAmount);
-                                    setTradeLog(id, "堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]", 0);
-                                    logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
-
-                                    JSONObject jsonObject = judgeRes(sellOrder, "code", "submitTrade");
-                                    if (jsonObject != null && jsonObject.getInt("code") == 200) {
-                                        sellOrderId = jsonObject.getString("data");
-                                    }
-                                    return price;
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        } else {
-                            setTradeLog(id, "出现疑似堵盘口订单，停止量化", 0, "000000");
-                            setWarmLog(id, 2, "出现疑似堵盘口订单，停止量化", "");
-                            setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
-                        }
-                    }
-
-                    //吃卖单
-                    if ("1".equals(exchange.get("isTradeCheck")) && sellAmount.compareTo(new BigDecimal(exchange.get("sellMinLimitAmount"))) < 1 && "1".equals(exchange.get("isSellMinLimitAmount"))) {
-                        //判断出现堵盘口单时的操作,是停止还是吃
-                        if ("0".equals(exchange.get("isSuspendTrade"))) {
-                            if (maxEatOrder == 0 || maxEatOrder > eatOrder) {
-                                if (sellAmount.compareTo(minAmount) == -1) {
-                                    sellAmount = minAmount;
-                                }
-                                try {
-                                    String buyOrder = submitTrade(1, sellPri, sellAmount);
-                                    setTradeLog(id, "堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]", 0);
-                                    logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
-
-                                    JSONObject jsonObject = judgeRes(buyOrder, "code", "submitTrade");
-                                    if (jsonObject != null && jsonObject.getInt("code") == 0) {
-                                        orderIdOne = jsonObject.getString("data");
-                                    }
-                                    return price;
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        } else {
-                            setTradeLog(id, "出现疑似堵盘口订单，停止量化", 0, "000000");
-                            setWarmLog(id, 2, "出现疑似堵盘口订单，停止量化", "");
-                            setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
-                        }
-                    }
-                }
-                int openIntervalFromPrice = new BigDecimal(exchange.get("openIntervalFromPrice")).compareTo(intervalPrice);
-                if ("1".equals(exchange.get("isOpenIntervalSwitch")) && openIntervalFromPrice < 0) {
-                    setTradeLog(id, "盘口空间过小", 0, "000000");
-                    setWarmLog(id, 2, "盘口空间过小,降低挂单频率", "");
-                    int st = (int) (Math.random() * (Integer.parseInt(exchange.get("endTime")) - Integer.parseInt(exchange.get("startTime"))) + Integer.parseInt(exchange.get("startTime")));
-                    sleep(st * 1000 + 60 * 1000 * 2, Integer.parseInt(exchange.get("isMobileSwitch")));
-
-                }
-
-                if ((buyPrice == BigDecimal.ZERO && sellPrice == BigDecimal.ZERO) || runTime == 0) {
-                    buyPrice = buyPri;
-                    sellPrice = sellPri;
-                }
-
-
-                BigDecimal disparity = sellPrice.subtract(buyPrice);
-                logger.info("robotId" + id + "----" + "上次买一：" + buyPrice + "，上次卖一：" + sellPrice);
-                logger.info("robotId" + id + "----" + "上次买一卖一差值：" + disparity);
-
-
-                Integer newScale = Integer.parseInt(exchange.get("pricePrecision").toString());
-
-                logger.info("robotId" + id + "----" + "等份数：" + exchange.get("priceRange"));
-                logger.info("robotId" + id + "----" + "价格保存小数位：" + newScale);
-                BigDecimal interval = nN(disparity.divide(new BigDecimal(exchange.get("priceRange")), newScale, ROUND_DOWN), newScale);
-
-                logger.info("robotId" + id + "----" + "区间值：" + interval);
-
-
-                if ("0".equals(exchange.get("sheetForm"))) {
-                    logger.info("robotId" + id + "----" + "旧版本开始");
-                    BigDecimal diff = sellPri.subtract(buyPri);
-                    BigDecimal ss = diff.multiply(BigDecimal.valueOf(Math.pow(10, Double.valueOf(newScale))));
-                    int randomInt = (int) (1 + Math.random() * (ss.intValue() - 2 + 1));
-                    BigDecimal random = new BigDecimal(String.valueOf(randomInt)).divide(BigDecimal.valueOf(Math.pow(10, Double.valueOf(newScale))), newScale, ROUND_DOWN);
-                    BigDecimal oldPrice = buyPri.add(random);
-                    price = nN(oldPrice, newScale);
-                    logger.info("robotId" + id + "----" + "随机增长------->" + random);
-                    logger.info("robotId" + id + "----" + "小数位未处理的新价格------->" + oldPrice);
-                    logger.info("robotId" + id + "----" + "小数位已处理的新价格------->" + price);
-                    if (price.compareTo(sellPri) < 0 && price.compareTo(buyPri) > 0) {
-                        logger.info("robotId" + id + "----" + "旧版本结束");
-                        buyPrice = BigDecimal.ZERO;
-                        sellPrice = BigDecimal.ZERO;
-                    } else {
-                        setWarmLog(id, 4, "买一卖一区间过小，无法量化卖1[" + sellPri + "]买1[" + buyPri + "]", "");
-                        setTradeLog(id, "买一卖一区间过小，无法量化------------------->卖1[" + sellPri + "]买1[" + buyPri + "]", 0, "FF111A");
-                        logger.info("robotId" + id + "----" + "买一卖一区间过小，无法量化------------------->卖1[" + sellPri + "]买1[" + buyPri + "]");
-                        sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
-                        buyPrice = BigDecimal.ZERO;
-                        sellPrice = BigDecimal.ZERO;
-                        logger.info("robotId" + id + "----" + "旧版本回调获取价格");
-                        price = null;
-                    }
-                } else {
-                    logger.info("robotId" + id + "----" + "新版本开始");
-                    BigDecimal minPrice = buyPrice.add(interval.multiply(BigDecimal.valueOf(randomNum - 1)));
-                    BigDecimal maxPrice = buyPrice.add(interval.multiply(BigDecimal.valueOf(randomNum)));
-                    logger.info("robotId" + id + "----" + "minPrice(区间最小价格)：" + minPrice + "，maxPrice(区间最大价格)：" + maxPrice);
-                    BigDecimal diff = maxPrice.subtract(minPrice);
-                    BigDecimal random = diff.subtract(diff.multiply(BigDecimal.valueOf(Math.random())));
-                    logger.info("robotId" + id + "----" + "random(随机增长)：" + random);
-
-                    price = nN(minPrice.add(random), newScale);
-                    logger.info("robotId" + id + "----" + "price(新价格)：" + price);
-
-                    if (price.compareTo(buyPri) > 0 && price.compareTo(sellPri) < 0) {
-                        logger.info("robotId" + id + "----" + "新版本结束");
-                    } else {
-                        buyPrice = BigDecimal.ZERO;
-                        sellPrice = BigDecimal.ZERO;
-                        sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
-                        logger.info("robotId" + id + "----" + "新版本回调获取价格");
-                        price = null;
-                    }
-                }
-
-
-            } else {
-
-                logger.info("异常回调获取价格 trades(深度接口返回)=>" + trades);
-                sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
-                price = null;
-            }
-
-            removeSmsRedis(Constant.KEY_SMS_SMALL_INTERVAL);
-
-            return price;
-        }
-
-        public void selectOrderDetail (String orderId,int type, String orderIdtradeNo){
-        }
-
-        public static void main (String[]args){
-            for (; ; ) {
-
-                int type = RandomUtils.nextInt(10) > Double.parseDouble("0.8") * 10 ? 1 : -1;
-                System.out.println(type);
-            }
-
-        }
+        setBalanceRedis();
+        clearLog();
+        logger.info("\r\n------------------------------{" + id + "} 结束------------------------------\r\n");
     }
+
+
+    /**
+     * 获得随机价格
+     *
+     * @return
+     */
+    public BigDecimal getRandomPrice() throws UnsupportedEncodingException {
+        BigDecimal price = null;
+
+        String trades = getDepth();
+        //获取深度 判断平台撮合是否成功
+        com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
+
+        if (tradesObj != null && tradesObj.getInteger("code") == 200) {
+            com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
+            JSONArray bids = data.getJSONArray("bids");
+            JSONArray asks = data.getJSONArray("asks");
+
+            BigDecimal buyPri = new BigDecimal(bids.getJSONObject(0).getString("price"));
+            BigDecimal sellPri = new BigDecimal(asks.getJSONObject(0).getString("price"));
+            long l = 1000 * 60 * 3 + (RandomUtils.nextInt(10) * 1000L);
+            BigDecimal intervalPrice = sellPri.subtract(buyPri);
+
+            logger.info("robotId" + id + "----" + "最新买一：" + buyPri + "，最新卖一：" + sellPri);
+            logger.info("robotId" + id + "----" + "当前买一卖一差值：" + intervalPrice);
+
+            int openIntervalFromPrice = new BigDecimal(exchange.get("openIntervalFromPrice")).compareTo(intervalPrice);
+            if ("1".equals(exchange.get("isOpenIntervalSwitch")) && openIntervalFromPrice < 0) {
+                setTradeLog(id, "盘口空间过小", 0, "000000");
+                setWarmLog(id, 2, "盘口空间过小,降低挂单频率", "");
+                int st = (int) (Math.random() * (Integer.parseInt(exchange.get("endTime")) - Integer.parseInt(exchange.get("startTime"))) + Integer.parseInt(exchange.get("startTime")));
+                sleep(st * 1000 + 60 * 1000 * 2, Integer.parseInt(exchange.get("isMobileSwitch")));
+
+            }
+
+            if ((buyPrice == BigDecimal.ZERO && sellPrice == BigDecimal.ZERO) || runTime == 0) {
+                buyPrice = buyPri;
+                sellPrice = sellPri;
+            }
+
+
+            BigDecimal disparity = sellPrice.subtract(buyPrice);
+            logger.info("robotId" + id + "----" + "上次买一：" + buyPrice + "，上次卖一：" + sellPrice);
+            logger.info("robotId" + id + "----" + "上次买一卖一差值：" + disparity);
+
+
+            Integer newScale = Integer.parseInt(exchange.get("pricePrecision").toString());
+
+            logger.info("robotId" + id + "----" + "等份数：" + exchange.get("priceRange"));
+            logger.info("robotId" + id + "----" + "价格保存小数位：" + newScale);
+            BigDecimal interval = nN(disparity.divide(new BigDecimal(exchange.get("priceRange")), newScale, ROUND_DOWN), newScale);
+
+            logger.info("robotId" + id + "----" + "区间值：" + interval);
+
+
+            if ("0".equals(exchange.get("sheetForm"))) {
+                logger.info("robotId" + id + "----" + "旧版本开始");
+                BigDecimal diff = sellPri.subtract(buyPri);
+                BigDecimal ss = diff.multiply(BigDecimal.valueOf(Math.pow(10, Double.valueOf(newScale))));
+                int randomInt = (int) (1 + Math.random() * (ss.intValue() - 2 + 1));
+                BigDecimal random = new BigDecimal(String.valueOf(randomInt)).divide(BigDecimal.valueOf(Math.pow(10, Double.valueOf(newScale))), newScale, ROUND_DOWN);
+                BigDecimal oldPrice = buyPri.add(random);
+                price = nN(oldPrice, newScale);
+                logger.info("robotId" + id + "----" + "随机增长------->" + random);
+                logger.info("robotId" + id + "----" + "小数位未处理的新价格------->" + oldPrice);
+                logger.info("robotId" + id + "----" + "小数位已处理的新价格------->" + price);
+                if (price.compareTo(sellPri) < 0 && price.compareTo(buyPri) > 0) {
+                    logger.info("robotId" + id + "----" + "旧版本结束");
+                    buyPrice = BigDecimal.ZERO;
+                    sellPrice = BigDecimal.ZERO;
+                } else {
+                    setWarmLog(id, 4, "买一卖一区间过小，无法量化卖1[" + sellPri + "]买1[" + buyPri + "]", "");
+                    setTradeLog(id, "买一卖一区间过小，无法量化------------------->卖1[" + sellPri + "]买1[" + buyPri + "]", 0, "FF111A");
+                    logger.info("robotId" + id + "----" + "买一卖一区间过小，无法量化------------------->卖1[" + sellPri + "]买1[" + buyPri + "]");
+                    sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
+                    buyPrice = BigDecimal.ZERO;
+                    sellPrice = BigDecimal.ZERO;
+                    logger.info("robotId" + id + "----" + "旧版本回调获取价格");
+                    price = null;
+                }
+            } else {
+                logger.info("robotId" + id + "----" + "新版本开始");
+                BigDecimal minPrice = buyPrice.add(interval.multiply(BigDecimal.valueOf(randomNum - 1)));
+                BigDecimal maxPrice = buyPrice.add(interval.multiply(BigDecimal.valueOf(randomNum)));
+                logger.info("robotId" + id + "----" + "minPrice(区间最小价格)：" + minPrice + "，maxPrice(区间最大价格)：" + maxPrice);
+                BigDecimal diff = maxPrice.subtract(minPrice);
+                BigDecimal random = diff.subtract(diff.multiply(BigDecimal.valueOf(Math.random())));
+                logger.info("robotId" + id + "----" + "random(随机增长)：" + random);
+
+                price = nN(minPrice.add(random), newScale);
+                logger.info("robotId" + id + "----" + "price(新价格)：" + price);
+
+                if (price.compareTo(buyPri) > 0 && price.compareTo(sellPri) < 0) {
+                    logger.info("robotId" + id + "----" + "新版本结束");
+                } else {
+                    buyPrice = BigDecimal.ZERO;
+                    sellPrice = BigDecimal.ZERO;
+                    sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
+                    logger.info("robotId" + id + "----" + "新版本回调获取价格");
+                    price = null;
+                }
+            }
+
+
+        } else {
+
+            logger.info("异常回调获取价格 trades(深度接口返回)=>" + trades);
+            sleep(2000, Integer.parseInt(exchange.get("isMobileSwitch")));
+            price = null;
+        }
+
+        removeSmsRedis(Constant.KEY_SMS_SMALL_INTERVAL);
+
+        return price;
+    }
+
+    public String selectOrderDetail(String orderId) {
+        String trade = null;
+        String apikey = exchange.get("apikey");
+        String tpass = exchange.get("tpass");
+        long time = System.currentTimeMillis();
+        // 签名过程
+        String pattern = "ts=%s,apiKey=%s,apiSecret=%s";
+        // ts有时效性，超过10秒则无效
+        String data = String.format(pattern, time, apikey, tpass);
+        // 使用MD5工具对数据进行加密，生成32位的十六进制字符串（不区分大小写）
+        String sign = HMAC.MD5(data);
+
+
+        HashMap<String, String> head = new HashMap<String, String>();
+        String requestPath = "/order/datas/detail?orderId=" + orderId + "&symbol=" + exchange.get("market");
+        head.put("apiKey", apikey);
+        head.put("ts", time + "");
+        head.put("sign", sign);
+        try {
+            trade = httpUtil.getAddHead(baseUrl + requestPath, head);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        JSONObject jsonObject = judgeRes(trade, "code", "selectOrder");
+        if (jsonObject != null && jsonObject.getInt("code") == 200) {
+            int status = jsonObject.getJSONObject("data").getInt("status");
+            if (status == 5) {
+                setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
+            } else {
+                String res = cancelTrade(orderId);
+                JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
+                setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
+                setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");
+                if (Integer.valueOf(exchange.get("orderSumSwitch")) == 1) {    //防褥羊毛开关
+                    orderNum++;
+                    setWarmLog(id, 2, "订单{" + orderId + "}撤单,撞单数为" + orderNum, "");
+                }
+            }
+
+        }
+        return trade;
+    }
+
+
+    }
+

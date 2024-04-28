@@ -3,6 +3,7 @@ package top.suilian.aio.service.mxc.randomDepth;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
@@ -50,6 +51,7 @@ public class MxcDeep extends MxcParentService {
     public int depthCancelOrderNum = 0;
     private String buyOrederId = "";
     private String sellOrederId = "";
+    private Integer depthCancelNumPD=0;
     private List<Order> orderVOS = new ArrayList<>();
     private List<Order> orderVOSLast = new ArrayList<>();
 
@@ -69,15 +71,6 @@ public class MxcDeep extends MxcParentService {
             setPrecision();
             logger.info("深度变化设置机器人交易规则结束");
             start = false;
-        }
-        Map<String, String> paramKline = getParamKline();
-        if (!"1".equals(paramKline.get("isdeepRobot"))){
-            try {
-                Thread.sleep(60*1000);
-                return;
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
         }
         int i1 = RandomUtils.nextInt(5);
         if (2 == i1) {
@@ -119,7 +112,16 @@ public class MxcDeep extends MxcParentService {
 
         String relishMin = exchange.get("depthOrderLowerLimit");
         String relishMax = exchange.get("depthOrderTopLimit");
-
+        int depthCancelNum = Integer.parseInt(exchange.get("depthCancelNum"));
+        if (depthCancelNumPD>depthCancelNum){
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            setTradeLog(id, "深度闪单撞单已到最大数量："+depthCancelNum, 0, "FF111A");
+            return;
+        }
         String trades = getDepth();
         JSONObject tradesObj = judgeRes(trades, "code", "getRandomPrice");
 
@@ -214,10 +216,20 @@ public class MxcDeep extends MxcParentService {
                 for (Order order : collect) {
                     if (order.getOrderId() != null) {
                         try {
-                            cancelTrade(order.getOrderId());
+                            String s = selectOrder(order.getOrderId());
+                            JSONObject jsonObject = JSONObject.fromObject(s);
+                            if (jsonObject.getString("code").equals("200")){}
+                            JSONObject data = jsonObject.getJSONArray("data").getJSONObject(0);
+                            String deal_quantity = data.getString("deal_quantity");
+                            if (new BigDecimal(deal_quantity).compareTo(BigDecimal.ZERO)>0){
+                                depthCancelNumPD++;
+                                setTradeLog(id, "深度闪单撞单-当前撞单数量："+depthCancelNumPD, 0, "FF111A");
+                            }
+
                         } catch (Exception e) {
                             logger.info("-----------------失败-------------------" + e.getMessage());
                         }
+                        cancelTrade(order.getOrderId());
                     }
                 }
             }
@@ -226,7 +238,7 @@ public class MxcDeep extends MxcParentService {
             orderVOS.clear();
             logger.info("-----------------撤单结束-------------------");
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

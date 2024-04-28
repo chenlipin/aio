@@ -46,7 +46,6 @@ public class MxcService {
                 break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewMxcKline.init(id);
-                runMxcDepth.init(id+1);
                 break;
             case Constant.KEY_STRATEGY_REPLENISH:
                 runMxcReplenish.init(id);
@@ -103,7 +102,6 @@ public class MxcService {
                 break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewMxcKline.killWork(id);
-                runNewMxcKline.killWork(id+1);
                 break;
             case Constant.KEY_STRATEGY_REPLENISH:
                 runMxcReplenish.killWork(id);

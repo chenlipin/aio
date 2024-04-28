@@ -34,6 +34,7 @@ public class RunNewMxcKline {
     RobotService robotService;
     @Autowired
     TradeLogService tradeLogService;
+
     //endregion
 
 

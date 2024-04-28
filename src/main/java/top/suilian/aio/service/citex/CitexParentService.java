@@ -82,13 +82,7 @@ public class CitexParentService extends BaseService implements RobotAction {
     }
 
 
-    /**
-     * {"symbol":"IPFS81742USDT1742","side":"BUY","executedQty":0,"orderId":1748360171254947192,"price":1.23,"origQty":5.0,"clientOrderId":"XXH1689999227713","transactTime":1689999230197,"orderIdString":"1748360171254947192","type":"LIMIT","status":0}
-     * @param type
-     * @param price
-     * @param amount
-     * @return
-     */
+
     public String submitTrade(int type, BigDecimal price, BigDecimal amount)   {
         String typeStr = type == 1 ? "买" : "卖";
         logger.info("robotId:" + id + "robotId:" + id + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
@@ -132,7 +126,7 @@ public class CitexParentService extends BaseService implements RobotAction {
 
 
     public String getDepth(){
-        return httpUtil.get("https://api.citex.info/v1/common/snapshot/"+exchange.get("market"));
+        return httpUtil.get("https://www.citex.io/prod-api/market/depth?businessType=spot&depth=20&step=step0&symbol="+exchange.get("market"));
     }
 
 
@@ -143,17 +137,27 @@ public class CitexParentService extends BaseService implements RobotAction {
     protected String getBalance() {
 
         String trade = null;
-        HashMap<String, String> head = new HashMap<String, String>();
         String apikey = exchange.get("apikey");
-        String timestamp = System.currentTimeMillis() + "";
-        String method = "GET";
-        String requestPath = "/sapi/v1/account";
-        head.put("X-CH-APIKEY", apikey);
-        head.put("X-CH-TS", timestamp);
-        String payload = (timestamp + method + requestPath );
-        String sign = HMAC.sha256_HMAC(payload, exchange.get("tpass"));
-        head.put("X-CH-SIGN", sign);
-        trade = httpUtil.getAddHead(baseUrl + requestPath , head);
+        String tpass = exchange.get("tpass");
+        long time = System.currentTimeMillis();
+        // 签名过程
+        String pattern = "ts=%s,apiKey=%s,apiSecret=%s";
+        // ts有时效性，超过10秒则无效
+        String data = String.format(pattern, time, apikey, tpass);
+        // 使用MD5工具对数据进行加密，生成32位的十六进制字符串（不区分大小写）
+        String sign = HMAC.MD5(data);
+
+
+        HashMap<String, String> head = new HashMap<String, String>();
+        String requestPath = "/wallet/assets";
+        head.put("apiKey", apikey);
+        head.put("ts", time+"");
+        head.put("sign", sign);
+        try {
+            trade = httpUtil.getAddHead(baseUrl + requestPath, head);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return trade;
     }
 
@@ -163,21 +167,24 @@ public class CitexParentService extends BaseService implements RobotAction {
      * {"code":0,"msg":"success","data":null}
      */
     public String cancelTrade(String orderId) {
+
         String trade = null;
+        String apikey = exchange.get("apikey");
+        String tpass = exchange.get("tpass");
+        long time = System.currentTimeMillis();
+        // 签名过程
+        String pattern = "ts=%s,apiKey=%s,apiSecret=%s";
+        // ts有时效性，超过10秒则无效
+        String data = String.format(pattern, time, apikey, tpass);
+        // 使用MD5工具对数据进行加密，生成32位的十六进制字符串（不区分大小写）
+        String sign =HMAC.MD5(data);
         Map<String, String> param = new TreeMap<>();
         param.put("orderId", orderId);
-        param.put("symbol", exchange.get("market"));
-        String body = JSON.toJSONString(param);
         HashMap<String, String> head = new HashMap<String, String>();
-        String apikey = exchange.get("apikey");
-        String timestamp = System.currentTimeMillis() + "";
-        String method = "POST";
-        String requestPath = "/sapi/v1/cancel";
-        head.put("X-CH-APIKEY", apikey);
-        head.put("X-CH-TS", timestamp);
-        String payload = (timestamp + method + requestPath + body);
-        String sign = HMAC.sha256_HMAC(payload, exchange.get("tpass"));
-        head.put("X-CH-SIGN", sign);
+        String requestPath = "/order/cancel";
+        head.put("apiKey", apikey);
+        head.put("ts", time+"");
+        head.put("sign", sign);
         try {
             trade = httpUtil.postByPackcoin(baseUrl + requestPath, param, head);
         } catch (UnsupportedEncodingException e) {
@@ -216,14 +223,14 @@ public class CitexParentService extends BaseService implements RobotAction {
             //获取余额
             String rt = getBalance();
             JSONObject obj = JSONObject.fromObject(rt);
-                JSONArray dataJson=obj.getJSONArray("balances");
+                JSONArray dataJson=obj.getJSONArray("data");
                 for(int i=0;i<dataJson.size();i++){
-                    if(dataJson.getJSONObject(i).getString("asset").equals(coinArr.get(0))){
-                        firstBalance = dataJson.getJSONObject(i).getString("free");
-                        firstBalance1 = dataJson.getJSONObject(i).getString("locked");
-                    } else if(dataJson.getJSONObject(i).getString("asset").equals(coinArr.get(1))){
-                        lastBalance = dataJson.getJSONObject(i).getString("free");
-                        lastBalance1 = dataJson.getJSONObject(i).getString("locked");
+                    if(dataJson.getJSONObject(i).getString("coinId").equals(coinArr.get(0))){
+                        firstBalance = dataJson.getJSONObject(i).getString("balance");
+                        firstBalance1 = dataJson.getJSONObject(i).getString("frozenBalance");
+                    } else if(dataJson.getJSONObject(i).getString("coinId").equals(coinArr.get(1))){
+                        lastBalance = dataJson.getJSONObject(i).getString("balance");
+                        lastBalance1 = dataJson.getJSONObject(i).getString("frozenBalance");
                     }
                 }
 
@@ -273,12 +280,12 @@ public class CitexParentService extends BaseService implements RobotAction {
         String submitOrder = submitTrade(type == 1 ? 1 : -1, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
-            if ("0".equals(jsonObject.getString("code"))) {
-                orderId = jsonObject.getString("data");
+            if ("200".equals(jsonObject.getString("code"))) {
+                orderId = jsonObject.getJSONObject("data").getString("orderId");
                 hashMap.put("res","true");
                 hashMap.put("orderId",orderId);
             }else {
-                String msg = jsonObject.getString("msg");
+                String msg = jsonObject.getString("message");
                 hashMap.put("res","false");
                 hashMap.put("orderId",msg);
             }

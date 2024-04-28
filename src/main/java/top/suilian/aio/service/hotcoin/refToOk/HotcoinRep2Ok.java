@@ -162,8 +162,10 @@ public class HotcoinRep2Ok extends HotCoinParentService {
 
 
                 // 同步k线
+                int y=0;
                  BigDecimal klinePrice=null;
                 for (DeepVo deepVo : history) {
+                    y++;
                     boolean b = RandomUtils.nextBoolean();
                     //同步交易
                     Order order = new Order();
@@ -172,16 +174,22 @@ public class HotcoinRep2Ok extends HotCoinParentService {
                     BigDecimal relishAmount = deepVo.getAmount().multiply(new BigDecimal(exchange.get("relishAmountPoint")));
                     BigDecimal multiply = deepVo.getPrice().multiply(point).setScale(Integer.parseInt(exchange.get("pricePrecision")), RoundingMode.HALF_UP);
                     order.setPrice(multiply);
-                    if (order.getPrice().compareTo(minPrice)==0){
-                        continue;
+                    if (order.getPrice().compareTo(minPrice)==0 ){
+                        BigDecimal addPrice = order.getPrice().add(change);
+                        if (addPrice.compareTo(sellPri)>=0||y<history.size()){
+                            continue;
+                        }else {
+                            order.setPrice(addPrice);
+                            logger.info("Kline对标-ok价格：" + deepVo.getPrice() + "---对标价格" + order.getPrice() + "和一分钟K线初始价格重合:"+minPrice);
+                        }
                     }
                     order.setAmount(relishAmount.compareTo(new BigDecimal(relishMax)) > 0 ? orderAmount : relishAmount);
                     logger.info("买--Kline对标-ok价格：" + deepVo.getPrice() + "---对标价格" + order.getPrice() + "平台数量：" + deepVo.getAmount() + "---实际数量：" + order.getAmount());
                     list.add(order);
                     Order order1 = new Order();
                     order1.setType(b?2:1);
-                    order1.setPrice(multiply);
-                    order1.setAmount(relishAmount.compareTo(new BigDecimal(relishMax)) > 0 ? orderAmount : relishAmount);
+                    order1.setPrice(order.getPrice());
+                    order1.setAmount(order.getAmount());
                     logger.info("买--Kline对标-ok价格：" + deepVo.getPrice() + "---对标价格" + order1.getPrice() + "平台数量：" + deepVo.getAmount() + "---实际数量：" + order1.getAmount());
                     list.add(order1);
                     klinePrice=order1.getPrice();

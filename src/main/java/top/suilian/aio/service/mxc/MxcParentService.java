@@ -233,14 +233,12 @@ public class MxcParentService extends BaseService implements RobotAction {
         params.put("req_time", timestamp);
         String sort = toSort(params);
         sort = "GET" + '\n' + "/open/api/v2/order/query" + '\n' + sort;
-        logger.info("加密参数：" + sort);
         String sign = HMAC.sha256_HMAC(sort, exchange.get("tpass"));
         params.put("sign", sign);
         String str = toSort(params);
-        logger.info("请求参数：" + str);
+
 
         String trade = httpUtil.get(baseUrl + "/open/api/v2/order/query?" + str);
-        logger.info("selectOrder返回参数：" + trade);
         JSONObject jsonObject = JSONObject.fromObject(trade);
         if(jsonObject==null||200!=jsonObject.getInt("code")){
             setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
@@ -266,18 +264,16 @@ public class MxcParentService extends BaseService implements RobotAction {
 
         String sort = toSort(params);
         sort = "DELETE" + '\n' + "/open/api/v2/order/cancel" + '\n' + sort;
-        logger.info("加密参数：" + sort);
         String sign = HMAC.sha256_HMAC(sort, exchange.get("tpass"));
         params.put("sign", sign);
         String str = toSort(params);
-        logger.info("请求参数：" + str);
         //delete请求
         String res = httpUtil.delete(baseUrl + "/open/api/v2/order/cancel?" + str);
-        logger.info("cancelTrade请求参数：" + res);
         JSONObject jsonObject = JSONObject.fromObject(res);
         if(jsonObject==null||200!=jsonObject.getInt("code")){
             setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
         }
+        logger.info("cancelTrade：" + orderId);
         return res;
     }
 
