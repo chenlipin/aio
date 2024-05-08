@@ -121,6 +121,38 @@ public class CitexParentService extends BaseService implements RobotAction {
     }
 
 
+    public String selectAllOrder()   {
+
+        String trade = null;
+        String apikey = exchange.get("apikey");
+        String tpass = exchange.get("tpass");
+        long time = System.currentTimeMillis();
+        // 签名过程
+        String pattern = "ts=%s,apiKey=%s,apiSecret=%s";
+        // ts有时效性，超过10秒则无效
+        String data = String.format(pattern, time, apikey, tpass);
+        // 使用MD5工具对数据进行加密，生成32位的十六进制字符串（不区分大小写）
+        String sign =HMAC.MD5(data);
+
+        Map<String, String> param = new TreeMap<>();
+
+        param.put("symbol", exchange.get("market"));
+        param.put("pageNo",1+"");
+        param.put("pageSize",100+"");
+        HashMap<String, String> head = new HashMap<String, String>();
+        String requestPath = "/order/datas/history";
+        head.put("apiKey", apikey);
+        head.put("ts", time+"");
+        head.put("sign", sign);
+        try {
+            trade = httpUtil.postByPackcoin(baseUrl + requestPath, param, head);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        return trade;
+    }
+
+
 
 
 
