@@ -79,7 +79,7 @@ public class E4ParentService extends BaseService implements RobotAction {
 
     //对标下单
     public String submitOrder(int type, BigDecimal price, BigDecimal amount) {
-        String timestamp = System.currentTimeMillis() + "";
+        String timestamp = System.currentTimeMillis()/1000 + "";
         String typeStr = type == 1 ? "买" : "卖";
 
         // 输出字符串
@@ -91,7 +91,7 @@ public class E4ParentService extends BaseService implements RobotAction {
 
         Map<String, String> params = new TreeMap<>();
         params.put("api_key", exchange.get("apikey"));
-        params.put("nonce",UUID.randomUUID().toString().substring(0,6));
+        params.put("nonce",(100000+RandomUtils.nextInt(100000))+"");
         params.put("timestamp",timestamp);
 
         params.put("symbol", exchange.get("market"));
@@ -109,7 +109,7 @@ public class E4ParentService extends BaseService implements RobotAction {
             throw new RuntimeException(e);
         }
         String tpass = splicing + exchange.get("tpass");
-        String sign = HMAC.MD5(tpass).toUpperCase();
+        String sign = HMAC.MD5(tpass);
 
         params.put("sign",sign);
         logger.info("挂单参数" + params);
