@@ -27,7 +27,7 @@ import java.util.*;
 @Service
 @DependsOn("beanContext")
 public class E4ParentService extends BaseService implements RobotAction {
-    public String baseUrl = "https://openapi.bikaglobal.one";
+    public String baseUrl = "https://api.eeeedex.com/";
     public String host = "";
 
     @Override
@@ -86,10 +86,10 @@ public class E4ParentService extends BaseService implements RobotAction {
         String trade = null;
         BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
         BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
-        String uri = "/Trade/tradeLimitOrder";
+        String uri = "/trade/tradeLimitOrder";
         String httpMethod = "POST";
 
-        Map<String, Object> params = new TreeMap<>();
+        Map<String, String> params = new TreeMap<>();
         params.put("api_key", exchange.get("apikey"));
         params.put("nonce",UUID.randomUUID().toString().substring(0,6));
         params.put("timestamp",timestamp);
@@ -109,13 +109,15 @@ public class E4ParentService extends BaseService implements RobotAction {
             throw new RuntimeException(e);
         }
         String tpass = splicing + exchange.get("tpass");
-        String sign = HMAC.MD5(tpass);
+        String sign = HMAC.MD5(tpass).toUpperCase();
 
         params.put("sign",sign);
         logger.info("挂单参数" + params);
         String orderId="";
+        HashMap<String, String> stringHashMap = new HashMap<>();
+        stringHashMap.put("aa","1");
         try {
-//            trade =httpUtil.doPostFormData();
+            trade = HttpUtil.sendMultipartFormData(baseUrl+uri,params);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -217,16 +219,16 @@ public class E4ParentService extends BaseService implements RobotAction {
 
         String uri = "/v1/order/entrust";
         String httpMethod = "GET";
-        Map<String, Object> params = new TreeMap<>();
+        Map<String, String> params = new TreeMap<>();
         params.put("AccessKeyId", exchange.get("apikey"));
-        params.put("SignatureVersion", 2);
+        params.put("SignatureVersion", 2+"");
         params.put("SignatureMethod", "HmacSHA256");
-        params.put("Timestamp", new Date().getTime());
+        params.put("Timestamp", new Date().getTime()+"");
         params.put("symbol", exchange.get("market"));
-        params.put("type", 0);
-        params.put("page", 1);
-        params.put("count", 500);
-        String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
+        params.put("type", "0");
+        params.put("page", "1");
+        params.put("count", "500");
+        String Signature = "";
         params.put("Signature", Signature);
         String httpParams = null;
         try {
@@ -355,9 +357,9 @@ public class E4ParentService extends BaseService implements RobotAction {
         }
     }
 
-    public static String splicing(Map<String, Object> params) throws UnsupportedEncodingException {
+    public static String splicing(Map<String, String> params) throws UnsupportedEncodingException {
         StringBuffer httpParams = new StringBuffer();
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
+        for (Map.Entry<String, String> entry : params.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue().toString();
             httpParams.append(key).append("=").append(URLEncoder.encode(value, "UTF-8")).append("&");

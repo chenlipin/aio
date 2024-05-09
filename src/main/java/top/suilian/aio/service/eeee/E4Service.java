@@ -10,14 +10,8 @@ import top.suilian.aio.service.eeee.newKline.RunNew4EKline;
 @Component
 public class E4Service {
     @Autowired
-    RunNew4EKline runNewBitterexKline;
-//    @Autowired
-//    RunBitterRandomDepth runBitterRandomDepth;
-    @Autowired
-    RunBikaReplenish replenish;
+    RunNew4EKline runNew4EKline;
 
-    @Autowired
-    RunBikaDeep runBikaDeep;
 
     /**
      * 开启机器人
@@ -33,14 +27,7 @@ public class E4Service {
 //                runBitterRandomDepth.init(id);
 //                break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
-                runNewBitterexKline.init(id);
-                break;
-
-            case Constant.KEY_STRATEGY_REPLENISH:
-                replenish.init(id);
-                break;
-            case Constant.KEY_STRA_9:
-                runBikaDeep.init(id);
+                runNew4EKline.init(id);
                 break;
         }
     }
@@ -50,15 +37,9 @@ public class E4Service {
 
             case Constant.KEY_STRATEGY_CANCEL:
                 break;
-//            case Constant.KEY_RANDOM_DEPTH:
-//                runBitterRandomDepth.stopWork(id);
-//                break;
-            case Constant.KEY_STRATEGY_NEW_KLINE:
-                runNewBitterexKline.stopWork(id);
-                break;
 
-            case Constant.KEY_STRATEGY_REPLENISH:
-                replenish.stopWork(id);
+            case Constant.KEY_STRATEGY_NEW_KLINE:
+                runNew4EKline.stopWork(id);
                 break;
         }
     }
@@ -67,21 +48,10 @@ public class E4Service {
         switch (type) {
             case Constant.KEY_STRATEGY_CANCEL:
                 break;
-//            case Constant.KEY_RANDOM_DEPTH:
-//                runBitterRandomDepth.killWork(id);
-//                break;
             case Constant.KEY_STRATEGY_NEW_KLINE:
-                runNewBitterexKline.killWork(id);
-//                runBitterRandomDepth.killWork(id+1);
+                runNew4EKline.killWork(id);
                 break;
 
-            case Constant.KEY_STRATEGY_REPLENISH:
-                replenish.killWork(id);
-                break;
-
-            case Constant.KEY_STRA_9:
-                runBikaDeep.killWork(id);
-                break;
         }
     }
 }

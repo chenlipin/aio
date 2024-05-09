@@ -359,6 +359,26 @@ public class HttpUtil {
         return  HttpClients.createDefault();
 
     }
+    public static String sendMultipartFormData(String url, Map<String, String> stringParams) throws IOException {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            for (Map.Entry<String, String> entry : stringParams.entrySet()) {
+                builder.addTextBody(entry.getKey(), entry.getValue(), ContentType.TEXT_PLAIN.withCharset("UTF-8"));
+            }
+
+            HttpEntity multipartEntity = builder.build();
+            httpPost.setEntity(multipartEntity);
+
+            try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+                HttpEntity responseEntity = response.getEntity();
+                if (responseEntity != null) {
+                    return EntityUtils.toString(responseEntity, "UTF-8");
+                }
+            }
+        }
+        return null;
+    }
 
 
     public static String post(String url, Map<String, String> params, HashMap<String, String> headers) throws UnsupportedEncodingException {

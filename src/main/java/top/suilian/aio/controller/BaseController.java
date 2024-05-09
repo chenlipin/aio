@@ -38,6 +38,7 @@ import top.suilian.aio.service.coinvv.CoinvvService;
 import top.suilian.aio.service.coinw.CoinwService;
 import top.suilian.aio.service.digifinex.DigifinexService;
 import top.suilian.aio.service.e9ex.E9exService;
+import top.suilian.aio.service.eeee.E4Service;
 import top.suilian.aio.service.eg.EgService;
 import top.suilian.aio.service.euex.EuexService;
 import top.suilian.aio.service.euexReferbibox.EuexReferBiboxService;
@@ -266,6 +267,9 @@ public class BaseController {
     XtService xtService;
     @Autowired
     BikaService bikaService;
+
+    @Autowired
+    E4Service e4Service;
     //endregion
 
     public int insertRobotLog(Integer robotId, String remark, Integer status) {

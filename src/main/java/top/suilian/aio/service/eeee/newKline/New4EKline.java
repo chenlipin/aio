@@ -77,6 +77,9 @@ public class New4EKline extends E4ParentService {
                 logger.info("设置机器人参数开始");
                 setParam();
                 setTransactionRatio();
+
+                String s = submitOrder(1, new BigDecimal("0.1"), new BigDecimal("1"));
+                System.out.println(s);
                 if (exchange.get("tradeRatio") != null || !"0".equals(exchange.get("tradeRatio"))) {
                     Double ratio = 10 * (1 / (1 + Double.valueOf(exchange.get("tradeRatio"))));
                     tradeRatio = new BigDecimal(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);

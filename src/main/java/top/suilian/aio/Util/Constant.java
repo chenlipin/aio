@@ -138,6 +138,8 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_BIKA=76; //BIKA
 
+    public static final int KEY_EXCHANGE_4E=77; //eeee
+
     //endregion
 
 
