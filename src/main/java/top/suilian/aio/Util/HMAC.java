@@ -11,6 +11,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -57,6 +58,24 @@ public class HMAC {
             System.out.println("Error HmacSHA256 ===========" + e.getMessage());
         }
         return hash;
+    }
+
+
+    public static String generateSignature(String secretKey, String payload) {
+        Mac hmacSha256;
+        try {
+            hmacSha256 = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secKey = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            hmacSha256.init(secKey);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("[Signature] No such algorithm: " + e.getMessage());
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException("[Signature] Invalid key: " + e.getMessage());
+        }
+        byte[] hash = hmacSha256.doFinal(payload.getBytes(StandardCharsets.UTF_8));
+
+        String actualSign = java.util.Base64.getEncoder().encodeToString(hash);
+        return actualSign;
     }
 
 

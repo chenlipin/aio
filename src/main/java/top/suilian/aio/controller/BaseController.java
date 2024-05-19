@@ -69,6 +69,7 @@ import top.suilian.aio.service.ok.OkService;
 import top.suilian.aio.service.pcas.PcasService;
 import top.suilian.aio.service.pickcoin.PickcoinService;
 import top.suilian.aio.service.playcoin.PlayCoinService;
+import top.suilian.aio.service.poloniex.PoloniexService;
 import top.suilian.aio.service.qb.QbService;
 import top.suilian.aio.service.ronance.RonanceService;
 import top.suilian.aio.service.s.SService;
@@ -270,6 +271,9 @@ public class BaseController {
 
     @Autowired
     E4Service e4Service;
+
+    @Autowired
+    PoloniexService poloniexService;
     //endregion
 
     public int insertRobotLog(Integer robotId, String remark, Integer status) {

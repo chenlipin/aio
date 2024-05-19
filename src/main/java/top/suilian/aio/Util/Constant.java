@@ -140,6 +140,8 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_4E=77; //eeee
 
+    public static final int KEY_EXCHANGE_POLONIEX=78; //poloniex
+
     //endregion
 
 

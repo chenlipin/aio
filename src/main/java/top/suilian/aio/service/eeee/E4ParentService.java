@@ -77,6 +77,34 @@ public class E4ParentService extends BaseService implements RobotAction {
 
 
 
+
+
+    /**
+     * {
+     *     "status": 200,
+     *     "source": "API",
+     *     "msg": "OK",
+     *     "data": {
+     *         "order_id": 119872293,
+     *         "user_id": 40221944,
+     *         "client_user_id": "",
+     *         "symbol": "aabtc_usdt",
+     *         "side": "buy",
+     *         "price": "1",
+     *         "total": "11",
+     *         "over_num": "11",
+     *         "deal_num": "0",
+     *         "deal_total": "0",
+     *         "deal_avg_price": "0",
+     *         "fee": "0.00000000",
+     *         "status": 0
+     *     },
+     *     "seconds": 1715350180,
+     *     "microtime": 1715350180197,
+     *     "unique_id": "663e2aa40d1b6659469435",
+     *     "host": "127.0.0.1"
+     * }
+     */
     //对标下单
     public String submitOrder(int type, BigDecimal price, BigDecimal amount) {
         String timestamp = System.currentTimeMillis()/1000 + "";
@@ -121,9 +149,8 @@ public class E4ParentService extends BaseService implements RobotAction {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        JSONObject jsonObject = judgeRes(trade, "code", "submitTrade");
 
-        setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + orderId, 0, type == 1 ? "05cbc8" : "ff6224");
+        setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         return trade;
     }
 
@@ -134,46 +161,99 @@ public class E4ParentService extends BaseService implements RobotAction {
      * @param orderId
      * @return
      * @throws UnsupportedEncodingException
+     *
+     * {
+     *     "status": 200,
+     *     "source": "API",
+     *     "msg": "OK",
+     *     "data": {
+     *         "order_id": 119872293,
+     *         "user_id": 40221944,
+     *         "symbol": "aabtc_usdt",
+     *         "side": "buy",
+     *         "price": "1",
+     *         "total": "11",
+     *         "over_num": "11",
+     *         "deal_num": "0",
+     *         "deal_total": "0",
+     *         "deal_avg_price": "0",
+     *         "fee": "0.00000000",
+     *         "status": 0,
+     *         "created_at": "2024-05-10 22:09:40",
+     *         "updated_at": "2024-05-10 22:09:40"
+     *     },
+     *     "seconds": 1715350647,
+     *     "microtime": 1715350647604,
+     *     "unique_id": "663e2c778e98e1502653283",
+     *     "host": "127.0.0.1"
+     * }
      */
 
 
     public String selectOrder(String orderId) throws UnsupportedEncodingException {
 
-        String timestamp = String.valueOf(new Date().getTime());
-        String uri = "/sapi/v1/order";
-        String httpMethod = "GET";
-        HashMap<String, String> header = new HashMap<>();
-        header.put("X-CH-APIKEY", exchange.get("apikey"));
-        header.put("X-CH-TS", timestamp);
-        Map<String, String> params = new TreeMap<>();
-        params.put("symbol", exchange.get("market"));
-        params.put("orderId", orderId);
-        String s = timestamp + httpMethod + uri + "?symbol=" + exchange.get("market") + "&orderId=" + orderId;
-        String signature = HMAC.sha256_HMAC(s, exchange.get("tpass"));
-        header.put("X-CH-SIGN", signature);
-        String market1 = baseUrl + uri + "?symbol=" + exchange.get("market") + "&orderId=" + orderId;
-        String market = httpUtil.getAddHead(market1, header);
-        JSONObject jsonObject = JSONObject.fromObject(market);
+        String timestamp = System.currentTimeMillis()/1000 + "";
 
-        return market;
+
+        Map<String, String> params = new TreeMap<>();
+        params.put("api_key", exchange.get("apikey"));
+        params.put("nonce",(100000+RandomUtils.nextInt(100000))+"");
+        params.put("timestamp",timestamp);
+
+        params.put("order_id", orderId);
+        String splicing="";
+        try {
+            splicing = splicing(params);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        String tpass = splicing + exchange.get("tpass");
+        String sign = HMAC.MD5(tpass);
+
+        params.put("sign",sign);
+        HashMap<String, String> stringHashMap = new HashMap<>();
+        stringHashMap.put("aa","1");
+        String  trade="";
+        String uri = "/Trade/orderInfo";
+        try {
+            trade = HttpUtil.sendMultipartFormData(baseUrl+uri,params);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return trade;
     }
 
 
 
     public String getBalance() throws UnsupportedEncodingException {
 
-        String timestamp = String.valueOf(new Date().getTime());
-        String uri = "/sapi/v1/account";
-        String httpMethod = "GET";
-        HashMap<String, String> header = new HashMap<>();
-        header.put("X-CH-APIKEY", exchange.get("apikey"));
-        header.put("X-CH-TS", timestamp);
-        String s = timestamp + httpMethod + uri ;
-        String signature = HMAC.sha256_HMAC(s, exchange.get("tpass"));
-        header.put("X-CH-SIGN", signature);
-        String market1 = baseUrl + uri ;
-        String market = httpUtil.getAddHead(market1, header);
-        return market;
+        String timestamp = System.currentTimeMillis()/1000 + "";
+        Map<String, String> params = new TreeMap<>();
+        params.put("api_key", exchange.get("apikey"));
+        params.put("nonce",(100000+RandomUtils.nextInt(100000))+"");
+        params.put("timestamp",timestamp);
+
+        String splicing="";
+        try {
+            splicing = splicing(params);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        String tpass = splicing + exchange.get("tpass");
+        String sign = HMAC.MD5(tpass);
+
+        params.put("sign",sign);
+        HashMap<String, String> stringHashMap = new HashMap<>();
+        stringHashMap.put("aa","1");
+        String  trade="";
+        String uri = "/Assets/getUserAssets";
+        try {
+            trade = HttpUtil.sendMultipartFormData(baseUrl+uri,params);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return trade;
     }
 
 
@@ -183,30 +263,63 @@ public class E4ParentService extends BaseService implements RobotAction {
      * @param orderId
      * @return
      * @throws UnsupportedEncodingException
+     *
+     * {
+     *     "status": 200,
+     *     "source": "API",
+     *     "msg": "OK",
+     *     "data": {
+     *         "order_id": "119872293",
+     *         "user_id": 40221944,
+     *         "symbol": "aabtc_usdt",
+     *         "side": "buy",
+     *         "price": "1",
+     *         "total": "11",
+     *         "over_num": "11",
+     *         "deal_num": "0",
+     *         "deal_total": "0",
+     *         "deal_avg_price": "0",
+     *         "fee": "0.00000000",
+     *         "status": 3,
+     *         "created_at": "2024-05-10 22:09:40",
+     *         "updated_at": "2024-05-10 22:09:40"
+     *     },
+     *     "seconds": 1715350996,
+     *     "microtime": 1715350996422,
+     *     "unique_id": "663e2dd454a751455006810",
+     *     "host": "127.0.0.1"
+     * }
      */
     public String cancelTrade(String orderId) throws UnsupportedEncodingException {
-        String timestamp = String.valueOf(new Date().getTime());
-        String uri = "/sapi/v1/cancel";
-        String httpMethod = "POST";
-        HashMap<String, String> header = new HashMap<>();
-        header.put("X-CH-APIKEY", exchange.get("apikey"));
-        header.put("X-CH-TS", timestamp);
+        String timestamp = System.currentTimeMillis()/1000 + "";
         Map<String, String> params = new TreeMap<>();
-        params.put("symbol", exchange.get("market"));
-        params.put("orderId", orderId);
-        logger.info("撤单参数" + params);
+        params.put("api_key", exchange.get("apikey"));
+        params.put("nonce",(100000+RandomUtils.nextInt(100000))+"");
+        params.put("timestamp",timestamp);
 
-        String s = timestamp + httpMethod + uri + com.alibaba.fastjson.JSONObject.toJSONString(params);
-        String signature = HMAC.sha256_HMAC(s, exchange.get("tpass"));
-        header.put("X-CH-SIGN", signature);
-        String trade = "";
+        params.put("order_id", orderId);
+        String splicing="";
         try {
-            trade = httpUtil.postByPackcoin(baseUrl + uri, params, header);
-        } catch (UnsupportedEncodingException e) {
+            splicing = splicing(params);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        String tpass = splicing + exchange.get("tpass");
+        String sign = HMAC.MD5(tpass);
+
+        params.put("sign",sign);
+        HashMap<String, String> stringHashMap = new HashMap<>();
+        stringHashMap.put("aa","1");
+        String  trade="";
+        String uri = "/Trade/cancelOrder";
+        try {
+            trade = HttpUtil.sendMultipartFormData(baseUrl+uri,params);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         logger.info("撤单：" + orderId + "  结果" + trade);
         return trade;
+
     }
 
 
@@ -262,9 +375,9 @@ public class E4ParentService extends BaseService implements RobotAction {
                 overdue = true;
             }
         }
-        if (balance == null || overdue) {
+
             String balance1 = getBalance();
-            JSONArray jsonArray = JSONObject.fromObject(balance1).getJSONArray("balances");
+            JSONArray jsonArray = JSONObject.fromObject(balance1).getJSONArray("data");
             Double firstBalance = null;
             Double lastBalance = null;
             Double firstBalance1 = null;
@@ -273,22 +386,24 @@ public class E4ParentService extends BaseService implements RobotAction {
             List<String> coinArr = Arrays.asList(coins.split("_"));
             for (int i = 0; i < jsonArray.size(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                if (jsonObject.getString("asset").equals(coinArr.get(0).toUpperCase())) {
-                    firstBalance = jsonObject.getDouble("free");
-                    firstBalance1 = jsonObject.getDouble("locked");
-                } else if (jsonObject.getString("asset").equals(coinArr.get(1).toUpperCase())) {
-                    lastBalance = jsonObject.getDouble("free");
-                    lastBalance1 = jsonObject.getDouble("locked");
+                if (jsonObject.getString("name").equals(coinArr.get(0))) {
+                    firstBalance = jsonObject.getDouble("num");
+                    firstBalance1 = jsonObject.getDouble("lock_num");
+                } else if (jsonObject.getString("name").equals(coinArr.get(1))) {
+                    lastBalance = jsonObject.getDouble("num");
+                    lastBalance1 = jsonObject.getDouble("lock_num");
                     if (lastBalance < 10) {
                         setWarmLog(id, 0, "余额不足", coinArr.get(1).toUpperCase() + "余额为:" + lastBalance);
                     }
                 }
             }
             HashMap<String, String> balances = new HashMap<>();
+
             balances.put(coinArr.get(0), firstBalance + "_" + firstBalance1);
             balances.put(coinArr.get(1), lastBalance + "_" + lastBalance1);
+        logger.info("余额"+ com.alibaba.fastjson.JSONObject.toJSONString(balances));
             redisHelper.setBalanceParam(Constant.KEY_ROBOT_BALANCE + id, balances);
-        }
+
     }
 
     /**
@@ -377,11 +492,12 @@ public class E4ParentService extends BaseService implements RobotAction {
         HashMap<String, String> hashMap = new HashMap<>();
         String submitOrder = submitOrder(type, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
-            com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
-            if (jsonObject.getString("origQty") != null) {
-                orderId = jsonObject.getJSONArray("orderId").getString(0);
+            JSONObject jsonObject = judgeRes(submitOrder, "code", "submitTrade");
+
+            if (jsonObject.getString("status") .equals("200")) {
+                String string = jsonObject.getJSONObject("data").getString("order_id");
                 hashMap.put("res", "true");
-                hashMap.put("orderId", orderId);
+                hashMap.put("orderId", string);
             } else {
                 String msg = jsonObject.getString("msg");
                 hashMap.put("res", "false");

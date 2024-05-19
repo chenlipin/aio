@@ -35,6 +35,7 @@ import top.suilian.aio.service.coinnoe.CoinnoeParentService;
 import top.suilian.aio.service.coinstore.CoinStoreParentService;
 import top.suilian.aio.service.coinw.CoinwParentService;
 import top.suilian.aio.service.digifinex.DigifinexParentService;
+import top.suilian.aio.service.eeee.E4ParentService;
 import top.suilian.aio.service.feltpex.FeltpexParentService;
 import top.suilian.aio.service.feltpex.FeltpexService;
 import top.suilian.aio.service.gate.GateParentService;
@@ -46,6 +47,7 @@ import top.suilian.aio.service.lbank.LbankParentService;
 import top.suilian.aio.service.loex.LoexParentService;
 import top.suilian.aio.service.mxc.MxcParentService;
 import top.suilian.aio.service.ok.OkParentService;
+import top.suilian.aio.service.poloniex.PoloniexParentService;
 import top.suilian.aio.service.skiesex.SkiesexParentService;
 import top.suilian.aio.service.wbfex.WbfexParentService;
 import top.suilian.aio.service.whitebit.WhitebitParentService;
@@ -252,6 +254,14 @@ public class TradeRobotService {
             case Constant.KEY_EXCHANGE_BIKA:
                 robotAction=new BikaaParentService();
                 break;
+
+            case Constant.KEY_EXCHANGE_4E:
+                robotAction=new E4ParentService();
+                break;
+
+            case Constant.KEY_EXCHANGE_POLONIEX:
+                robotAction=new PoloniexParentService();
+                break;
             default:
                 return null;
         }
@@ -314,6 +324,11 @@ public class TradeRobotService {
 
         }
         if (robot.getStrategyId()==18){
+            return robotAction.selectOrder();
+
+        }
+
+        if (robot.getStrategyId()==78){
             return robotAction.selectOrder();
 
         }

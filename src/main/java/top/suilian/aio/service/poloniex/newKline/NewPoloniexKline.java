@@ -1,4 +1,4 @@
-package top.suilian.aio.service.bika.newKline;
+package top.suilian.aio.service.poloniex.newKline;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -9,11 +9,11 @@ import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.bika.BikaaParentService;
-import top.suilian.aio.service.kucoin.KucoinParentService;
+import top.suilian.aio.service.poloniex.PoloniexParentService;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,9 +22,9 @@ import java.util.Random;
 import static java.math.BigDecimal.ROUND_DOWN;
 
 
-public class NewBikaKline extends BikaaParentService {
+public class NewPoloniexKline extends PoloniexParentService {
 
-        public NewBikaKline(
+        public NewPoloniexKline(
                 CancelExceptionService cancelExceptionService,
                 CancelOrderService cancelOrderService,
                 ExceptionMessageService exceptionMessageService,
@@ -46,7 +46,7 @@ public class NewBikaKline extends BikaaParentService {
             super.httpUtil = httpUtil;
             super.redisHelper = redisHelper;
             super.id = id;
-            super.logger = getLogger(Constant.KEY_LOG_PATH_HOTCOIN_KLINE, id);
+            super.logger = getLogger("poloniex/kline", id);
         }
 
         private BigDecimal intervalAmount = BigDecimal.ZERO;
@@ -74,23 +74,23 @@ public class NewBikaKline extends BikaaParentService {
 
 
 
-        public void init() throws UnsupportedEncodingException {
+        public void init() throws Exception {
 
             if (start) {
                 logger.info("设置机器人参数开始");
                 setParam();
                 setTransactionRatio();
                 if (exchange.get("tradeRatio") != null || !"0".equals(exchange.get("tradeRatio"))) {
-                    Double ratio = 10 * (1 / (1 + Double.valueOf(exchange.get("tradeRatio"))));
-                    tradeRatio = new BigDecimal(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    Double ratio = 10 * (1 / (1 + Double.parseDouble(exchange.get("tradeRatio"))));
+                    tradeRatio = new BigDecimal(ratio).setScale(2, RoundingMode.HALF_UP);
                 }
                 logger.info("设置机器人参数结束");
 
                 logger.info("设置机器人交易规则开始");
-//            setPrecision();
                 logger.info("设置机器人交易规则结束");
 
-
+                String balance = getBalance();
+                System.out.println(balance);
                 //判断走K线的方式
                 if ("1".equals(exchange.get("sheetForm"))) {
                     //新版本
@@ -114,7 +114,7 @@ public class NewBikaKline extends BikaaParentService {
             logger.info("当前时间段单量百分比：" + transactionRatio);
 
             if (runTime < timeSlot) {
-                String trades = httpUtil.get(baseUrl +"/sapi/v1/depth?symbol="+exchange.get("market").toUpperCase());
+                String trades = httpUtil.get(baseUrl +"/markets/"+exchange.get("market").toUpperCase()+"/orderBook");
 
 
                 //获取深度 判断平台撮合是否成功
@@ -122,12 +122,13 @@ public class NewBikaKline extends BikaaParentService {
 
                 if (tradesObj != null ) {
 
-                    List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
+                    List<String> bids = JSONArray.parseArray(tradesObj.getString("bids"), String.class);
+                    List<String> asks = JSONArray.parseArray(tradesObj.getString("asks"), String.class);
 
-                    List<List<String>> sellPrices = (List<List<String>>) tradesObj.get("asks");
 
-                    BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
-                    BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
+
+                    BigDecimal buyPri = new BigDecimal(bids.get(0));
+                    BigDecimal sellPri = new BigDecimal(asks.get(0));
 
                     if (sellPri.compareTo(buyPri) == 0) {
                         //平台撮合功能失败
@@ -205,7 +206,7 @@ public class NewBikaKline extends BikaaParentService {
 
                 setTradeLog(id, "撤单数为" + orderNum, 0, "000000");
 
-                if (Integer.valueOf(exchange.get("orderSumSwitch")) == 1) {    //防褥羊毛开关
+                if (Integer.parseInt(exchange.get("orderSumSwitch")) == 1) {    //防褥羊毛开关
                     setTradeLog(id, "停止量化撤单数设置为：" + exchange.get("orderSum"), 0, "000000");
                 }
                 BigDecimal price = getRandomPrice();
@@ -236,14 +237,14 @@ public class NewBikaKline extends BikaaParentService {
                     String resultJson = submitOrder(type, price, num);
                     JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
-                    if (jsonObject != null && jsonObject.getString("origQty")!=null) {
+                    if (jsonObject != null && jsonObject.getString("id")!=null) {
 
-                        orderIdOne = jsonObject.getJSONArray("orderId").getString(0);
+                        orderIdOne = jsonObject.getString("id");
                         String resultJson1 = submitOrder(type == 1 ? 2 : 1, price, num);
                         JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
-                        if (jsonObject1 != null && jsonObject1.getString("origQty")!=null) {
-                            orderIdTwo = jsonObject1.getJSONArray("orderId").getString(0);
+                        if (jsonObject1 != null && jsonObject1.getString("id")!=null) {
+                            orderIdTwo = jsonObject1.getString("id");
                             removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
                             ordersleeptime = System.currentTimeMillis();
 
@@ -256,7 +257,7 @@ public class NewBikaKline extends BikaaParentService {
 
 
                     }
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     if (StringUtils.isNotEmpty(orderIdOne)){
                         cancelTrade(orderIdOne);
                     }
@@ -324,7 +325,7 @@ public class NewBikaKline extends BikaaParentService {
         public BigDecimal getRandomPrice() throws UnsupportedEncodingException {
             BigDecimal price = null;
 
-            String trades = httpUtil.get(baseUrl +"/sapi/v1/depth?symbol="+exchange.get("market").toUpperCase());
+            String trades = httpUtil.get(baseUrl +"/markets/"+exchange.get("market").toUpperCase()+"/orderBook");
 
 
             //获取深度 判断平台撮合是否成功
@@ -332,12 +333,13 @@ public class NewBikaKline extends BikaaParentService {
 
             if (tradesObj != null ) {
 
-                List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
+                List<String> bids = JSONArray.parseArray(tradesObj.getString("bids"), String.class);
+                List<String> asks = JSONArray.parseArray(tradesObj.getString("asks"), String.class);
 
-                List<List<String>> sellPrices = (List<List<String>>) tradesObj.get("asks");
 
-                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
-                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
+
+                BigDecimal buyPri = new BigDecimal(bids.get(0));
+                BigDecimal sellPri = new BigDecimal(asks.get(0));
 
                 long l = 1000 * 60 * 2 + (RandomUtils.nextInt(10) * 1000L);
                 logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
@@ -347,8 +349,8 @@ public class NewBikaKline extends BikaaParentService {
                     String resultJson = submitOrder(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
                     JSONObject jsonObject1 = judgeRes(resultJson, "code", "submitTrade");
 
-                    if (jsonObject1 != null && jsonObject1.getString("origQty")!=null) {
-                        orderIdBu = jsonObject1.getJSONArray("orderId").getString(0);
+                    if (jsonObject1 != null && jsonObject1.getString("id")!=null) {
+                        orderIdBu = jsonObject1.getString("id");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
                         ordersleeptime = System.currentTimeMillis();
                         logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
@@ -365,8 +367,8 @@ public class NewBikaKline extends BikaaParentService {
                 if ("1".equals(exchange.get("isTradeCheck"))) {
 
                     //吃堵盘口的订单
-                    BigDecimal buyAmount = new BigDecimal(String.valueOf(buyPrices.get(0).get(1)));
-                    BigDecimal sellAmount = new BigDecimal(String.valueOf(sellPrices.get(0).get(1)));
+                    BigDecimal buyAmount = new BigDecimal(bids.get(1));
+                    BigDecimal sellAmount = new BigDecimal(bids.get(1));
                     BigDecimal minAmount = new BigDecimal(exchange.get("minTradeLimit").toString());
                     if (maxEatOrder == 0) {
                         logger.info("吃单上限功能未开启：maxEatOrder=" + maxEatOrder);
@@ -388,9 +390,9 @@ public class NewBikaKline extends BikaaParentService {
                                     logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
 
                                     JSONObject jsonObject = judgeRes(sellOrder, "code", "submitTrade");
-                                    if (jsonObject != null && jsonObject.getString("origQty")!=null) {
+                                    if (jsonObject != null && jsonObject.getString("id")!=null) {
 
-                                        sellOrderId =jsonObject.getJSONArray("orderId").getString(0);
+                                        sellOrderId =jsonObject.getString("id");
                                     }
                                     return price;
                                 } catch (Exception e) {
@@ -420,8 +422,8 @@ public class NewBikaKline extends BikaaParentService {
                                     logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
 
                                     JSONObject jsonObject = judgeRes(buyOrder, "code", "submitTrade");
-                                    if (jsonObject != null && jsonObject.getString("origQty")!=null) {
-                                        buyOrderId = jsonObject.getJSONArray("orderId").getString(0);
+                                    if (jsonObject != null && jsonObject.getString("id")!=null) {
+                                        buyOrderId = jsonObject.getString("id");
                                     }
                                     return price;
                                 } catch (Exception e) {
@@ -438,22 +440,7 @@ public class NewBikaKline extends BikaaParentService {
                     }
                 }
 
-                if (Integer.parseInt(exchange.get("isOpenIntervalSwitch")) == 1 && intervalPrice.compareTo(new BigDecimal(exchange.get("openIntervalFromPrice"))) < 1) {
-                    //刷开区间
-                    if ("0".equals(exchange.get("openIntervalAllAmount")) || exchange.get("openIntervalAllAmount").trim() == null) {
-                        //刷开区间
-                        String msg = "您的" + getRobotName(this.id) + "刷开量化机器人已开启,将不计成本的刷开区间!";
-                        sendSms(msg, exchange.get("mobile"));
-                        openInterval(sellPri, buyPrices, new BigDecimal(exchange.get("openIntervalPrice")));
-                    } else if (new BigDecimal(exchange.get("openIntervalAllAmount")).compareTo(intervalAmount) < 0) {
-                        setRobotArgs(id, "isOpenIntervalSwitch", "0");
-                        setTradeLog(id, "刷开区间的数量已达到最大值,停止刷开区间", 0, "000000");
-                    } else {
-                        //刷开区间
 
-                        openInterval(sellPri, buyPrices, new BigDecimal(exchange.get("openIntervalPrice")));
-                    }
-                }
 
                 if ((buyPrice == BigDecimal.ZERO && sellPrice == BigDecimal.ZERO) || runTime == 0) {
                     buyPrice = buyPri;
@@ -577,7 +564,7 @@ public class NewBikaKline extends BikaaParentService {
                 JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
                 if (jsonObject != null ) {
 
-                    String status = jsonObject.getString("status");
+                    String status = jsonObject.getString("state");
                     if ("FILLED".equals(status) || "CANCELED".equals(status)) {
                         setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                     } else {

@@ -1304,6 +1304,7 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
             post.setEntity(s);
             response = httpclient.execute(post);
             if (response != null && response.getStatusLine().getStatusCode() != 45) {
+                System.out.println("--0--"+JSON.toJSONString(response.getAllHeaders()));
                 result = EntityUtils.toString(response.getEntity());// 返回json格式：
             } else {
                 result = EntityUtils.toString(response.getEntity());

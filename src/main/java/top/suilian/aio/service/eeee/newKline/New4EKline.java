@@ -2,6 +2,7 @@ package top.suilian.aio.service.eeee.newKline;
 
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
@@ -43,7 +44,7 @@ public class New4EKline extends E4ParentService {
             super.httpUtil = httpUtil;
             super.redisHelper = redisHelper;
             super.id = id;
-            super.logger = getLogger(Constant.KEY_LOG_PATH_HOTCOIN_KLINE, id);
+            super.logger = getLogger("eeee/kline", id);
         }
 
         private BigDecimal intervalAmount = BigDecimal.ZERO;
@@ -77,11 +78,8 @@ public class New4EKline extends E4ParentService {
                 logger.info("设置机器人参数开始");
                 setParam();
                 setTransactionRatio();
-
-                String s = submitOrder(1, new BigDecimal("0.1"), new BigDecimal("1"));
-                System.out.println(s);
                 if (exchange.get("tradeRatio") != null || !"0".equals(exchange.get("tradeRatio"))) {
-                    Double ratio = 10 * (1 / (1 + Double.valueOf(exchange.get("tradeRatio"))));
+                    Double ratio = 10 * (1 / (1 + Double.parseDouble(exchange.get("tradeRatio"))));
                     tradeRatio = new BigDecimal(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
                 }
                 logger.info("设置机器人参数结束");
@@ -90,7 +88,7 @@ public class New4EKline extends E4ParentService {
 //            setPrecision();
                 logger.info("设置机器人交易规则结束");
 
-
+                setBalanceRedis();
                 //判断走K线的方式
                 if ("1".equals(exchange.get("sheetForm"))) {
                     //新版本
@@ -104,8 +102,7 @@ public class New4EKline extends E4ParentService {
                 start = false;
             }
 
-            logger.info("开始");
-            int index = Integer.valueOf(new Date().getHours());
+            int index = new Date().getHours();
             //获取当前小时内的单量百分比
             transactionRatio = transactionArr[index];
             if (transactionRatio.equals("0") || transactionRatio.equals("")) {
@@ -114,17 +111,18 @@ public class New4EKline extends E4ParentService {
             logger.info("当前时间段单量百分比：" + transactionRatio);
 
             if (runTime < timeSlot) {
-                String trades = httpUtil.get(baseUrl +"/sapi/v1/depth?symbol="+exchange.get("market").toUpperCase());
+                String trades = httpUtil.get(baseUrl +"/V1/Market/depth?symbol_id="+exchange.get("marketId"));
 
 
                 //获取深度 判断平台撮合是否成功
                 com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
                 if (tradesObj != null ) {
+                    com.alibaba.fastjson.JSONObject jsonObject = tradesObj.getJSONObject("data").getJSONObject("depth");
 
-                    List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
+                    List<List<String>> buyPrices = (List<List<String>>) jsonObject.get("b");
 
-                    List<List<String>> sellPrices = (List<List<String>>) tradesObj.get("asks");
+                    List<List<String>> sellPrices = (List<List<String>>) jsonObject.get("a");
 
                     BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
                     BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
@@ -219,12 +217,12 @@ public class New4EKline extends E4ParentService {
 
                 Double numThreshold1 = Double.valueOf(exchange.get("numThreshold"));
                 Double minNum = Double.valueOf(exchange.get("numMinThreshold"));
-                long max = (long) (numThreshold1 * Math.pow(10, Double.valueOf(String.valueOf(exchange.get("amountPrecision")))));
-                long min = (long) (minNum * Math.pow(10, Double.valueOf(String.valueOf(exchange.get("amountPrecision")))));
+                long max = (long) (numThreshold1 * Math.pow(10, Double.parseDouble(String.valueOf(exchange.get("amountPrecision")))));
+                long min = (long) (minNum * Math.pow(10, Double.parseDouble(String.valueOf(exchange.get("amountPrecision")))));
                 long randNumber = min + (((long) (new Random().nextDouble() * (max - min))));
 
 
-                BigDecimal oldNum = new BigDecimal(String.valueOf(randNumber / Math.pow(10, Double.valueOf(String.valueOf(exchange.get("amountPrecision"))))));
+                BigDecimal oldNum = new BigDecimal(String.valueOf(randNumber / Math.pow(10, Double.parseDouble(String.valueOf(exchange.get("amountPrecision"))))));
                 BigDecimal num = oldNum.multiply(new BigDecimal(transactionRatio));
                 logger.info("robotId" + id + "----" + "num(挂单数量)：" + num);
 
@@ -236,14 +234,14 @@ public class New4EKline extends E4ParentService {
                     String resultJson = submitOrder(type, price, num);
                     JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
-                    if (jsonObject != null && jsonObject.getString("origQty")!=null) {
+                    if (jsonObject != null && jsonObject.getString("status").equals("200")) {
 
-                        orderIdOne = jsonObject.getJSONArray("orderId").getString(0);
+                        orderIdOne = jsonObject.getJSONObject("data").getString("order_id");
                         String resultJson1 = submitOrder(type == 1 ? 2 : 1, price, num);
                         JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
-                        if (jsonObject1 != null && jsonObject1.getString("origQty")!=null) {
-                            orderIdTwo = jsonObject1.getJSONArray("orderId").getString(0);
+                        if (jsonObject1 != null && jsonObject1.getString("status").equals("200")) {
+                            orderIdTwo = jsonObject1.getJSONObject("data").getString("order_id");
                             removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
                             ordersleeptime = System.currentTimeMillis();
 
@@ -260,6 +258,12 @@ public class New4EKline extends E4ParentService {
                     exceptionMessage = collectExceptionStackMsg(e);
                     setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                     logger.info("robotId" + id + "----" + exceptionMessage);
+                    if (StringUtils.isNotEmpty(orderIdOne)){
+                        cancelTrade(orderIdOne);
+                    }
+                    if (StringUtils.isNotEmpty(orderIdTwo)){
+                        cancelTrade(orderIdTwo);
+                    }
                     e.printStackTrace();
                 }
                 int st = (int) (Math.random() * (Integer.parseInt(exchange.get("endTime")) - Integer.parseInt(exchange.get("startTime"))) + Integer.parseInt(exchange.get("startTime")));
@@ -318,17 +322,18 @@ public class New4EKline extends E4ParentService {
         public BigDecimal getRandomPrice() throws UnsupportedEncodingException {
             BigDecimal price = null;
 
-            String trades = httpUtil.get(baseUrl +"/sapi/v1/depth?symbol="+exchange.get("market").toUpperCase());
+            String trades = httpUtil.get(baseUrl +"/V1/Market/depth?symbol_id="+exchange.get("marketId"));
 
 
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
             if (tradesObj != null ) {
+                com.alibaba.fastjson.JSONObject jsonObjectdeep = tradesObj.getJSONObject("data").getJSONObject("depth");
 
-                List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
+                List<List<String>> buyPrices = (List<List<String>>) jsonObjectdeep.get("b");
 
-                List<List<String>> sellPrices = (List<List<String>>) tradesObj.get("asks");
+                List<List<String>> sellPrices = (List<List<String>>) jsonObjectdeep.get("a");
 
                 BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
                 BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
@@ -571,8 +576,8 @@ public class New4EKline extends E4ParentService {
                 JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
                 if (jsonObject != null ) {
 
-                    String status = jsonObject.getString("status");
-                    if ("FILLED".equals(status) || "CANCELED".equals(status)) {
+                    String status = jsonObject.getJSONObject("data").getString("status");
+                    if ("2".equals(status) || "3".equals(status)) {
                         setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                     } else {
                         String res = cancelTrade(orderId);
@@ -584,7 +589,6 @@ public class New4EKline extends E4ParentService {
                             setWarmLog(id,2,"订单{"+orderId+"}撤单,撞单数为"+orderNum,"");
                         }
                     }
-
 
                 }
             } catch (UnsupportedEncodingException e) {
