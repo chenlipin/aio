@@ -183,7 +183,7 @@ public class HotcoinRep2Ok extends HotCoinParentService {
                             logger.info("Kline对标-ok价格：" + deepVo.getPrice() + "---对标价格" + order.getPrice() + "和一分钟K线初始价格重合:"+minPrice);
                         }
                     }
-                    order.setAmount(relishAmount.compareTo(new BigDecimal(relishMax)) > 0 ? orderAmount : relishAmount);
+                    order.setAmount(orderAmount.multiply(new BigDecimal("1.5")));
                     logger.info("买--Kline对标-ok价格：" + deepVo.getPrice() + "---对标价格" + order.getPrice() + "平台数量：" + deepVo.getAmount() + "---实际数量：" + order.getAmount());
                     list.add(order);
                     Order order1 = new Order();

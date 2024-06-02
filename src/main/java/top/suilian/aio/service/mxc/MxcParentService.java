@@ -342,7 +342,6 @@ public class MxcParentService extends BaseService implements RobotAction {
     public String getDepth() {
 
         String trade = httpUtil.get(baseUrl + "/open/api/v2/market/depth?depth=20&symbol=" + exchange.get("market"));
-        logger.info("当前深度：" + trade);
         return trade;
     }
 

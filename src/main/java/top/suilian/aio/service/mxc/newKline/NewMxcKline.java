@@ -117,7 +117,7 @@ public class NewMxcKline extends MxcParentService  {
             String trades = getDepth();
             JSONObject tradesObj = judgeRes(trades, "code", "getRandomPrice");
 
-            if (!"".equals(trades) && trades != null && !trades.isEmpty() && tradesObj != null) {
+            if (trades != null && !trades.isEmpty() && tradesObj != null) {
 
 
                 JSONObject result = tradesObj.getJSONObject("data");

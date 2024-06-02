@@ -3,7 +3,7 @@ package top.suilian.aio.service.mxc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
-import top.suilian.aio.service.mxc.depthRefer.RunMxcRefer;
+import top.suilian.aio.service.mxc.depthRefer.RunMexRep2Hot;
 import top.suilian.aio.service.mxc.kline.RunMxcKline;
 import top.suilian.aio.service.mxc.newKline.RunNewMxcKline;
 import top.suilian.aio.service.mxc.randomDepth.RunMxcDeep;
@@ -20,7 +20,7 @@ public class MxcService {
     @Autowired
     RunMxcReplenish runMxcReplenish;
     @Autowired
-    RunMxcRefer mxcRefer;
+    RunMexRep2Hot mxcRefer;
 
     /**
      * 开启机器人

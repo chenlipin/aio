@@ -1,4 +1,4 @@
-package top.suilian.aio.service.poloniex.refToHot;
+package top.suilian.aio.service.mxc.depthRefer;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -8,20 +8,18 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
-import top.suilian.aio.refer.BianUtils;
 import top.suilian.aio.refer.DeepVo;
 import top.suilian.aio.refer.HotcoinUtils;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.hotcoin.HotCoinParentService;
+import top.suilian.aio.service.mxc.MxcParentService;
 import top.suilian.aio.service.poloniex.PoloniexParentService;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
-public class PoloniexRep2Hot extends PoloniexParentService {
-    public PoloniexRep2Hot(
+public class MexRep2Hot extends MxcParentService {
+    public MexRep2Hot(
             CancelExceptionService cancelExceptionService,
             CancelOrderService cancelOrderService,
             ExceptionMessageService exceptionMessageService,
@@ -43,7 +41,7 @@ public class PoloniexRep2Hot extends PoloniexParentService {
         super.httpUtil = httpUtil;
         super.redisHelper = redisHelper;
         super.id = id;
-        super.logger = getLogger("hotcoin/replenish", id);
+        super.logger = getLogger("mex/replenish", id);
     }
 
     boolean start = true;
@@ -52,8 +50,7 @@ public class PoloniexRep2Hot extends PoloniexParentService {
     List<String> lastOrderList = new ArrayList<>();
     BigDecimal point=null;
 
-    boolean up=true;
-    int time=0;
+
 
     /**
      * range              同步深度数量
@@ -71,7 +68,7 @@ public class PoloniexRep2Hot extends PoloniexParentService {
             logger.info("对标策略设置机器人参数结束");
             logger.info("对标策略设置机器人交易规则开始");
             setPrecision();
-            logger.info("补单策略设置机器人交易规则结束");
+            logger.info("对标策略设置机器人交易规则结束");
             start = false;
         }
         int i1 = RandomUtils.nextInt(5);
@@ -84,7 +81,7 @@ public class PoloniexRep2Hot extends PoloniexParentService {
         }
 
 
-        String trades = httpUtil.get(baseUrl + "/markets/" + exchange.get("market").toUpperCase() + "/orderBook");
+        String trades = getDepth();
 
 
         //获取深度 判断平台撮合是否成功
@@ -100,14 +97,18 @@ public class PoloniexRep2Hot extends PoloniexParentService {
          */
 
         //获取深度 判断平台撮合是否成功
-        com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
-        if (tradesObj != null ) {
-            try {
-                List<String> bids = JSONArray.parseArray(tradesObj.getString("bids"), String.class);
-                List<String> asks = JSONArray.parseArray(tradesObj.getString("asks"), String.class);
+        JSONObject tradesObj = judgeRes(trades, "code", "getRandomPrice");
+        if (trades != null && !trades.isEmpty() && tradesObj != null) {
 
-                BigDecimal buyPri = new BigDecimal(bids.get(0));
-                BigDecimal sellPri = new BigDecimal(asks.get(0));
+
+            try {
+                JSONObject result = tradesObj.getJSONObject("data");
+                List<JSONObject> buyPrices = (List<JSONObject>) result.get("bids");
+
+                List<JSONObject> sellPrices = (List<JSONObject>) result.get("asks");
+
+                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).getString("price")));
+                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).getString("price")));
 
                 if (sellPri.compareTo(buyPri) == 0) {
                     //平台撮合功能失败
@@ -152,7 +153,7 @@ public class PoloniexRep2Hot extends PoloniexParentService {
                     order.setPrice(multiply);
 
 
-                    order.setAmount( orderAmount);
+                    order.setAmount( orderAmount.multiply(new BigDecimal("1.5")));
                     logger.info("买--Kline对标-hot价格：" + deepVo.getPrice() + "---对标价格" + order.getPrice() + "平台数量：" + deepVo.getAmount() + "---实际数量：" + order.getAmount());
                     list.add(order);
                     Order order1 = new Order();
@@ -204,9 +205,11 @@ public class PoloniexRep2Hot extends PoloniexParentService {
                 for (Order order2 : list) {
                     Thread.sleep(1000);
                     String resultJson = submitOrder(order2.getType(), order2.getPrice(), order2.getAmount());
-                    JSONObject jsonObject1 = judgeRes(resultJson, "code", "submitTrade");
-                    if (jsonObject1 != null  && StringUtils.isNotEmpty(jsonObject1.getString("id"))) {
-                        String orderId = jsonObject1.getString("id");
+                    JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
+
+                    if (jsonObject != null && "200".equals(jsonObject.getString("code"))) {
+
+                        String orderId = jsonObject.getString("data");
                         nowOrderList.add(orderId);
                     }
                 }
@@ -224,7 +227,7 @@ public class PoloniexRep2Hot extends PoloniexParentService {
             }
             lastOrderList=nowOrderList;
             nowOrderList.clear();
-            double time = Double.valueOf(exchange.get("time"));
+            double time = Double.parseDouble(exchange.get("time"));
             try {
                 Thread.sleep(getRandom(time,null).intValue()* 1000L);
             } catch (InterruptedException e) {
