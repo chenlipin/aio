@@ -5,7 +5,6 @@ import java.util.Date;
 
 /**
  * 时间转化工具
- * @author suxuelian
  */
 public class DateConvertUtil {
 

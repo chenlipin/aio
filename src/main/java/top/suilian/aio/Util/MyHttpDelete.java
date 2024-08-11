@@ -1,15 +1,8 @@
 package top.suilian.aio.Util;
 
-import java.io.IOException;
-import java.net.URI;
-import org.apache.http.Header;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+
+import java.net.URI;
 
 public class MyHttpDelete extends HttpEntityEnclosingRequestBase {
 

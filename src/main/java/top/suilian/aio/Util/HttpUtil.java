@@ -442,7 +442,7 @@ public class HttpUtil {
      * @param url 请求地址加参数
      * @return 响应
      */
-    public String get(String url) {
+    public static  String get(String url) {
         String result = null;
         HttpClientBuilder builder = HttpClients.custom();
         builder.setUserAgent("Mozilla/5.0(Windows;U;Windows NT 5.1;en-US;rv:0.9.4)");
