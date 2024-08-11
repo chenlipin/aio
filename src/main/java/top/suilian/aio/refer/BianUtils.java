@@ -29,7 +29,7 @@ public class BianUtils extends BaseHttp {
             DeepVo deepVo = new DeepVo();
             JSONArray jsonArray = bidsJson.getJSONArray(i);
             BigDecimal amount = new BigDecimal(jsonArray.getString(1));
-            BigDecimal price = new BigDecimal(jsonArray.getString(0)).setScale(4, RoundingMode.HALF_UP);
+            BigDecimal price = new BigDecimal(jsonArray.getString(0)).setScale(9, RoundingMode.HALF_UP);
             boolean b = buy.stream().anyMatch(e -> e.getPrice().compareTo(price) == 0);
             if (b){
                 continue;
@@ -43,7 +43,7 @@ public class BianUtils extends BaseHttp {
             DeepVo deepVo = new DeepVo();
             JSONArray jsonArray = asksJson.getJSONArray(i);
             BigDecimal amount = new BigDecimal(jsonArray.getString(1));
-            BigDecimal price = new BigDecimal(jsonArray.getString(0)).setScale(4, RoundingMode.HALF_UP);
+            BigDecimal price = new BigDecimal(jsonArray.getString(0)).setScale(9, RoundingMode.HALF_UP);
             boolean b = buy.stream().anyMatch(e -> e.getPrice().compareTo(price) == 0);
             if (b){
                 continue;
@@ -65,7 +65,7 @@ public class BianUtils extends BaseHttp {
         for (int i = 0; i < jsonArray.size(); i+=3) {
             DeepVo deepVo = new DeepVo();
             JSONObject jsonObject = jsonArray.getJSONObject(i);
-            BigDecimal price = new BigDecimal(jsonObject.getString("price")).setScale(5, RoundingMode.HALF_UP);
+            BigDecimal price = new BigDecimal(jsonObject.getString("price")).setScale(9, RoundingMode.HALF_UP);
             boolean b = deepVos.stream().anyMatch(e -> e.getPrice().compareTo(price) == 0);
             if (b){
                 continue;

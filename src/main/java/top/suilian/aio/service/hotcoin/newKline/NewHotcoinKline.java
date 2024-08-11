@@ -369,9 +369,10 @@ public class NewHotcoinKline extends HotCoinParentService {
             BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
 
-            long l = 1000 * 60 * 2 + (RandomUtils.nextInt(10) * 1000L);
+            long l = 1000 * 60 + (RandomUtils.nextInt(10) * 1000L);
             logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
             if (System.currentTimeMillis() - ordersleeptime > l ) {
+
 
                 if (eatOrderPd<20) {
                     logger.info("开始补单子");

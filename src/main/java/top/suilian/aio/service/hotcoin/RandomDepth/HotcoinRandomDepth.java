@@ -204,16 +204,16 @@ public class HotcoinRandomDepth extends HotCoinParentService {
 
 
             BigDecimal buyMinPri = new BigDecimal(String.valueOf(buyPrices.get(fromDepth).get(0)));
-            logger.info("深度 买" + fromDepth + "价格:" + buyMinPri);
+//            logger.info("深度 买" + fromDepth + "价格:" + buyMinPri);
 
             BigDecimal buyMaxPri = new BigDecimal(String.valueOf(buyPrices.get(toDepth).get(0)));
-            logger.info("深度 买" + toDepth + "价格:" + buyMaxPri);
+//            logger.info("深度 买" + toDepth + "价格:" + buyMaxPri);
 
             BigDecimal sellMinPri = new BigDecimal(String.valueOf(sellPrices.get(fromDepth).get(0)));
-            logger.info("深度 卖" + fromDepth + "价格:" + sellMinPri);
+//            logger.info("深度 卖" + fromDepth + "价格:" + sellMinPri);
 
             BigDecimal sellMaxPri = new BigDecimal(String.valueOf(sellPrices.get(toDepth).get(0)));
-            logger.info("深度 卖" + toDepth + "价格:" + sellMaxPri);
+//            logger.info("深度 卖" + toDepth + "价格:" + sellMaxPri);
 
             Integer newScale = Integer.parseInt(precision.get("pricePrecision").toString());
             int maxBuy = buyMinPri.multiply(BigDecimal.valueOf(Math.pow(10, newScale))).intValue();

@@ -1,6 +1,7 @@
 package top.suilian.aio.service.hotcoin.refToOk;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import lombok.Data;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.math.NumberUtils;
@@ -17,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class HotcoinRep2Ok extends HotCoinParentService {
     public HotcoinRep2Ok(
@@ -153,7 +155,7 @@ public class HotcoinRep2Ok extends HotCoinParentService {
                     point = sellPri.divide(okDeepSellPrice, 6, BigDecimal.ROUND_HALF_UP);
                 }
                 logger.info("hotcoin-价格：" + sellPri + "--OK价格：" + okDeepSellPrice + "--比例：" + point);
-                ArrayList<Order> list = new ArrayList<>();
+                List<Order> list = new ArrayList<>();
 
                 int pricePrecision = Integer.parseInt(exchange.get("pricePrecision").toString());
 
@@ -169,6 +171,7 @@ public class HotcoinRep2Ok extends HotCoinParentService {
                     boolean b = RandomUtils.nextBoolean();
                     //同步交易
                     Order order = new Order();
+                    order.setFirst(1);
                     BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, 5);
                     order.setType(b?1:2);
                     BigDecimal relishAmount = deepVo.getAmount().multiply(new BigDecimal(exchange.get("relishAmountPoint")));
@@ -189,6 +192,7 @@ public class HotcoinRep2Ok extends HotCoinParentService {
                     Order order1 = new Order();
                     order1.setType(b?2:1);
                     order1.setPrice(order.getPrice());
+                    order1.setFirst(1);
                     order1.setAmount(order.getAmount());
                     logger.info("买--Kline对标-ok价格：" + deepVo.getPrice() + "---对标价格" + order1.getPrice() + "平台数量：" + deepVo.getAmount() + "---实际数量：" + order1.getAmount());
                     list.add(order1);
@@ -208,7 +212,12 @@ public class HotcoinRep2Ok extends HotCoinParentService {
                     }
                     BigDecimal relishAmount = deepBuy.getAmount().multiply(new BigDecimal(exchange.get("relishAmountPoint")));
                     order.setAmount(relishAmount.compareTo(new BigDecimal(relishMax)) > 0 ? orderAmount : relishAmount);
+                    if (i==0){
+                        order.setFirst(2);
+                        order.setAmount(order.getAmount().multiply(new BigDecimal("1.5")));
+                    }
                     logger.info("买--对标-ok价格：" + deepBuy.getPrice() + "---对标价格" + order.getPrice() + "平台数量：" + deepBuy.getAmount() + "---实际数量：" + order.getAmount());
+
                     j++;
                     list.add(order);
                 }
@@ -224,11 +233,19 @@ public class HotcoinRep2Ok extends HotCoinParentService {
                     }
                     BigDecimal relishAmount = deepBuy.getAmount().multiply(new BigDecimal(exchange.get("relishAmountPoint")));
                     order.setAmount(relishAmount.compareTo(new BigDecimal(relishMin)) > 0 ? orderAmount : relishAmount);
+                    if (i==0){
+                        order.setFirst(2);
+                        order.setAmount(order.getAmount().multiply(new BigDecimal("1.5")));
+                    }
                     logger.info("卖--对标-ok价格：" + deepBuy.getPrice() + "---对标价格" + order.getPrice() + "平台数量：" + deepBuy.getAmount() + "---实际数量：" + order.getAmount());
                     j++;
                     list.add(order);
                 }
+
                 Collections.shuffle(list);
+                list = list.stream()
+                        .sorted(Comparator.comparing(Order::getFirst))
+                        .collect(Collectors.toList());
 
 
                 //开始挂单
@@ -253,7 +270,10 @@ public class HotcoinRep2Ok extends HotCoinParentService {
                     logger.info("撤单失败"+orderId+"---"+e.getMessage());
                 }
             }
-            lastOrderList=nowOrderList;
+
+
+            lastOrderList= JSONArray.parseArray(JSON.toJSONString(nowOrderList), String.class);
+
             nowOrderList.clear();
             double time = Double.valueOf(exchange.get("time"));
             try {
@@ -272,6 +292,7 @@ public class HotcoinRep2Ok extends HotCoinParentService {
         private Integer type;
         private BigDecimal price;
         private BigDecimal amount;
+        private Integer first=8;
     }
     public static Double getRandom(double num, Integer precision) {
         precision=8;
