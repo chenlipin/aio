@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="aa">
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ApiReq.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/BananceVo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/EditDetai.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/Vedit.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/Vedit2.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

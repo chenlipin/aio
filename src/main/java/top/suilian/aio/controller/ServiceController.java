@@ -5,10 +5,7 @@ import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import top.suilian.aio.service.hotcoin.HotCoinParentService;
 import top.suilian.aio.service.hotcoin.Vedit2;
 
@@ -29,7 +26,7 @@ public class ServiceController extends BaseController {
 
 
 
-    @RequestMapping(value = "/getBalance")
+    @PostMapping(value = "/getBalance")
     @ResponseBody
     public Object setBalance(@RequestBody ApiReq req) {
         JSONObject maps = null;
@@ -42,7 +39,7 @@ public class ServiceController extends BaseController {
         return maps;
     }
 
-    @RequestMapping(value = "/getBalanceV1")
+    @PostMapping(value = "/getBalanceV1")
     @ResponseBody
     public JSONObject setBalancev2(@RequestBody Vedit2 req) {
         logger.info("getBalance22:"+ com.alibaba.fastjson.JSONObject.toJSONString(req));
@@ -52,7 +49,7 @@ public class ServiceController extends BaseController {
         return maps;
     }
 
-    @RequestMapping(value = "/getBalanceV3")
+    @PostMapping(value = "/getBalanceV3")
     @ResponseBody
     public JSONObject setBalancev3(@RequestBody Vedit2 req) {
         logger.info("getBalance33:"+com.alibaba.fastjson.JSONObject.toJSONString(req));
@@ -62,7 +59,7 @@ public class ServiceController extends BaseController {
         return maps;
     }
 
-    @RequestMapping(value = "/redisUpdateTXERYT")
+    @GetMapping(value = "/redisUpdateTXERYT")
     @ResponseBody
     public JSONObject redisUpdate() {
         logger.info("getBalance33:");
