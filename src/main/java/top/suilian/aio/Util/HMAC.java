@@ -50,9 +50,9 @@ public class HMAC {
         String hash = "";
         try {
             Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
+            SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
             sha256_HMAC.init(secret_key);
-            byte[] bytes = sha256_HMAC.doFinal(message.getBytes());
+            byte[] bytes = sha256_HMAC.doFinal(message.getBytes(StandardCharsets.UTF_8));
             hash = byteArrayToHexString(bytes);
         } catch (Exception e) {
             System.out.println("Error HmacSHA256 ===========" + e.getMessage());
