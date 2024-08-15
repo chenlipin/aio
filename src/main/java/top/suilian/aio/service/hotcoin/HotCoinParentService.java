@@ -4,11 +4,13 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.Util.RandomUtilsme;
+import top.suilian.aio.controller.ServiceController;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.redis.RedisStringExecutor;
 
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @DependsOn("beanContext")
 public class HotCoinParentService {
+    private static Logger logger = Logger.getLogger(HotCoinParentService.class);
 
 
     @Autowired
@@ -80,6 +83,7 @@ public class HotCoinParentService {
         params.put("Signature", Signature);
         String httpParams = splicing(params);
         String trades = HttpUtil.get(baseUrl + uri + "?" + httpParams);
+        logger.info("trades--"+trades);
         JSONObject jsonObjectss = JSONObject.fromObject(trades);
         if (!"200".equals(jsonObjectss.getString("code"))) {
             jsonObject.put("errcode", -1);
@@ -89,7 +93,6 @@ public class HotCoinParentService {
         JSONObject tradesJson = JSONObject.fromObject(trades);
         JSONObject data = tradesJson.getJSONObject("data");
         JSONArray wallet = data.getJSONArray("wallet");
-
         ArrayList<BananceVo> maps = new ArrayList<>();
         for (int i = 0; i < wallet.size(); i++) {
             BananceVo bananceVo = new BananceVo();
