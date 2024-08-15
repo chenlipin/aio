@@ -10,6 +10,7 @@ import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
 import top.suilian.aio.service.huobi.HuobiParentService;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -80,17 +81,14 @@ public class NewHobiKline extends HuobiParentService {
                 logger.info("设置机器人参数开始");
                 setParam();
                 setTransactionRatio();
+                setAccount();
                 if (exchange.get("tradeRatio") != null || !"0".equals(exchange.get("tradeRatio"))) {
                     Double ratio = 10 * (1 / (1 + Double.parseDouble(exchange.get("tradeRatio"))));
                     tradeRatio = new BigDecimal(ratio).setScale(2, RoundingMode.HALF_UP);
                 }
                 logger.info("设置机器人参数结束");
-
                 logger.info("设置机器人交易规则开始");
                 logger.info("设置机器人交易规则结束");
-
-                String balance = getBalance();
-                System.out.println(balance);
                 //判断走K线的方式
                 if ("1".equals(exchange.get("sheetForm"))) {
                     //新版本
@@ -114,21 +112,21 @@ public class NewHobiKline extends HuobiParentService {
             logger.info("当前时间段单量百分比：" + transactionRatio);
 
             if (runTime < timeSlot) {
-                String trades = httpUtil.get(baseUrl +"/markets/"+exchange.get("market").toUpperCase()+"/orderBook");
+                String trades = httpUtil.get(baseUrl +"/market/depth?type=step0&depth=5&symbol="+exchange.get("market"));
 
 
                 //获取深度 判断平台撮合是否成功
                 com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-                if (tradesObj != null ) {
+                if (tradesObj != null && tradesObj.getString("status").equals("ok") ) {
+                    com.alibaba.fastjson.JSONObject tick = tradesObj.getJSONObject("tick");
 
-                    List<String> bids = JSONArray.parseArray(tradesObj.getString("bids"), String.class);
-                    List<String> asks = JSONArray.parseArray(tradesObj.getString("asks"), String.class);
+                    List<List<String>> buyPrices = (List<List<String>>) tick.get("bids");
 
+                    List<List<String>> sellPrices = (List<List<String>>) tick.get("asks");
 
-
-                    BigDecimal buyPri = new BigDecimal(bids.get(0));
-                    BigDecimal sellPri = new BigDecimal(asks.get(0));
+                    BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+                    BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
                     if (sellPri.compareTo(buyPri) == 0) {
                         //平台撮合功能失败
@@ -220,12 +218,12 @@ public class NewHobiKline extends HuobiParentService {
 
                 Double numThreshold1 = Double.valueOf(exchange.get("numThreshold"));
                 Double minNum = Double.valueOf(exchange.get("numMinThreshold"));
-                long max = (long) (numThreshold1 * Math.pow(10, Double.valueOf(String.valueOf(exchange.get("amountPrecision")))));
-                long min = (long) (minNum * Math.pow(10, Double.valueOf(String.valueOf(exchange.get("amountPrecision")))));
+                long max = (long) (numThreshold1 * Math.pow(10, Double.parseDouble(String.valueOf(exchange.get("amountPrecision")))));
+                long min = (long) (minNum * Math.pow(10, Double.parseDouble(String.valueOf(exchange.get("amountPrecision")))));
                 long randNumber = min + (((long) (new Random().nextDouble() * (max - min))));
 
 
-                BigDecimal oldNum = new BigDecimal(String.valueOf(randNumber / Math.pow(10, Double.valueOf(String.valueOf(exchange.get("amountPrecision"))))));
+                BigDecimal oldNum = new BigDecimal(String.valueOf(randNumber / Math.pow(10, Double.parseDouble(String.valueOf(exchange.get("amountPrecision"))))));
                 BigDecimal num = oldNum.multiply(new BigDecimal(transactionRatio));
                 logger.info("robotId" + id + "----" + "num(挂单数量)：" + num);
 
@@ -237,14 +235,14 @@ public class NewHobiKline extends HuobiParentService {
                     String resultJson = submitOrder(type, price, num);
                     JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
-                    if (jsonObject != null && jsonObject.getString("id")!=null) {
+                    if (jsonObject != null && jsonObject.getString("status").equals("ok")) {
 
-                        orderIdOne = jsonObject.getString("id");
+                        orderIdOne = jsonObject.getString("data");
                         String resultJson1 = submitOrder(type == 1 ? 2 : 1, price, num);
                         JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
-                        if (jsonObject1 != null && jsonObject1.getString("id")!=null) {
-                            orderIdTwo = jsonObject1.getString("id");
+                        if (jsonObject1 != null && jsonObject1.getString("status").equals("ok")) {
+                            orderIdTwo = jsonObject1.getString("data");
                             removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
                             ordersleeptime = System.currentTimeMillis();
 
@@ -325,21 +323,21 @@ public class NewHobiKline extends HuobiParentService {
         public BigDecimal getRandomPrice() throws UnsupportedEncodingException {
             BigDecimal price = null;
 
-            String trades = httpUtil.get(baseUrl +"/markets/"+exchange.get("market").toUpperCase()+"/orderBook");
+            String trades = httpUtil.get(baseUrl +"/market/depth?type=step0&depth=5&symbol="+exchange.get("market"));
 
 
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-            if (tradesObj != null ) {
+            if (tradesObj != null && tradesObj.getString("status").equals("ok") ) {
+                com.alibaba.fastjson.JSONObject tick = tradesObj.getJSONObject("tick");
 
-                List<String> bids = JSONArray.parseArray(tradesObj.getString("bids"), String.class);
-                List<String> asks = JSONArray.parseArray(tradesObj.getString("asks"), String.class);
+                List<List<String>> buyPrices = (List<List<String>>) tick.get("bids");
 
+                List<List<String>> sellPrices = (List<List<String>>) tick.get("asks");
 
-
-                BigDecimal buyPri = new BigDecimal(bids.get(0));
-                BigDecimal sellPri = new BigDecimal(asks.get(0));
+                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
                 long l = 1000 * 60 * 2 + (RandomUtils.nextInt(10) * 1000L);
                 logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
@@ -349,8 +347,8 @@ public class NewHobiKline extends HuobiParentService {
                     String resultJson = submitOrder(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
                     JSONObject jsonObject1 = judgeRes(resultJson, "code", "submitTrade");
 
-                    if (jsonObject1 != null && jsonObject1.getString("id")!=null) {
-                        orderIdBu = jsonObject1.getString("id");
+                    if (jsonObject1 != null && jsonObject1.getString("status").equals("ok")) {
+                        orderIdBu = jsonObject1.getString("data");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
                         ordersleeptime = System.currentTimeMillis();
                         logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
@@ -362,83 +360,6 @@ public class NewHobiKline extends HuobiParentService {
 
                 logger.info("robotId" + id + "----" + "最新买一：" + buyPri + "，最新卖一：" + sellPri);
                 logger.info("robotId" + id + "----" + "当前买一卖一差值：" + intervalPrice);
-
-                //判断盘口买卖检测开关是否开启
-                if ("1".equals(exchange.get("isTradeCheck"))) {
-
-                    //吃堵盘口的订单
-                    BigDecimal buyAmount = new BigDecimal(bids.get(1));
-                    BigDecimal sellAmount = new BigDecimal(bids.get(1));
-                    BigDecimal minAmount = new BigDecimal(exchange.get("minTradeLimit").toString());
-                    if (maxEatOrder == 0) {
-                        logger.info("吃单上限功能未开启：maxEatOrder=" + maxEatOrder);
-                    } else if (maxEatOrder <= eatOrder) {
-                        setWarmLog(id,2,"已吃堵盘口单总数(" + eatOrder + ")=吃单成交上限数(" + maxEatOrder + "),吃单上限，停止吃单","");
-                        setTradeLog(id, "已吃堵盘口单总数(" + eatOrder + ")=吃单成交上限数(" + maxEatOrder + "),吃单上限，停止吃单", 0);
-                    }
-
-                    //吃买单
-                    if (buyAmount.compareTo(new BigDecimal(exchange.get("buyMinLimitAmount"))) < 1 && "1".equals(exchange.get("isBuyMinLimitAmount"))) {
-                        if ("0".equals(exchange.get("isSuspendTrade"))) {
-                            if (maxEatOrder == 0 || maxEatOrder > eatOrder) {
-                                if (buyAmount.compareTo(minAmount) == -1) {
-                                    buyAmount = minAmount;
-                                }
-                                try {
-                                    String sellOrder = submitOrder(2, buyPri, buyAmount);
-                                    setTradeLog(id, "堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]", 0);
-                                    logger.info("堵盘口买单:数量[" + buyAmount + "],价格:[" + buyPri + "]");
-
-                                    JSONObject jsonObject = judgeRes(sellOrder, "code", "submitTrade");
-                                    if (jsonObject != null && jsonObject.getString("id")!=null) {
-
-                                        sellOrderId =jsonObject.getString("id");
-                                    }
-                                    return price;
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        } else {
-                            setTradeLog(id, "出现疑似堵盘口订单，停止量化", 0, "000000");
-                            setWarmLog(id,2,"出现疑似堵盘口订单，停止量化","");
-                            String msg = "出现疑似堵盘口订单，您的" + getRobotName(this.id) + "量化机器人已停止!";
-                            setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
-                            judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
-                        }
-                    }
-
-                    //吃卖单
-                    if (sellAmount.compareTo(new BigDecimal(exchange.get("sellMinLimitAmount"))) < 1 && "1".equals(exchange.get("isSellMinLimitAmount"))) {
-                        //判断出现堵盘口单时的操作,是停止还是吃
-                        if ("0".equals(exchange.get("isSuspendTrade"))) {
-                            if (maxEatOrder == 0 || maxEatOrder > eatOrder) {
-                                if (sellAmount.compareTo(minAmount) == -1) {
-                                    sellAmount = minAmount;
-                                }
-                                try {
-                                    String buyOrder = submitOrder(1, sellPri, sellAmount);
-                                    setTradeLog(id, "堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]", 0);
-                                    logger.info("堵盘口卖单:数量[" + sellAmount + "],价格:[" + sellPri + "]");
-
-                                    JSONObject jsonObject = judgeRes(buyOrder, "code", "submitTrade");
-                                    if (jsonObject != null && jsonObject.getString("id")!=null) {
-                                        buyOrderId = jsonObject.getString("id");
-                                    }
-                                    return price;
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        } else {
-                            setTradeLog(id, "出现疑似堵盘口订单，停止量化", 0, "000000");
-                            setWarmLog(id,2,"出现疑似堵盘口订单，停止量化","");
-                            String msg = "出现疑似堵盘口订单，您的" + getRobotName(this.id) + "量化机器人已停止!";
-                            setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
-                            judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
-                        }
-                    }
-                }
 
 
 
@@ -564,8 +485,8 @@ public class NewHobiKline extends HuobiParentService {
                 JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
                 if (jsonObject != null ) {
 
-                    String status = jsonObject.getString("state");
-                    if ("FILLED".equals(status) || "CANCELED".equals(status)) {
+                    String status = jsonObject.getJSONObject("data").getString("state");
+                    if ("filled".equals(status) || "canceled".equals(status)) {
                         setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                     } else {
                         String res = cancelTrade(orderId);

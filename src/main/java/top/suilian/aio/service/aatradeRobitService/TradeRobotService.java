@@ -41,6 +41,7 @@ import top.suilian.aio.service.feltpex.FeltpexService;
 import top.suilian.aio.service.gate.GateParentService;
 import top.suilian.aio.service.hoo.HooParentService;
 import top.suilian.aio.service.hotcoin.HotCoinParentService;
+import top.suilian.aio.service.huobi.HuobiParentService;
 import top.suilian.aio.service.iex.IexParentService;
 import top.suilian.aio.service.kucoin.KucoinParentService;
 import top.suilian.aio.service.lbank.LbankParentService;
@@ -262,6 +263,10 @@ public class TradeRobotService {
             case Constant.KEY_EXCHANGE_POLONIEX:
                 robotAction=new PoloniexParentService();
                 break;
+
+            case Constant.KEY_EXCHANGE_HUOBI:
+                robotAction=new HuobiParentService();
+                break;
             default:
                 return null;
         }
@@ -329,6 +334,10 @@ public class TradeRobotService {
         }
 
         if (robot.getStrategyId()==78){
+            return robotAction.selectOrder();
+
+        }
+        if (robot.getStrategyId()==79){
             return robotAction.selectOrder();
 
         }

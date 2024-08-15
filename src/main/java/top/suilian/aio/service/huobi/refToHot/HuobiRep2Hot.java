@@ -47,10 +47,10 @@ public class HuobiRep2Hot extends HuobiParentService {
     public int depthCancelOrderNum = 0;
     List<String> nowOrderList = new ArrayList<>();
     List<String> lastOrderList = new ArrayList<>();
-    BigDecimal point=null;
+    BigDecimal point = null;
 
-    boolean up=true;
-    int time=0;
+    boolean up = true;
+    int time = 0;
 
     /**
      * range              同步深度数量
@@ -60,7 +60,7 @@ public class HuobiRep2Hot extends HuobiParentService {
      * relishPoint       同步交易数量倍数
      */
 
-    public void init()  {
+    public void init() {
         logger.info("\r\n------------------------------{" + id + "} 开始------------------------------\r\n");
         if (start) {
             logger.info("对标策略设置机器人参数开始");
@@ -69,10 +69,11 @@ public class HuobiRep2Hot extends HuobiParentService {
             logger.info("对标策略设置机器人交易规则开始");
             setPrecision();
             logger.info("补单策略设置机器人交易规则结束");
+            setAccount();
             start = false;
         }
-        int i1 = RandomUtils.nextInt(5);
-        if(2==i1){
+        int i1 = RandomUtils.nextInt(4);
+        if (2 == i1) {
             try {
                 setBalanceRedis();
             } catch (Exception e) {
@@ -81,11 +82,14 @@ public class HuobiRep2Hot extends HuobiParentService {
         }
 
 
-        String trades = httpUtil.get(baseUrl + "/markets/" + exchange.get("market").toUpperCase() + "/orderBook");
+        String trades = httpUtil.get(baseUrl + "/market/depth?type=step0&depth=5&symbol=" + exchange.get("market"));
 
 
         //获取深度 判断平台撮合是否成功
+        com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
+
+        //获取深度 判断平台撮合是否成功
 
 
         /**
@@ -96,15 +100,17 @@ public class HuobiRep2Hot extends HuobiParentService {
          * relishPoint        同步交易数量倍数
          */
 
-        //获取深度 判断平台撮合是否成功
-        com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
-        if (tradesObj != null ) {
-            try {
-                List<String> bids = JSONArray.parseArray(tradesObj.getString("bids"), String.class);
-                List<String> asks = JSONArray.parseArray(tradesObj.getString("asks"), String.class);
 
-                BigDecimal buyPri = new BigDecimal(bids.get(0));
-                BigDecimal sellPri = new BigDecimal(asks.get(0));
+        if (tradesObj != null && tradesObj.getString("status").equals("ok")) {
+            try {
+                com.alibaba.fastjson.JSONObject tick = tradesObj.getJSONObject("tick");
+
+                List<List<String>> buyPrices = (List<List<String>>) tick.get("bids");
+
+                List<List<String>> sellPrices = (List<List<String>>) tick.get("asks");
+
+                BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+                BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
                 if (sellPri.compareTo(buyPri) == 0) {
                     //平台撮合功能失败
@@ -124,52 +130,47 @@ public class HuobiRep2Hot extends HuobiParentService {
                 BigDecimal okDeepSellPrice = okDepp.get("deepSellList").get(0).getPrice();
 
                 //计算价格比例
-                point=new BigDecimal("1");
+                point = new BigDecimal("1");
 
                 logger.info("hotcoin-价格：" + sellPri + "--hot价格：" + okDeepSellPrice + "--比例：" + point);
                 ArrayList<Order> list = new ArrayList<>();
 
-                int pricePrecision = Integer.parseInt(exchange.get("pricePrecision").toString());
-                double pow = Math.pow(10, pricePrecision);
-
-
 
                 // 同步k线
-                int y=0;
-                 BigDecimal klinePrice=null;
+                int y = 0;
+                BigDecimal klinePrice = null;
                 for (DeepVo deepVo : history) {
                     y++;
                     boolean b = RandomUtils.nextBoolean();
                     //同步交易
                     Order order = new Order();
                     BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, 5);
-                    order.setType(b?1:2);
-                    BigDecimal relishAmount = deepVo.getAmount().multiply(new BigDecimal(exchange.get("relishAmountPoint")));
+                    order.setType(b ? 1 : 2);
                     BigDecimal multiply = deepVo.getPrice().multiply(point).setScale(Integer.parseInt(exchange.get("pricePrecision")), RoundingMode.HALF_UP);
                     order.setPrice(multiply);
 
 
-                    order.setAmount( orderAmount);
+                    order.setAmount(orderAmount);
                     logger.info("买--Kline对标-hot价格：" + deepVo.getPrice() + "---对标价格" + order.getPrice() + "平台数量：" + deepVo.getAmount() + "---实际数量：" + order.getAmount());
                     list.add(order);
                     Order order1 = new Order();
-                    order1.setType(b?2:1);
+                    order1.setType(b ? 2 : 1);
                     order1.setPrice(order.getPrice());
                     order1.setAmount(order.getAmount());
                     logger.info("买--Kline对标-hot价格：" + deepVo.getPrice() + "---对标价格" + order1.getPrice() + "平台数量：" + deepVo.getAmount() + "---实际数量：" + order1.getAmount());
                     list.add(order1);
-                    klinePrice=order1.getPrice();
+                    klinePrice = order1.getPrice();
                     break;
                 }
 
                 //同步深度
-                for (int i = 0,j=0; i < okDepp.get("deepBuyList").size() && j < range; i++) {
+                for (int i = 0, j = 0; i < okDepp.get("deepBuyList").size() && j < range; i++) {
                     BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, 5);
                     DeepVo deepBuy = okDepp.get("deepBuyList").get(i);
                     Order order = new Order();
                     order.setType(1);
                     order.setPrice(deepBuy.getPrice().multiply(point));
-                    if (klinePrice!=null&&order.getPrice().compareTo(klinePrice)==0){
+                    if (klinePrice != null && order.getPrice().compareTo(klinePrice) == 0) {
                         continue;
                     }
                     BigDecimal relishAmount = deepBuy.getAmount().multiply(new BigDecimal(exchange.get("relishAmountPoint")));
@@ -179,13 +180,13 @@ public class HuobiRep2Hot extends HuobiParentService {
                     list.add(order);
                 }
 
-                for (int i = 0,j=0; i < okDepp.get("deepSellList").size() &&  j< range; i++) {
+                for (int i = 0, j = 0; i < okDepp.get("deepSellList").size() && j < range; i++) {
                     BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, 5);
                     DeepVo deepBuy = okDepp.get("deepSellList").get(i);
                     Order order = new Order();
                     order.setType(2);
                     order.setPrice(deepBuy.getPrice().multiply(point));
-                    if (klinePrice!=null&&order.getPrice().compareTo(klinePrice)==0){
+                    if (klinePrice != null && order.getPrice().compareTo(klinePrice) == 0) {
                         continue;
                     }
                     BigDecimal relishAmount = deepBuy.getAmount().multiply(new BigDecimal(exchange.get("relishAmountPoint")));
@@ -202,33 +203,32 @@ public class HuobiRep2Hot extends HuobiParentService {
                     Thread.sleep(1000);
                     String resultJson = submitOrder(order2.getType(), order2.getPrice(), order2.getAmount());
                     JSONObject jsonObject1 = judgeRes(resultJson, "code", "submitTrade");
-                    if (jsonObject1 != null  && StringUtils.isNotEmpty(jsonObject1.getString("id"))) {
-                        String orderId = jsonObject1.getString("id");
+                    if (jsonObject1 != null && "ok".equals(jsonObject1.getString("status"))) {
+                        String orderId = jsonObject1.getString("data");
                         nowOrderList.add(orderId);
                     }
                 }
-            }catch (Exception e){
-                logger.info("失败---"+e.getMessage());
+            } catch (Exception e) {
+                logger.info("失败---" + e.getMessage());
             }
             //撤单 上一波的
             for (String orderId : lastOrderList) {
                 try {
                     String s = cancelTrade(orderId);
-                    logger.info("撤单---"+orderId);
-                }catch (Exception e){
-                    logger.info("撤单失败"+orderId+"---"+e.getMessage());
+                    logger.info("撤单---" + orderId);
+                } catch (Exception e) {
+                    logger.info("撤单失败" + orderId + "---" + e.getMessage());
                 }
             }
-            lastOrderList=nowOrderList;
+            lastOrderList= JSONArray.parseArray(JSON.toJSONString(nowOrderList), String.class);
             nowOrderList.clear();
             double time = Double.valueOf(exchange.get("time"));
             try {
-                Thread.sleep(getRandom(time,null).intValue()* 1000L);
+                Thread.sleep(getRandom(time, null).intValue() * 1000L);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
-
 
 
     }
@@ -239,8 +239,9 @@ public class HuobiRep2Hot extends HuobiParentService {
         private BigDecimal price;
         private BigDecimal amount;
     }
+
     public static Double getRandom(double num, Integer precision) {
-        precision=8;
+        precision = 8;
         double randomNum = Math.floor(Math.random() * Math.pow(10, precision)) / Math.pow(10, precision);
 
         while (randomNum >= num) {
@@ -257,8 +258,6 @@ public class HuobiRep2Hot extends HuobiParentService {
         long randNumber = minty + (((long) (new Random().nextDouble() * (maxQty - minty))));
         return new BigDecimal(String.valueOf(randNumber / Math.pow(10, pression)));
     }
-
-
 
 
 }

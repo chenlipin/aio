@@ -61,6 +61,21 @@ public class HMAC {
     }
 
 
+    public static String sha256_HMACAndBase(String message, String secret) {
+        String hash = "";
+        try {
+            Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            sha256_HMAC.init(secret_key);
+            byte[] bytes = sha256_HMAC.doFinal(message.getBytes(StandardCharsets.UTF_8));
+             hash = java.util.Base64.getEncoder().encodeToString(bytes);
+        } catch (Exception e) {
+            System.out.println("Error HmacSHA256 ===========" + e.getMessage());
+        }
+        return hash;
+    }
+
+
     public static String generateSignature(String secretKey, String payload) {
         Mac hmacSha256;
         try {

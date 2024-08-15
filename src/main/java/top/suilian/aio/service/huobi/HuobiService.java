@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.service.huobi.newKline.RunNewHuobiKline;
-import top.suilian.aio.service.huobi.refToHot.RunPoloniexRep2Hot;
+import top.suilian.aio.service.huobi.refToHot.RunHuobiRep2Hot;
 
 @Component
 public class HuobiService {
@@ -13,7 +13,7 @@ public class HuobiService {
     //    @Autowired
 //    RunBitterRandomDepth runBitterRandomDepth;
     @Autowired
-    RunPoloniexRep2Hot runPoloniexRep2Hot;
+    RunHuobiRep2Hot runHuobiRep2Hot;
 
 
     /**
@@ -33,7 +33,7 @@ public class HuobiService {
                 runNewHuobiKline.init(id);
                 break;
             case Constant.KEY_STRA_9:
-                runPoloniexRep2Hot.init(id);
+                runHuobiRep2Hot.init(id);
                 break;
         }
     }
@@ -47,7 +47,7 @@ public class HuobiService {
 //                runBitterRandomDepth.stopWork(id);
 //                break;
             case Constant.KEY_STRA_9:
-                runPoloniexRep2Hot.stopWork(id);
+                runHuobiRep2Hot.stopWork(id);
                 break;
         }
     }
@@ -64,7 +64,7 @@ public class HuobiService {
 //                runBitterRandomDepth.killWork(id+1);
                 break;
             case Constant.KEY_STRA_9:
-                runPoloniexRep2Hot.killWork(id);
+                runHuobiRep2Hot.killWork(id);
                 break;
         }
     }

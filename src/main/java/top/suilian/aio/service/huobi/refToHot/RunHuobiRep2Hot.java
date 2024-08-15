@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class RunPoloniexRep2Hot {
+public class RunHuobiRep2Hot {
     //region    Service
     @Autowired
     CancelExceptionService cancelExceptionService;

@@ -22,29 +22,38 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
 @DependsOn("beanContext")
 public class HuobiParentService extends BaseService implements RobotAction {
-    public String baseUrl = "https://api.poloniex.com";
+    public String baseUrl = "https://api.huobi.pro";
     public String host = "";
+    private static final DateTimeFormatter DT_FORMAT = DateTimeFormatter
+            .ofPattern("uuuu-MM-dd'T'HH:mm:ss");
+    private static final ZoneId ZONE_GMT = ZoneId.of("Z");
+
+
 
     @Override
     public List<getAllOrderPonse> selectOrder() {
         ArrayList<getAllOrderPonse> getAllOrderPonses = new ArrayList<>();
         String trade = getTrade();
-        com.alibaba.fastjson.JSONArray array = com.alibaba.fastjson.JSONArray.parseArray(trade);
+        JSONObject jsonObject1 = JSONObject.fromObject(trade);
+        JSONArray array = jsonObject1.getJSONArray("data");
 
         for (int i = 0; i < array.size(); i++) {
             getAllOrderPonse getAllOrderPonse = new getAllOrderPonse();
-            com.alibaba.fastjson.JSONObject jsonObject = array.getJSONObject(i);
+            JSONObject jsonObject = array.getJSONObject(i);
 
             getAllOrderPonse.setOrderId(jsonObject.getString("id"));
-            getAllOrderPonse.setCreatedAt(DateUtils.convertTimestampToString(jsonObject.getLong("createTime")));
-            getAllOrderPonse.setPrice(jsonObject.getString("side")+"-"+jsonObject.getString("price"));
+            getAllOrderPonse.setCreatedAt(DateUtils.convertTimestampToString(jsonObject.getLong("created-at")));
+            getAllOrderPonse.setPrice(jsonObject.getString("type").split("-")[0]+"-"+new BigDecimal(jsonObject.getString("price")).stripTrailingZeros().toPlainString());
             getAllOrderPonse.setStatus(0);
-            getAllOrderPonse.setAmount(jsonObject.getString("quantity"));
+            getAllOrderPonse.setAmount(new BigDecimal(jsonObject.getString("amount")).stripTrailingZeros().toPlainString());
             getAllOrderPonses.add(getAllOrderPonse);
         }
         return getAllOrderPonses;
@@ -92,63 +101,71 @@ public class HuobiParentService extends BaseService implements RobotAction {
 
 
     /**
-     {
-     "id" : "315110412968390656",
-     "clientOrderId" : "SSS1716094576774"
-     }
      *
      * @param type
      * @param price
      * @param amount
-     * @return
+     * @return {"status":"ok","data":"1133371409337541"}
      */
     protected String submitOrder(int type, BigDecimal price, BigDecimal amount) {
         logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + (type==1?"买":"卖") + "，price(价格)：" + price + "，amount(数量)：" + amount);
         BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
         BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
-        String timestamp =(getTime())+"";
-
-
-        HashMap<String, String> head = new HashMap<String, String>();
-        head.put("key",exchange.get("apikey"));
-        head.put("signMethod","HmacSHA256");
-        head.put("signVersion","2");
-        head.put("signTimestamp",timestamp);
-        head.put("recvWindow","5000");
-
-        Map<String, String> params = new TreeMap<String, String>();
-        params.put("symbol", exchange.get("market"));
-        params.put("type", "LIMIT");
-        if (type == 1) {
-            params.put("side", "BUY");
-        } else {
-            params.put("side", "SELL");
-        }
-        params.put("quantity", num+"");
-        params.put("price", price1+"");
-        params.put("timeInForce", "GTC");
-        params.put("clientOrderId", "SSS" + timestamp);
-        params.put("stpMode","None");
-
-        String uri="/orders";
         String strSign = "POST" + "\n" +
-                uri + "\n" +
-                "requestBody=" + com.alibaba.fastjson.JSONObject.toJSONString(params) +
-                "&" + "signTimestamp" + "=" + timestamp;
+                "api.huobi.pro" + "\n" +
+                "/v1/order/orders/place" + "\n";
+        Map<String, String> params = new TreeMap<String, String>();
+        params.put("AccessKeyId",exchange.get("apikey"));
+        params.put("SignatureMethod","HmacSHA256");
+        params.put("SignatureVersion","2");
+        params.put("Timestamp",gmtNow());
+        String splicingStr = splicingStr(params);
+        strSign=strSign+splicingStr;
+        Map<String, Object> reqparam = new TreeMap<String, Object>();
+        reqparam.put("account-id",exchange.get("account-id"));
+        reqparam.put("symbol", exchange.get("market"));
+        reqparam.put("type",type==1? "buy-limit":"sell-limit");
+        reqparam.put("amount",num);
+        reqparam.put("price", price1);
 
-        String sign = HMAC.generateSignature( exchange.get("tpass"),strSign);
-        head.put("signature",sign);
-
+        String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
+        sign = urlEncode(sign);
         String trade = null;
         try {
-            trade = HttpUtil.doPostMart(baseUrl + uri, com.alibaba.fastjson.JSONObject.toJSONString(params),head);
-            setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+            trade = HttpUtil.postes("https://api.huobi.pro/v1/order/orders/place?" + splicingStr + "&Signature=" + sign,reqparam);
             JSONObject jsonObject = JSONObject.fromObject(trade);
-            if(StringUtils.isEmpty(jsonObject.getString("id"))){
-                setWarmLog(id,3,"API接口错误",jsonObject.getString("message"));
+            setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+            if(!"ok".equals(jsonObject.getString("status"))){
+                setWarmLog(id,3,"API接口错误",jsonObject.getString("err-msg"));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        return trade;
+    }
+
+
+
+    protected String setAccount() {
+        String strSign = "GET" + "\n" +
+                "api.huobi.pro" + "\n" +
+                "/v1/account/accounts" + "\n";
+        Map<String, String> params = new TreeMap<String, String>();
+        params.put("AccessKeyId",exchange.get("apikey"));
+        params.put("SignatureMethod","HmacSHA256");
+        params.put("SignatureVersion","2");
+        params.put("Timestamp",gmtNow());
+        String splicingStr = splicingStr(params);
+        strSign=strSign+splicingStr;
+        String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
+        sign = urlEncode(sign);
+        String trade = null;
+        trade = HttpUtil.get("https://api.huobi.pro/v1/account/accounts?" + splicingStr + "&Signature=" + sign);
+        JSONObject jsonObject = JSONObject.fromObject(trade);
+        if("ok".equals(jsonObject.getString("status"))){
+            String string = jsonObject.getJSONArray("data").getJSONObject(0).getString("id");
+            exchange.put("account-id",string);
+            System.out.println("account-id-----"+string);
         }
 
         return trade;
@@ -156,74 +173,79 @@ public class HuobiParentService extends BaseService implements RobotAction {
 
 
     public String getBalance() throws UnsupportedEncodingException {
-
-        String timestamp =(getTime())+"";
-        HashMap<String, String> head = new HashMap<String, String>();
-        head.put("key",exchange.get("apikey"));
-        head.put("signMethod","HmacSHA256");
-        head.put("signVersion","2");
-        head.put("signTimestamp",timestamp);
-        head.put("recvWindow","5000");
-        String uri="/accounts/balances";
-
         String strSign = "GET" + "\n" +
-                uri + "\n" +
-                "signTimestamp" + "=" + timestamp;
-        String sign = HMAC.generateSignature( exchange.get("tpass"),strSign);
-        head.put("signature",sign);
-        String market = HttpUtil.getAddHead(baseUrl + uri, head);
-        return market;
+                "api.huobi.pro" + "\n" +
+                "/v1/account/accounts/"+exchange.get("account-id")+"/balance" + "\n";
+        Map<String, String> params = new TreeMap<String, String>();
+        params.put("AccessKeyId",exchange.get("apikey"));
+        params.put("SignatureMethod","HmacSHA256");
+        params.put("SignatureVersion","2");
+        params.put("Timestamp",gmtNow());
+        String splicingStr = splicingStr(params);
+        strSign=strSign+splicingStr;
+        String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
+        sign = urlEncode(sign);
+        String trade = null;
+        trade = HttpUtil.get("https://api.huobi.pro/v1/account/accounts/"+exchange.get("account-id")+"/balance?" + splicingStr + "&Signature=" + sign);
+        JSONObject jsonObject = JSONObject.fromObject(trade);
+        return trade;
     }
 
 
 
     /**
-     * 查询订单详情
-     {
-     "id" : "315110412968390656",
-     "clientOrderId" : "SSS1716094576774",
-     "symbol" : "REEE_USDT",
-     "state" : "NEW",
-     "accountType" : "SPOT",
-     "side" : "BUY",
-     "type" : "LIMIT",
-     "timeInForce" : "GTC",
-     "quantity" : "20000",
-     "price" : "0.0001",
-     "avgPrice" : "0",
-     "amount" : "0",
-     "filledQuantity" : "0",
-     "filledAmount" : "0",
-     "createTime" : 1716094576921,
-     "updateTime" : 1716094576921,
-     "orderSource" : "API",
-     "loan" : false,
-     "cancelReason" : 0
-     }
      * @param orderId
      * @return
-     * @throws UnsupportedEncodingException
+     * @throws
+     * {
+     *     "status": "ok",
+     *     "data": {
+     *         "id": 1133371409337541,
+     *         "symbol": "trxusdt",
+     *         "account-id": 62914536,
+     *         "client-order-id": "",
+     *         "amount": "100",
+     *         "market-amount": "0",
+     *         "ice-amount": "0",
+     *         "is-ice": false,
+     *         "price": "0.12",
+     *         "created-at": 1723729310315,
+     *         "type": "buy-limit",
+     *         "field-amount": "0",
+     *         "field-cash-amount": "0",
+     *         "field-fees": "0",
+     *         "finished-at": 0,
+     *         "updated-at": 1723729310315,
+     *         "source": "spot-api",
+     *         "state": "submitted",
+     *         "canceled-at": 0,
+     *         "canceled-source": null,
+     *         "canceled-source-desc": null
+     *     }
+     * }
      */
 
 
     public String selectOrder(String orderId) throws UnsupportedEncodingException {
-        String timestamp =(getTime())+"";
-        HashMap<String, String> head = new HashMap<String, String>();
-        head.put("key",exchange.get("apikey"));
-        head.put("signMethod","HmacSHA256");
-        head.put("signVersion","2");
-        head.put("signTimestamp",timestamp);
-        head.put("recvWindow","5000");
-        String uri="/orders/"+orderId;
+            String strSign = "GET" + "\n" +
+                    "api.huobi.pro" + "\n" +
+                    "/v1/order/orders/"+ orderId+ "\n";
 
-        String strSign = "GET" + "\n" +
-                uri + "\n" +
-                "signTimestamp" + "=" + timestamp;
-        String sign = HMAC.generateSignature( exchange.get("tpass"),strSign);
-        head.put("signature",sign);
-        String market = HttpUtil.getAddHead(baseUrl + uri, head);
-        return market;
-    }
+            Map<String, String> params = new TreeMap<String, String>();
+            params.put("AccessKeyId",exchange.get("apikey"));
+            params.put("SignatureMethod","HmacSHA256");
+            params.put("SignatureVersion","2");
+            params.put("Timestamp",gmtNow());
+            String splicingStr = splicingStr(params);
+            strSign=strSign+splicingStr;
+            String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
+            sign = urlEncode(sign);
+            String trade = null;
+            trade = HttpUtil.get("https://api.huobi.pro/v1/order/orders/"+orderId+"?" + splicingStr + "&Signature=" + sign);
+            JSONObject jsonObject = JSONObject.fromObject(trade);
+            return trade;
+        }
+
 
 
 
@@ -231,33 +253,41 @@ public class HuobiParentService extends BaseService implements RobotAction {
 
     /**
      * 撤单
-     *{
-     *   "orderId" : "315110412968390656",
-     *   "clientOrderId" : "SSS1716094576774",
-     *   "state" : "PENDING_CANCEL",
-     *   "code" : 200,
-     *   "message" : ""
-     * }
      * @param orderId
      * @return
+     * {"status":"ok","data":"1133371409337541"}
      * @throws
      */
     public String cancelTrade(String orderId)  {
-        String timestamp =(getTime())+"";
-        HashMap<String, String> head = new HashMap<String, String>();
-        head.put("key",exchange.get("apikey"));
-        head.put("signMethod","HmacSHA256");
-        head.put("signVersion","2");
-        head.put("signTimestamp",timestamp);
-        head.put("recvWindow","5000");
-        String uri="/orders/"+orderId;
-        String strSign = "DELETE" + "\n" +
-                uri + "\n" +
-                "signTimestamp" + "=" + timestamp;
-        String sign = HMAC.generateSignature( exchange.get("tpass"),strSign);
-        head.put("signature",sign);
-        String trade = HttpUtil.doDeletes(baseUrl + uri, head);
-        logger.info("撤单：" + orderId + "  结果" + trade);
+
+        String strSign = "POST" + "\n" +
+                "api.huobi.pro" + "\n" +
+                "/v1/order/orders/"+orderId+"/submitcancel" + "\n";
+        Map<String, String> params = new TreeMap<String, String>();
+        params.put("AccessKeyId",exchange.get("apikey"));
+        params.put("SignatureMethod","HmacSHA256");
+        params.put("SignatureVersion","2");
+        params.put("Timestamp",gmtNow());
+        params.put("symbol",exchange.get("market"));
+
+        String splicingStr = splicingStr(params);
+        strSign=strSign+splicingStr;
+        System.out.println(strSign);
+        Map<String, Object> reqparam = new TreeMap<String, Object>();
+        reqparam.put("symbol", exchange.get("market"));
+
+        String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
+        sign = urlEncode(sign);
+        String trade = null;
+        try {
+            trade = HttpUtil.postes("https://api.huobi.pro/v1/order/orders/"+orderId+"/submitcancel?" + splicingStr + "&Signature=" + sign,reqparam);
+            JSONObject jsonObject = JSONObject.fromObject(trade);
+            if(!"ok".equals(jsonObject.getString("status"))){
+                setWarmLog(id,3,"API接口错误",jsonObject.getString("err-msg"));
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
         return trade;
     }
 
@@ -265,46 +295,49 @@ public class HuobiParentService extends BaseService implements RobotAction {
     /**
      * 获取所有尾单
      *
-     * [ {
-     *   "id" : "314953143895048192",
-     *   "clientOrderId" : "",
-     *   "symbol" : "BEBE_USDT",
-     *   "state" : "NEW",
-     *   "accountType" : "SPOT",
-     *   "side" : "SELL",
-     *   "type" : "LIMIT_MAKER",
-     *   "timeInForce" : "GTC",
-     *   "quantity" : "20",
-     *   "price" : "0.3",
-     *   "avgPrice" : "0",
-     *   "amount" : "0",
-     *   "filledQuantity" : "0",
-     *   "filledAmount" : "0",
-     *   "createTime" : 1716057081051,
-     *   "updateTime" : 1716057081051,
-     *   "orderSource" : "API",
-     *   "loan" : false
-     * } ]
+     {
+     "status": "ok",
+     "data": [
+     {
+     "symbol": "trxusdt",
+     "source": "api",
+     "client-order-id": "",
+     "amount": "100.000000000000000000",
+     "ice-amount": "0.0",
+     "created-at": 1723731367412,
+     "price": "0.120000000000000000",
+     "account-id": 62914536,
+     "filled-amount": "0.0",
+     "filled-cash-amount": "0.0",
+     "filled-fees": "0.0",
+     "id": 1133371694744493,
+     "state": "submitted",
+     "type": "buy-limit"
+     }
+     ]
+     }
      * @return
      */
     public String getTrade() {
 
-        String timestamp =(getTime()+500)+"";
-        HashMap<String, String> head = new HashMap<String, String>();
-        head.put("key",exchange.get("apikey"));
-        head.put("signMethod","HmacSHA256");
-        head.put("signVersion","2");
-        head.put("signTimestamp",timestamp);
-        head.put("recvWindow","5000");
-        String uri="/orders";
-
         String strSign = "GET" + "\n" +
-                uri + "\n" +
-                "signTimestamp" + "=" + timestamp  ;
-        String sign = HMAC.generateSignature( exchange.get("tpass"),strSign);
-        head.put("signature",sign);
-        String market = HttpUtil.getAddHead(baseUrl + uri, head);
-        return market;
+                "api.huobi.pro" + "\n" +
+                "/v1/order/openOrders"+"\n";
+
+        Map<String, String> params = new TreeMap<String, String>();
+        params.put("AccessKeyId",exchange.get("apikey"));
+        params.put("SignatureMethod","HmacSHA256");
+        params.put("SignatureVersion","2");
+        params.put("Timestamp",gmtNow());
+        params.put("account-id",exchange.get("account-id"));
+        params.put("symbol",exchange.get("market"));
+        String splicingStr = splicingStr(params);
+        strSign=strSign+splicingStr;
+        String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
+        sign = urlEncode(sign);
+        String trade = null;
+        trade = HttpUtil.get("https://api.huobi.pro/v1/order/openOrders?" + splicingStr + "&Signature=" + sign);
+        return trade;
     }
 
 
@@ -329,26 +362,36 @@ public class HuobiParentService extends BaseService implements RobotAction {
         }
         if (balance == null || overdue) {
             String balance1 = getBalance();
-            JSONArray jsonArray1 = JSONArray.fromObject(balance1);
+            JSONObject jsonObject1 = JSONObject.fromObject(balance1);
+            JSONArray jsonArray1 = jsonObject1.getJSONObject("data").getJSONArray("list");
 
-            JSONArray jsonArray =JSONObject.fromObject(jsonArray1.get(0)).getJSONArray("balances");
             String firstBalance = null;
             String lastBalance = null;
             String firstBalance1 = null;
             String lastBalance1 = null;
 
             List<String> coinArr = Arrays.asList(coins.split("_"));
-            for (int i = 0; i < jsonArray.size(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                if (jsonObject.getString("currency").equals(coinArr.get(0).toUpperCase())) {
-                    firstBalance = jsonObject.getString("available");
-                    firstBalance1 = jsonObject.getString("hold");
-                } else if (jsonObject.getString("currency").equals(coinArr.get(1).toUpperCase())) {
-                    lastBalance = jsonObject.getString("available");
-                    lastBalance1 = jsonObject.getString("hold");
-                    if (Double.parseDouble(lastBalance) < 10) {
-                        setWarmLog(id, 0, "余额不足", coinArr.get(1).toUpperCase() + "余额为:" + lastBalance);
+            for (int i = 0; i < jsonArray1.size(); i++) {
+                JSONObject jsonObject = jsonArray1.getJSONObject(i);
+                if (jsonObject.getString("currency").equals(coinArr.get(0))) {
+                    if (jsonObject.getString("type").equals("frozen")) {
+                        firstBalance1 = jsonObject.getString("balance");
                     }
+                    if (jsonObject.getString("type").equals("trade")) {
+                        firstBalance = jsonObject.getString("balance");
+                    }
+                } else if (jsonObject.getString("currency").equals(coinArr.get(1))) {
+                    if (jsonObject.getString("type").equals("frozen")) {
+                        lastBalance1 = jsonObject.getString("balance");
+                    }
+                    if (jsonObject.getString("type").equals("trade")) {
+                        lastBalance = jsonObject.getString("balance");
+                        if (Double.parseDouble(lastBalance) < 10) {
+                            setWarmLog(id, 0, "余额不足", coinArr.get(1).toUpperCase() + "余额为:" + lastBalance);
+                        }
+
+                    }
+
                 }
             }
 
@@ -356,6 +399,7 @@ public class HuobiParentService extends BaseService implements RobotAction {
 
             balances.put(coinArr.get(0), firstBalance + "_" + firstBalance1);
             balances.put(coinArr.get(1), lastBalance + "_" + lastBalance1);
+            setTradeLog(id, "余额==+"+ JSON.toJSONString(balances), 0,  "05cbc8");
             logger.info("余额："  + "  结果" + JSON.toJSONString(balances));
             redisHelper.setBalanceParam(Constant.KEY_ROBOT_BALANCE + id, balances);
         }
@@ -397,44 +441,6 @@ public class HuobiParentService extends BaseService implements RobotAction {
     }
 
 
-    public static String getSignature(String apiSecret, String host, String uri, String httpMethod, Map<String, Object> params) {
-        StringBuilder sb = new StringBuilder(1024);
-        sb.append(httpMethod.toUpperCase()).append('\n')
-                .append(host.toLowerCase()).append('\n')
-                .append(uri).append('\n');
-        SortedMap<String, Object> map = new TreeMap<>(params);
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue().toString();
-            sb.append(key).append('=').append(urlEncode(value)).append('&');
-        }
-        sb.deleteCharAt(sb.length() - 1);
-        Mac hmacSha256;
-        try {
-            hmacSha256 = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secKey =
-                    new SecretKeySpec(apiSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-            hmacSha256.init(secKey);
-        } catch (Exception e) {
-            return null;
-        }
-        String payload = sb.toString();
-        byte[] hash = hmacSha256.doFinal(payload.getBytes(StandardCharsets.UTF_8));
-        //需要对签名进行base64的编码
-        String actualSign = Base64.getEncoder().encodeToString(hash);
-        actualSign = actualSign.replace("\n", "");
-        return actualSign;
-    }
-
-
-    public static String urlEncode(String s) {
-        try {
-            return URLEncoder.encode(s, "UTF-8").replaceAll("\\+", "%20");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("UTF-8 encoding not supported!");
-        }
-    }
-
     public static String splicing(Map<String, Object> params)   {
         StringBuffer httpParams = new StringBuffer();
         for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -453,6 +459,13 @@ public class HuobiParentService extends BaseService implements RobotAction {
     }
 
 
+    /**
+     * {"status":"ok","data":"1133371409337541"}
+     * @param type 类型
+     * @param price 价格
+     * @param amount 数量
+     * @return
+     */
     @Override
     public Map<String, String> submitOrderStr(int type, BigDecimal price, BigDecimal amount) {
         String orderId = "";
@@ -460,12 +473,12 @@ public class HuobiParentService extends BaseService implements RobotAction {
         String submitOrder = submitOrder(type, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
-            if (StringUtils.isNotEmpty(jsonObject.getString("id"))) {
-                orderId = jsonObject.getString("id");
+            if ("ok".equals(jsonObject.getString("status"))) {
+                orderId = jsonObject.getString("data");
                 hashMap.put("res", "true");
                 hashMap.put("orderId", orderId);
             } else {
-                String msg = jsonObject.getString("message");
+                String msg = jsonObject.getString("err-msg");
                 hashMap.put("res", "false");
                 hashMap.put("orderId", msg);
             }
@@ -496,7 +509,7 @@ public class HuobiParentService extends BaseService implements RobotAction {
         }
         if (StringUtils.isNotEmpty(cancelTrade)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(cancelTrade);
-            if ("200".equals(jsonObject.getString("code"))) {
+            if ("ok".equals(jsonObject.getString("status"))) {
                 return "true";
             }
         }
@@ -504,26 +517,34 @@ public class HuobiParentService extends BaseService implements RobotAction {
     }
 
 
-    public TradeEnum getTradeEnum(Integer integer) {
-        switch (integer) {
-            case 1:
-                return TradeEnum.NOTRADE;
+    static String gmtNow() {
+        return Instant.ofEpochSecond(epochNow()).atZone(ZONE_GMT).format(DT_FORMAT);
+    }
+    private static long epochNow() {
+        return Instant.now().getEpochSecond();
+    }
+    public static String splicingStr(Map<String, String> params)   {
+        StringBuilder httpParams = new StringBuilder();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue().toString();
+            try {
+                httpParams.append(key).append("=").append(urlEncode(value)).append("&");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (httpParams.length() > 0) {
+            httpParams.deleteCharAt(httpParams.length() - 1);
+        }
+        return httpParams.toString();
+    }
 
-            case 2:
-                return TradeEnum.TRADEING;
-
-            case 3:
-                return TradeEnum.NOTRADED;
-
-            case 4:
-                return TradeEnum.CANCEL;
-
-            case 5:
-                return TradeEnum.CANCEL;
-
-            default:
-                return TradeEnum.CANCEL;
-
+    public static String urlEncode(String s) {
+        try {
+            return URLEncoder.encode(s, "UTF-8").replaceAll("\\+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 }
