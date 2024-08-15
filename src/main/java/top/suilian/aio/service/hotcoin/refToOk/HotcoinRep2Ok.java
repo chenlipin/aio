@@ -152,7 +152,7 @@ public class HotcoinRep2Ok extends HotCoinParentService {
 
                 //计算价格比例
                 if (point == null) {
-                    point = sellPri.divide(okDeepSellPrice, 6, BigDecimal.ROUND_HALF_UP);
+                    point = sellPri.divide(okDeepSellPrice, 12, BigDecimal.ROUND_HALF_UP);
                 }
                 logger.info("hotcoin-价格：" + sellPri + "--OK价格：" + okDeepSellPrice + "--比例：" + point);
                 List<Order> list = new ArrayList<>();
