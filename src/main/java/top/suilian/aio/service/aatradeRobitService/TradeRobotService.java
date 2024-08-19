@@ -317,6 +317,10 @@ public class TradeRobotService {
             }
             return getAllOrderPonses.stream().filter(e->e.getMyself()==1).collect(Collectors.toList());
         }
+        if (robot.getStrategyId()==69){
+            return robotAction.selectOrder();
+
+        }
 
 
         if (req.getRobotId()==556){
@@ -572,7 +576,9 @@ public class TradeRobotService {
                     }
 
                    logger.info("一键挂单"+"------类型"+typeTrade+"---价格："+price.toPlainString()+"----数量："+amount);
+                    Thread.sleep(800);
                     Map<String, String> stringStringMap = robotAction.submitOrderStr(typeTrade ? 1 : 2, price, amount);
+
                     logger.info("开始2");
                     ApitradeLog apitradeLog = new ApitradeLog();
                     apitradeLog.setAmount(amount);

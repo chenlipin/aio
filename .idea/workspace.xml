@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="huobi">
+    <list default="true" id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="gate">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/DateUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/DateUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/gate/GateParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/gate/GateParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/huobi/HuobiParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/huobi/HuobiParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/gate/GateService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/gate/GateService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,25 +35,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/huobi_Java-master&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;spring.configuration.checksum&quot;: &quot;144066ff0da09361c9fe2b8fd900c61f&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/home/aio/src/main/java/top/suilian/aio/service/gate",
+    "nodejs_package_manager_path": "npm",
+    "spring.configuration.checksum": "144066ff0da09361c9fe2b8fd900c61f"
   }
-}</component>
+}]]></component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\gate" />
       <recent name="C:\aio\src\main\java\top\suilian\aio\service\mxc\depthRefer" />
       <recent name="C:\aio\src\main\java\top\suilian\aio\service\poloniex\refToHot" />
       <recent name="C:\aio\src\main\java\top\suilian\aio\service\poloniex" />
@@ -134,7 +136,8 @@
       <workItem from="1722173970178" duration="2527000" />
       <workItem from="1723215995581" duration="4978000" />
       <workItem from="1723950605836" duration="2464000" />
-      <workItem from="1724036850430" duration="2892000" />
+      <workItem from="1724036850430" duration="4095000" />
+      <workItem from="1724047124841" duration="8495000" />
     </task>
     <task id="LOCAL-00001" summary="aa">
       <created>1713893670498</created>
@@ -185,7 +188,14 @@
       <option name="project" value="LOCAL" />
       <updated>1723741830229</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="gate">
+      <created>1724045400255</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1724045400255</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -216,7 +226,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="aa" />
     <MESSAGE value="huobi" />
-    <option name="LAST_COMMIT_MESSAGE" value="huobi" />
+    <MESSAGE value="gate" />
+    <option name="LAST_COMMIT_MESSAGE" value="gate" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -385,6 +396,21 @@
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/huobi/refToHot/HuobiRep2Hot.java</url>
           <line>201</line>
           <option name="timeStamp" value="147" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/gate/GateParentService.java</url>
+          <line>36</line>
+          <option name="timeStamp" value="149" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/gate/refToHot/GateRep2Hot.java</url>
+          <line>83</line>
+          <option name="timeStamp" value="150" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/gate/refToHot/GateRep2Hot.java</url>
+          <line>210</line>
+          <option name="timeStamp" value="151" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -329,6 +329,12 @@ public static final String DATE_FORMAT = "yyyy-MM-dd";
 		return (before.getTime() - after.getTime()) / (1000 * 60 * 60 * 24);
 	}
 
+	public static String convertTimestampToString1(long timestamp) {
+		Date date = new Date(timestamp * 1000); // 转换为毫秒级
+		SimpleDateFormat sdf = new SimpleDateFormat(DATETIME_FORMAT);
+		return sdf.format(date);
+	}
+
 	/**
 	 * 获取传入时间的前后多少天的时间
 	 * @param dateFormat

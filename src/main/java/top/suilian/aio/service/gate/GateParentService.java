@@ -1,12 +1,14 @@
 package top.suilian.aio.service.gate;
 
 import com.alibaba.fastjson.JSON;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
+import top.suilian.aio.Util.DateUtils;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.RobotArgs;
@@ -32,7 +34,41 @@ public class GateParentService extends BaseService implements RobotAction {
 
     @Override
     public List<getAllOrderPonse> selectOrder() {
-        return null;
+        ArrayList<getAllOrderPonse> getAllOrderPonses = new ArrayList<>();
+        String uri = "https://api.gateio.ws/api2/1/private/openOrders";
+        Map<String, String> params = new TreeMap<>();
+        params.put("currencyPair", exchange.get("market"));
+        HashMap<String, String> head = new HashMap<>();
+        head.put("Content-Type","application/x-www-form-urlencoded");
+        head.put("key",exchange.get("apikey"));
+        String httpParams = splicing(params);
+        String sign = HMAC.Hmac_SHA512(httpParams, exchange.get("tpass"));
+        head.put("sign",sign);
+        String trade=null;
+        try {
+            trade = HttpUtil.post( uri ,params,head);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+
+        JSONObject jsonObject1 = JSONObject.fromObject(trade);
+        if(0!=jsonObject1.getInt("code")){
+            setWarmLog(id,3,"API接口错误",jsonObject1.getString("message"));
+        }
+        JSONArray array = jsonObject1.getJSONArray("orders");
+        for (int i = 0; i < array.size(); i++) {
+            getAllOrderPonse getAllOrderPonse = new getAllOrderPonse();
+            JSONObject jsonObject = array.getJSONObject(i);
+
+            getAllOrderPonse.setOrderId(jsonObject.getString("orderNumber"));
+            getAllOrderPonse.setCreatedAt(DateUtils.convertTimestampToString1(jsonObject.getLong("timestamp")));
+            getAllOrderPonse.setPrice(jsonObject.getString("type")+"-"+new BigDecimal(jsonObject.getString("initialRate")).stripTrailingZeros().toPlainString());
+            getAllOrderPonse.setStatus(0);
+            getAllOrderPonse.setAmount(new BigDecimal(jsonObject.getString("initialAmount")).stripTrailingZeros().toPlainString());
+            getAllOrderPonses.add(getAllOrderPonse);
+        }
+
+        return getAllOrderPonses;
     }
 
     @Override
@@ -350,7 +386,7 @@ public class GateParentService extends BaseService implements RobotAction {
         }
         if (StringUtils.isNotEmpty(cancelTrade)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(cancelTrade);
-            if ("200".equals(jsonObject.getString("code"))||"300".equals(jsonObject.getString("code"))) {
+            if ("0".equals(jsonObject.getString("code"))) {
                 return "true";
             }
         }
