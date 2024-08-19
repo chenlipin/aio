@@ -394,6 +394,7 @@ public class HuobiParentService extends BaseService implements RobotAction {
 
                 }
             }
+            
 
             HashMap<String, String> balances = new HashMap<>();
 

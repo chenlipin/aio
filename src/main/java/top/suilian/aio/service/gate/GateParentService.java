@@ -1,5 +1,6 @@
 package top.suilian.aio.service.gate;
 
+import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.DependsOn;
@@ -22,7 +23,7 @@ import java.util.*;
 @Service
 @DependsOn("beanContext")
 public class GateParentService extends BaseService implements RobotAction {
-    public String baseUrl = "https://data.gateapi.io/api2/1";
+    public String baseUrl = "https://api.gateio.ws/api2/1";
     public RunHotcoinRandomDepth runHotcoinRandomDepth = BeanContext.getBean(RunHotcoinRandomDepth.class);
 
     public Map<String, Object> precision = new HashMap<String, Object>();
@@ -110,7 +111,7 @@ public class GateParentService extends BaseService implements RobotAction {
         String trade = null;
         BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
         BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
-        String uri = "https://api.gateio.la/api2/1/private/"+(type==1?"buy":"sell");
+        String uri = "https://api.gateio.ws/api2/1/private/"+(type==1?"buy":"sell");
         Map<String, String> params = new TreeMap<>();
         params.put("currencyPair", exchange.get("market"));
         params.put("rate", price1+"");
@@ -146,7 +147,7 @@ public class GateParentService extends BaseService implements RobotAction {
 
 
     public String selectOrder(String orderId) {
-        String uri = "https://api.gateio.la/api2/1/private/getOrder";
+        String uri = "https://api.gateio.ws/api2/1/private/getOrder";
         Map<String, String> params = new TreeMap<>();
         params.put("currencyPair", exchange.get("market"));
         params.put("orderNumber", orderId);
@@ -180,7 +181,7 @@ public class GateParentService extends BaseService implements RobotAction {
      */
     public String cancelTrade(String orderId) throws UnsupportedEncodingException {
 
-        String uri = "https://api.gateio.la/api2/1/private/cancelOrder";
+        String uri = "https://api.gateio.ws/api2/1/private/cancelOrder";
         Map<String, String> params = new TreeMap<>();
         params.put("currencyPair", exchange.get("market"));
         params.put("orderNumber", orderId);
@@ -205,7 +206,7 @@ public class GateParentService extends BaseService implements RobotAction {
     }
 
     public String getDeep(){
-        String uri = "https://api.gateio.la/api2/1/private/balances";
+        String uri = "https://api.gateio.ws/api2/1/private/balances";
         Map<String, String> params = new TreeMap<>();
         HashMap<String, String> head = new HashMap<>();
         head.put("Content-Type","application/x-www-form-urlencoded");
@@ -263,7 +264,7 @@ public class GateParentService extends BaseService implements RobotAction {
             List<String> coinArr = Arrays.asList(coins.toUpperCase().split("_"));
 
             String deep = getDeep();
-            logger.info("获取余额"+deep);
+
 
             String firstBalance = null;
             String lastBalance = null;
@@ -279,6 +280,7 @@ public class GateParentService extends BaseService implements RobotAction {
             HashMap<String, String> balances = new HashMap<>();
             balances.put(coinArr.get(0), firstBalance+"_"+firstBalance1);
             balances.put(coinArr.get(1), lastBalance+"_"+lastBalance1);
+            logger.info("获取余额"+ JSON.toJSONString(balances));
             redisHelper.setBalanceParam(Constant.KEY_ROBOT_BALANCE + id, balances);
         }
     }

@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="aa">
+    <list default="true" id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="huobi">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/BianUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/BianUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/RandomDepth/HotcoinRandomDepth.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/RandomDepth/HotcoinRandomDepth.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/NewHotcoinKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/NewHotcoinKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/gate/GateParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/gate/GateParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/huobi/HuobiParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/huobi/HuobiParentService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -45,7 +43,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/javawork/mmweb&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/huobi_Java-master&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;spring.configuration.checksum&quot;: &quot;144066ff0da09361c9fe2b8fd900c61f&quot;
   }
@@ -78,6 +76,19 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Test" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="top.suilian.aio.controller.Test" />
+      <module name="aio" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="top.suilian.aio.controller.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="AioApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
       <module name="aio" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="top.suilian.aio.AioApplication" />
@@ -94,6 +105,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="Spring Boot.AioApplication" />
+        <item itemvalue="Application.Test" />
         <item itemvalue="Application.E4ParentService" />
       </list>
     </recent_temporary>
@@ -121,6 +133,8 @@
       <workItem from="1722171310858" duration="599000" />
       <workItem from="1722173970178" duration="2527000" />
       <workItem from="1723215995581" duration="4978000" />
+      <workItem from="1723950605836" duration="2464000" />
+      <workItem from="1724036850430" duration="2892000" />
     </task>
     <task id="LOCAL-00001" summary="aa">
       <created>1713893670498</created>
@@ -164,7 +178,14 @@
       <option name="project" value="LOCAL" />
       <updated>1717372080215</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="huobi">
+      <created>1723741830229</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1723741830229</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -194,7 +215,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="aa" />
-    <option name="LAST_COMMIT_MESSAGE" value="aa" />
+    <MESSAGE value="huobi" />
+    <option name="LAST_COMMIT_MESSAGE" value="huobi" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -275,11 +297,6 @@
           <option name="timeStamp" value="70" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/HttpUtil.java</url>
-          <line>412</line>
-          <option name="timeStamp" value="78" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/poloniex/refToHot/PoloniexRep2Hot.java</url>
           <line>203</line>
           <option name="timeStamp" value="99" />
@@ -338,6 +355,36 @@
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java</url>
           <line>251</line>
           <option name="timeStamp" value="112" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/huobi/HuobiParentService.java</url>
+          <line>402</line>
+          <option name="timeStamp" value="128" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/huobi/HuobiParentService.java</url>
+          <line>383</line>
+          <option name="timeStamp" value="132" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/huobi/newKline/NewHobiKline.java</url>
+          <line>114</line>
+          <option name="timeStamp" value="140" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/huobi/HuobiParentService.java</url>
+          <line>164</line>
+          <option name="timeStamp" value="142" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/huobi/refToHot/HuobiRep2Hot.java</url>
+          <line>74</line>
+          <option name="timeStamp" value="145" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/huobi/refToHot/HuobiRep2Hot.java</url>
+          <line>201</line>
+          <option name="timeStamp" value="147" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
