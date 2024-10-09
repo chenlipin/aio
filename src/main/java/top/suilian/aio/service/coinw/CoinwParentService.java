@@ -3,6 +3,7 @@ package top.suilian.aio.service.coinw;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import top.suilian.aio.Util.Constant;
+import top.suilian.aio.Util.DateUtils;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.RobotArgs;
@@ -24,10 +25,7 @@ public class CoinwParentService extends BaseService implements RobotAction {
     public String exceptionMessage = null;
     public String[] transactionArr = new String[24];
 
-    @Override
-    public List<getAllOrderPonse> selectOrder() {
-        return null;
-    }
+
 
     @Override
     public List<String> cancelAllOrder(Integer type, Integer tradeType) {
@@ -74,7 +72,7 @@ public class CoinwParentService extends BaseService implements RobotAction {
 
         BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision"))).stripTrailingZeros();
         BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision"))).stripTrailingZeros();
-        logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
+        logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + num);
 
         Map<String, String> params = new TreeMap<String, String>();
         params.put("api_key", exchange.get("apikey"));
@@ -92,10 +90,10 @@ public class CoinwParentService extends BaseService implements RobotAction {
         }
         JSONObject rt = JSONObject.fromObject(trade);
         if (200 != rt.getInt("code")) {
-            setWarmLog(id, 3, "API接口错误", rt.getString("msg"));
+            setWarmLog(id, 3, "API ERROR", rt.getString("msg"));
             logger.info("robotId" + id + "----" + "挂单失败结束");
         } else {
-            setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
+            setTradeLog(id, "Place an order-- type:" + (type == 1 ? "BUY" : "SELL") + "[price：" + price1 + ": amount" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
             logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
         }
         return trade;
@@ -117,7 +115,7 @@ public class CoinwParentService extends BaseService implements RobotAction {
         }
         JSONObject rt = JSONObject.fromObject(trade);
         if (200 != rt.getInt("code")) {
-            setWarmLog(id, 3, "API接口错误", rt.getString("msg"));
+            setWarmLog(id, 3, "API ERROR", rt.getString("msg"));
             logger.info("robotId" + id + "----" + "撤去所有订单响应：" + trade);
         }
         return trade;
@@ -149,18 +147,49 @@ public class CoinwParentService extends BaseService implements RobotAction {
         }
         JSONObject rt = JSONObject.fromObject(trade);
         if (200 != rt.getInt("code")) {
-            setWarmLog(id, 3, "API接口错误", rt.getString("msg"));
+            setWarmLog(id, 3, "API ERROR", rt.getString("msg"));
             logger.info("robotId" + id + "----" + "查询订单错误响应：" + trade);
         }
         return trade;
     }
 
+    //查询所有订单详情
+    @Override
+    public List<getAllOrderPonse> selectOrder() {
+        String trade = null;
+        Map<String, String> params = new TreeMap<String, String>();
+        params.put("api_key", exchange.get("apikey"));
+        params.put("currencyPair", exchange.get("market"));
+        String sign = sign(params);
+        params.put("sign", sign);
+        logger.info("robotId" + id + "----" + "查询未完成订单参数：" + params);
+        try {
+            trade = HttpUtil.doPostFormData(url + "private?command=returnOpenOrders", params);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        JSONObject rt = JSONObject.fromObject(trade);
 
-    protected String getTradeOrders() {
+        ArrayList<getAllOrderPonse> getAllOrderPonses = new ArrayList<>();
 
-        return "";
+        com.alibaba.fastjson.JSONArray array = com.alibaba.fastjson.JSONArray.parseArray(rt.getString("data"));
 
+        for (int i = 0; i < array.size(); i++) {
+            getAllOrderPonse getAllOrderPonse = new getAllOrderPonse();
+            com.alibaba.fastjson.JSONObject jsonObject = array.getJSONObject(i);
+
+            getAllOrderPonse.setOrderId(jsonObject.getString("orderNumber"));
+            getAllOrderPonse.setCreatedAt(DateUtils.convertTimestampToString(jsonObject.getLong("date")));
+            getAllOrderPonse.setPrice(jsonObject.getString("type")+"-"+jsonObject.getString("prize"));
+            getAllOrderPonse.setStatus(0);
+            getAllOrderPonse.setAmount(jsonObject.getString("total"));
+            getAllOrderPonses.add(getAllOrderPonse);
+        }
+        return getAllOrderPonses;
     }
+
+
+
 
     public String getDepth() {
         String trades = httpUtil.get(url + "/public?command=returnOrderBook&size=20&symbol=" + exchange.get("market"));
@@ -212,7 +241,7 @@ public class CoinwParentService extends BaseService implements RobotAction {
         }
         JSONObject object = JSONObject.fromObject(trade);
         if (200 != object.getInt("code")) {
-            setWarmLog(id, 3, "API接口错误", object.getString("msg"));
+            setWarmLog(id, 3, "API ERROR", object.getString("msg"));
         }
         return trade;
     }

@@ -1,4 +1,4 @@
-package top.suilian.aio.service.hotcoin.RandomDepth;
+package top.suilian.aio.service.coinw.randomDepet;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -7,8 +7,8 @@ import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
+import top.suilian.aio.service.coinw.CoinwParentService;
 import top.suilian.aio.service.hotcoin.HotCoinParentService;
-import top.suilian.aio.service.mxc.MxcParentService;
 import top.suilian.aio.vo.Order;
 
 import java.io.UnsupportedEncodingException;
@@ -17,8 +17,8 @@ import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class HotcoinDeep extends HotCoinParentService {
-    public HotcoinDeep(
+public class CoinWDeep extends CoinwParentService {
+    public CoinWDeep(
             CancelExceptionService cancelExceptionService,
             CancelOrderService cancelOrderService,
             ExceptionMessageService exceptionMessageService,
@@ -64,26 +64,15 @@ public class HotcoinDeep extends HotCoinParentService {
             logger.info("深度变化策略设置机器人参数开始");
             setParam();
             logger.info("深度变化设置机器人参数结束");
-            logger.info("深度变化设置机器人交易规则开始");
-            setPrecision();
-            logger.info("深度变化设置机器人交易规则结束");
             start = false;
+            setBalanceRedis();
         }
-//        Map<String, String> paramKline = getParamKline();
-//        if (!"1".equals(paramKline.get("isdeepRobot"))) {
-//            try {
-//                logger.info("没开启深度机器人  返回-------------");
-//                Thread.sleep(60 * 1000);
-//                return;
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
+
         int i1 = RandomUtils.nextInt(5);
         if (2 == i1) {
             try {
                 setBalanceRedis();
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -98,7 +87,7 @@ public class HotcoinDeep extends HotCoinParentService {
         String depthOrderRange = exchange.get("depthOrderRange");
         String depthCancelNum = exchange.get("depthCancelNum");
         if (tradeNum>=Integer.parseInt(depthCancelNum)){
-            setWarmLog(id,2,"闪单撞单达到最大值停止","闪单撞单达到最大值停止");
+            setWarmLog(id,2,"The robot stops when the flash collision reaches its maximum value","The robot stops when the flash collision reaches its maximum value");
             try {
                 Thread.sleep(60*1000L);
             } catch (InterruptedException e) {
@@ -130,45 +119,19 @@ public class HotcoinDeep extends HotCoinParentService {
         String relishMin = exchange.get("depthOrderLowerLimit");
         String relishMax = exchange.get("depthOrderTopLimit");
 
-        String uri = "/v1/depth";
-        String httpMethod = "GET";
-        Map<String, Object> params = new TreeMap<>();
-        params.put("AccessKeyId", exchange.get("apikey"));
-        params.put("SignatureVersion", 2);
-        params.put("SignatureMethod", "HmacSHA256");
-        params.put("Timestamp", new Date().getTime());
-        params.put("symbol", exchange.get("market"));
-        params.put("step", 3060);
-
-        String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
-        params.put("Signature", Signature);
-        String httpParams = null;
-        try {
-            httpParams = splicing(params);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
         int deepNum1 = Integer.parseInt(depthOrderRange.split("_")[0]);
         int deepNum2 = Integer.parseInt(depthOrderRange.split("_")[1]);
 
-
-
-        String trades = httpUtil.get(baseUrl + uri + "?" + httpParams);
-
-
+        String trades = getDepth();
         //获取深度 判断平台撮合是否成功
         com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
+
         if (tradesObj != null && tradesObj.getInteger("code") == 200) {
-
-
             com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
+            List<List<String>> buyPrices = (List<List<String>>) data.get("bids");
+            List<List<String>> sellPrices = (List<List<String>>) data.get("asks");
 
-            com.alibaba.fastjson.JSONObject tick = data.getJSONObject("depth");
-            List<List<String>> buyPrices = (List<List<String>>) tick.get("bids");
-
-            List<List<String>> sellPrices = (List<List<String>>) tick.get("asks");
 
             BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
             BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
@@ -227,11 +190,11 @@ public class HotcoinDeep extends HotCoinParentService {
             logger.info("-----------------开始补单-------------------");
             try {
                 for (Order orderVO : orderVOS) {
-                    String resultJson = submitOrder(orderVO.getType(), orderVO.getPrice(), orderVO.getAmount());
+                    String resultJson = submitTrade(orderVO.getType(), orderVO.getPrice(), orderVO.getAmount());
 
                     JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
                     if (jsonObject != null && jsonObject.getInt("code") == 200) {
-                        String orderId = jsonObject.getJSONObject("data").getString("ID");
+                        String orderId = jsonObject.getJSONObject("data").getString("orderNumber");
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
@@ -259,11 +222,11 @@ public class HotcoinDeep extends HotCoinParentService {
                             JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
                             if (jsonObject != null && jsonObject.getInt("code") == 200) {
                                 JSONObject datas = jsonObject.getJSONObject("data");
-                                int status = datas.getInt("statusCode");
+                                int status = datas.getInt("status");
                                 if (status==2||status==3){
                                     tradeNum++;
                                     logger.info("闪单撞单--" + order.getOrderId());
-                                    setWarmLog(id,2,"闪单撞单,订单{"+order.getOrderId()+"}撤单,撞单数为"+tradeNum,"");
+                                    setWarmLog(id,2,"jump order hit single,order{"+order.getOrderId()+"},num:"+tradeNum,"");
                                 }
                             }
                             Thread.sleep(1000);

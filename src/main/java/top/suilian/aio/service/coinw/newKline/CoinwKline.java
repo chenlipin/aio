@@ -1,4 +1,4 @@
-package top.suilian.aio.service.coinw;
+package top.suilian.aio.service.coinw.newKline;
 
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
@@ -7,6 +7,8 @@ import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
+import top.suilian.aio.service.coinw.CoinwParentService;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -72,7 +74,7 @@ public class CoinwKline extends CoinwParentService {
             setParam();
             setTransactionRatio();
             logger.info("设置机器人参数结束");
-            logger.info("查询当前订单：" + noOreder());
+            setBalanceRedis();
             //判断走K线的方式
             if ("1".equals(exchange.get("sheetForm"))) {
                 //新版本
@@ -149,8 +151,8 @@ public class CoinwKline extends CoinwParentService {
                     //撞单达上限后的操作
                     //停止机器人
                     if ("0".equals(exchange.get("orderOperation"))) {
-                        setTradeLog(id, "撤单数达到上限，停止量化", 0, "000000");
-                        setWarmLog(id, 2, "撤单数达到上限，停止量化", "");
+                        setTradeLog(id, "Remove the singular number to the upper limit, stop quantifying", 0, "000000");
+                        setWarmLog(id, 2, "Remove the singular number to the upper limit, stop quantifying", "");
                         msg = "您的" + getRobotName(this.id) + "量化机器人已停止!";
                         setRobotStatus(id, Constant.KEY_ROBOT_STATUS_OUT);
                         judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
@@ -158,17 +160,16 @@ public class CoinwKline extends CoinwParentService {
 
                     } else if ("1".equals(exchange.get("orderOperation"))) {//不停止
 
-                        setTradeLog(id, "撤单数次数过多，请注意盘口", 0, "000000");
-                        setWarmLog(id, 2, "撤单数次数过多，请注意盘口", "");
+                        setTradeLog(id, "Remove singular number too much, please pay attention to the plate", 0, "000000");
+                        setWarmLog(id, 2, "Remove singular number too much, please pay attention to the plate", "");
                         msg = "您的" + getRobotName(this.id) + "量化机器人撤单数次数过多，请注意盘口!";
                         //judgeSendMessage(Integer.parseInt(exchange.get("isMobileSwitch")), msg, exchange.get("mobile"), Constant.KEY_SMS_CANCEL_MAX_STOP);
                         //重置撞单次数
                         orderNum = 0;
                     } else if ("2".equals(exchange.get("orderOperation"))) {//随机暂停后重启
                         int st = (int) (Math.random() * (Integer.parseInt(exchange.get("suspendTopLimit")) - Integer.parseInt(exchange.get("suspendLowerLimit"))) + Integer.parseInt(exchange.get("suspendLowerLimit")));
-                        setTradeLog(id, "撤单数次数过多，将暂停" + st + "秒后自动恢复", 0, "000000");
-                        msg = "您的" + getRobotName(this.id) + "量化机器人撤单数次数过多，将暂停片刻后自动恢复!";
-                        setWarmLog(id, 2, "撤单数次数过多，将暂停" + st + "秒后自动恢复", "");
+                        setTradeLog(id, "If the odd number of withdrawals is too many times, pause for " + st + "seconds", 0, "000000");
+                        setWarmLog(id, 2, "If the odd number of withdrawals is too many times, pause for" + st + "seconds", "");
                         //重置撞单次数
                         orderNum = 0;
                         //暂停
@@ -178,10 +179,10 @@ public class CoinwKline extends CoinwParentService {
 
                 }
             }
-            setTradeLog(id, "撤单数为" + orderNum, 0, "000000");
+            setTradeLog(id, "The singular number is currently withdrawn:" + orderNum, 0, "000000");
 
             if (Integer.parseInt(exchange.get("orderSumSwitch")) == 1) {    //防褥羊毛开关
-                setTradeLog(id, "停止量化撤单数设置为：" + exchange.get("orderSum"), 0, "000000");
+                setTradeLog(id, "Stop quantization Cancel singular set to：" + exchange.get("orderSum"), 0, "000000");
             }
             BigDecimal price = getRandomPrice();
             if (price == null) {
@@ -217,7 +218,7 @@ public class CoinwKline extends CoinwParentService {
                         ordersleeptime = System.currentTimeMillis();
                     } else {
                         String res = cancelTrade(orderIdOne);
-                        setTradeLog(id, "撤单[" + orderIdOne + "]=> " + res, 0, "000000");
+                        setTradeLog(id, "Cancel order[" + orderIdOne + "]=> " + res, 0, "000000");
                         JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
                         setCancelOrder(cancelRes, res, orderIdOne, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
                     }
@@ -225,13 +226,13 @@ public class CoinwKline extends CoinwParentService {
             } catch (Exception e) {
                 if (!orderIdOne.equals("0")) {
                     String res = cancelTrade(orderIdOne);
-                    setTradeLog(id, "撤单[" + orderIdOne + "]=> " + res, 0, "000000");
-                    logger.info("撤单" + orderIdOne + ":结果" + res);
+                    setTradeLog(id, "Cancel order[" + orderIdOne + "]=> " + res, 0, "000000");
+                    logger.info("Cancel order" + orderIdOne + ":result" + res);
                 }
                 if (!orderIdTwo.equals("0")) {
                     String res = cancelTrade(orderIdTwo);
-                    setTradeLog(id, "撤单[" + orderIdTwo + "]=> " + res, 0, "000000");
-                    logger.info("撤单" + orderIdTwo + ":结果" + res);
+                    setTradeLog(id, "Cancel order[" + orderIdTwo + "]=> " + res, 0, "000000");
+                    logger.info("Cancel order" + orderIdTwo + ":result" + res);
                 }
                 exceptionMessage = collectExceptionStackMsg(e);
                 setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
@@ -239,10 +240,10 @@ public class CoinwKline extends CoinwParentService {
                 e.printStackTrace();
             }
             int st = (int) (Math.random() * (Integer.parseInt(exchange.get("endTime")) - Integer.parseInt(exchange.get("startTime"))) + Integer.parseInt(exchange.get("startTime")));
-            setTradeLog(id, "暂停时间----------------------------->" + st + "秒", 0);
+            setTradeLog(id, "Stop time----------------------------->" + st + "s", 0);
             if ("1".equals(exchange.get("sheetForm"))) {
                 runTime += (st);
-                setTradeLog(id, "累计周期时间----------------------------->" + runTime + "秒", 1);
+                setTradeLog(id, "Cumulative stop time----------------------------->" + runTime + "s", 1);
             }
 
             sleep(st * 1000, Integer.parseInt(exchange.get("isMobileSwitch")));
@@ -307,7 +308,7 @@ public class CoinwKline extends CoinwParentService {
                 JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
                 if (jsonObject != null && jsonObject.getInt("code") == 1) {
                     removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
-                    logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
+                    logger.info("Long time no order to fill the direction of the order" + (type ? "buy" : "sell") + "：num" + exchange.get("minTradeLimit") + "price：" + (type ? sellPri : buyPri));
                 }
             }
             BigDecimal intervalPrice = sellPri.subtract(buyPri);
@@ -483,7 +484,7 @@ public class CoinwKline extends CoinwParentService {
                 JSONObject data = jsonObject.getJSONObject("data");
                 String status = data.getString("status");
                 if ("3".equals(status)) {
-                    setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
+                    setTradeLog(id, "order->id：" + orderId + "fully filled,", 0, "#67c23a");
                 } else {
                     String res = cancelTrade(orderId);
                     JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
@@ -491,7 +492,7 @@ public class CoinwKline extends CoinwParentService {
                     setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");
                     if (Integer.parseInt(exchange.get("orderSumSwitch")) == 1 && type == 1) {    //防褥羊毛开关
                         orderNum++;
-                        setWarmLog(id, 2, "订单{" + orderId + "}撤单,撞单数为" + orderNum, "");
+                        setWarmLog(id, 2, "Cancel order{" + orderId + "}Cancel order num" + orderNum, "");
                     }
                 }
             }

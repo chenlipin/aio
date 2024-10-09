@@ -267,6 +267,7 @@ public class TradeRobotService {
             case Constant.KEY_EXCHANGE_HUOBI:
                 robotAction=new HuobiParentService();
                 break;
+
             default:
                 return null;
         }
@@ -288,9 +289,9 @@ public class TradeRobotService {
 
     public String fastTradestatus(CancalAllOrder req) {
         if (map.get(req.getRobotId()) == null) {
-            return "停止中";
+            return "STOP";
         }
-        return "运行中";
+        return "RUNNING";
     }
 
     /**
@@ -332,7 +333,12 @@ public class TradeRobotService {
             return robotAction.selectOrder();
 
         }
+
         if (robot.getStrategyId()==18){
+            return robotAction.selectOrder();
+
+        }
+        if (robot.getStrategyId()==71){
             return robotAction.selectOrder();
 
         }
@@ -576,7 +582,7 @@ public class TradeRobotService {
                     }
 
                    logger.info("一键挂单"+"------类型"+typeTrade+"---价格："+price.toPlainString()+"----数量："+amount);
-                    Thread.sleep(800);
+                    Thread.sleep(100);
                     Map<String, String> stringStringMap = robotAction.submitOrderStr(typeTrade ? 1 : 2, price, amount);
 
                     logger.info("开始2");
