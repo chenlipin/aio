@@ -4,14 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="gate">
+    <list default="true" id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="coinw">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/HttpUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/HttpUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/CoinwKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/newKline/CoinwKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/CoinwParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/CoinwParentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/CoinwService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/CoinwService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/RuncoinwKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/newKline/RuncoinwKline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/RandomDepth/HotcoinDeep.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/RandomDepth/HotcoinDeep.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinstore/CoinStoreParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinstore/CoinStoreParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinstore/newKline/NewCoinStoreKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinstore/newKline/NewCoinStoreKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +48,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/home/aio/src/main/java/top/suilian/aio/service/coinw",
+    "last_opened_file_path": "C:/home/aio/src/main/java/top/suilian/aio/service/superex",
     "nodejs_package_manager_path": "npm",
     "spring.configuration.checksum": "144066ff0da09361c9fe2b8fd900c61f"
   }
@@ -56,11 +58,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\superex" />
       <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\coinw" />
       <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\coinw\randomDepet" />
       <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\gate" />
       <recent name="C:\aio\src\main\java\top\suilian\aio\service\mxc\depthRefer" />
-      <recent name="C:\aio\src\main\java\top\suilian\aio\service\poloniex\refToHot" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="top.suilian.aio.Util" />
@@ -141,7 +143,9 @@
       <workItem from="1724036850430" duration="4095000" />
       <workItem from="1724047124841" duration="8495000" />
       <workItem from="1724245844307" duration="374000" />
-      <workItem from="1728471851439" duration="14229000" />
+      <workItem from="1728471851439" duration="14705000" />
+      <workItem from="1729087094469" duration="2746000" />
+      <workItem from="1732194442938" duration="14281000" />
     </task>
     <task id="LOCAL-00001" summary="aa">
       <created>1713893670498</created>
@@ -199,7 +203,14 @@
       <option name="project" value="LOCAL" />
       <updated>1724045400255</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="coinw">
+      <created>1728491139418</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1728491139418</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -231,7 +242,8 @@
     <MESSAGE value="aa" />
     <MESSAGE value="huobi" />
     <MESSAGE value="gate" />
-    <option name="LAST_COMMIT_MESSAGE" value="gate" />
+    <MESSAGE value="coinw" />
+    <option name="LAST_COMMIT_MESSAGE" value="coinw" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -465,6 +477,21 @@
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/replenish/CoinwReplenish.java</url>
           <line>78</line>
           <option name="timeStamp" value="163" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/superex/SuperexParentService.java</url>
+          <line>204</line>
+          <option name="timeStamp" value="168" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/superex/SuperexParentService.java</url>
+          <line>46</line>
+          <option name="timeStamp" value="170" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/superex/newKline/NewSuperexKline.java</url>
+          <line>101</line>
+          <option name="timeStamp" value="176" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

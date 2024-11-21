@@ -76,6 +76,7 @@ import top.suilian.aio.service.ronance.RonanceService;
 import top.suilian.aio.service.s.SService;
 import top.suilian.aio.service.senbit.SenbitService;
 import top.suilian.aio.service.skiesex.SkiesexService;
+import top.suilian.aio.service.superex.SuperexService;
 import top.suilian.aio.service.test.TestService;
 import top.suilian.aio.service.wbfex.WbfexService;
 import top.suilian.aio.service.whitebit.WhitebitService;
@@ -278,6 +279,9 @@ public class BaseController {
 
     @Autowired
     HuobiService huobiService;
+
+    @Autowired
+    SuperexService superexService;
     //endregion
 
     public int insertRobotLog(Integer robotId, String remark, Integer status) {

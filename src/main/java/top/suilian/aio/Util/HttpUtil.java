@@ -1131,7 +1131,7 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
         return null;
     }
 
-    public String postByPackcoin(String url, Map<String, String> params, HashMap<String, String> headers) throws UnsupportedEncodingException {
+    public static  String postByPackcoin(String url, Map<String, String> params, HashMap<String, String> headers) throws UnsupportedEncodingException {
         List<NameValuePair> list = new LinkedList<>();
         for (String key : params.keySet()) {
             BasicNameValuePair param1 = new BasicNameValuePair(key, String.valueOf(params.get(key)));
@@ -1185,7 +1185,7 @@ httpdelete.setHeader("Content-Type", "application/json;charset=UTF-8");
         return null;
     }
 
-    public String postByPackcoin1(String url, Map<String, Object> params, HashMap<String, String> headers) throws UnsupportedEncodingException {
+    public static  String postByPackcoin1(String url, Map<String, Object> params, HashMap<String, String> headers) throws UnsupportedEncodingException {
         List<NameValuePair> list = new LinkedList<>();
         for (String key : params.keySet()) {
             BasicNameValuePair param1 = new BasicNameValuePair(key, String.valueOf(params.get(key)));

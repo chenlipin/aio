@@ -144,6 +144,8 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_HUOBI=79; //huobi
 
+    public static final int KEY_EXCHANGE_SUPEREX=80; //SUPEREX
+
     //endregion
 
 

@@ -72,122 +72,6 @@ public class CoinStoreParentService extends BaseService implements RobotAction {
     }
 
 
-    /**
-     * 下单
-     *
-     * @param type
-     * @param price
-     * @param amount
-     * @return
-     * @throws UnsupportedEncodingException
-     */
-    public String submitTrade(int type, BigDecimal price, BigDecimal amount) throws UnsupportedEncodingException {
-        long time = new Date().getTime();
-        String typeStr = type == 1 ? "买" : "卖";
-
-        logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + typeStr + "，price(价格)：" + price + "，amount(数量)：" + amount);
-
-        // 输出字符串
-
-        String trade = null;
-
-
-        BigDecimal price1 = nN(price, Integer.parseInt(precision.get("pricePrecision").toString()));
-        BigDecimal num = nN(amount, Integer.parseInt(precision.get("amountPrecision").toString()));
-
-        Double minTradeLimit = Double.valueOf(String.valueOf(precision.get("minTradeLimit")));
-        if (num.compareTo(BigDecimal.valueOf(minTradeLimit)) >= 0) {
-
-            boolean flag = exchange.containsKey("numThreshold");
-            if (flag) {
-                Double numThreshold1 = Double.valueOf(exchange.get("numThreshold"));
-                if (price1.compareTo(BigDecimal.ZERO) > 0 && num.compareTo(BigDecimal.valueOf(numThreshold1)) < 1) {
-                    if (num.compareTo(BigDecimal.valueOf(numThreshold1)) == 1) {
-                        num = BigDecimal.valueOf(numThreshold1);
-                    }
-                    logger.info("apikey:"+exchange.get("apikey"));
-                    logger.info("SecretKey:"+exchange.get("tpass"));
-                    logger.info("time:"+time);
-                    String uri = "/trade/order/place";
-                    Map<String, String> params = new TreeMap<>();
-                    params.put("symbol", exchange.get("market"));
-                    params.put("side", type == 1 ? "BUY" : "SELL");
-                    params.put("ordType", "LIMIT");
-                    params.put("ordQty", num + "");
-                    params.put("ordPrice", price1 + "");
-                    params.put("timestamp", time + "");
-                    logger.info("参数body:"+JSONObject.toJSONString(params));
-                    String key = HMAC.sha256_HMAC((time / 30000) + "", exchange.get("tpass"));
-                    logger.info("time 和SecretKey加密:"+key);
-                    String sings = HMAC.sha256_HMAC(JSONObject.toJSONString(params), key);
-                    logger.info("参数body加密:"+sings);
-                    HashMap<String, String> headMap = new HashMap<>();
-                    headMap.put("X-CS-EXPIRES", time + "");
-                    headMap.put("X-CS-APIKEY", exchange.get("apikey"));
-                    headMap.put("X-CS-SIGN", sings);
-                    logger.info("最终参数:"+JSONObject.toJSONString(params));
-                    logger.info("head:"+JSONObject.toJSONString(headMap));
-                    try {
-                        trade = httpUtil.postByPackcoin(baseUrl + uri, params, headMap);
-                        net.sf.json.JSONObject jsonObjectss = net.sf.json.JSONObject.fromObject(trade);
-                        if (0 != jsonObjectss.getInt("code")) {
-                            setWarmLog(id, 3, "API接口错误", jsonObjectss.getString("message"));
-                        }
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
-                    logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
-
-                } else {
-                    setTradeLog(id, "price[" + price1 + "] num[" + num + "]", 1);
-                    logger.info("robotId" + id + "----" + "挂单失败结束");
-                }
-            } else {
-                logger.info("apikey:"+exchange.get("apikey"));
-                logger.info("SecretKey:"+exchange.get("tpass"));
-                String uri = "/trade/order/place";
-                Map<String, String> params = new TreeMap<>();
-                params.put("symbol", exchange.get("market"));
-                params.put("side", type == 1 ? "BUY" : "SELL");
-                params.put("ordType", "LIMIT");
-                params.put("ordQty", num + "");
-                params.put("ordPrice", price1 + "");
-                params.put("timestamp", time + "");
-                String key = HMAC.sha256_HMAC((time / 30000) + "", exchange.get("apikey"));
-                logger.info("time:"+time);
-                logger.info("参数body:"+JSONObject.toJSONString(params));
-                logger.info("time 和SecretKey加密:"+key);
-                String sings = HMAC.sha256_HMAC(JSONObject.toJSONString(params), key);
-                logger.info("参数body加密:"+sings);
-                HashMap<String, String> headMap = new HashMap<>();
-                headMap.put("X-CS-EXPIRES", time + "");
-                headMap.put("X-CS-APIKEY", exchange.get("tpass"));
-                headMap.put("X-CS-SIGN", sings);
-                logger.info("最终参数:"+JSONObject.toJSONString(params));
-                logger.info("head:"+JSONObject.toJSONString(headMap));
-                try {
-                    trade = httpUtil.postByPackcoin(baseUrl + uri, params, headMap);
-                    net.sf.json.JSONObject jsonObjectss = net.sf.json.JSONObject.fromObject(trade);
-                    if (0 != jsonObjectss.getInt("code")) {
-                        setWarmLog(id, 3, "API接口错误", jsonObjectss.getString("message"));
-                    }
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
-                logger.info("robotId" + id + "----" + "挂单成功结束：" + trade);
-            }
-
-        } else {
-            setTradeLog(id, "交易量最小为：" + precision.get("minTradeLimit"), 0);
-            logger.info("robotId" + id + "----" + "挂单失败结束");
-        }
-
-        valid = 1;
-        return trade;
-
-    }
 
     //对标下单
     public String submitOrder(int type, BigDecimal price, BigDecimal amount) {
@@ -218,7 +102,9 @@ public class CoinStoreParentService extends BaseService implements RobotAction {
         headMap.put("X-CS-APIKEY", exchange.get("tpass"));
         headMap.put("X-CS-SIGN", sings);
         try {
+            logger.info("robotId" + id + "----" + "挂单：" + params);
             trade = httpUtil.postByPackcoin(baseUrl + uri, params, headMap);
+            logger.info("robotId" + id + "----" + "挂单：" + trade);
             net.sf.json.JSONObject jsonObjectss = net.sf.json.JSONObject.fromObject(trade);
             if (0 != jsonObjectss.getInt("code")) {
                 setWarmLog(id, 3, "API接口错误", jsonObjectss.getString("message"));

@@ -50,6 +50,7 @@ import top.suilian.aio.service.mxc.MxcParentService;
 import top.suilian.aio.service.ok.OkParentService;
 import top.suilian.aio.service.poloniex.PoloniexParentService;
 import top.suilian.aio.service.skiesex.SkiesexParentService;
+import top.suilian.aio.service.superex.SuperexParentService;
 import top.suilian.aio.service.wbfex.WbfexParentService;
 import top.suilian.aio.service.whitebit.WhitebitParentService;
 import top.suilian.aio.service.xt.XtKline;
@@ -267,6 +268,9 @@ public class TradeRobotService {
             case Constant.KEY_EXCHANGE_HUOBI:
                 robotAction=new HuobiParentService();
                 break;
+            case Constant.KEY_EXCHANGE_SUPEREX:
+                robotAction=new SuperexParentService();
+                break;
 
             default:
                 return null;
@@ -348,6 +352,10 @@ public class TradeRobotService {
 
         }
         if (robot.getStrategyId()==79){
+            return robotAction.selectOrder();
+
+        }
+        if (robot.getStrategyId()==80){
             return robotAction.selectOrder();
 
         }
