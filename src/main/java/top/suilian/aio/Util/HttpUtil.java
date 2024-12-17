@@ -95,7 +95,7 @@ public class HttpUtil {
      * @return 响应
      */
     //post json提交
-    public String post(String url, String json) {
+    public static  String post(String url, String json) {
 
         CloseableHttpClient httpclient = HttpClientBuilder.create().build();
         RequestConfig config = RequestConfig.custom().setConnectTimeout(35000) //连接超时时间
@@ -185,9 +185,9 @@ public class HttpUtil {
         }
         String result = null;
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        RequestConfig config = RequestConfig.custom().setConnectTimeout(35000) //连接超时时间
-                .setConnectionRequestTimeout(35000) //从连接池中取的连接的最长时间
-                .setSocketTimeout(60000) //数据传输的超时时间
+        RequestConfig config = RequestConfig.custom().setConnectTimeout(350000) //连接超时时间
+                .setConnectionRequestTimeout(350000) //从连接池中取的连接的最长时间
+                .setSocketTimeout(600000) //数据传输的超时时间
                 .build();
         HttpPost post = new HttpPost(url);
         post.setConfig(config);
@@ -447,9 +447,9 @@ public class HttpUtil {
         HttpClientBuilder builder = HttpClients.custom();
         builder.setUserAgent("Mozilla/5.0(Windows;U;Windows NT 5.1;en-US;rv:0.9.4)");
         final CloseableHttpClient httpClient = builder.build();
-        RequestConfig config = RequestConfig.custom().setConnectTimeout(35000) //连接超时时间
-                .setConnectionRequestTimeout(35000) //从连接池中取的连接的最长时间
-                .setSocketTimeout(60000) //数据传输的超时时间
+        RequestConfig config = RequestConfig.custom().setConnectTimeout(105000) //连接超时时间
+                .setConnectionRequestTimeout(105000) //从连接池中取的连接的最长时间
+                .setSocketTimeout(100000) //数据传输的超时时间
                 .build();
         HttpGet get = new HttpGet(url);
         get.setConfig(config);

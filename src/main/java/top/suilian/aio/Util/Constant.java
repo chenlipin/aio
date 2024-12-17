@@ -146,6 +146,8 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_SUPEREX=80; //SUPEREX
 
+    public static final int KEY_EXCHANGE_ARBISOO=81; //arbisoo
+
     //endregion
 
 

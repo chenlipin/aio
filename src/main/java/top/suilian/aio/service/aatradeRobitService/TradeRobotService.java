@@ -20,6 +20,7 @@ import top.suilian.aio.model.Robot;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
+import top.suilian.aio.service.arbisoo.ArbisooParentService;
 import top.suilian.aio.service.bian.BianParentService;
 import top.suilian.aio.service.bibox.BiboxParentService;
 import top.suilian.aio.service.bifinance.BifinanceParentService;
@@ -271,6 +272,9 @@ public class TradeRobotService {
             case Constant.KEY_EXCHANGE_SUPEREX:
                 robotAction=new SuperexParentService();
                 break;
+            case Constant.KEY_EXCHANGE_ARBISOO:
+                robotAction=new ArbisooParentService();
+                break;
 
             default:
                 return null;
@@ -356,6 +360,10 @@ public class TradeRobotService {
 
         }
         if (robot.getStrategyId()==80){
+            return robotAction.selectOrder();
+
+        }
+        if (robot.getStrategyId()==81){
             return robotAction.selectOrder();
 
         }

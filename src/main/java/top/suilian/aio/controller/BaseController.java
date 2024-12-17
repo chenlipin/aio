@@ -9,6 +9,7 @@ import top.suilian.aio.redis.RedisStringExecutor;
 import top.suilian.aio.service.RobotArgsService;
 import top.suilian.aio.service.RobotLogService;
 import top.suilian.aio.service.RobotService;
+import top.suilian.aio.service.arbisoo.ArbisooService;
 import top.suilian.aio.service.asproex.AsproexService;
 import top.suilian.aio.service.auxsto.AuxstoService;
 import top.suilian.aio.service.basic.BasicService;
@@ -282,6 +283,10 @@ public class BaseController {
 
     @Autowired
     SuperexService superexService;
+
+    @Autowired
+    ArbisooService arbisooService;
+
     //endregion
 
     public int insertRobotLog(Integer robotId, String remark, Integer status) {

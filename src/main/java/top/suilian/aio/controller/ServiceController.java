@@ -277,6 +277,9 @@ public class ServiceController extends BaseController {
                     case Constant.KEY_EXCHANGE_SUPEREX:
                         superexService.start(operationRequest.getId(), operationRequest.getType());
                         break;
+                    case Constant.KEY_EXCHANGE_ARBISOO:
+                        arbisooService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
                 }
                 if (operationRequest.getCategory() == 1) {
                     insertRobotLog(operationRequest.getId(), "重启机器人", Constant.KEY_STATUS_RESTART);
@@ -529,6 +532,10 @@ public class ServiceController extends BaseController {
                     break;
                 case Constant.KEY_EXCHANGE_SUPEREX:
                     superexService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
+
+                case Constant.KEY_EXCHANGE_ARBISOO:
+                    arbisooService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {
@@ -786,6 +793,10 @@ public class ServiceController extends BaseController {
                     break;
                 case Constant.KEY_EXCHANGE_SUPEREX:
                     superexService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+
+                case Constant.KEY_EXCHANGE_ARBISOO:
+                    arbisooService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {
