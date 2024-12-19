@@ -87,15 +87,14 @@ public class ArbisooParentService extends BaseService implements RobotAction {
         params.put("password", exchange.get("tpass"));
         params.put("amount", String.valueOf(num));
         params.put("entrust_price", String.valueOf(price1));
-
-
-
         try {
-             trade = HttpUtil.post("https://ttsjys.laikas.shop/api/app/other/storeEntrust", params);
+
+             trade = HttpUtil.post("https://api.ee1234.xyz/api/app/v2/storeEntrust", params);
         } catch (Exception e) {
             e.printStackTrace();
         }
         JSONObject rt = JSONObject.fromObject(trade);
+        System.out.println(rt);
         if (200 != rt.getInt("code")) {
             logger.info("robotId" + id + "----" + "挂单失败结束");
         } else {
@@ -140,7 +139,7 @@ public class ArbisooParentService extends BaseService implements RobotAction {
     public String selectOrder(String orderId) {
         String trade = null;
         try {
-            trade = HttpUtil.get("https://ttsjys.laikas.shop/api/app/other/getCurrentEntrustByorder?order_id="+orderId);
+            trade = HttpUtil.get("https://api.ee1234.xyz/api/app/v2/getCurrentEntrustByorder?order_id="+orderId);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -158,7 +157,8 @@ public class ArbisooParentService extends BaseService implements RobotAction {
         String trade = null;
 
         try {
-            trade = HttpUtil.get("https://ttsjys.laikas.shop/api/app/other/getCurrentEntrust?page=1");
+            //
+            trade = HttpUtil.get("https://api.ee1234.xyz/api/app/v2/getCurrentEntrust?page=1");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -172,6 +172,10 @@ public class ArbisooParentService extends BaseService implements RobotAction {
         for (int i = 0; i < array.size(); i++) {
             getAllOrderPonse getAllOrderPonse = new getAllOrderPonse();
             com.alibaba.fastjson.JSONObject jsonObject = array.getJSONObject(i);
+            String market1 = exchange.get("market1");
+            if (!jsonObject.getString("symbol").contains(market1)){
+                continue;
+            }
 
             getAllOrderPonse.setOrderId(jsonObject.getString("order_no"));
             getAllOrderPonse.setCreatedAt(jsonObject.getString("created_at"));
@@ -187,7 +191,7 @@ public class ArbisooParentService extends BaseService implements RobotAction {
 
 
     public String getDepth() {
-        String trades = httpUtil.get("https://ttsjys.laikas.shop/api/app/other/getDepth?symbol=" + exchange.get("market"));
+        String trades = httpUtil.get("https://api.ee1234.xyz/api/app/v2/getDepth?symbol=" + exchange.get("market"));
         return trades;
 
     }
@@ -206,7 +210,7 @@ public class ArbisooParentService extends BaseService implements RobotAction {
         params.put("sign", sign);
         logger.info("robotId" + id + "----" + "挂单参数：" + params);
         try {
-            trade = HttpUtil.get("https://ttsjys.laikas.shop/api/app/other/getrobotbalance");
+            trade = HttpUtil.get("https://api.ee1234.xyz/api/app/v2/getrobotbalance");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -232,7 +236,7 @@ public class ArbisooParentService extends BaseService implements RobotAction {
         String trade = "";
 
         try {
-            trade = HttpUtil.post("https://ttsjys.laikas.shop/api/app/other/cancelEntrust", params);
+            trade = HttpUtil.post("https://api.ee1234.xyz/api/app/v2/cancelEntrust", params);
         } catch (Exception e) {
             e.printStackTrace();
         }
