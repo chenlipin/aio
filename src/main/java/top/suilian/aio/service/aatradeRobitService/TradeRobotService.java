@@ -21,6 +21,7 @@ import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.arbisoo.ArbisooParentService;
+import top.suilian.aio.service.arbisooNew.ArbisooNewParentService;
 import top.suilian.aio.service.bian.BianParentService;
 import top.suilian.aio.service.bibox.BiboxParentService;
 import top.suilian.aio.service.bifinance.BifinanceParentService;
@@ -275,6 +276,9 @@ public class TradeRobotService {
             case Constant.KEY_EXCHANGE_ARBISOO:
                 robotAction=new ArbisooParentService();
                 break;
+            case Constant.KEY_EXCHANGE_ARBISOO_NEW:
+                robotAction=new ArbisooNewParentService();
+                break;
 
             default:
                 return null;
@@ -367,7 +371,10 @@ public class TradeRobotService {
             return robotAction.selectOrder();
 
         }
+        if (robot.getStrategyId()==82){
+            return robotAction.selectOrder();
 
+        }
         List<getAllOrderPonse> list = apitradeLogMapper.selectByRobotId(req.getRobotId());
         Map<String, Integer> map = robotAction.selectOrderStr(list.stream().filter(e -> e.getStatus().equals(0) || e.getStatus().equals(1)).map(getAllOrderPonse::getOrderId).collect(Collectors.joining(",", "", "")));
         for (getAllOrderPonse order : list) {

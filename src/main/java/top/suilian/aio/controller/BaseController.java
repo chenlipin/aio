@@ -10,6 +10,7 @@ import top.suilian.aio.service.RobotArgsService;
 import top.suilian.aio.service.RobotLogService;
 import top.suilian.aio.service.RobotService;
 import top.suilian.aio.service.arbisoo.ArbisooService;
+import top.suilian.aio.service.arbisooNew.ArbisooNewService;
 import top.suilian.aio.service.asproex.AsproexService;
 import top.suilian.aio.service.auxsto.AuxstoService;
 import top.suilian.aio.service.basic.BasicService;
@@ -286,6 +287,9 @@ public class BaseController {
 
     @Autowired
     ArbisooService arbisooService;
+
+    @Autowired
+    ArbisooNewService arbisooNewService;
 
     //endregion
 
