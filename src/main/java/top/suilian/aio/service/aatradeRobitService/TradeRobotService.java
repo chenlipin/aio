@@ -419,9 +419,14 @@ public class TradeRobotService {
 //        if (!checkSignature) {
 ////            throw new RuntimeException("Signature失败");
 //        }
+        Robot robot = robotMapper.selectByPrimaryKey(req.getRobotId());
         RobotAction robotAction = getRobotAction(req.getRobotId());
         if (req.getRobotId()==17){
             List<String> strings = robotAction.cancelAllOrder(Integer.parseInt(req.getType()), req.getTradeType());
+            return ResponseEntity.success(strings);
+        }
+        if (robot.getStrategyId()==82){
+            List<String> strings = robotAction.cancelAllOrder(Integer.parseInt(req.getType()==null?"1":req.getType()), req.getTradeType());
             return ResponseEntity.success(strings);
         }
         FastCancalTradeM fastCancalTradeM = new FastCancalTradeM(robotAction, req);

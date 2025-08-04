@@ -283,6 +283,9 @@ public class ServiceController extends BaseController {
                     case Constant.KEY_EXCHANGE_ARBISOO_NEW:
                         arbisooNewService.start(operationRequest.getId(), operationRequest.getType());
                         break;
+                    case Constant.KEY_EXCHANGE_Nivex_NEW:
+                        nivexService.start(operationRequest.getId(), operationRequest.getType());
+                        break;
                 }
                 if (operationRequest.getCategory() == 1) {
                     insertRobotLog(operationRequest.getId(), "重启机器人", Constant.KEY_STATUS_RESTART);
@@ -543,6 +546,9 @@ public class ServiceController extends BaseController {
 
                 case Constant.KEY_EXCHANGE_ARBISOO_NEW:
                     arbisooNewService.stop(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_Nivex_NEW:
+                    nivexService.stop(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {
@@ -807,6 +813,9 @@ public class ServiceController extends BaseController {
                     break;
                 case Constant.KEY_EXCHANGE_ARBISOO_NEW:
                     arbisooNewService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
+                case Constant.KEY_EXCHANGE_Nivex_NEW:
+                    nivexService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
             }
         } else {

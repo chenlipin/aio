@@ -150,6 +150,8 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_ARBISOO_NEW=82; //arbisoo_new
 
+    public static final int KEY_EXCHANGE_Nivex_NEW=83; //Nivex
+
     //endregion
 
 

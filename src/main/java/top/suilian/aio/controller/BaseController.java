@@ -68,6 +68,7 @@ import top.suilian.aio.service.lbank.LbankService;
 import top.suilian.aio.service.loex.LoexService;
 import top.suilian.aio.service.mxc.MxcService;
 import top.suilian.aio.service.nine9ex.Nine9ExService;
+import top.suilian.aio.service.nivex0.NivexService;
 import top.suilian.aio.service.ok.OkService;
 import top.suilian.aio.service.pcas.PcasService;
 import top.suilian.aio.service.pickcoin.PickcoinService;
@@ -290,6 +291,9 @@ public class BaseController {
 
     @Autowired
     ArbisooNewService arbisooNewService;
+
+    @Autowired
+    NivexService nivexService;
 
     //endregion
 

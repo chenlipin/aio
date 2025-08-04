@@ -30,6 +30,12 @@ public class ArbisooNewParentService extends BaseService implements RobotAction 
 
     @Override
     public List<String> cancelAllOrder(Integer type, Integer tradeType) {
+        List<getAllOrderPonse> getAllOrderPonses = selectOrder();
+        for (getAllOrderPonse getAllOrderPons : getAllOrderPonses) {
+            String s = cancelTrade(getAllOrderPons.getOrderId());
+            logger.info("一键撤单，单号："+getAllOrderPons.getOrderId()+"--结果-"+s);
+        }
+
         return null;
     }
 
@@ -163,7 +169,7 @@ public class ArbisooNewParentService extends BaseService implements RobotAction 
             params.put("sign", HMAC.MD5("api_key=" + exchange.get("apikey") + "&api_name=" + exchange.get("tpass")));
             params.put("uid", exchange.get("tpass"));
             params.put("pageNo", "1");
-            params.put("pageSize", "100");
+            params.put("pageSize", "500");
             params.put("type","LIMIT_PRICE");
             trade = HttpUtil.get("https://api.huibit.com/exchange/openApi/order/personal/current?"+sign(params));
         } catch (Exception e) {
