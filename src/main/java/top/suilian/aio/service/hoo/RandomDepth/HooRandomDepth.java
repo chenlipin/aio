@@ -8,9 +8,7 @@ import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
 import top.suilian.aio.service.hoo.HooParentService;
-import top.suilian.aio.service.hotcoin.HotCoinParentService;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
 

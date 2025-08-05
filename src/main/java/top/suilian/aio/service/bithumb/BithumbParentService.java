@@ -11,7 +11,7 @@ import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
-import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
+import top.suilian.aio.service.mxc.hotcoin.RandomDepth.RunHotcoinRandomDepth;
 import top.suilian.aio.vo.getAllOrderPonse;
 
 import javax.crypto.Mac;

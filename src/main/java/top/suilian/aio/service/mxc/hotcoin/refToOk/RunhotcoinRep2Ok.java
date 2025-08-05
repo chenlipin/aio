@@ -1,4 +1,4 @@
-package top.suilian.aio.service.hotcoin.refToOk;
+package top.suilian.aio.service.mxc.hotcoin.refToOk;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

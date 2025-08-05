@@ -1,4 +1,4 @@
-package top.suilian.aio.service.hotcoin.RandomDepth;
+package top.suilian.aio.service.mxc.hotcoin.depthReferToZg;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class RunHotcoinDeep {
+public class RunDepthHotcoinReferToZg {
     //region    Service
     @Autowired
     CancelExceptionService cancelExceptionService;
@@ -53,9 +53,9 @@ public class RunHotcoinDeep {
      */
     public void init(int id) {
         //实例化策略对象
-        HotcoinDeep randomDepth = new HotcoinDeep(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
+        DepthHotcoinReferToZg kline = new DepthHotcoinReferToZg(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
         redisHelper.initRobot(id);
-        work = new Work(randomDepth);
+        work = new Work(kline);
         works.add(work);
         Thread thread = new Thread(work);
         thread.start();
@@ -111,39 +111,46 @@ public class RunHotcoinDeep {
     }
 
     class Work extends StopableTask<Work> {
-        HotcoinDeep randomDepth;
+        DepthHotcoinReferToZg kline;
 
-        public Work(HotcoinDeep randomDepth) {
-            super(randomDepth.id);
-            this.randomDepth = randomDepth;
+        public Work(DepthHotcoinReferToZg kline) {
+            super(kline.id);
+            this.kline = kline;
         }
 
         @Override
         public void dowork() {
             Robot robot = redisHelper.getRobot(name);
+
             if (robot != null && redisHelper.getRobot(name).getStatus() == Constant.KEY_ROBOT_STATUS_RUN) {
                 String key = "_exception";
                 try {
-                    randomDepth.init();
+                    kline.init();
                     //清理发送短信
-                    if (redisHelper.getParam(randomDepth.id + key) != null) {
-                        redisHelper.removeParent(randomDepth.id + key);
+                    if (redisHelper.getParam(kline.id + key) != null) {
+                        redisHelper.removeParent(kline.id + key);
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                     StringWriter sw = new StringWriter();
                     e.printStackTrace(new PrintWriter(sw, true));
                     String strs = sw.toString();
-                    redisHelper.setParam("Exception_" + randomDepth.id, strs);                    //长时间异常，发送短信给我
-                    if (redisHelper.getParam(randomDepth.id + key) == null) {
-                        redisHelper.setParam(randomDepth.id + key, String.valueOf(System.currentTimeMillis()));
-                    } else if (System.currentTimeMillis() - Long.valueOf(redisHelper.getParam(randomDepth.id + key)) > Constant.KEY_SNS_INTERFACE_ERROR_TIME) {
-                        redisHelper.setParam(randomDepth.id + key + "_true", "true");
-                        commonUtil.sendSms(redisHelper.getRobot(randomDepth.id).getName() + "异常机器人停止");
-                        redisHelper.removeParent(randomDepth.id+key);
+                    redisHelper.setParam("Exception_" + kline.id, strs);                    //长时间异常，发送短信给我
+                    if (redisHelper.getParam(kline.id + key) == null) {
+                        redisHelper.setParam(kline.id + key, String.valueOf(System.currentTimeMillis()));
+                    } else if (System.currentTimeMillis() - Long.valueOf(redisHelper.getParam(kline.id + key)) > Constant.KEY_SNS_INTERFACE_ERROR_TIME && redisHelper.getParam(kline.id + key + "_true") == null) {
+                        redisHelper.setParam(kline.id + key + "_true", "true");
+                        String name = redisHelper.getRobot(kline.id).getName();
+                        commonUtil.sendSms(name + "异常机器人停止");
+//                        redisHelper.removeParent(kline.id + key);
+                    }else if(System.currentTimeMillis() - Long.valueOf(redisHelper.getParam(kline.id + key)) > 30 * 60 * 1000){
+                        redisHelper.setParam(kline.id + key, String.valueOf(System.currentTimeMillis()));
+                        String name = redisHelper.getRobot(kline.id).getName();
+                        commonUtil.sendSms(name + "异常机器人停止");
                     }
                 }
             } else {
-                killWork(randomDepth.id);
+                killWork(kline.id);
             }
         }
     }

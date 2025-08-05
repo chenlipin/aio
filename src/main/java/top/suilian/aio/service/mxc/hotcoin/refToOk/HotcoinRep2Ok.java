@@ -1,18 +1,16 @@
-package top.suilian.aio.service.hotcoin.refToOk;
+package top.suilian.aio.service.mxc.hotcoin.refToOk;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import lombok.Data;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.HttpUtil;
-import top.suilian.aio.Util.RandomUtilsme;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.refer.BianUtils;
 import top.suilian.aio.refer.DeepVo;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.hotcoin.HotCoinParentService;
+import top.suilian.aio.service.mxc.hotcoin.HotCoinParentService;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;

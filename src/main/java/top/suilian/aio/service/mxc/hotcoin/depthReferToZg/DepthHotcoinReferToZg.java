@@ -1,4 +1,4 @@
-package top.suilian.aio.service.hotcoin.depthReferToZg;
+package top.suilian.aio.service.mxc.hotcoin.depthReferToZg;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -6,7 +6,7 @@ import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.hotcoin.HotCoinParentService;
+import top.suilian.aio.service.mxc.hotcoin.HotCoinParentService;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;

@@ -1,4 +1,4 @@
-package top.suilian.aio.service.hotcoin.klineReferToZg;
+package top.suilian.aio.service.mxc.hotcoin.newKline;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class RunKlineHotcoinReferToZg {
+public class RunNewHotcoinKline {
     //region    Service
     @Autowired
     CancelExceptionService cancelExceptionService;
@@ -53,7 +53,7 @@ public class RunKlineHotcoinReferToZg {
      */
     public void init(int id) {
         //实例化策略对象
-        KlineHotcoinReferToZg kline = new KlineHotcoinReferToZg(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
+        NewHotcoinKline kline = new NewHotcoinKline(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
         redisHelper.initRobot(id);
         work = new Work(kline);
         works.add(work);
@@ -111,9 +111,9 @@ public class RunKlineHotcoinReferToZg {
     }
 
     class Work extends StopableTask<Work> {
-        KlineHotcoinReferToZg kline;
+        NewHotcoinKline kline;
 
-        public Work(KlineHotcoinReferToZg kline) {
+        public Work(NewHotcoinKline kline) {
             super(kline.id);
             this.kline = kline;
         }

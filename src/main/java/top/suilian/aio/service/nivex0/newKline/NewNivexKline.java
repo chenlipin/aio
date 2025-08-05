@@ -80,6 +80,8 @@ public class NewNivexKline extends NivexParentService {
             }
             logger.info("设置机器人交易规则结束");
 
+            String balance = getBalance();
+
             /**
              * 深度
              */

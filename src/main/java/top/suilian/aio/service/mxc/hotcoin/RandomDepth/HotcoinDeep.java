@@ -1,4 +1,4 @@
-package top.suilian.aio.service.hotcoin.RandomDepth;
+package top.suilian.aio.service.mxc.hotcoin.RandomDepth;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -7,8 +7,7 @@ import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.hotcoin.HotCoinParentService;
-import top.suilian.aio.service.mxc.MxcParentService;
+import top.suilian.aio.service.mxc.hotcoin.HotCoinParentService;
 import top.suilian.aio.vo.Order;
 
 import java.io.UnsupportedEncodingException;

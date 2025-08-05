@@ -4,12 +4,46 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="aa">
+    <list default="true" id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="Nivex">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/newKline/NewBasicKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/basic/newKline/NewBasicKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/newKlile/NewBisionKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bision/newKlile/NewBisionKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bithumb/BithumbParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bithumb/BithumbParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bkex/coinnoe/BkexParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bkex/coinnoe/BkexParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/CoinnoeParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinnoe/CoinnoeParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/randomDepet/CoinWDeep.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/randomDepet/CoinWDeep.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/replenish/CoinwReplenish.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/replenish/CoinwReplenish.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/gate/GateParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/gate/GateParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hoo/RandomDepth/HooRandomDepth.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hoo/RandomDepth/HooRandomDepth.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/HotCoinParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/HotCoinParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/HotCoinService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/HotCoinService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/RandomDepth/HotcoinDeep.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/RandomDepth/HotcoinDeep.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/RandomDepth/HotcoinRandomDepth.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/RandomDepth/HotcoinRandomDepth.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/RandomDepth/RunHotcoinDeep.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/RandomDepth/RunHotcoinDeep.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/RandomDepth/RunHotcoinRandomDepth.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/RandomDepth/RunHotcoinRandomDepth.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/depthReferToZg/DepthHotcoinReferToZg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/depthReferToZg/DepthHotcoinReferToZg.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/depthReferToZg/RunDepthHotcoinReferToZg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/depthReferToZg/RunDepthHotcoinReferToZg.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/kline/HotCoinKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/kline/HotCoinKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/kline/RunHotCoinKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/kline/RunHotCoinKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/klineReferToZg/KlineHotcoinReferToZg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/klineReferToZg/KlineHotcoinReferToZg.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/klineReferToZg/RunKlineHotcoinReferToZg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/klineReferToZg/RunKlineHotcoinReferToZg.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/NewHotcoinKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/newKline/NewHotcoinKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/RunNewHotcoinKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/newKline/RunNewHotcoinKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/refToOk/HotcoinRep2Ok.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/RunhotcoinRep2Ok.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/refToOk/RunhotcoinRep2Ok.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/replenish/HotcoinReplenish.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/replenish/HotcoinReplenish.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/replenish/RunhotcoinReplenish.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/replenish/RunhotcoinReplenish.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nivex0/NivexParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nivex0/NivexParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nivex0/newKline/NewNivexKline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nivex0/newKline/NewNivexKline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/poloniex/refToHot/PoloniexRep2Hot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/poloniex/refToHot/PoloniexRep2Hot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/skiesex/SkiesexParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/skiesex/SkiesexParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/superex/SuperexParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/superex/SuperexParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/whitebit/WhitebitParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/whitebit/WhitebitParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zb/ZbParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zb/ZbParentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zb/ZbService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zb/ZbService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zbg/ZbgParentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/zbg/ZbgParentService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -36,30 +70,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/aio/src/main/java/top/suilian/aio/arbisooNew&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;spring.configuration.checksum&quot;: &quot;144066ff0da09361c9fe2b8fd900c61f&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/aio/src/main/java/top/suilian/aio/service/nivex0",
+    "nodejs_package_manager_path": "npm",
+    "spring.configuration.checksum": "144066ff0da09361c9fe2b8fd900c61f"
   }
-}</component>
+}]]></component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\aio\src\main\java\top\suilian\aio\service\nivex0" />
       <recent name="C:\aio\src\main\java\top\suilian\aio\arbisooNew" />
       <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\superex" />
       <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\coinw" />
       <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\coinw\randomDepet" />
-      <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\gate" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="top.suilian.aio.Util" />
@@ -146,6 +180,14 @@
       <workItem from="1737968530820" duration="6451000" />
       <workItem from="1738327813551" duration="4503000" />
       <workItem from="1738674205268" duration="431000" />
+      <workItem from="1739363496745" duration="1069000" />
+      <workItem from="1739453648706" duration="1024000" />
+      <workItem from="1740545947542" duration="3490000" />
+      <workItem from="1740741176491" duration="2160000" />
+      <workItem from="1747580563679" duration="340000" />
+      <workItem from="1748154326783" duration="604000" />
+      <workItem from="1748868502579" duration="7000" />
+      <workItem from="1754314975929" duration="15007000" />
     </task>
     <task id="LOCAL-00001" summary="aa">
       <created>1713893670498</created>
@@ -210,7 +252,21 @@
       <option name="project" value="LOCAL" />
       <updated>1728491139418</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="aa">
+      <created>1739363524720</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1739363524720</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Nivex">
+      <created>1754323194103</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1754323194103</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -251,22 +307,23 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="aa" />
     <MESSAGE value="huobi" />
     <MESSAGE value="gate" />
     <MESSAGE value="coinw" />
-    <option name="LAST_COMMIT_MESSAGE" value="coinw" />
+    <MESSAGE value="aa" />
+    <MESSAGE value="Nivex" />
+    <option name="LAST_COMMIT_MESSAGE" value="Nivex" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/RandomDepth/RunHotcoinDeep.java</url>
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/RandomDepth/RunHotcoinDeep.java</url>
           <line>55</line>
           <option name="timeStamp" value="19" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java</url>
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/refToOk/HotcoinRep2Ok.java</url>
           <line>168</line>
           <option name="timeStamp" value="32" />
         </line-breakpoint>
@@ -337,7 +394,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/poloniex/refToHot/PoloniexRep2Hot.java</url>
-          <line>203</line>
+          <line>200</line>
           <option name="timeStamp" value="99" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -366,32 +423,32 @@
           <option name="timeStamp" value="106" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/newKline/NewHotcoinKline.java</url>
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/newKline/NewHotcoinKline.java</url>
           <line>75</line>
           <option name="timeStamp" value="107" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/replenish/HotcoinReplenish.java</url>
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/replenish/HotcoinReplenish.java</url>
           <line>59</line>
           <option name="timeStamp" value="108" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/replenish/HotcoinReplenish.java</url>
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/replenish/HotcoinReplenish.java</url>
           <line>102</line>
           <option name="timeStamp" value="109" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/replenish/HotcoinReplenish.java</url>
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/replenish/HotcoinReplenish.java</url>
           <line>78</line>
           <option name="timeStamp" value="110" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java</url>
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/refToOk/HotcoinRep2Ok.java</url>
           <line>140</line>
           <option name="timeStamp" value="111" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java</url>
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/mxc/hotcoin/refToOk/HotcoinRep2Ok.java</url>
           <line>251</line>
           <option name="timeStamp" value="112" />
         </line-breakpoint>
@@ -467,7 +524,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/randomDepet/CoinWDeep.java</url>
-          <line>88</line>
+          <line>86</line>
           <option name="timeStamp" value="158" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -477,27 +534,27 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/randomDepet/CoinWDeep.java</url>
-          <line>190</line>
+          <line>188</line>
           <option name="timeStamp" value="160" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/randomDepet/CoinWDeep.java</url>
-          <line>214</line>
+          <line>212</line>
           <option name="timeStamp" value="161" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/coinw/replenish/CoinwReplenish.java</url>
-          <line>78</line>
+          <line>76</line>
           <option name="timeStamp" value="163" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/superex/SuperexParentService.java</url>
-          <line>204</line>
+          <line>202</line>
           <option name="timeStamp" value="168" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/superex/SuperexParentService.java</url>
-          <line>46</line>
+          <line>44</line>
           <option name="timeStamp" value="170" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -507,7 +564,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/arbisooNew/ArbisooNewParentService.java</url>
-          <line>171</line>
+          <line>177</line>
           <option name="timeStamp" value="185" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -519,6 +576,21 @@
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/arbisooNew/newKline/ArbisooNewNewKline.java</url>
           <line>108</line>
           <option name="timeStamp" value="188" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java</url>
+          <line>431</line>
+          <option name="timeStamp" value="189" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nivex0/newKline/NewNivexKline.java</url>
+          <line>80</line>
+          <option name="timeStamp" value="199" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java</url>
+          <line>518</line>
+          <option name="timeStamp" value="202" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

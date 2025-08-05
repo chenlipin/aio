@@ -18,7 +18,6 @@ import top.suilian.aio.model.ApitradeLog;
 import top.suilian.aio.model.Member;
 import top.suilian.aio.model.Robot;
 import top.suilian.aio.redis.RedisHelper;
-import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.arbisoo.ArbisooParentService;
 import top.suilian.aio.service.arbisooNew.ArbisooNewParentService;
@@ -39,23 +38,22 @@ import top.suilian.aio.service.coinw.CoinwParentService;
 import top.suilian.aio.service.digifinex.DigifinexParentService;
 import top.suilian.aio.service.eeee.E4ParentService;
 import top.suilian.aio.service.feltpex.FeltpexParentService;
-import top.suilian.aio.service.feltpex.FeltpexService;
 import top.suilian.aio.service.gate.GateParentService;
 import top.suilian.aio.service.hoo.HooParentService;
-import top.suilian.aio.service.hotcoin.HotCoinParentService;
+import top.suilian.aio.service.mxc.hotcoin.HotCoinParentService;
 import top.suilian.aio.service.huobi.HuobiParentService;
 import top.suilian.aio.service.iex.IexParentService;
 import top.suilian.aio.service.kucoin.KucoinParentService;
 import top.suilian.aio.service.lbank.LbankParentService;
 import top.suilian.aio.service.loex.LoexParentService;
 import top.suilian.aio.service.mxc.MxcParentService;
+import top.suilian.aio.service.nivex0.NivexParentService;
 import top.suilian.aio.service.ok.OkParentService;
 import top.suilian.aio.service.poloniex.PoloniexParentService;
 import top.suilian.aio.service.skiesex.SkiesexParentService;
 import top.suilian.aio.service.superex.SuperexParentService;
 import top.suilian.aio.service.wbfex.WbfexParentService;
 import top.suilian.aio.service.whitebit.WhitebitParentService;
-import top.suilian.aio.service.xt.XtKline;
 import top.suilian.aio.service.xt.XtParentService;
 import top.suilian.aio.service.zb.ZbParentService;
 import top.suilian.aio.service.zbg.ZbgParentService;
@@ -279,7 +277,9 @@ public class TradeRobotService {
             case Constant.KEY_EXCHANGE_ARBISOO_NEW:
                 robotAction=new ArbisooNewParentService();
                 break;
-
+            case Constant.KEY_EXCHANGE_Nivex_NEW:
+                robotAction=new NivexParentService();
+                break;
             default:
                 return null;
         }
@@ -372,6 +372,10 @@ public class TradeRobotService {
 
         }
         if (robot.getStrategyId()==82){
+            return robotAction.selectOrder();
+
+        }
+        if (robot.getStrategyId()==83){
             return robotAction.selectOrder();
 
         }
