@@ -40,7 +40,7 @@ import top.suilian.aio.service.eeee.E4ParentService;
 import top.suilian.aio.service.feltpex.FeltpexParentService;
 import top.suilian.aio.service.gate.GateParentService;
 import top.suilian.aio.service.hoo.HooParentService;
-import top.suilian.aio.service.mxc.hotcoin.HotCoinParentService;
+import top.suilian.aio.service.hotcoin.HotCoinParentService;
 import top.suilian.aio.service.huobi.HuobiParentService;
 import top.suilian.aio.service.iex.IexParentService;
 import top.suilian.aio.service.kucoin.KucoinParentService;

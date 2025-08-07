@@ -1,4 +1,4 @@
-package top.suilian.aio.service.mxc.hotcoin.refToOk;
+package top.suilian.aio.service.hotcoin.RandomDepth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class RunhotcoinRep2Ok {
+public class RunHotcoinRandomDepth {
     //region    Service
     @Autowired
     CancelExceptionService cancelExceptionService;
@@ -53,7 +53,7 @@ public class RunhotcoinRep2Ok {
      */
     public void init(int id) {
         //实例化策略对象
-        HotcoinRep2Ok randomDepth = new HotcoinRep2Ok(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
+        HotcoinRandomDepth randomDepth = new HotcoinRandomDepth(cancelExceptionService, cancelOrderService, exceptionMessageService, robotArgsService, robotLogService, robotService, tradeLogService, httpUtil, redisHelper, id);
         redisHelper.initRobot(id);
         work = new Work(randomDepth);
         works.add(work);
@@ -111,9 +111,9 @@ public class RunhotcoinRep2Ok {
     }
 
     class Work extends StopableTask<Work> {
-        HotcoinRep2Ok randomDepth;
+        HotcoinRandomDepth randomDepth;
 
-        public Work(HotcoinRep2Ok randomDepth) {
+        public Work(HotcoinRandomDepth randomDepth) {
             super(randomDepth.id);
             this.randomDepth = randomDepth;
         }
@@ -121,7 +121,7 @@ public class RunhotcoinRep2Ok {
         @Override
         public void dowork() {
             Robot robot = redisHelper.getRobot(name);
-            if (robot != null && redisHelper.getRobot(name).getStatus() == Constant.KEY_ROBOT_STATUS_RUN) {
+            if (robot != null ) {
                 String key = "_exception";
                 try {
                     randomDepth.init();
@@ -130,12 +130,6 @@ public class RunhotcoinRep2Ok {
                         redisHelper.removeParent(randomDepth.id + key);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
-                    }
                     StringWriter sw = new StringWriter();
                     e.printStackTrace(new PrintWriter(sw, true));
                     String strs = sw.toString();
@@ -144,7 +138,6 @@ public class RunhotcoinRep2Ok {
                         redisHelper.setParam(randomDepth.id + key, String.valueOf(System.currentTimeMillis()));
                     } else if (System.currentTimeMillis() - Long.valueOf(redisHelper.getParam(randomDepth.id + key)) > Constant.KEY_SNS_INTERFACE_ERROR_TIME) {
                         redisHelper.setParam(randomDepth.id + key + "_true", "true");
-                        commonUtil.sendSms(redisHelper.getRobot(randomDepth.id).getName() + "异常机器人停止");
                         redisHelper.removeParent(randomDepth.id+key);
                     }
                 }

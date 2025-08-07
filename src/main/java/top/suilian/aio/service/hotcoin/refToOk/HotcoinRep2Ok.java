@@ -1,4 +1,4 @@
-package top.suilian.aio.service.mxc.hotcoin.refToOk;
+package top.suilian.aio.service.hotcoin.refToOk;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -10,7 +10,7 @@ import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.refer.BianUtils;
 import top.suilian.aio.refer.DeepVo;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.mxc.hotcoin.HotCoinParentService;
+import top.suilian.aio.service.hotcoin.HotCoinParentService;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;

@@ -1,16 +1,16 @@
-package top.suilian.aio.service.mxc.hotcoin;
+package top.suilian.aio.service.hotcoin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
-import top.suilian.aio.service.mxc.hotcoin.RandomDepth.RunHotcoinDeep;
-import top.suilian.aio.service.mxc.hotcoin.RandomDepth.RunHotcoinRandomDepth;
-import top.suilian.aio.service.mxc.hotcoin.depthReferToZg.RunDepthHotcoinReferToZg;
-import top.suilian.aio.service.mxc.hotcoin.kline.RunHotCoinKline;
-import top.suilian.aio.service.mxc.hotcoin.klineReferToZg.RunKlineHotcoinReferToZg;
-import top.suilian.aio.service.mxc.hotcoin.newKline.RunNewHotcoinKline;
-import top.suilian.aio.service.mxc.hotcoin.refToOk.RunhotcoinRep2Ok;
-import top.suilian.aio.service.mxc.hotcoin.replenish.RunhotcoinReplenish;
+import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinDeep;
+import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
+import top.suilian.aio.service.hotcoin.klineReferToZg.RunKlineHotcoinReferToZg;
+import top.suilian.aio.service.hotcoin.refToOk.RunhotcoinRep2Ok;
+import top.suilian.aio.service.hotcoin.replenish.RunhotcoinReplenish;
+import top.suilian.aio.service.hotcoin.depthReferToZg.RunDepthHotcoinReferToZg;
+import top.suilian.aio.service.hotcoin.kline.RunHotCoinKline;
+import top.suilian.aio.service.hotcoin.newKline.RunNewHotcoinKline;
 
 @Component
 public class HotCoinService {

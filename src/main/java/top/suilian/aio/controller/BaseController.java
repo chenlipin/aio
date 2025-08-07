@@ -56,7 +56,7 @@ import top.suilian.aio.service.gwet.GwetService;
 import top.suilian.aio.service.happycoin.HappyCoinService;
 import top.suilian.aio.service.hkex.HkexService;
 import top.suilian.aio.service.hoo.HooService;
-import top.suilian.aio.service.mxc.hotcoin.HotCoinService;
+import top.suilian.aio.service.hotcoin.HotCoinService;
 import top.suilian.aio.service.huobi.HuobiService;
 import top.suilian.aio.service.hwanc.HwancService;
 import top.suilian.aio.service.idcm.IdcmService;

@@ -2,6 +2,7 @@ package top.suilian.aio.service.nivex0.newKline;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
@@ -40,7 +41,7 @@ public class NewNivexKline extends NivexParentService {
         super.httpUtil = httpUtil;
         super.redisHelper = redisHelper;
         super.id = id;
-        super.logger = getLogger(Constant.KEY_LOG_PATH_MXC_KLINE, id);
+        super.logger = getLogger(Constant.KEY_LOG_PATH_Nivex_kline, id);
     }
 
     private BigDecimal intervalAmount = BigDecimal.ZERO;
@@ -61,6 +62,9 @@ public class NewNivexKline extends NivexParentService {
     private int timeSlot = 1;
     private BigDecimal tradeRatio = new BigDecimal(5);
 
+    long ordersleeptime = System.currentTimeMillis();
+    private int eatOrderPd = 0;//吃单数量 没盘口吃单
+
 
     public void init() {
 
@@ -80,7 +84,7 @@ public class NewNivexKline extends NivexParentService {
             }
             logger.info("设置机器人交易规则结束");
 
-            String balance = getBalance();
+            getBalance();
 
             /**
              * 深度
@@ -234,7 +238,7 @@ public class NewNivexKline extends NivexParentService {
             try {
                 String resultJson = submitOrder(type == 1 ? 1 : 2, price, num);
                 JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
-
+                ordersleeptime = System.currentTimeMillis();
                 if (jsonObject != null && "200".equals(jsonObject.getString("status"))) {
 
                     String tradeId = jsonObject.getJSONObject("data").getString("order_id");
@@ -344,11 +348,34 @@ public class NewNivexKline extends NivexParentService {
             BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
 
+            long l = 1000 * 50 + (RandomUtils.nextInt(10) * 1000L);
+            logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
+            if (System.currentTimeMillis() - ordersleeptime > l ) {
+                if (eatOrderPd<100) {
+                    logger.info("开始补单子");
+                    boolean type = RandomUtils.nextBoolean();
+                    String resultJson = submitOrder(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
+                    eatOrderPd++;
+                    JSONObject jsonObject1 = judgeRes(resultJson, "code", "submitTrade");
+
+                    if (jsonObject1 != null && jsonObject1.getInt("status") == 200) {
+                        ordersleeptime = System.currentTimeMillis();
+                        logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
+                    }
+                }else {
+                    setWarmLog(id,2,"吃盘口单数达到上限(" + eatOrderPd + ")=吃单成交上限数(" + eatOrderPd + "),吃单上限，停止吃单","");
+                }
+            }
+
 
             BigDecimal intervalPrice = sellPri.subtract(buyPri);
 
             logger.info("robotId" + id + "----" + "最新买一：" + buyPri + "，最新卖一：" + sellPri);
             logger.info("robotId" + id + "----" + "当前买一卖一差值：" + intervalPrice);
+
+
+
+
 
             //判断盘口买卖检测开关是否开启
             if ("1".equals(exchange.get("isTradeCheck"))) {

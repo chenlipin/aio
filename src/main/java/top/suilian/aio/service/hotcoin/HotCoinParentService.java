@@ -1,4 +1,4 @@
-package top.suilian.aio.service.mxc.hotcoin;
+package top.suilian.aio.service.hotcoin;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -12,8 +12,8 @@ import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
-import top.suilian.aio.service.mxc.hotcoin.RandomDepth.RunHotcoinDeep;
-import top.suilian.aio.service.mxc.hotcoin.RandomDepth.RunHotcoinRandomDepth;
+import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinDeep;
+import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
 import top.suilian.aio.vo.getAllOrderPonse;
 
 import javax.crypto.Mac;
