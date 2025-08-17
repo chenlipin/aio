@@ -82,6 +82,9 @@ public class NewNivexKline extends NivexParentService {
             if (!setPrecision()) {
                 return;
             }
+
+            String dealList = getDealList();
+            System.out.println(dealList);
             logger.info("设置机器人交易规则结束");
 
             getBalance();

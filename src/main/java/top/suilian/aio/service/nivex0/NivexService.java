@@ -10,6 +10,9 @@ import top.suilian.aio.service.mxc.replenish.RunMxcReplenish;
 import top.suilian.aio.service.nine9ex.randomDepth.RunNine9exDepth;
 import top.suilian.aio.service.nivex0.RandomDepth.RunNivexRandomDepth;
 import top.suilian.aio.service.nivex0.newKline.RunNewNivexKline;
+import top.suilian.aio.service.nivex0.refToHot.RunNivexRep2Hot;
+import top.suilian.aio.service.nivex0.replenish.NivexReplenish;
+import top.suilian.aio.service.nivex0.replenish.RunNivexReplenish;
 
 @Component
 public class NivexService {
@@ -19,6 +22,12 @@ public class NivexService {
 
     @Autowired
     RunNivexRandomDepth randomDepth;
+
+    @Autowired
+    RunNivexReplenish replenish;
+
+    @Autowired
+    RunNivexRep2Hot nivexRep2Hot;
 
 
     /**
@@ -44,8 +53,12 @@ public class NivexService {
             case Constant.KEY_RANDOM_DEPTH:
                 randomDepth.init(id);
                 break;
+            case Constant.KEY_STRATEGY_REPLENISH:
+                replenish.init(id);
+                break;
 
             case 9:
+                nivexRep2Hot.init(id);
                 break;
         }
     }
@@ -72,8 +85,9 @@ public class NivexService {
 
                 break;
             case 9:
-
+                nivexRep2Hot.stopWork(id);
                 break;
+
         }
     }
 
@@ -97,10 +111,12 @@ public class NivexService {
                 runNewNivexKline.killWork(id);
                 break;
             case Constant.KEY_STRATEGY_REPLENISH:
+                replenish.killWork(id);
                 break;
             case 9:
-
+                nivexRep2Hot.killWork(id);
                 break;
+
         }
     }
 }
