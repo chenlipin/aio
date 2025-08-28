@@ -152,6 +152,9 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_Nivex_NEW=83; //Nivex
 
+
+    public static final int KEY_EXCHANGE_WEEX=84; //weex
+
     //endregion
 
 

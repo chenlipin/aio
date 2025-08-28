@@ -82,6 +82,7 @@ import top.suilian.aio.service.skiesex.SkiesexService;
 import top.suilian.aio.service.superex.SuperexService;
 import top.suilian.aio.service.test.TestService;
 import top.suilian.aio.service.wbfex.WbfexService;
+import top.suilian.aio.service.weex.WeexService;
 import top.suilian.aio.service.whitebit.WhitebitService;
 import top.suilian.aio.service.xoxoex.XoxoexService;
 import top.suilian.aio.service.xt.XtService;
@@ -294,6 +295,10 @@ public class BaseController {
 
     @Autowired
     NivexService nivexService;
+
+
+    @Autowired
+    WeexService weexService;
 
     //endregion
 
