@@ -7,6 +7,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
+import top.suilian.aio.Util.DateUtils;
 import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.RobotArgs;
@@ -24,7 +25,7 @@ import java.util.*;
 @Service
 public class NivexParentService extends BaseService implements RobotAction {
 
-        public String baseUrl = "https://testapi.oihqfjapi.online/";
+    public String baseUrl = "https://api.oihqfjapi.online/";
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
@@ -67,7 +68,22 @@ public class NivexParentService extends BaseService implements RobotAction {
 
     @Override
     public List<getAllOrderPonse> selectOrder() {
-        return null;
+        String dealList = getDealList();
+        JSONArray array = JSONObject.fromObject(dealList).getJSONObject("data").getJSONArray("list");
+
+        ArrayList<getAllOrderPonse> getAllOrderPonses = new ArrayList<>();
+
+        for (int i = 0; i < array.size(); i++) {
+            getAllOrderPonse getAllOrderPonse = new getAllOrderPonse();
+            JSONObject jsonObject = array.getJSONObject(i);
+            getAllOrderPonse.setOrderId(jsonObject.getString("order_id"));
+            getAllOrderPonse.setCreatedAt(jsonObject.getString("created_at"));
+            getAllOrderPonse.setPrice(jsonObject.getString("side")+"-"+jsonObject.getString("price"));
+            getAllOrderPonse.setStatus(0);
+            getAllOrderPonse.setAmount(jsonObject.getString("num"));
+            getAllOrderPonses.add(getAllOrderPonse);
+        }
+        return getAllOrderPonses;
     }
 
     @Override
@@ -119,20 +135,17 @@ public class NivexParentService extends BaseService implements RobotAction {
         String sort = toSort(params)+exchange.get("tpass");
         String sign = HMAC.MD5(sort);
         params.put("sign",sign);
-        logger.info("下单参数：" + params);
-
         String trade = null;
         try {
             trade = HttpUtil.post(baseUrl + "/Deal/dealLimitOrder", params);
             JSONObject jsonObject = JSONObject.fromObject(trade);
-            logger.info("submitOrder返回参数：" + trade);
             if(jsonObject==null||200!=jsonObject.getInt("status")){
                 setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         return trade;
     }
     public static int generate6DigitNumber() {
@@ -321,7 +334,7 @@ public class NivexParentService extends BaseService implements RobotAction {
      */
     public void setCancelOrder(JSONObject cancelRes, String res, String orderId, Integer type) {
         int cancelStatus = Constant.KEY_CANCEL_ORDER_STATUS_FAILED;
-        if (cancelRes != null && cancelRes.getInt("code") == 200) {
+        if (cancelRes != null && cancelRes.getInt("status") == 200) {
             cancelStatus = Constant.KEY_CANCEL_ORDER_STATUS_CANCELLED;
         }
         insertCancel(id, orderId, 1, type, Integer.parseInt(exchange.get("isMobileSwitch")), cancelStatus, res, Constant.KEY_EXCHANGE_WBFEX);
@@ -371,9 +384,6 @@ public class NivexParentService extends BaseService implements RobotAction {
         String sort = toSort(params)+exchange.get("tpass");
         String sign = HMAC.MD5(sort);
         params.put("sign",sign);
-        logger.info("查询没成交订单参数：" + params);
-
-
         String  trade = null;
         try {
             trade = HttpUtil.post(baseUrl + "/Property/getUserProperty", params);
@@ -436,8 +446,8 @@ public class NivexParentService extends BaseService implements RobotAction {
         String submitOrder = submitOrder(type, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
-            if ( "200".equals(jsonObject.getString("code"))) {
-                orderId  = jsonObject.getString("data");
+            if ( "200".equals(jsonObject.getString("status"))) {
+                orderId  = jsonObject.getJSONObject("data").getString("order_id");
                 hashMap.put("res", "true");
                 hashMap.put("orderId", orderId);
             } else {
@@ -471,14 +481,14 @@ public class NivexParentService extends BaseService implements RobotAction {
 
     @Override
     public String cancelTradeStr(String orderId) {
-//        String cancelTrade = cancelTrade(orderId);
-//        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(cancelTrade);
-//        if(jsonObject.getInteger("code")==200){
-//            return "true";
-//        }else {
-//            return "false";
-//        }
-        return "true";
+        String cancelTrade = cancelTrade(orderId);
+        com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(cancelTrade);
+        if(jsonObject.getInteger("status")==200){
+            return "true";
+        }else {
+            return "false";
+        }
+
     }
 
     public TradeEnum getTradeEnum(String status) {
@@ -516,7 +526,7 @@ public class NivexParentService extends BaseService implements RobotAction {
 
         String  trade = null;
         try {
-            trade = HttpUtil.post(baseUrl + "/Deal/getDealLis", params);
+            trade = HttpUtil.post(baseUrl + "/Deal/getDealList", params);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

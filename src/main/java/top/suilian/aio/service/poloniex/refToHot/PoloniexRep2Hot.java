@@ -8,14 +8,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
-import top.suilian.aio.refer.BianUtils;
 import top.suilian.aio.refer.DeepVo;
 import top.suilian.aio.refer.HotcoinUtils;
 import top.suilian.aio.service.*;
-import top.suilian.aio.service.hotcoin.HotCoinParentService;
 import top.suilian.aio.service.poloniex.PoloniexParentService;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;

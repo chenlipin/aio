@@ -3,10 +3,6 @@ package top.suilian.aio.service.zb;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
-import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
-import top.suilian.aio.service.hotcoin.depthReferToZg.RunDepthHotcoinReferToZg;
-import top.suilian.aio.service.hotcoin.kline.RunHotCoinKline;
-import top.suilian.aio.service.hotcoin.klineReferToZg.RunKlineHotcoinReferToZg;
 import top.suilian.aio.service.zb.newKline.RunNewZbKline;
 
 @Component

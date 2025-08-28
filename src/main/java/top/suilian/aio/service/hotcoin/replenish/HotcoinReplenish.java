@@ -1,11 +1,9 @@
 package top.suilian.aio.service.hotcoin.replenish;
 
 import com.alibaba.fastjson.JSON;
-import io.netty.util.internal.MathUtil;
 import lombok.Data;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.math.RandomUtils;
-import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.Util.RandomUtilsme;
 import top.suilian.aio.redis.RedisHelper;

@@ -253,6 +253,11 @@ public class Constant {
     public static final String KEY_LOG_PATH_HOTCOIN_DEPTH="hotcoin/depth";
 
 
+
+    public static final String KEY_LOG_PATH_Nivex_DEPTH="nivex/depth";
+    public static final String KEY_LOG_PATH_Nivex_kline="nivex/kline";
+
+
     public static final String KEY_LOG_PATH_BIAN_KLINE = "bian/kline";
 
     /**

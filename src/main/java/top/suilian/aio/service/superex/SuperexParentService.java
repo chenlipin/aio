@@ -1,6 +1,5 @@
 package top.suilian.aio.service.superex;
 
-import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.DateUtils;
-import top.suilian.aio.Util.HMAC;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;

@@ -3,15 +3,11 @@ package top.suilian.aio.service.hotcoin.newKline;
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.math.RandomUtils;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.stereotype.Service;
-import top.suilian.aio.BeanContext;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
 import top.suilian.aio.service.hotcoin.HotCoinParentService;
-import top.suilian.aio.service.hotcoin.kline.RunHotCoinKline;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
