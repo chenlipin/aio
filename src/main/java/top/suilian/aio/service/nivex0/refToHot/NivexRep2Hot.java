@@ -114,6 +114,9 @@ public class NivexRep2Hot extends NivexParentService {
                 String relishMin = exchange.get("relishMin");
                 String relishMax = exchange.get("relishMax");
                 String relishMark = exchange.get("relishMark");
+                String deepMin = exchange.get("deepMin");
+                String deepMax = exchange.get("deepMax");
+
 
 
                 List<DeepVo> history = HotcoinUtils.getHistory(relishMark);
@@ -160,7 +163,7 @@ public class NivexRep2Hot extends NivexParentService {
 
                 //同步深度
                 for (int i = 0, j = 0; i < okDepp.get("deepBuyList").size() && j < range; i++) {
-                    BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, 5);
+                    BigDecimal orderAmount = getOrderAmount(deepMin, deepMax, 5);
                     DeepVo deepBuy = okDepp.get("deepBuyList").get(i);
                     Order order = new Order();
                     order.setType(1);
@@ -176,7 +179,7 @@ public class NivexRep2Hot extends NivexParentService {
                 }
 
                 for (int i = 0, j = 0; i < okDepp.get("deepSellList").size() && j < range; i++) {
-                    BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, 5);
+                    BigDecimal orderAmount = getOrderAmount(deepMin, deepMax, 5);
                     DeepVo deepBuy = okDepp.get("deepSellList").get(i);
                     Order order = new Order();
                     order.setType(2);
