@@ -4,13 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="aa">
+    <list default="true" id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="weex">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/Constant.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/BaseController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/controller/ServiceController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +20,9 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitToolBoxStore">
+    <option name="projectConfigVersion" value="5" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -36,26 +34,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/aio/src/main/java/top/suilian/aio/arbisooNew&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;spring.configuration.checksum&quot;: &quot;144066ff0da09361c9fe2b8fd900c61f&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "D:/桌面/rt_wd/java/aio/src/main/java/top/suilian/aio/service/weex",
+    "nodejs_package_manager_path": "npm",
+    "spring.configuration.checksum": "144066ff0da09361c9fe2b8fd900c61f",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\aio\src\main\java\top\suilian\aio\arbisooNew" />
+      <recent name="D:\桌面\rt_wd\java\aio\src\main\java\top\suilian\aio\service\weex" />
       <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\superex" />
       <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\coinw" />
       <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\coinw\randomDepet" />
@@ -143,9 +142,8 @@
       <workItem from="1728471851439" duration="14705000" />
       <workItem from="1729087094469" duration="2746000" />
       <workItem from="1732194442938" duration="14281000" />
-      <workItem from="1737968530820" duration="6451000" />
-      <workItem from="1738327813551" duration="4503000" />
-      <workItem from="1738674205268" duration="431000" />
+      <workItem from="1756273019907" duration="563000" />
+      <workItem from="1756371004995" duration="1952000" />
     </task>
     <task id="LOCAL-00001" summary="aa">
       <created>1713893670498</created>
@@ -210,7 +208,14 @@
       <option name="project" value="LOCAL" />
       <updated>1728491139418</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="weex">
+      <created>1756377259966</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1756377259966</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -232,19 +237,7 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="FILTERS">
-                <map>
-                  <entry key="branch">
-                    <value>
-                      <list>
-                        <option value="master" />
-                      </list>
-                    </value>
-                  </entry>
-                </map>
-              </option>
-            </State>
+            <State />
           </value>
         </entry>
       </map>
@@ -255,7 +248,8 @@
     <MESSAGE value="huobi" />
     <MESSAGE value="gate" />
     <MESSAGE value="coinw" />
-    <option name="LAST_COMMIT_MESSAGE" value="coinw" />
+    <MESSAGE value="weex" />
+    <option name="LAST_COMMIT_MESSAGE" value="weex" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -504,21 +498,6 @@
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/superex/newKline/NewSuperexKline.java</url>
           <line>101</line>
           <option name="timeStamp" value="176" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/arbisooNew/ArbisooNewParentService.java</url>
-          <line>171</line>
-          <option name="timeStamp" value="185" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/arbisooNew/newKline/ArbisooNewNewKline.java</url>
-          <line>424</line>
-          <option name="timeStamp" value="186" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/arbisooNew/newKline/ArbisooNewNewKline.java</url>
-          <line>108</line>
-          <option name="timeStamp" value="188" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
