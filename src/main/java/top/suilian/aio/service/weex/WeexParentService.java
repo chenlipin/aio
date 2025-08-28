@@ -108,7 +108,7 @@ public class WeexParentService extends BaseService implements RobotAction {
         BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
         BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
         long timeMillis = System.currentTimeMillis();
-        String strSign =timeMillis+ "POST" +"/api/v2/trade/orders"
+        String strSign =timeMillis+ "POST" +"/api/v2/trade/orders";
 
         Map<String, Object> reqparam = new TreeMap<String, Object>();
         reqparam.put("symbol", exchange.get("market"));
