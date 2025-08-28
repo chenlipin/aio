@@ -437,10 +437,6 @@ public class HMAC {
 
 
 
-    public static void main(String[] args) {
-        String s = HMAC.md5_HMAC("accesskey=ce2a18e0-dshs-4c44-4515-9aca67dd706e&acctType=0&amount=0.001&currency=zb_qc&method=order&price=1.0&tradeType=1",
-                "86429c69799d3d6ac5da5c2c514baa874d75a4ba");
-        System.out.println(s);
-    }
+
 
 }
