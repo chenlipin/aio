@@ -381,7 +381,7 @@ public class HttpUtil {
     }
 
 
-    public static String post(String url, Map<String, String> params, HashMap<String, String> headers) throws UnsupportedEncodingException {
+    public static String post(String url, Map<String, String> params, Map<String, String> headers) throws UnsupportedEncodingException {
         List<NameValuePair> list = new LinkedList<>();
         for (String key : params.keySet()) {
             BasicNameValuePair param1 = new BasicNameValuePair(key, String.valueOf(params.get(key)));

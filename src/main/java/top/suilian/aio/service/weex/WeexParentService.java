@@ -26,7 +26,7 @@ import java.util.*;
 @Service
 @DependsOn("beanContext")
 public class WeexParentService extends BaseService implements RobotAction {
-    public String baseUrl = "https://api.huobi.pro";
+    public String baseUrl = "https://api-spot.weex.com";
     public String host = "";
     private static final DateTimeFormatter DT_FORMAT = DateTimeFormatter
             .ofPattern("uuuu-MM-dd'T'HH:mm:ss");
@@ -39,17 +39,17 @@ public class WeexParentService extends BaseService implements RobotAction {
         ArrayList<getAllOrderPonse> getAllOrderPonses = new ArrayList<>();
         String trade = getTrade();
         JSONObject jsonObject1 = JSONObject.fromObject(trade);
-        JSONArray array = jsonObject1.getJSONArray("data");
+        JSONArray array = jsonObject1.getJSONObject("data").getJSONArray("orderInfoResultList");
 
         for (int i = 0; i < array.size(); i++) {
             getAllOrderPonse getAllOrderPonse = new getAllOrderPonse();
             JSONObject jsonObject = array.getJSONObject(i);
 
-            getAllOrderPonse.setOrderId(jsonObject.getString("id"));
-            getAllOrderPonse.setCreatedAt(DateUtils.convertTimestampToString(jsonObject.getLong("created-at")));
-            getAllOrderPonse.setPrice(jsonObject.getString("type").split("-")[0]+"-"+new BigDecimal(jsonObject.getString("price")).stripTrailingZeros().toPlainString());
+            getAllOrderPonse.setOrderId(jsonObject.getString("orderId"));
+            getAllOrderPonse.setCreatedAt(DateUtils.convertTimestampToString(jsonObject.getLong("cTime")));
+            getAllOrderPonse.setPrice(jsonObject.getString("side")+"-"+new BigDecimal(jsonObject.getString("price")).stripTrailingZeros().toPlainString());
             getAllOrderPonse.setStatus(0);
-            getAllOrderPonse.setAmount(new BigDecimal(jsonObject.getString("amount")).stripTrailingZeros().toPlainString());
+            getAllOrderPonse.setAmount(new BigDecimal(jsonObject.getString("quantity")).stripTrailingZeros().toPlainString());
             getAllOrderPonses.add(getAllOrderPonse);
         }
         return getAllOrderPonses;
@@ -110,35 +110,32 @@ public class WeexParentService extends BaseService implements RobotAction {
         long timeMillis = System.currentTimeMillis();
         String strSign =timeMillis+ "POST" +"/api/v2/trade/orders";
 
-        Map<String, Object> reqparam = new TreeMap<String, Object>();
+        Map<String, String> reqparam = new TreeMap<String, String>();
         reqparam.put("symbol", exchange.get("market"));
         reqparam.put("side",type==1? "buy":"sell");
         reqparam.put("orderType","limit");
         reqparam.put("force","normal");
-        reqparam.put("price", price1);
-        reqparam.put("quantity",num);
+        reqparam.put("price", price1+"");
+        reqparam.put("quantity",num+"");
         reqparam.put("clientOrderId","sl"+timeMillis);
+        strSign=strSign+JSON.toJSONString(reqparam);
+        String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
 
         Map<String, String> params = new TreeMap<String, String>();
-        params.put("AccessKeyId",exchange.get("apikey"));
-        params.put("SignatureMethod","HmacSHA256");
-        params.put("SignatureVersion","2");
-        params.put("Timestamp",gmtNow());
-        String splicingStr = splicingStr(params);
-        strSign=strSign+splicingStr;
+        params.put("ACCESS-KEY",exchange.get("apikey"));
+        params.put("ACCESS-TIMESTAMP",timeMillis+"");
+        params.put("ACCESS-PASSPHRASE", exchange.get("memo"));
+        params.put("Content-Type", "application/json");
+        params.put("ACCESS-SIGN", sign);
+        params.put("locale", "zh-CN");
 
-
-
-
-        String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
-        sign = urlEncode(sign);
         String trade = null;
         try {
-            trade = HttpUtil.postes("https://api.huobi.pro/v1/order/orders/place?" + splicingStr + "&Signature=" + sign,reqparam);
+            trade = HttpUtil.post(baseUrl + "/api/v2/trade/orders", params, reqparam);
             JSONObject jsonObject = JSONObject.fromObject(trade);
             setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
-            if(!"ok".equals(jsonObject.getString("status"))){
-                setWarmLog(id,3,"API接口错误",jsonObject.getString("err-msg"));
+            if(!"00000".equals(jsonObject.getString("code"))){
+                setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
             }
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
@@ -175,21 +172,28 @@ public class WeexParentService extends BaseService implements RobotAction {
 
 
     public String getBalance() throws UnsupportedEncodingException {
-        String strSign = "GET" + "\n" +
-                "api.huobi.pro" + "\n" +
-                "/v1/account/accounts/"+exchange.get("account-id")+"/balance" + "\n";
-        Map<String, String> params = new TreeMap<String, String>();
-        params.put("AccessKeyId",exchange.get("apikey"));
-        params.put("SignatureMethod","HmacSHA256");
-        params.put("SignatureVersion","2");
-        params.put("Timestamp",gmtNow());
-        String splicingStr = splicingStr(params);
-        strSign=strSign+splicingStr;
+        long timeMillis = System.currentTimeMillis();
+        String strSign =timeMillis+ "GET" +"/api/v2/account/assets";
+
         String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
-        sign = urlEncode(sign);
+
+        Map<String, String> params = new TreeMap<String, String>();
+        params.put("ACCESS-KEY",exchange.get("apikey"));
+        params.put("ACCESS-TIMESTAMP",timeMillis+"");
+        params.put("ACCESS-PASSPHRASE", exchange.get("memo"));
+        params.put("Content-Type", "application/json");
+        params.put("ACCESS-SIGN", sign);
+        params.put("locale", "zh-CN");
         String trade = null;
-        trade = HttpUtil.get("https://api.huobi.pro/v1/account/accounts/"+exchange.get("account-id")+"/balance?" + splicingStr + "&Signature=" + sign);
-        JSONObject jsonObject = JSONObject.fromObject(trade);
+        try {
+            trade = HttpUtil.getAddHead(baseUrl + "/api/v2/account/assets", params);
+            JSONObject jsonObject = JSONObject.fromObject(trade);
+            if(!"00000".equals(jsonObject.getString("code"))){
+                setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return trade;
     }
 
@@ -229,23 +233,34 @@ public class WeexParentService extends BaseService implements RobotAction {
 
 
     public String selectOrder(String orderId) throws UnsupportedEncodingException {
-            String strSign = "GET" + "\n" +
-                    "api.huobi.pro" + "\n" +
-                    "/v1/order/orders/"+ orderId+ "\n";
 
-            Map<String, String> params = new TreeMap<String, String>();
-            params.put("AccessKeyId",exchange.get("apikey"));
-            params.put("SignatureMethod","HmacSHA256");
-            params.put("SignatureVersion","2");
-            params.put("Timestamp",gmtNow());
-            String splicingStr = splicingStr(params);
-            strSign=strSign+splicingStr;
-            String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
-            sign = urlEncode(sign);
-            String trade = null;
-            trade = HttpUtil.get("https://api.huobi.pro/v1/order/orders/"+orderId+"?" + splicingStr + "&Signature=" + sign);
+        long timeMillis = System.currentTimeMillis();
+        String strSign =timeMillis+ "POST" +"/api/v2/trade/orderInfo";
+
+        Map<String, String> reqparam = new TreeMap<String, String>();
+        reqparam.put("orderId", orderId);
+        strSign=strSign+JSON.toJSONString(reqparam);
+        String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
+
+        Map<String, String> params = new TreeMap<String, String>();
+        params.put("ACCESS-KEY",exchange.get("apikey"));
+        params.put("ACCESS-TIMESTAMP",timeMillis+"");
+        params.put("ACCESS-PASSPHRASE", exchange.get("memo"));
+        params.put("Content-Type", "application/json");
+        params.put("ACCESS-SIGN", sign);
+        params.put("locale", "zh-CN");
+        String trade = null;
+        try {
+            trade = HttpUtil.post(baseUrl + "/api/v2/trade/orderInfo", params, reqparam);
             JSONObject jsonObject = JSONObject.fromObject(trade);
-            return trade;
+            setTradeLog(id, "查询订单[orderId：" + orderId + "]=>" + trade, 0);
+            if(!"00000".equals(jsonObject.getString("code"))){
+                setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        return trade;
         }
 
 
@@ -262,30 +277,29 @@ public class WeexParentService extends BaseService implements RobotAction {
      */
     public String cancelTrade(String orderId)  {
 
-        String strSign = "POST" + "\n" +
-                "api.huobi.pro" + "\n" +
-                "/v1/order/orders/"+orderId+"/submitcancel" + "\n";
-        Map<String, String> params = new TreeMap<String, String>();
-        params.put("AccessKeyId",exchange.get("apikey"));
-        params.put("SignatureMethod","HmacSHA256");
-        params.put("SignatureVersion","2");
-        params.put("Timestamp",gmtNow());
-        params.put("symbol",exchange.get("market"));
+        long timeMillis = System.currentTimeMillis();
+        String strSign =timeMillis+ "POST" +"/api/v2/trade/cancel-order";
 
-        String splicingStr = splicingStr(params);
-        strSign=strSign+splicingStr;
-        System.out.println(strSign);
-        Map<String, Object> reqparam = new TreeMap<String, Object>();
+        Map<String, String> reqparam = new TreeMap<String, String>();
+        reqparam.put("orderId", orderId);
         reqparam.put("symbol", exchange.get("market"));
-
+        strSign=strSign+JSON.toJSONString(reqparam);
         String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
-        sign = urlEncode(sign);
+
+        Map<String, String> params = new TreeMap<String, String>();
+        params.put("ACCESS-KEY",exchange.get("apikey"));
+        params.put("ACCESS-TIMESTAMP",timeMillis+"");
+        params.put("ACCESS-PASSPHRASE", exchange.get("memo"));
+        params.put("Content-Type", "application/json");
+        params.put("ACCESS-SIGN", sign);
+        params.put("locale", "zh-CN");
         String trade = null;
         try {
-            trade = HttpUtil.postes("https://api.huobi.pro/v1/order/orders/"+orderId+"/submitcancel?" + splicingStr + "&Signature=" + sign,reqparam);
+            trade = HttpUtil.post(baseUrl + "/api/v2/trade/cancel-order", params, reqparam);
             JSONObject jsonObject = JSONObject.fromObject(trade);
-            if(!"ok".equals(jsonObject.getString("status"))){
-                setWarmLog(id,3,"API接口错误",jsonObject.getString("err-msg"));
+           logger.info("撤销订单::"+orderId+",cancelTrade返回参数：" + trade);
+            if(!"00000".equals(jsonObject.getString("code"))){
+                setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
             }
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
@@ -296,49 +310,36 @@ public class WeexParentService extends BaseService implements RobotAction {
 
     /**
      * 获取所有尾单
-     *
-     {
-     "status": "ok",
-     "data": [
-     {
-     "symbol": "trxusdt",
-     "source": "api",
-     "client-order-id": "",
-     "amount": "100.000000000000000000",
-     "ice-amount": "0.0",
-     "created-at": 1723731367412,
-     "price": "0.120000000000000000",
-     "account-id": 62914536,
-     "filled-amount": "0.0",
-     "filled-cash-amount": "0.0",
-     "filled-fees": "0.0",
-     "id": 1133371694744493,
-     "state": "submitted",
-     "type": "buy-limit"
-     }
-     ]
-     }
      * @return
      */
     public String getTrade() {
 
-        String strSign = "GET" + "\n" +
-                "api.huobi.pro" + "\n" +
-                "/v1/order/openOrders"+"\n";
+        long timeMillis = System.currentTimeMillis();
+        String strSign =timeMillis+ "POST" +"/api/v2/trade/open-orders";
+
+        Map<String, String> reqparam = new TreeMap<String, String>();
+        reqparam.put("symbol", exchange.get("market"));
+        strSign=strSign+JSON.toJSONString(reqparam);
+        String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
 
         Map<String, String> params = new TreeMap<String, String>();
-        params.put("AccessKeyId",exchange.get("apikey"));
-        params.put("SignatureMethod","HmacSHA256");
-        params.put("SignatureVersion","2");
-        params.put("Timestamp",gmtNow());
-        params.put("account-id",exchange.get("account-id"));
-        params.put("symbol",exchange.get("market"));
-        String splicingStr = splicingStr(params);
-        strSign=strSign+splicingStr;
-        String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
-        sign = urlEncode(sign);
+        params.put("ACCESS-KEY",exchange.get("apikey"));
+        params.put("ACCESS-TIMESTAMP",timeMillis+"");
+        params.put("ACCESS-PASSPHRASE", exchange.get("memo"));
+        params.put("Content-Type", "application/json");
+        params.put("ACCESS-SIGN", sign);
+        params.put("locale", "zh-CN");
         String trade = null;
-        trade = HttpUtil.get("https://api.huobi.pro/v1/order/openOrders?" + splicingStr + "&Signature=" + sign);
+        try {
+            trade = HttpUtil.post(baseUrl + "/api/v2/trade/open-orders", params, reqparam);
+            JSONObject jsonObject = JSONObject.fromObject(trade);
+            logger.info("获取未成交列表返回参数：" + trade);
+            if(!"00000".equals(jsonObject.getString("code"))){
+                setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
         return trade;
     }
 
@@ -365,7 +366,7 @@ public class WeexParentService extends BaseService implements RobotAction {
         if (balance == null || overdue) {
             String balance1 = getBalance();
             JSONObject jsonObject1 = JSONObject.fromObject(balance1);
-            JSONArray jsonArray1 = jsonObject1.getJSONObject("data").getJSONArray("list");
+            JSONArray jsonArray1 = jsonObject1.getJSONArray("data");
 
             String firstBalance = null;
             String lastBalance = null;
@@ -375,28 +376,14 @@ public class WeexParentService extends BaseService implements RobotAction {
             List<String> coinArr = Arrays.asList(coins.split("_"));
             for (int i = 0; i < jsonArray1.size(); i++) {
                 JSONObject jsonObject = jsonArray1.getJSONObject(i);
-                if (jsonObject.getString("currency").equals(coinArr.get(0))) {
-                    if (jsonObject.getString("type").equals("frozen")) {
-                        firstBalance1 = jsonObject.getString("balance");
-                    }
-                    if (jsonObject.getString("type").equals("trade")) {
-                        firstBalance = jsonObject.getString("balance");
-                    }
-                } else if (jsonObject.getString("currency").equals(coinArr.get(1))) {
-                    if (jsonObject.getString("type").equals("frozen")) {
-                        lastBalance1 = jsonObject.getString("balance");
-                    }
-                    if (jsonObject.getString("type").equals("trade")) {
-                        lastBalance = jsonObject.getString("balance");
-                        if (Double.parseDouble(lastBalance) < 10) {
-                            setWarmLog(id, 0, "余额不足", coinArr.get(1).toUpperCase() + "余额为:" + lastBalance);
-                        }
-
-                    }
-
+                if (jsonObject.getString("coinName").equals(coinArr.get(0))) {
+                        firstBalance1 = jsonObject.getString("available");
+                        firstBalance = jsonObject.getString("frozen");
+                } else if (jsonObject.getString("coinName").equals(coinArr.get(1))) {
+                        lastBalance1 = jsonObject.getString("available");
+                        lastBalance = jsonObject.getString("frozen");
                 }
             }
-            
 
             HashMap<String, String> balances = new HashMap<>();
 
@@ -476,12 +463,12 @@ public class WeexParentService extends BaseService implements RobotAction {
         String submitOrder = submitOrder(type, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
-            if ("ok".equals(jsonObject.getString("status"))) {
-                orderId = jsonObject.getString("data");
+            if ("00000".equals(jsonObject.getString("code"))) {
+                orderId = jsonObject.getJSONObject("data").getString("orderId");
                 hashMap.put("res", "true");
                 hashMap.put("orderId", orderId);
             } else {
-                String msg = jsonObject.getString("err-msg");
+                String msg = jsonObject.getString("msg");
                 hashMap.put("res", "false");
                 hashMap.put("orderId", msg);
             }
@@ -512,8 +499,10 @@ public class WeexParentService extends BaseService implements RobotAction {
         }
         if (StringUtils.isNotEmpty(cancelTrade)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(cancelTrade);
-            if ("ok".equals(jsonObject.getString("status"))) {
+            if ("00000".equals(jsonObject.getString("code"))) {
                 return "true";
+            }else {
+                return jsonObject.getString("msg");
             }
         }
         return "false";
