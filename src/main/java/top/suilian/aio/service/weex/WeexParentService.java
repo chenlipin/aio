@@ -26,7 +26,7 @@ import java.util.*;
 @Service
 @DependsOn("beanContext")
 public class WeexParentService extends BaseService implements RobotAction {
-    public String baseUrl = "https://api-spot.weex.com";
+    public String baseUrl = "https://api-spot.weex.com/";
     public String host = "";
     private static final DateTimeFormatter DT_FORMAT = DateTimeFormatter
             .ofPattern("uuuu-MM-dd'T'HH:mm:ss");
@@ -39,6 +39,9 @@ public class WeexParentService extends BaseService implements RobotAction {
         ArrayList<getAllOrderPonse> getAllOrderPonses = new ArrayList<>();
         String trade = getTrade();
         JSONObject jsonObject1 = JSONObject.fromObject(trade);
+        if (jsonObject1.getJSONObject("data")==null){
+            return null;
+        }
         JSONArray array = jsonObject1.getJSONObject("data").getJSONArray("orderInfoResultList");
 
         for (int i = 0; i < array.size(); i++) {
@@ -101,7 +104,7 @@ public class WeexParentService extends BaseService implements RobotAction {
      * @param type
      * @param price
      * @param amount
-     * @return {"status":"ok","data":"1133371409337541"}
+     * @return {"code":"00000","msg":"success","requestTime":1756477816771,"data":{"orderId":656315532781290072,"clientOrderId":"sl1756477811614","isSuccess":null,"errorMsg":null,"errorCode":null}}
      */
     protected String submitOrder(int type, BigDecimal price, BigDecimal amount) {
         logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + (type==1?"买":"卖") + "，price(价格)：" + price + "，amount(数量)：" + amount);
@@ -121,17 +124,17 @@ public class WeexParentService extends BaseService implements RobotAction {
         strSign=strSign+JSON.toJSONString(reqparam);
         String sign = HMAC.sha256_HMACAndBase(strSign, exchange.get("tpass"));
 
-        Map<String, String> params = new TreeMap<String, String>();
-        params.put("ACCESS-KEY",exchange.get("apikey"));
-        params.put("ACCESS-TIMESTAMP",timeMillis+"");
-        params.put("ACCESS-PASSPHRASE", exchange.get("memo"));
-        params.put("Content-Type", "application/json");
-        params.put("ACCESS-SIGN", sign);
-        params.put("locale", "zh-CN");
+        Map<String, String> header = new TreeMap<String, String>();
+        header.put("ACCESS-KEY",exchange.get("apikey"));
+        header.put("ACCESS-TIMESTAMP",timeMillis+"");
+        header.put("ACCESS-PASSPHRASE", exchange.get("memo"));
+        header.put("Content-Type", "application/json");
+        header.put("ACCESS-SIGN", sign);
+        header.put("locale", "zh-CN");
 
         String trade = null;
         try {
-            trade = HttpUtil.post(baseUrl + "/api/v2/trade/orders", params, reqparam);
+            trade = HttpUtil.postByPackcoin(baseUrl + "/api/v2/trade/orders",  reqparam,header);
             JSONObject jsonObject = JSONObject.fromObject(trade);
             setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
             if(!"00000".equals(jsonObject.getString("code"))){
@@ -203,32 +206,10 @@ public class WeexParentService extends BaseService implements RobotAction {
      * @param orderId
      * @return
      * @throws
-     * {
-     *     "status": "ok",
-     *     "data": {
-     *         "id": 1133371409337541,
-     *         "symbol": "trxusdt",
-     *         "account-id": 62914536,
-     *         "client-order-id": "",
-     *         "amount": "100",
-     *         "market-amount": "0",
-     *         "ice-amount": "0",
-     *         "is-ice": false,
-     *         "price": "0.12",
-     *         "created-at": 1723729310315,
-     *         "type": "buy-limit",
-     *         "field-amount": "0",
-     *         "field-cash-amount": "0",
-     *         "field-fees": "0",
-     *         "finished-at": 0,
-     *         "updated-at": 1723729310315,
-     *         "source": "spot-api",
-     *         "state": "submitted",
-     *         "canceled-at": 0,
-     *         "canceled-source": null,
-     *         "canceled-source-desc": null
-     *     }
-     * }
+     *{"code":"00000","msg":"success","requestTime":1756478364835,"data":[{"accountId":"643170352205136472","symbol":"TRXUSDT_SPBL",
+     * "orderId":"656315532781290072","clientOrderId":"sl1756477811614","price":"0.1000","quantity":"100.00000","orderType":"limit",
+     * "side":"buy","status":"open","latestFillPrice":"0","maxFillPrice":"0",
+     * "minFillPrice":"0","fillQuantity":"0","fillTotalAmount":"0","cTime":"1756477816768","uTime":"1756477816782"}]}
      */
 
 
@@ -251,7 +232,7 @@ public class WeexParentService extends BaseService implements RobotAction {
         params.put("locale", "zh-CN");
         String trade = null;
         try {
-            trade = HttpUtil.post(baseUrl + "/api/v2/trade/orderInfo", params, reqparam);
+            trade = HttpUtil.postByPackcoin(baseUrl + "/api/v2/trade/orderInfo",  reqparam,params);
             JSONObject jsonObject = JSONObject.fromObject(trade);
             setTradeLog(id, "查询订单[orderId：" + orderId + "]=>" + trade, 0);
             if(!"00000".equals(jsonObject.getString("code"))){
@@ -295,7 +276,7 @@ public class WeexParentService extends BaseService implements RobotAction {
         params.put("locale", "zh-CN");
         String trade = null;
         try {
-            trade = HttpUtil.post(baseUrl + "/api/v2/trade/cancel-order", params, reqparam);
+            trade = HttpUtil.postByPackcoin(baseUrl + "/api/v2/trade/cancel-order", reqparam,params);
             JSONObject jsonObject = JSONObject.fromObject(trade);
            logger.info("撤销订单::"+orderId+",cancelTrade返回参数：" + trade);
             if(!"00000".equals(jsonObject.getString("code"))){
@@ -331,7 +312,7 @@ public class WeexParentService extends BaseService implements RobotAction {
         params.put("locale", "zh-CN");
         String trade = null;
         try {
-            trade = HttpUtil.post(baseUrl + "/api/v2/trade/open-orders", params, reqparam);
+            trade = HttpUtil.postByPackcoin(baseUrl + "/api/v2/trade/open-orders", reqparam,params);
             JSONObject jsonObject = JSONObject.fromObject(trade);
             logger.info("获取未成交列表返回参数：" + trade);
             if(!"00000".equals(jsonObject.getString("code"))){
@@ -377,11 +358,11 @@ public class WeexParentService extends BaseService implements RobotAction {
             for (int i = 0; i < jsonArray1.size(); i++) {
                 JSONObject jsonObject = jsonArray1.getJSONObject(i);
                 if (jsonObject.getString("coinName").equals(coinArr.get(0))) {
-                        firstBalance1 = jsonObject.getString("available");
-                        firstBalance = jsonObject.getString("frozen");
+                        firstBalance = jsonObject.getString("available");
+                        firstBalance1 = jsonObject.getString("frozen");
                 } else if (jsonObject.getString("coinName").equals(coinArr.get(1))) {
-                        lastBalance1 = jsonObject.getString("available");
-                        lastBalance = jsonObject.getString("frozen");
+                        lastBalance = jsonObject.getString("available");
+                        lastBalance1 = jsonObject.getString("frozen");
                 }
             }
 

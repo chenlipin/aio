@@ -45,7 +45,7 @@ public class NewWeexKline extends WeexParentService {
             super.httpUtil = httpUtil;
             super.redisHelper = redisHelper;
             super.id = id;
-            super.logger = getLogger("huobi/kline", id);
+            super.logger = getLogger("weex/kline", id);
         }
 
         private BigDecimal intervalAmount = BigDecimal.ZERO;
@@ -87,6 +87,9 @@ public class NewWeexKline extends WeexParentService {
                 logger.info("设置机器人参数结束");
                 logger.info("设置机器人交易规则开始");
                 logger.info("设置机器人交易规则结束");
+                String balance = getBalance();
+                System.out.println(balance);
+
                 //判断走K线的方式
                 if ("1".equals(exchange.get("sheetForm"))) {
                     //新版本
@@ -110,14 +113,14 @@ public class NewWeexKline extends WeexParentService {
             logger.info("当前时间段单量百分比：" + transactionRatio);
 
             if (runTime < timeSlot) {
-                String trades = httpUtil.get(baseUrl +"/market/depth?type=step0&depth=5&symbol="+exchange.get("market"));
+                String trades = httpUtil.get(baseUrl +"/api/v2/market/depth?symbol="+exchange.get("market")+"&type=step0&limit=15");
 
 
                 //获取深度 判断平台撮合是否成功
                 com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-                if (tradesObj != null && tradesObj.getString("status").equals("ok") ) {
-                    com.alibaba.fastjson.JSONObject tick = tradesObj.getJSONObject("tick");
+                if (tradesObj != null && tradesObj.getString("code").equals("00000") ) {
+                    com.alibaba.fastjson.JSONObject tick = tradesObj.getJSONObject("data");
 
                     List<List<String>> buyPrices = (List<List<String>>) tick.get("bids");
 
@@ -233,14 +236,14 @@ public class NewWeexKline extends WeexParentService {
                     String resultJson = submitOrder(type, price, num);
                     JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
-                    if (jsonObject != null && jsonObject.getString("status").equals("ok")) {
+                    if (jsonObject != null && jsonObject.getString("code").equals("00000")) {
 
-                        orderIdOne = jsonObject.getString("data");
+                        orderIdOne = jsonObject.getJSONObject("data").getString("orderId");
                         String resultJson1 = submitOrder(type == 1 ? 2 : 1, price, num);
                         JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
-                        if (jsonObject1 != null && jsonObject1.getString("status").equals("ok")) {
-                            orderIdTwo = jsonObject1.getString("data");
+                        if (jsonObject1 != null && jsonObject1.getString("code").equals("00000")) {
+                            orderIdTwo = jsonObject1.getJSONObject("data").getString("orderId");
                             removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
                             ordersleeptime = System.currentTimeMillis();
 
@@ -321,14 +324,14 @@ public class NewWeexKline extends WeexParentService {
         public BigDecimal getRandomPrice() throws UnsupportedEncodingException {
             BigDecimal price = null;
 
-            String trades = httpUtil.get(baseUrl +"/market/depth?type=step0&depth=5&symbol="+exchange.get("market"));
+            String trades = httpUtil.get(baseUrl +"/api/v2/market/depth?symbol="+exchange.get("market")+"&type=step0&limit=15");
 
 
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-            if (tradesObj != null && tradesObj.getString("status").equals("ok") ) {
-                com.alibaba.fastjson.JSONObject tick = tradesObj.getJSONObject("tick");
+            if (tradesObj != null && tradesObj.getString("code").equals("00000") ) {
+                com.alibaba.fastjson.JSONObject tick = tradesObj.getJSONObject("data");
 
                 List<List<String>> buyPrices = (List<List<String>>) tick.get("bids");
 
@@ -337,16 +340,16 @@ public class NewWeexKline extends WeexParentService {
                 BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
                 BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
-                long l = 1000 * 60 * 2 + (RandomUtils.nextInt(10) * 1000L);
+                long l = 1000 * 50 * 1 + (RandomUtils.nextInt(10) * 1000L);
                 logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
                 if (System.currentTimeMillis() - ordersleeptime > l) {
                     logger.info("开始补单子");
                     boolean type = RandomUtils.nextBoolean();
                     String resultJson = submitOrder(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
                     JSONObject jsonObject1 = judgeRes(resultJson, "code", "submitTrade");
-
-                    if (jsonObject1 != null && jsonObject1.getString("status").equals("ok")) {
-                        orderIdBu = jsonObject1.getString("data");
+                    ordersleeptime = System.currentTimeMillis();
+                    if (jsonObject1 != null && jsonObject1.getString("code").equals("00000")) {
+                        orderIdBu = jsonObject1.getJSONObject("data").getString("orderId");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
                         ordersleeptime = System.currentTimeMillis();
                         logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
@@ -483,7 +486,7 @@ public class NewWeexKline extends WeexParentService {
                 JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
                 if (jsonObject != null ) {
 
-                    String status = jsonObject.getJSONObject("data").getString("state");
+                    String status = jsonObject.getJSONArray("data").getJSONObject(0).getString("status");
                     if ("filled".equals(status) || "canceled".equals(status)) {
                         setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                     } else {

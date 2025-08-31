@@ -820,6 +820,9 @@ public class ServiceController extends BaseController {
                 case Constant.KEY_EXCHANGE_ARBISOO_NEW:
                     arbisooNewService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
+                case Constant.KEY_EXCHANGE_Nivex_NEW:
+                    nivexService.kill(operationRequest.getId(), operationRequest.getType());
+                    break;
                 case Constant.KEY_EXCHANGE_WEEX:
                     weexService.kill(operationRequest.getId(), operationRequest.getType());
                     break;
