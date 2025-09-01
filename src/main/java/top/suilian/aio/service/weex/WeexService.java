@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.service.huobi.refToHot.RunHuobiRep2Hot;
 import top.suilian.aio.service.weex.newKline.RunNewWeexKline;
+import top.suilian.aio.service.weex.replenish.RunWeexReplenish;
 
 @Component
 public class WeexService {
@@ -12,7 +13,7 @@ public class WeexService {
     RunNewWeexKline runNewWeexKline;
 
     @Autowired
-    RunHuobiRep2Hot runHuobiRep2Hot;
+    RunWeexReplenish replenish;
 
 
     /**
@@ -31,8 +32,8 @@ public class WeexService {
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewWeexKline.init(id);
                 break;
-            case Constant.KEY_STRA_9:
-                runHuobiRep2Hot.init(id);
+            case Constant.KEY_STRATEGY_REPLENISH:
+                replenish.init(id);
                 break;
         }
     }
@@ -45,8 +46,8 @@ public class WeexService {
 //            case Constant.KEY_RANDOM_DEPTH:
 //                runBitterRandomDepth.stopWork(id);
 //                break;
-            case Constant.KEY_STRA_9:
-                runHuobiRep2Hot.stopWork(id);
+            case Constant.KEY_STRATEGY_REPLENISH:
+                replenish.stopWork(id);
                 break;
         }
     }
@@ -62,8 +63,8 @@ public class WeexService {
                 runNewWeexKline.killWork(id);
 //                runBitterRandomDepth.killWork(id+1);
                 break;
-            case Constant.KEY_STRA_9:
-                runHuobiRep2Hot.killWork(id);
+            case Constant.KEY_STRATEGY_REPLENISH:
+                replenish.killWork(id);
                 break;
         }
     }
