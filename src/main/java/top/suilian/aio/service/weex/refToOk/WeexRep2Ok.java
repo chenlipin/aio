@@ -108,7 +108,7 @@ public class WeexRep2Ok extends WeexParentService {
 
                 BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
                 BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
-
+                logger.info("买--：" + buyPri + "---卖" + sellPri);
 
                 if (sellPri.compareTo(buyPri) == 0) {
                     //平台撮合功能失败
@@ -187,15 +187,14 @@ public class WeexRep2Ok extends WeexParentService {
                     DeepVo deepBuy = okDepp.get("deepBuyList").get(i);
                     Order order = new Order();
                     order.setType(1);
-                    order.setPrice(deepBuy.getPrice().multiply(point));
+                    order.setPrice(deepBuy.getPrice().multiply(point).setScale(Integer.parseInt(exchange.get("pricePrecision")),RoundingMode.HALF_UP));
                     if (klinePrice!=null&&order.getPrice().compareTo(klinePrice)==0){
                         continue;
                     }
-                    BigDecimal relishAmount = deepBuy.getAmount().multiply(new BigDecimal(exchange.get("relishAmountPoint")));
-                    order.setAmount(relishAmount.compareTo(new BigDecimal(relishMax)) > 0 ? orderAmount : relishAmount);
+
+                    order.setAmount(orderAmount);
                     if (i==0){
                         order.setFirst(2);
-                        order.setAmount(order.getAmount());
                     }
                     logger.info("买--对标-ok价格：" + deepBuy.getPrice() + "---对标价格" + order.getPrice()  + "数量：" + order.getAmount());
 
@@ -204,19 +203,18 @@ public class WeexRep2Ok extends WeexParentService {
                 }
 
                 for (int i = 0,j=0; i < okDepp.get("deepSellList").size() &&  j< range; i++) {
-                    BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, 5);
+                    BigDecimal orderAmount = getOrderAmount(deepMin, deepMax, 5);
                     DeepVo deepBuy = okDepp.get("deepSellList").get(i);
                     Order order = new Order();
                     order.setType(2);
-                    order.setPrice(deepBuy.getPrice().multiply(point));
+                    order.setPrice(deepBuy.getPrice().multiply(point).setScale(Integer.parseInt(exchange.get("pricePrecision")),RoundingMode.HALF_UP));
                     if (klinePrice!=null&&order.getPrice().compareTo(klinePrice)==0){
                         continue;
                     }
-                    BigDecimal relishAmount = deepBuy.getAmount().multiply(new BigDecimal(exchange.get("relishAmountPoint")));
-                    order.setAmount(relishAmount.compareTo(new BigDecimal(relishMin)) > 0 ? orderAmount : relishAmount);
+                    order.setAmount(orderAmount);
                     if (i==0){
                         order.setFirst(2);
-                        order.setAmount(order.getAmount().multiply(new BigDecimal("1.5")));
+
                     }
                     logger.info("卖--对标-ok价格：" + deepBuy.getPrice() + "---对标价格" + order.getPrice() + "平台数量：" + deepBuy.getAmount() + "---实际数量：" + order.getAmount());
                     j++;
@@ -234,8 +232,8 @@ public class WeexRep2Ok extends WeexParentService {
                     Thread.sleep(1000);
                     String resultJson = submitOrder(order2.getType(), order2.getPrice(), order2.getAmount());
                     JSONObject jsonObject1 = judgeRes(resultJson, "code", "submitTrade");
-                    if (jsonObject1 != null && jsonObject1.getInt("code") == 200) {
-                        String orderId = jsonObject1.getJSONObject("data").getString("ID");
+                    if (jsonObject1 != null && "00000".equals(jsonObject1.getString("code"))) {
+                        String orderId = jsonObject1.getJSONObject("data").getString("orderId");
                         nowOrderList.add(orderId);
                     }
                 }

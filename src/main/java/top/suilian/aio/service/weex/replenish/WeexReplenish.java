@@ -6,6 +6,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.Util.RandomUtilsme;
+import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
 import top.suilian.aio.service.nivex0.NivexParentService;
@@ -254,7 +255,8 @@ public class WeexReplenish extends WeexParentService {
     }
 
     void replenish(List<Order> orderList) {
-        String[] split = exchange.get("market").split("_");
+        RobotArgs robotArgs = robotArgsService.findOne(id, "market");
+        String[] split = robotArgs.getRemark().split("_");
         BigDecimal maxLeftQty = new BigDecimal(exchange.get("maxLeftQty"));
         BigDecimal maxRightQty = new BigDecimal(exchange.get("maxRightQty"));
 
@@ -279,7 +281,7 @@ public class WeexReplenish extends WeexParentService {
             String trade = submitOrder(order.getType(), order.getPrice(), order.getAmount());
             setTradeLog(id, "补单=》挂" + (order.getType() == 1 ? "买" : "卖") + "单[价格：" + order.getPrice() + ": 数量" + order.getAmount() + "]=>" + trade, 0, order.getType() == 1 ? "05cbc8" : "ff6224");
             JSONObject jsonObject = JSONObject.fromObject(trade);
-            if ("0000" .equals(jsonObject.getString("code")) ) {
+            if ("00000" .equals(jsonObject.getString("code")) ) {
                 if (order.type == 1) {
                     redisHelper.setSt("maxRightQty_" + id, maxRightQty_redis.add(order.getAmount()).toString());
                 } else {
