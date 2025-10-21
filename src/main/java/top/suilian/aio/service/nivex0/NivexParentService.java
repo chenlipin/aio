@@ -515,9 +515,8 @@ public class NivexParentService extends BaseService implements RobotAction {
         Map<String, Object> params = new TreeMap<String, Object>();
         params.put("api_key", exchange.get("apikey"));
         params.put("random_int_str", number);
-        params.put("time", time);
-        params.put("status", 2);
         params.put("page_size", 500);
+        params.put("time", time);
         params.put("symbol",  exchange.get("market"));
 
         String sort = toSort(params)+exchange.get("tpass");

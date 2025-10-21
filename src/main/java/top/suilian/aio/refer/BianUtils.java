@@ -25,7 +25,7 @@ public class BianUtils extends BaseHttp {
         //卖单
         JSONArray asksJson = tradesObj.getJSONArray("asks");
 
-        for (int i = 0; i < bidsJson.size(); i+=5) {
+        for (int i = 0; i < bidsJson.size(); i+=2) {
             DeepVo deepVo = new DeepVo();
             JSONArray jsonArray = bidsJson.getJSONArray(i);
             BigDecimal amount = new BigDecimal(jsonArray.getString(1));
@@ -39,7 +39,7 @@ public class BianUtils extends BaseHttp {
             deepVo.setPrice(price);
             buy.add(deepVo);
         }
-        for (int i = 0; i < asksJson.size(); i+=5) {
+        for (int i = 0; i < asksJson.size(); i+=2) {
             DeepVo deepVo = new DeepVo();
             JSONArray jsonArray = asksJson.getJSONArray(i);
             BigDecimal amount = new BigDecimal(jsonArray.getString(1));
