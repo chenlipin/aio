@@ -25,6 +25,7 @@ import top.suilian.aio.service.biki.BikiService;
 import top.suilian.aio.service.bilian.BiLianService;
 import top.suilian.aio.service.bision.BisionService;
 import top.suilian.aio.service.bitai.BiTaiService;
+import top.suilian.aio.service.bitbaby.BitbabyService;
 import top.suilian.aio.service.bithumb.BithumbService;
 import top.suilian.aio.service.bitmart.BitMartService;
 import top.suilian.aio.service.bitrue.BitureService;
@@ -299,6 +300,9 @@ public class BaseController {
 
     @Autowired
     WeexService weexService;
+
+    @Autowired
+    BitbabyService bitbabyService;
 
     //endregion
 

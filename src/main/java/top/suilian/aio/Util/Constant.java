@@ -155,6 +155,9 @@ public class Constant {
 
     public static final int KEY_EXCHANGE_WEEX=84; //weex
 
+
+    public static final int KEY_EXCHANGE_BITBABY=85; //bitbaby
+
     //endregion
 
 
