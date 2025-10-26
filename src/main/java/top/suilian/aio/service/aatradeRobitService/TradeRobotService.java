@@ -26,6 +26,7 @@ import top.suilian.aio.service.bibox.BiboxParentService;
 import top.suilian.aio.service.bifinance.BifinanceParentService;
 import top.suilian.aio.service.bika.BikaaParentService;
 import top.suilian.aio.service.bision.BisionParentService;
+import top.suilian.aio.service.bitbaby.BitbabyParentService;
 import top.suilian.aio.service.bithumb.BithumbParentService;
 import top.suilian.aio.service.bitmart.BitMartParentService;
 import top.suilian.aio.service.bitrue.BitureParentService;
@@ -285,6 +286,10 @@ public class TradeRobotService {
             case Constant.KEY_EXCHANGE_WEEX:
                 robotAction=new WeexParentService();
                 break;
+
+            case Constant.KEY_EXCHANGE_BITBABY:
+                robotAction=new BitbabyParentService();
+                break;
             default:
                 return null;
         }
@@ -385,6 +390,10 @@ public class TradeRobotService {
 
         }
         if (robot.getStrategyId()==84){
+            return robotAction.selectOrder();
+
+        }
+        if (robot.getStrategyId()==85){
             return robotAction.selectOrder();
 
         }

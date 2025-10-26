@@ -9,6 +9,7 @@ import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.service.*;
 import top.suilian.aio.service.bitbaby.BitbabyParentService;
+import top.suilian.aio.vo.getAllOrderPonse;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -79,16 +80,13 @@ public class NewBitbabyKline extends BitbabyParentService {
                 logger.info("设置机器人参数开始");
                 setParam();
                 setTransactionRatio();
-                setAccount();
                 if (exchange.get("tradeRatio") != null || !"0".equals(exchange.get("tradeRatio"))) {
                     Double ratio = 10 * (1 / (1 + Double.parseDouble(exchange.get("tradeRatio"))));
                     tradeRatio = new BigDecimal(ratio).setScale(2, RoundingMode.HALF_UP);
                 }
                 logger.info("设置机器人参数结束");
                 logger.info("设置机器人交易规则开始");
-                logger.info("设置机器人交易规则结束");
-                String balance = getBalance();
-                System.out.println(balance);
+                setBalanceRedis();
 
                 //判断走K线的方式
                 if ("1".equals(exchange.get("sheetForm"))) {
@@ -119,15 +117,16 @@ public class NewBitbabyKline extends BitbabyParentService {
                 //获取深度 判断平台撮合是否成功
                 com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-                if (tradesObj != null && tradesObj.getString("code").equals("00000") ) {
-                    com.alibaba.fastjson.JSONObject tick = tradesObj.getJSONObject("data");
+                if (tradesObj != null ) {
 
-                    List<List<String>> buyPrices = (List<List<String>>) tick.get("bids");
 
-                    List<List<String>> sellPrices = (List<List<String>>) tick.get("asks");
+                    List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
+
+                    List<List<String>> sellPrices = (List<List<String>>) tradesObj.get("asks");
 
                     BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
                     BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
+
 
                     if (sellPri.compareTo(buyPri) == 0) {
                         //平台撮合功能失败
@@ -233,36 +232,10 @@ public class NewBitbabyKline extends BitbabyParentService {
 
 
                 try {
-                    String resultJson = submitOrder(type, price, num);
+                    String resultJson = submitOrderMM(type, price, num);
                     JSONObject jsonObject = judgeRes(resultJson, "code", "submitTrade");
 
-                    if (jsonObject != null && jsonObject.getString("code").equals("00000")) {
-
-                        orderIdOne = jsonObject.getJSONObject("data").getString("orderId");
-                        String resultJson1 = submitOrder(type == 1 ? 2 : 1, price, num);
-                        JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
-
-                        if (jsonObject1 != null && jsonObject1.getString("code").equals("00000")) {
-                            orderIdTwo = jsonObject1.getJSONObject("data").getString("orderId");
-                            removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
-                            ordersleeptime = System.currentTimeMillis();
-
-                        } else {
-                            String res = cancelTrade(orderIdOne);
-                            setTradeLog(id, "撤单[" + orderIdOne + "]=> " + res, 0, "000000");
-                            JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
-                            setCancelOrder(cancelRes, res, orderIdOne, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
-                        }
-
-
-                    }
                 } catch (Exception e) {
-                    if (StringUtils.isNotEmpty(orderIdOne)){
-                        cancelTrade(orderIdOne);
-                    }
-                    if (StringUtils.isNotEmpty(orderIdTwo)){
-                        cancelTrade(orderIdTwo);
-                    }
                     exceptionMessage = collectExceptionStackMsg(e);
                     setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
                     logger.info("robotId" + id + "----" + exceptionMessage);
@@ -324,37 +297,37 @@ public class NewBitbabyKline extends BitbabyParentService {
         public BigDecimal getRandomPrice() throws UnsupportedEncodingException {
             BigDecimal price = null;
 
-            String trades = httpUtil.get(baseUrl +"/api/v2/market/depth?symbol="+exchange.get("market")+"&type=step0&limit=15");
+            String trades = HttpUtil.get(baseUrl +"/spot/open/sapi/v1/depth?symbol="+exchange.get("market")+"&limit=10");
 
 
             //获取深度 判断平台撮合是否成功
             com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-            if (tradesObj != null && tradesObj.getString("code").equals("00000") ) {
-                com.alibaba.fastjson.JSONObject tick = tradesObj.getJSONObject("data");
+            if (tradesObj != null ) {
 
-                List<List<String>> buyPrices = (List<List<String>>) tick.get("bids");
 
-                List<List<String>> sellPrices = (List<List<String>>) tick.get("asks");
+                List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
+
+                List<List<String>> sellPrices = (List<List<String>>) tradesObj.get("asks");
 
                 BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
                 BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
                 long l = 1000 * 50 * 1 + (RandomUtils.nextInt(10) * 1000L);
                 logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
-                if (System.currentTimeMillis() - ordersleeptime > l) {
-                    logger.info("开始补单子");
-                    boolean type = RandomUtils.nextBoolean();
-                    String resultJson = submitOrder(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
-                    JSONObject jsonObject1 = judgeRes(resultJson, "code", "submitTrade");
-                    ordersleeptime = System.currentTimeMillis();
-                    if (jsonObject1 != null && jsonObject1.getString("code").equals("00000")) {
-                        orderIdBu = jsonObject1.getJSONObject("data").getString("orderId");
-                        removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
-                        ordersleeptime = System.currentTimeMillis();
-                        logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
-                    }
-                }
+//                if (System.currentTimeMillis() - ordersleeptime > l) {
+//                    logger.info("开始补单子");
+//                    boolean type = RandomUtils.nextBoolean();
+//                    String resultJson = submitOrder(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
+//                    JSONObject jsonObject1 = judgeRes(resultJson, "code", "submitTrade");
+//                    ordersleeptime = System.currentTimeMillis();
+//                    if (jsonObject1 != null ) {
+//                        orderIdBu = jsonObject1.getJSONArray("orderId").getString(0);
+//                        removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
+//                        ordersleeptime = System.currentTimeMillis();
+//                        logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
+//                    }
+//                }
 
 
                 BigDecimal intervalPrice = sellPri.subtract(buyPri);
@@ -481,32 +454,32 @@ public class NewBitbabyKline extends BitbabyParentService {
 
 
         public void selectOrderDetail(String orderId, int type) {
-            try {
-                String str = selectOrder(orderId);
-                JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
-                if (jsonObject != null ) {
-
-                    String status = jsonObject.getJSONArray("data").getJSONObject(0).getString("status");
-                    if ("filled".equals(status) || "canceled".equals(status)) {
-                        setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
-                    } else {
-                        String res = cancelTrade(orderId);
-                        JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
-                        setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
-                        setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");
-                        if (Integer.parseInt(exchange.get("orderSumSwitch")) == 1 && type == 1) {    //防褥羊毛开关
-                            orderNum++;
-                            setWarmLog(id,2,"订单{"+orderId+"}撤单,撞单数为"+orderNum,"");
-                        }
-                    }
-
-
-                }
-            } catch (UnsupportedEncodingException e) {
-                exceptionMessage = collectExceptionStackMsg(e);
-                setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
-                e.printStackTrace();
-            }
+//            try {
+//                String str = selectOrder(orderId);
+//                com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(str);
+//                if (jsonObject != null ) {
+//
+//                    String status = jsonObject.getString("status")==null?"CANCELED": jsonObject.getString("status");
+//                    if (status.contains("FILLED") || status.contains("CANCELED")) {
+//                        setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
+//                    } else {
+//                        String res = cancelTrade(orderId);
+//                        JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
+//                        setCancelOrder(cancelRes, res, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
+//                        setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");
+//                        if (Integer.parseInt(exchange.get("orderSumSwitch")) == 1 && type == 1) {    //防褥羊毛开关
+//                            orderNum++;
+//                            setWarmLog(id,2,"订单{"+orderId+"}撤单,撞单数为"+orderNum,"");
+//                        }
+//                    }
+//
+//
+//                }
+//            } catch (UnsupportedEncodingException e) {
+//                exceptionMessage = collectExceptionStackMsg(e);
+//                setExceptionMessage(id, exceptionMessage, Integer.parseInt(exchange.get("isMobileSwitch")));
+//                e.printStackTrace();
+//            }
         }
 
         public static void main(String[] args) {

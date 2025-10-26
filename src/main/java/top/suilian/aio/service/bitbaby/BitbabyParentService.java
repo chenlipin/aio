@@ -26,7 +26,7 @@ import java.util.*;
 @Service
 @DependsOn("beanContext")
 public class BitbabyParentService extends BaseService implements RobotAction {
-    public String baseUrl = "https://api-spot.weex.com/";
+    public String baseUrl ="https://api.bitbaby.com/";
     public String host = "";
     private static final DateTimeFormatter DT_FORMAT = DateTimeFormatter
             .ofPattern("uuuu-MM-dd'T'HH:mm:ss");
@@ -38,21 +38,18 @@ public class BitbabyParentService extends BaseService implements RobotAction {
     public List<getAllOrderPonse> selectOrder() {
         ArrayList<getAllOrderPonse> getAllOrderPonses = new ArrayList<>();
         String trade = getTrade();
-        JSONObject jsonObject1 = JSONObject.fromObject(trade);
-        if (jsonObject1.getJSONObject("data")==null){
-            return null;
-        }
-        JSONArray array = jsonObject1.getJSONObject("data").getJSONArray("orderInfoResultList");
+
+        JSONArray array = JSONArray.fromObject(trade);
 
         for (int i = 0; i < array.size(); i++) {
             getAllOrderPonse getAllOrderPonse = new getAllOrderPonse();
             JSONObject jsonObject = array.getJSONObject(i);
 
             getAllOrderPonse.setOrderId(jsonObject.getString("orderId"));
-            getAllOrderPonse.setCreatedAt(DateUtils.convertTimestampToString(jsonObject.getLong("cTime")));
+            getAllOrderPonse.setCreatedAt(DateUtils.convertTimestampToString(jsonObject.getLong("time")));
             getAllOrderPonse.setPrice(jsonObject.getString("side")+"-"+new BigDecimal(jsonObject.getString("price")).stripTrailingZeros().toPlainString());
             getAllOrderPonse.setStatus(0);
-            getAllOrderPonse.setAmount(new BigDecimal(jsonObject.getString("quantity")).stripTrailingZeros().toPlainString());
+            getAllOrderPonse.setAmount(new BigDecimal(jsonObject.getString("origQty")).stripTrailingZeros().toPlainString());
             getAllOrderPonses.add(getAllOrderPonse);
         }
         return getAllOrderPonses;
@@ -104,17 +101,17 @@ public class BitbabyParentService extends BaseService implements RobotAction {
      * @param type
      * @param price
      * @param amount
-     * @return {"code":"00000","msg":"success","requestTime":1756477816771,"data":{"orderId":656315532781290072,"clientOrderId":"sl1756477811614","isSuccess":null,"errorMsg":null,"errorCode":null}}
+     * @return {"symbol":"TRXUSDT","newClientOrderId":null,"side":"BUY","executedQty":0,"orderId":["2983966324645348641"],"price":0.200,"origQty":26,"clientOrderId":null,"transactTime":1761398775777,"type":"LIMIT","status":"NEW"}
      */
     protected String submitOrder(int type, BigDecimal price, BigDecimal amount) {
         logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + (type==1?"买":"卖") + "，price(价格)：" + price + "，amount(数量)：" + amount);
         BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
         BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
         long timeMillis = System.currentTimeMillis();
-        String strSign =timeMillis+ "POST" +"/spot/open/sapi/v1/order";
+        String strSign =timeMillis+ "POST" +"/sapi/v1/order";
 
         Map<String, String> reqparam = new TreeMap<String, String>();
-        reqparam.put("symbol", exchange.get("market"));
+        reqparam.put("symbol",  exchange.get("market"));
         reqparam.put("side",type==1? "BUY":"SELL");
         reqparam.put("type","LIMIT");
         reqparam.put("price", price1+"");
@@ -126,16 +123,49 @@ public class BitbabyParentService extends BaseService implements RobotAction {
         header.put("X-CH-APIKEY",exchange.get("apikey"));
         header.put("X-CH-TS",timeMillis+"");
         header.put("Content-Type", "application/json");
-        header.put("ACCESS-SIGN", sign);
+        header.put("X-CH-SIGN", sign);
 
         String trade = null;
         try {
             trade = HttpUtil.postByPackcoin(baseUrl + "/spot/open/sapi/v1/order",  reqparam,header);
             JSONObject jsonObject = JSONObject.fromObject(trade);
             setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
-            if(!"00000".equals(jsonObject.getString("code"))){
-                setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
-            }
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        return trade;
+    }
+
+
+    protected String submitOrderMM(int type, BigDecimal price, BigDecimal amount) {
+        logger.info("robotId" + id + "----" + "开始挂单：type(交易类型)：" + (type==1?"买":"卖") + "，price(价格)：" + price + "，amount(数量)：" + amount);
+        BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
+        long timeMillis = System.currentTimeMillis();
+        String strSign =timeMillis+ "POST" +"/sapi/v1/self_trade";
+
+        Map<String, String> reqparam = new TreeMap<String, String>();
+        reqparam.put("symbol",  exchange.get("market"));
+        reqparam.put("side",type==1? "BUY":"SELL");
+        reqparam.put("type","1");
+        reqparam.put("price", price1+"");
+        reqparam.put("volume",num+"");
+        strSign=strSign+JSON.toJSONString(reqparam);
+        String sign = HMAC.sha256_HMAC(strSign, exchange.get("tpass"));
+
+        Map<String, String> header = new TreeMap<String, String>();
+        header.put("X-CH-APIKEY",exchange.get("apikey"));
+        header.put("X-CH-TS",timeMillis+"");
+        header.put("Content-Type", "application/json");
+        header.put("X-CH-SIGN", sign);
+
+        String trade = null;
+        try {
+            trade = HttpUtil.postByPackcoin(baseUrl + "/spot/open/sapi/v1/self_trade",  reqparam,header);
+            System.out.println(JSON.toJSONString(reqparam));
+            System.out.println(trade);
+            JSONObject jsonObject = JSONObject.fromObject(trade);
+            setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -172,21 +202,17 @@ public class BitbabyParentService extends BaseService implements RobotAction {
 
     public String getBalance() throws UnsupportedEncodingException {
         long timeMillis = System.currentTimeMillis();
-        String strSign =timeMillis+ "GET" +"/spot/open/sapi/v1/account";
+        String strSign =timeMillis+ "GET" +"/sapi/v1/account";
 
-        String sign = HMAC.sha256_HMAC1(strSign, exchange.get("tpass"));
+        String sign = HMAC.sha256_HMAC(strSign, exchange.get("tpass"));
 
         Map<String, String> header = new TreeMap<String, String>();
         header.put("X-CH-APIKEY",exchange.get("apikey"));
         header.put("X-CH-TS",timeMillis+"");
-        header.put("ACCESS-SIGN", sign);
+        header.put("X-CH-SIGN", sign);
         String trade = null;
         try {
             trade = HttpUtil.getAddHead(baseUrl + "/spot/open/sapi/v1/account", header);
-            JSONObject jsonObject = JSONObject.fromObject(trade);
-            if(!"00000".equals(jsonObject.getString("code"))){
-                setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
-            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -199,36 +225,26 @@ public class BitbabyParentService extends BaseService implements RobotAction {
      * @param orderId
      * @return
      * @throws
-     *{"code":"00000","msg":"success","requestTime":1756478364835,"data":[{"accountId":"643170352205136472","symbol":"TRXUSDT_SPBL",
-     * "orderId":"656315532781290072","clientOrderId":"sl1756477811614","price":"0.1000","quantity":"100.00000","orderType":"limit",
-     * "side":"buy","status":"open","latestFillPrice":"0","maxFillPrice":"0",
-     * "minFillPrice":"0","fillQuantity":"0","fillTotalAmount":"0","cTime":"1756477816768","uTime":"1756477816782"}]}
+    {"symbol":"trxusdt","side":"BUY","executedQty":0,"orderId":"2983966324645348641","price":0.2,"origQty":26,"avgPrice":0,"transactTime":1761398775000,"type":"LIMIT","status":"New Order"}
      */
 
 
     public String selectOrder(String orderId) throws UnsupportedEncodingException {
 
         long timeMillis = System.currentTimeMillis();
-        String strSign =timeMillis+ "GET" +"/spot/open/sapi/v1/order";
+        String strSign =timeMillis+ "GET" +"/sapi/v1/order?symbol="+ exchange.get("market") +"&orderId="+orderId;
 
-        Map<String, String> reqparam = new TreeMap<String, String>();
-        reqparam.put("orderId", orderId);
-        reqparam.put("symbol", exchange.get("market"));
         strSign=strSign;
         String sign = HMAC.sha256_HMAC(strSign, exchange.get("tpass"));
 
         Map<String, String> header = new TreeMap<String, String>();
         header.put("X-CH-APIKEY",exchange.get("apikey"));
         header.put("X-CH-TS",timeMillis+"");
-        header.put("ACCESS-SIGN", sign);
+        header.put("X-CH-SIGN", sign);
         String trade = null;
         try {
-            trade = HttpUtil.getAddHead(baseUrl + "/spot/open/sapi/v1/order",header);
-            JSONObject jsonObject = JSONObject.fromObject(trade);
+            trade = HttpUtil.getAddHead(baseUrl + "/spot/open/sapi/v1/order?symbol="+ exchange.get("market") +"&orderId="+orderId,header);
             setTradeLog(id, "查询订单[orderId：" + orderId + "]=>" + trade, 0);
-            if(!"00000".equals(jsonObject.getString("code"))){
-                setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
-            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -244,13 +260,13 @@ public class BitbabyParentService extends BaseService implements RobotAction {
      * 撤单
      * @param orderId
      * @return
-     * {"status":"ok","data":"1133371409337541"}
+     * {"symbol":"trxusdt","orderId":["2983966324645348641"],"status":"PENDING_CANCEL"}
      * @throws
      */
     public String cancelTrade(String orderId)  {
 
         long timeMillis = System.currentTimeMillis();
-        String strSign =timeMillis+ "POST" +"/spot/open/sapi/v1/cancel";
+        String strSign =timeMillis+ "POST" +"/sapi/v1/cancel";
 
         Map<String, String> reqparam = new TreeMap<String, String>();
         reqparam.put("orderId", orderId);
@@ -262,16 +278,13 @@ public class BitbabyParentService extends BaseService implements RobotAction {
         params.put("X-CH-APIKEY",exchange.get("apikey"));
         params.put("X-CH-TS",timeMillis+"");
         params.put("Content-Type", "application/json");
-        params.put("ACCESS-SIGN", sign);
+        params.put("X-CH-SIGN", sign);
         String trade = null;
         try {
             trade = HttpUtil.postByPackcoin(baseUrl + "/spot/open/sapi/v1/cancel", reqparam,params);
-            JSONObject jsonObject = JSONObject.fromObject(trade);
            logger.info("撤销订单::"+orderId+",cancelTrade返回参数：" + trade);
-            if(!"00000".equals(jsonObject.getString("code"))){
-                setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
-            }
-        } catch (UnsupportedEncodingException e) {
+
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return trade;
@@ -281,30 +294,24 @@ public class BitbabyParentService extends BaseService implements RobotAction {
     /**
      * 获取所有尾单
      * @return
+     * [{"symbol":"TRXUSDT","newClientOrderId":null,"side":"BUY","executedQty":"0","orderId":"2983966324645348641","price":"0.2","origQty":"26","avgPrice":"0","time":1761398775000,"type":"LIMIT","status":"New Order"}]
      */
     public String getTrade() {
 
         long timeMillis = System.currentTimeMillis();
-        String strSign =timeMillis+ "GET" +"/spot/open/sapi/v1/openOrders";
+        String strSign =timeMillis+ "GET" +"/sapi/v1/openOrders?symbol="+ exchange.get("market")+"&limit=1000";
 
-        Map<String, String> reqparam = new TreeMap<String, String>();
-        reqparam.put("symbol", exchange.get("market"));
-        reqparam.put("limit", exchange.get("1000"));
         strSign=strSign;
         String sign = HMAC.sha256_HMAC(strSign, exchange.get("tpass"));
 
         Map<String, String> params = new TreeMap<String, String>();
         params.put("X-CH-APIKEY",exchange.get("apikey"));
         params.put("X-CH-TS",timeMillis+"");
-        params.put("ACCESS-SIGN", sign);
+        params.put("X-CH-SIGN", sign);
         String trade = null;
         try {
-            trade = HttpUtil.getAddHead(baseUrl + "/spot/open/sapi/v1/openOrders",params);
-            JSONObject jsonObject = JSONObject.fromObject(trade);
+            trade = HttpUtil.getAddHead(baseUrl + "/spot/open/sapi/v1/openOrders?symbol="+ exchange.get("market")+"&limit=1000",params);
             logger.info("获取未成交列表返回参数：" + trade);
-            if(!"00000".equals(jsonObject.getString("code"))){
-                setWarmLog(id,3,"API接口错误",jsonObject.getString("msg"));
-            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -334,7 +341,7 @@ public class BitbabyParentService extends BaseService implements RobotAction {
         if (balance == null || overdue) {
             String balance1 = getBalance();
             JSONObject jsonObject1 = JSONObject.fromObject(balance1);
-            JSONArray jsonArray1 = jsonObject1.getJSONArray("data");
+            JSONArray jsonArray1 = jsonObject1.getJSONArray("balances");
 
             String firstBalance = null;
             String lastBalance = null;
@@ -344,12 +351,12 @@ public class BitbabyParentService extends BaseService implements RobotAction {
             List<String> coinArr = Arrays.asList(coins.split("_"));
             for (int i = 0; i < jsonArray1.size(); i++) {
                 JSONObject jsonObject = jsonArray1.getJSONObject(i);
-                if (jsonObject.getString("coinName").equals(coinArr.get(0))) {
-                        firstBalance = jsonObject.getString("available");
-                        firstBalance1 = jsonObject.getString("frozen");
-                } else if (jsonObject.getString("coinName").equals(coinArr.get(1))) {
-                        lastBalance = jsonObject.getString("available");
-                        lastBalance1 = jsonObject.getString("frozen");
+                if (jsonObject.getString("asset").equals(coinArr.get(0))) {
+                        firstBalance = jsonObject.getString("free");
+                        firstBalance1 = jsonObject.getString("locked");
+                } else if (jsonObject.getString("asset").equals(coinArr.get(1))) {
+                        lastBalance = jsonObject.getString("free");
+                        lastBalance1 = jsonObject.getString("locked");
                 }
             }
 
@@ -373,7 +380,7 @@ public class BitbabyParentService extends BaseService implements RobotAction {
      */
     public void setCancelOrder(JSONObject cancelRes, String res, String orderId, Integer type) {
         int cancelStatus = Constant.KEY_CANCEL_ORDER_STATUS_FAILED;
-        if (cancelRes != null && cancelRes.getInt("code") == 200) {
+        if (cancelRes != null) {
             cancelStatus = Constant.KEY_CANCEL_ORDER_STATUS_CANCELLED;
         }
         insertCancel(id, orderId, 1, type, Integer.parseInt(exchange.get("isMobileSwitch")), cancelStatus, res, Constant.KEY_EXCHANGE_HOTCOIN);
@@ -431,8 +438,8 @@ public class BitbabyParentService extends BaseService implements RobotAction {
         String submitOrder = submitOrder(type, price, amount);
         if (StringUtils.isNotEmpty(submitOrder)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(submitOrder);
-            if ("00000".equals(jsonObject.getString("code"))) {
-                orderId = jsonObject.getJSONObject("data").getString("orderId");
+            if (jsonObject.getJSONArray("orderId")!=null) {
+                orderId = jsonObject.getJSONArray("orderId").getString(0);
                 hashMap.put("res", "true");
                 hashMap.put("orderId", orderId);
             } else {
@@ -467,7 +474,7 @@ public class BitbabyParentService extends BaseService implements RobotAction {
         }
         if (StringUtils.isNotEmpty(cancelTrade)) {
             com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(cancelTrade);
-            if ("00000".equals(jsonObject.getString("code"))) {
+            if (jsonObject.getString("status")!=null) {
                 return "true";
             }else {
                 return jsonObject.getString("msg");
