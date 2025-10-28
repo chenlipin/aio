@@ -81,21 +81,19 @@ public class BitbabyReplenish extends BitbabyParentService {
         BigDecimal buyPri=null;
         BigDecimal sellPri=null;
 
-        String trades = httpUtil.get(baseUrl +"/api/v2/market/depth?symbol="+exchange.get("market")+"&type=step0&limit=15");
+        String trades = HttpUtil.get(baseUrl +"/spot/open/sapi/v1/depth?symbol="+exchange.get("market")+"&limit=10");
 
 
         //获取深度 判断平台撮合是否成功
         com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
 
-        if (tradesObj != null && tradesObj.getString("code").equals("00000") ) {
-            com.alibaba.fastjson.JSONObject tick = tradesObj.getJSONObject("data");
+        if (tradesObj != null ){
+            List<List<String>> buyPrices = (List<List<String>>) tradesObj.get("bids");
 
-            List<List<String>> buyPrices = (List<List<String>>) tick.get("bids");
+            List<List<String>> sellPrices = (List<List<String>>) tradesObj.get("asks");
 
-            List<List<String>> sellPrices = (List<List<String>>) tick.get("asks");
-
-             buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
-             sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
+            buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+            sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
 
             if (sellPri.compareTo(buyPri) == 0) {
                 //平台撮合功能失败
@@ -104,112 +102,75 @@ public class BitbabyReplenish extends BitbabyParentService {
             }
         }
 
-            String relishMin = exchange.get("relishMin");
-            String relishMax = exchange.get("relishMax");
+        String relishMin = exchange.get("relishMin");
+        String relishMax = exchange.get("relishMax");
 
-            //待挂单集合
-            List<Order> orderList = new ArrayList<Order>();
-            //补单方案
-            int orderType = Integer.parseInt(exchange.get("orderType"));
-            //最大盘口差值
-            BigDecimal maxrange = new BigDecimal(exchange.get("range"));
-            //当前盘口差值
-            BigDecimal nowRange = sellPri.subtract(buyPri);
-            //需要补的差值
-            BigDecimal needRange = nowRange.subtract(maxrange);
+        //待挂单集合
+        List<Order> orderList = new ArrayList<Order>();
+        //补单方案
+        int orderType = Integer.parseInt(exchange.get("orderType"));
+        //最大盘口差值
+        BigDecimal maxrange = new BigDecimal(exchange.get("range"));
+        //当前盘口差值
+        BigDecimal nowRange = sellPri.subtract(buyPri);
+        //需要补的差值
+        BigDecimal needRange = nowRange.subtract(maxrange);
 
-            Double amountPrecision = Double.parseDouble(precision.get("amountPrecision").toString());
-            Double pricePrecision = Double.parseDouble(precision.get("pricePrecision").toString());
+        Double amountPrecision = Double.parseDouble(precision.get("amountPrecision").toString());
+        Double pricePrecision = Double.parseDouble(precision.get("pricePrecision").toString());
 
-            if (nowRange.compareTo(maxrange) > 0) {
-                setTradeLog(id, "买一[" + buyPri + "],卖一[" + sellPri + "],差值大于:" + maxrange + ";开始补单", 0, "a61b12");
-                setWarmLog(id, 2, "买一[" + buyPri + "],卖一[" + sellPri + "],差值大于:" + maxrange + ";开始补单", "");
-                logger.info("买一[" + buyPri + "],卖一[" + sellPri + "],差值" + nowRange + ";大于:" + maxrange);
-                BigDecimal bigDecimal1 = new BigDecimal(Math.pow(10, pricePrecision) + "");
+        if (nowRange.compareTo(maxrange) > 0) {
+            setTradeLog(id, "买一[" + buyPri + "],卖一[" + sellPri + "],差值大于:" + maxrange + ";开始补单", 0, "a61b12");
+            setWarmLog(id, 2, "买一[" + buyPri + "],卖一[" + sellPri + "],差值大于:" + maxrange + ";开始补单", "");
+            logger.info("买一[" + buyPri + "],卖一[" + sellPri + "],差值" + nowRange + ";大于:" + maxrange);
+            BigDecimal bigDecimal1 = new BigDecimal(Math.pow(10, pricePrecision) + "");
 
-                BigDecimal bigDecimal = BigDecimal.ONE.divide(bigDecimal1, pricePrecision.intValue(), RoundingMode.HALF_DOWN);
-                //可以挂单的区间数
-                BigDecimal ranggeInt = needRange.divide(bigDecimal, 0, RoundingMode.HALF_DOWN);
-                //可以挂单的次数
-                int relishOrderQty = Math.min(Integer.parseInt(ranggeInt.toString()), Integer.parseInt(exchange.get("relishOrderQty")));
-                logger.info("可以挂单的区间数==》" + Integer.parseInt(ranggeInt.toString()));
-                logger.info("可以挂单的次数=》" + relishOrderQty);
-                BigDecimal basePrice = BigDecimal.ZERO;
-                if (orderType != 3) {
-                    //挂买或者卖单
-                    basePrice = orderType == 1 ? buyPri : sellPri;
-                    if (orderType == 1) {
-                        logger.info("-----都补买单-------");
-                        //买单
-                        BigDecimal oneRange = needRange.divide(new BigDecimal(relishOrderQty), pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
-                        for (int i = 0; i < relishOrderQty; i++) {
-                            Order order = new Order();
-                            Double random = RandomUtilsme.getRandom(Double.parseDouble(oneRange.toString()), pricePrecision.intValue());
-                            if(i==relishOrderQty-1){
-                                random=Double.parseDouble(oneRange.toString());
-                            }
-                            logger.info("一个区间的价格：" + oneRange + "---随机的价格" + random);
-                            BigDecimal orderPrice = basePrice.add(oneRange.multiply(new BigDecimal(i))).add(new BigDecimal(random.toString()));
-                            BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, amountPrecision);
-                            order.setPrice(orderPrice);
-                            order.setAmount(orderAmount);
-                            order.setType(1);
-                            orderList.add(order);
-                        }
-                    } else {
-                        //卖单
-                        logger.info("-----都补卖单-------");
-                        BigDecimal oneRange = needRange.divide(new BigDecimal(relishOrderQty), pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
-                        for (int i = 0; i < relishOrderQty; i++) {
-                            Order order = new Order();
-                            Double random = RandomUtilsme.getRandom(Double.parseDouble(oneRange.toString()), pricePrecision.intValue());
-                            if(i==relishOrderQty-1){
-                                random=Double.parseDouble(oneRange.toString());
-                            }
-                            logger.info("一个区间的价格：" + oneRange + "---随机的价格" + random);
-                            BigDecimal orderPrice = basePrice.subtract(oneRange.multiply(new BigDecimal(i))).subtract(new BigDecimal(random.toString()));
-                            BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, amountPrecision);
-                            order.setPrice(orderPrice);
-                            order.setAmount(orderAmount);
-                            order.setType(2);
-                            orderList.add(order);
-                        }
-                    }
-                    logger.info(JSON.toJSONString(orderList));
-                    logger.info("-----------------开始补单-------------------");
-                    replenish(orderList);
-                    logger.info("-----------------补单结束-------------------");
-                    try {
-                        Thread.sleep(300000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    logger.info("-----买卖单都补-------");
-                    BigDecimal oneRange = needRange.divide(new BigDecimal(relishOrderQty), pricePrecision.intValue(), RoundingMode.HALF_DOWN);
-                    for (int i = 0; i < relishOrderQty / 2; i++) {
+            BigDecimal bigDecimal = BigDecimal.ONE.divide(bigDecimal1, pricePrecision.intValue(), RoundingMode.HALF_DOWN);
+            //可以挂单的区间数
+            BigDecimal ranggeInt = needRange.divide(bigDecimal, 0, RoundingMode.HALF_DOWN);
+            //可以挂单的次数
+            int relishOrderQty = Math.min(Integer.parseInt(ranggeInt.toString()), Integer.parseInt(exchange.get("relishOrderQty")));
+            logger.info("可以挂单的区间数==》" + Integer.parseInt(ranggeInt.toString()));
+            logger.info("可以挂单的次数=》" + relishOrderQty);
+            BigDecimal basePrice = BigDecimal.ZERO;
+            if (orderType != 3) {
+                //挂买或者卖单
+                basePrice = orderType == 1 ? buyPri : sellPri;
+                if (orderType == 1) {
+                    logger.info("-----都补买单-------");
+                    //买单
+                    BigDecimal oneRange = needRange.divide(new BigDecimal(relishOrderQty), pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
+                    for (int i = 0; i < relishOrderQty; i++) {
                         Order order = new Order();
-                        Order order1 = new Order();
-                        BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, amountPrecision);
-                        BigDecimal orderAmount1 = getOrderAmount(relishMin, relishMax, amountPrecision);
                         Double random = RandomUtilsme.getRandom(Double.parseDouble(oneRange.toString()), pricePrecision.intValue());
-                        if(i==relishOrderQty / 2-1){
+                        if(i==relishOrderQty-1){
                             random=Double.parseDouble(oneRange.toString());
                         }
-                        logger.info("一个区间的价格：" + oneRange.toPlainString() + "---随机的价格" + random.toString());
-                        BigDecimal orderPrice = sellPri.subtract(oneRange.multiply(new BigDecimal(i))).subtract(new BigDecimal(random.toString())).setScale(pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
-                        BigDecimal orderPrice1 = buyPri.add(oneRange.multiply(new BigDecimal(i))).add(new BigDecimal(random.toString())).setScale(pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
-                        if(i==relishOrderQty / 2-1){
-                            orderPrice1=orderPrice1.add(oneRange);
+                        logger.info("一个区间的价格：" + oneRange + "---随机的价格" + random);
+                        BigDecimal orderPrice = basePrice.add(oneRange.multiply(new BigDecimal(i))).add(new BigDecimal(random.toString()));
+                        BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, amountPrecision);
+                        order.setPrice(orderPrice);
+                        order.setAmount(orderAmount);
+                        order.setType(1);
+                        orderList.add(order);
+                    }
+                } else {
+                    //卖单
+                    logger.info("-----都补卖单-------");
+                    BigDecimal oneRange = needRange.divide(new BigDecimal(relishOrderQty), pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
+                    for (int i = 0; i < relishOrderQty; i++) {
+                        Order order = new Order();
+                        Double random = RandomUtilsme.getRandom(Double.parseDouble(oneRange.toString()), pricePrecision.intValue());
+                        if(i==relishOrderQty-1){
+                            random=Double.parseDouble(oneRange.toString());
                         }
+                        logger.info("一个区间的价格：" + oneRange + "---随机的价格" + random);
+                        BigDecimal orderPrice = basePrice.subtract(oneRange.multiply(new BigDecimal(i))).subtract(new BigDecimal(random.toString()));
+                        BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, amountPrecision);
                         order.setPrice(orderPrice);
                         order.setAmount(orderAmount);
                         order.setType(2);
-                        order1.setPrice(orderPrice1);
-                        order1.setAmount(orderAmount1);
-                        order1.setType(1);
                         orderList.add(order);
-                        orderList.add(order1);
                     }
                 }
                 logger.info(JSON.toJSONString(orderList));
@@ -217,22 +178,59 @@ public class BitbabyReplenish extends BitbabyParentService {
                 replenish(orderList);
                 logger.info("-----------------补单结束-------------------");
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(300000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             } else {
-                int anInt = RandomUtils.nextInt(5);
-                if (anInt == 3) {
-                    setTradeLog(id, "买一[" + buyPri + "],卖一[" + sellPri + "],差值小于:" + maxrange + ";正常无需补单", 0, "1cd66c");
-                }
-                try {
-                    Thread.sleep(8000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                logger.info("-----买卖单都补-------");
+                BigDecimal oneRange = needRange.divide(new BigDecimal(relishOrderQty), pricePrecision.intValue(), RoundingMode.HALF_DOWN);
+                for (int i = 0; i < relishOrderQty / 2; i++) {
+                    Order order = new Order();
+                    Order order1 = new Order();
+                    BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, amountPrecision);
+                    BigDecimal orderAmount1 = getOrderAmount(relishMin, relishMax, amountPrecision);
+                    Double random = RandomUtilsme.getRandom(Double.parseDouble(oneRange.toString()), pricePrecision.intValue());
+                    if(i==relishOrderQty / 2-1){
+                        random=Double.parseDouble(oneRange.toString());
+                    }
+                    logger.info("一个区间的价格：" + oneRange.toPlainString() + "---随机的价格" + random.toString());
+                    BigDecimal orderPrice = sellPri.subtract(oneRange.multiply(new BigDecimal(i))).subtract(new BigDecimal(random.toString())).setScale(pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
+                    BigDecimal orderPrice1 = buyPri.add(oneRange.multiply(new BigDecimal(i))).add(new BigDecimal(random.toString())).setScale(pricePrecision.intValue(), BigDecimal.ROUND_HALF_DOWN);
+                    if(i==relishOrderQty / 2-1){
+                        orderPrice1=orderPrice1.add(oneRange);
+                    }
+                    order.setPrice(orderPrice);
+                    order.setAmount(orderAmount);
+                    order.setType(2);
+                    order1.setPrice(orderPrice1);
+                    order1.setAmount(orderAmount1);
+                    order1.setType(1);
+                    orderList.add(order);
+                    orderList.add(order1);
                 }
             }
+            logger.info(JSON.toJSONString(orderList));
+            logger.info("-----------------开始补单-------------------");
+            replenish(orderList);
+            logger.info("-----------------补单结束-------------------");
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            int anInt = RandomUtils.nextInt(5);
+            if (anInt == 3) {
+                setTradeLog(id, "买一[" + buyPri + "],卖一[" + sellPri + "],差值小于:" + maxrange + ";正常无需补单", 0, "1cd66c");
+            }
+            try {
+                Thread.sleep(8000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+    }
 
 
 
@@ -280,7 +278,7 @@ public class BitbabyReplenish extends BitbabyParentService {
             String trade = submitOrder(order.getType(), order.getPrice(), order.getAmount());
             setTradeLog(id, "补单=》挂" + (order.getType() == 1 ? "买" : "卖") + "单[价格：" + order.getPrice() + ": 数量" + order.getAmount() + "]=>" + trade, 0, order.getType() == 1 ? "05cbc8" : "ff6224");
             JSONObject jsonObject = JSONObject.fromObject(trade);
-            if ("00000" .equals(jsonObject.getString("code")) ) {
+            if (jsonObject.getJSONArray("orderId")!=null ) {
                 if (order.type == 1) {
                     redisHelper.setSt("maxRightQty_" + id, maxRightQty_redis.add(order.getAmount()).toString());
                 } else {

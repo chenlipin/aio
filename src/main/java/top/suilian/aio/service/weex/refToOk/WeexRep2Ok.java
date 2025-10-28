@@ -52,6 +52,7 @@ public class WeexRep2Ok extends WeexParentService {
 
     boolean up=true;
     int time=0;
+    Long times=0L;
 
     /**
      * range              同步深度数量
@@ -133,8 +134,9 @@ public class WeexRep2Ok extends WeexParentService {
                 BigDecimal okDeepSellPrice = okDepp.get("deepSellList").get(0).getPrice();
 
                 //计算价格比例
-                if (point == null) {
+                if (point == null || System.currentTimeMillis()-times>1000*60*30) {
                     point = sellPri.divide(okDeepSellPrice, 12, BigDecimal.ROUND_HALF_UP);
+                    times=System.currentTimeMillis();
                 }
                 logger.info("weex-价格：" + sellPri + "--OK价格：" + okDeepSellPrice + "--比例：" + point);
                 List<Order> list = new ArrayList<>();
