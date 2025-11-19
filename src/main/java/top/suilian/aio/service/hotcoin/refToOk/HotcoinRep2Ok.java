@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import lombok.Data;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
@@ -215,7 +216,13 @@ public class HotcoinRep2Ok extends HotCoinParentService {
                 //开始挂单
                 for (Order order2 : list) {
                     Thread.sleep(1000);
-                    String resultJson = submitOrder(order2.getType(), order2.getPrice(), order2.getAmount());
+                    String resultJson =null;
+                    if (!StringUtils.isEmpty(exchange.get("test"))){
+                        resultJson="{\"code\":200,\"msg\":\"委托成功\",\"time\":1763558284055,\"data\":{\"ID\":2511024846264825}}";
+                    }else {
+                        resultJson = submitOrder(order2.getType(), order2.getPrice(), order2.getAmount());
+                    }
+
                     JSONObject jsonObject1 = judgeRes(resultJson, "code", "submitTrade");
                     if (jsonObject1 != null && "200".equals(jsonObject1.getString("code"))) {
                         String orderId = jsonObject1.getJSONObject("data").getString("ID");
