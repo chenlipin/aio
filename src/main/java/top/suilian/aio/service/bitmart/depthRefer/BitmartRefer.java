@@ -103,7 +103,8 @@ public class BitmartRefer extends BitMartParentService {
         }
         refer = HotcoinUtils.getTrade(exchange.get("referMarket"));
 //        logger.info(JSONObject.toJSONString(refer));
-        depth = HotcoinUtils.getDepth(exchange.get("referMarket"));
+//        depth = HotcoinUtils.getDepth(exchange.get("referMarket"));
+        depth = null;
         logger.info(JSONObject.toJSONString(depth));
         Integer deepNum = Integer.parseInt(exchange.get("deepNum"));
 

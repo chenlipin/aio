@@ -96,6 +96,7 @@ public class NewHotcoinKline extends HotCoinParentService {
 
             maxEatOrder = Integer.parseInt(exchange.get("maxEatOrder"));//吃单成交上限数
             start = false;
+            setBalanceRedis();
         }
         int index = Integer.valueOf(new Date().getHours());
         //获取当前小时内的单量百分比

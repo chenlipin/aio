@@ -4,15 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="Nivex">
-      <change afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nivex0/replenish/NivexReplenish.java" afterDir="false" />
+    <list default="true" id="1ee00b96-5105-435a-a89e-eca159321fd6" name="Changes" comment="bitbaby">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nivex0/refToHot/NivexRep2Hot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nivex0/refToHot/NivexRep2Hot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/depthRefer/BitmartRefer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitmart/depthRefer/BitmartRefer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -21,6 +29,13 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/HotcoinUtils.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nivex0/NivexParentService.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nivex0/NivexService.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nivex0/refToHot/NivexRep2Hot.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/main/resources/application.properties" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -42,7 +57,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/aio/src/main/java/top/suilian/aio/service/nivex0&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/aio/src/main/java/top/suilian/aio/service/bitbaby/RandomDepth&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;spring.configuration.checksum&quot;: &quot;144066ff0da09361c9fe2b8fd900c61f&quot;
   }
@@ -52,11 +67,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\aio\src\main\java\top\suilian\aio\service\bitbaby\RandomDepth" />
+      <recent name="C:\aio\src\main\java\top\suilian\aio\service\weex" />
       <recent name="C:\aio\src\main\java\top\suilian\aio\service\nivex0" />
       <recent name="C:\aio\src\main\java\top\suilian\aio\arbisooNew" />
       <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\superex" />
-      <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\coinw" />
-      <recent name="C:\home\aio\src\main\java\top\suilian\aio\service\coinw\randomDepet" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="top.suilian.aio.Util" />
@@ -155,6 +170,25 @@
       <workItem from="1754732877530" duration="2596000" />
       <workItem from="1755351260136" duration="4053000" />
       <workItem from="1755405688956" duration="10279000" />
+      <workItem from="1756386553754" duration="640000" />
+      <workItem from="1756388447629" duration="9637000" />
+      <workItem from="1756486449495" duration="5598000" />
+      <workItem from="1756603628198" duration="814000" />
+      <workItem from="1756655748272" duration="3738000" />
+      <workItem from="1756819321219" duration="2299000" />
+      <workItem from="1756994155805" duration="6640000" />
+      <workItem from="1757125143881" duration="1156000" />
+      <workItem from="1757261807483" duration="1659000" />
+      <workItem from="1760968022178" duration="278000" />
+      <workItem from="1761050074223" duration="1184000" />
+      <workItem from="1761307547472" duration="3000" />
+      <workItem from="1761365187464" duration="1182000" />
+      <workItem from="1761381913486" duration="10207000" />
+      <workItem from="1761463507155" duration="4029000" />
+      <workItem from="1761473057310" duration="3546000" />
+      <workItem from="1761482054096" duration="4341000" />
+      <workItem from="1761662576973" duration="5814000" />
+      <workItem from="1763474092131" duration="7061000" />
     </task>
     <task id="LOCAL-00001" summary="aa">
       <created>1713893670498</created>
@@ -254,7 +288,56 @@
       <option name="project" value="LOCAL" />
       <updated>1755444686194</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Nivex">
+      <created>1756386619699</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1756386619699</updated>
+    </task>
+    <task id="LOCAL-00016" summary="WEEX">
+      <created>1756655781118</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1756655781118</updated>
+    </task>
+    <task id="LOCAL-00017" summary="WEEX">
+      <created>1756739678663</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1756739678663</updated>
+    </task>
+    <task id="LOCAL-00018" summary="WEEX">
+      <created>1757000249086</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1757000249086</updated>
+    </task>
+    <task id="LOCAL-00019" summary="WEEX">
+      <created>1761051236899</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1761051236899</updated>
+    </task>
+    <task id="LOCAL-00020" summary="bitbaby">
+      <created>1761486751464</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1761486751464</updated>
+    </task>
+    <task id="LOCAL-00021" summary="bitbaby">
+      <created>1761667757547</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1761667757547</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -300,7 +383,9 @@
     <MESSAGE value="coinw" />
     <MESSAGE value="aa" />
     <MESSAGE value="Nivex" />
-    <option name="LAST_COMMIT_MESSAGE" value="Nivex" />
+    <MESSAGE value="WEEX" />
+    <MESSAGE value="bitbaby" />
+    <option name="LAST_COMMIT_MESSAGE" value="bitbaby" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -312,7 +397,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java</url>
-          <line>168</line>
+          <line>65</line>
           <option name="timeStamp" value="32" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -386,11 +471,6 @@
           <option name="timeStamp" value="99" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/Util/HttpUtil.java</url>
-          <line>1305</line>
-          <option name="timeStamp" value="101" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/poloniex/PoloniexParentService.java</url>
           <line>493</line>
           <option name="timeStamp" value="102" />
@@ -432,12 +512,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java</url>
-          <line>140</line>
-          <option name="timeStamp" value="111" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java</url>
-          <line>251</line>
+          <line>252</line>
           <option name="timeStamp" value="112" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -567,12 +642,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java</url>
-          <line>431</line>
+          <line>450</line>
           <option name="timeStamp" value="189" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/aatradeRobitService/TradeRobotService.java</url>
-          <line>518</line>
+          <line>537</line>
           <option name="timeStamp" value="202" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -599,6 +674,86 @@
           <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/nivex0/RandomDepth/NivexRandomDepth.java</url>
           <line>48</line>
           <option name="timeStamp" value="211" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/weex/newKline/NewWeexKline.java</url>
+          <line>131</line>
+          <option name="timeStamp" value="228" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/weex/newKline/NewWeexKline.java</url>
+          <line>236</line>
+          <option name="timeStamp" value="230" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/weex/newKline/NewWeexKline.java</url>
+          <line>484</line>
+          <option name="timeStamp" value="232" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/weex/replenish/WeexReplenish.java</url>
+          <line>63</line>
+          <option name="timeStamp" value="233" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/weex/replenish/WeexReplenish.java</url>
+          <line>68</line>
+          <option name="timeStamp" value="235" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/weex/refToOk/WeexRep2Ok.java</url>
+          <line>97</line>
+          <option name="timeStamp" value="237" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/weex/refToOk/WeexRep2Ok.java</url>
+          <line>232</line>
+          <option name="timeStamp" value="238" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitbaby/newKline/NewBitbabyKline.java</url>
+          <line>235</line>
+          <option name="timeStamp" value="260" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitbaby/replenish/BitbabyReplenish.java</url>
+          <line>60</line>
+          <option name="timeStamp" value="276" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitbaby/RandomDepth/BitbabyRandomDepth.java</url>
+          <line>69</line>
+          <option name="timeStamp" value="278" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitbaby/RandomDepth/BitbabyRandomDepth.java</url>
+          <line>184</line>
+          <option name="timeStamp" value="279" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/bitbaby/RandomDepth/BitbabyRandomDepth.java</url>
+          <line>93</line>
+          <option name="timeStamp" value="280" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java</url>
+          <line>98</line>
+          <option name="timeStamp" value="282" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java</url>
+          <line>130</line>
+          <option name="timeStamp" value="283" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/service/hotcoin/refToOk/HotcoinRep2Ok.java</url>
+          <line>131</line>
+          <option name="timeStamp" value="284" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/top/suilian/aio/refer/WeexUtils.java</url>
+          <line>24</line>
+          <option name="timeStamp" value="285" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
