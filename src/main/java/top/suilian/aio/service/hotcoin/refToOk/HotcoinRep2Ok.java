@@ -4,16 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import lombok.Data;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.refer.BianUtils;
 import top.suilian.aio.refer.DeepVo;
-import top.suilian.aio.refer.WeexUtils;
 import top.suilian.aio.service.*;
 import top.suilian.aio.service.hotcoin.HotCoinParentService;
-import top.suilian.aio.service.weex.refToOk.WeexRep2Ok;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -52,6 +49,9 @@ public class HotcoinRep2Ok extends HotCoinParentService {
     List<String> nowOrderList = new ArrayList<>();
     List<String> lastOrderList = new ArrayList<>();
     BigDecimal point=null;
+    Long times=0L;
+
+
 
     boolean up=true;
     int time=0;
@@ -72,21 +72,46 @@ public class HotcoinRep2Ok extends HotCoinParentService {
             logger.info("对标策略设置机器人参数结束");
             logger.info("对标策略设置机器人交易规则开始");
             setPrecision();
+            try {
+                setBalanceRedis();
+            } catch (Exception e) {
+               logger.info("获取余额失败");
+            }
             logger.info("补单策略设置机器人交易规则结束");
             start = false;
         }
-        int i1 = RandomUtils.nextInt(5);
+        int i1 = RandomUtils.nextInt(4);
         if(2==i1){
             try {
                 setBalanceRedis();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
 
+        String uri = "/v1/depth";
+        String httpMethod = "GET";
+        Map<String, Object> params = new TreeMap<>();
+        params.put("AccessKeyId", exchange.get("apikey"));
+        params.put("SignatureVersion", 2);
+        params.put("SignatureMethod", "HmacSHA256");
+        params.put("Timestamp", new Date().getTime());
+        params.put("symbol", exchange.get("market"));
+        params.put("step", 3060);
+
+        String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
+        params.put("Signature", Signature);
+        String httpParams = null;
+        try {
+            httpParams = splicing(params);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
 
 
+        String trades = httpUtil.get(baseUrl + uri + "?" + httpParams);
         /**
          * range              同步深度数量
          * relishMax          同步深度交易数量最大值值
@@ -95,56 +120,61 @@ public class HotcoinRep2Ok extends HotCoinParentService {
          * relishPoint        同步交易数量倍数
          */
 
-
         //获取深度 判断平台撮合是否成功
-        String trades = httpUtil.get("https://api.hotcoinfin.com/v1/depth?step=20&symbol=" +exchange.get("market").toLowerCase());
-        JSONObject tradesObj = JSONObject.fromObject(trades);
-        if (tradesObj != null && tradesObj.getString("code").equals("200") ) {
+        com.alibaba.fastjson.JSONObject tradesObj = JSON.parseObject(trades);
+        if (tradesObj != null && tradesObj.getInteger("code") == 200) {
             try {
 
 
-                JSONObject tick = tradesObj.getJSONObject("data").getJSONObject("depth");
+                com.alibaba.fastjson.JSONObject data = tradesObj.getJSONObject("data");
 
+                com.alibaba.fastjson.JSONObject tick = data.getJSONObject("depth");
                 List<List<String>> buyPrices = (List<List<String>>) tick.get("bids");
-
                 List<List<String>> sellPrices = (List<List<String>>) tick.get("asks");
-
                 BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
+
                 BigDecimal sellPri = new BigDecimal(String.valueOf(sellPrices.get(0).get(0)));
-                logger.info("买--：" + buyPri + "---卖" + sellPri);
+
 
                 if (sellPri.compareTo(buyPri) == 0) {
                     //平台撮合功能失败
                     setTradeLog(id, "交易平台无法撮合", 0, "FF111A");
                     return;
                 }
-
                 Integer range = Integer.valueOf(exchange.get("range"));
                 String relishMin = exchange.get("relishMin");
                 String relishMax = exchange.get("relishMax");
-                String relishMark = exchange.get("relishMark");
-
                 String deepMin = exchange.get("deepMin");
                 String deepMax = exchange.get("deepMax");
+                String relishMark = exchange.get("relishMark");
 
+                String kline = httpUtil.get("https://api.hotcoinfin.com/v1/ticker?step=1&symbol=" + exchange.get("market"));
+                //1分钟的开盘价
+                BigDecimal minPrice = new BigDecimal(JSONObject.fromObject(kline).getJSONArray("data").getJSONArray(0).getString(1));
 
-                List<DeepVo> history = WeexUtils.getHistory(relishMark);
-                Map<String, List<DeepVo>> okDepp = WeexUtils.getdeep(relishMark);
+                List<DeepVo> history = BianUtils.getHistory(relishMark);
+                Map<String, List<DeepVo>> okDepp = BianUtils.getdeep(relishMark);
                 BigDecimal okDeepSellPrice = okDepp.get("deepSellList").get(0).getPrice();
 
                 //计算价格比例
-                if (point == null) {
-                    point = new BigDecimal("1");
+                if (point == null || System.currentTimeMillis()-times>1000*60*30) {
+                    point = sellPri.divide(okDeepSellPrice, 12, BigDecimal.ROUND_HALF_UP);
+                    times=System.currentTimeMillis();
                 }
-                logger.info("weex-价格：" + sellPri + "--OK价格：" + okDeepSellPrice + "--比例：" + point);
+                logger.info("hotcoin-价格：" + sellPri + "--OK价格：" + okDeepSellPrice + "--比例：" + point);
                 List<Order> list = new ArrayList<>();
 
+                int pricePrecision = Integer.parseInt(exchange.get("pricePrecision").toString());
+
+                double pow = Math.pow(10, pricePrecision);
+                BigDecimal change = new BigDecimal("1").divide(new BigDecimal(pow), pricePrecision, BigDecimal.ROUND_HALF_UP);
 
 
                 // 同步k线
-
-                BigDecimal klinePrice=null;
+                int y=0;
+                 BigDecimal klinePrice=null;
                 for (DeepVo deepVo : history) {
+                    y++;
                     boolean b = RandomUtils.nextBoolean();
                     //同步交易
                     Order order = new Order();
@@ -153,15 +183,24 @@ public class HotcoinRep2Ok extends HotCoinParentService {
                     order.setType(b?1:2);
                     BigDecimal multiply = deepVo.getPrice().multiply(point).setScale(Integer.parseInt(exchange.get("pricePrecision")), RoundingMode.HALF_UP);
                     order.setPrice(multiply);
-                    order.setAmount(orderAmount);
-                    logger.info("买--Kline对标-ok价格：" + deepVo.getPrice() + "---对标价格" + order.getPrice()  + "---数量：" + order.getAmount());
+                    if (order.getPrice().compareTo(minPrice)==0 ){
+                        BigDecimal addPrice = order.getPrice().add(change);
+                        if (addPrice.compareTo(sellPri)>=0||y<history.size()){
+                            continue;
+                        }else {
+                            order.setPrice(addPrice);
+                            logger.info("Kline对标-ok价格：" + deepVo.getPrice() + "---对标价格" + order.getPrice() + "和一分钟K线初始价格重合:"+minPrice);
+                        }
+                    }
+                    order.setAmount(orderAmount.multiply(new BigDecimal("1.5")));
+                    logger.info("买--Kline对标-ok价格：" + deepVo.getPrice() + "---对标价格" + order.getPrice() + "平台数量：" + deepVo.getAmount() + "---实际数量：" + order.getAmount());
                     list.add(order);
-                   Order order1 = new Order();
+                    Order order1 = new Order();
                     order1.setType(b?2:1);
                     order1.setPrice(order.getPrice());
                     order1.setFirst(1);
                     order1.setAmount(order.getAmount());
-                    logger.info("买--Kline对标-ok价格：" + deepVo.getPrice() + "---对标价格" + order1.getPrice() + "---数量：" + order1.getAmount());
+                    logger.info("买--Kline对标-ok价格：" + deepVo.getPrice() + "---对标价格" + order1.getPrice() + "平台数量：" + deepVo.getAmount() + "---实际数量：" + order1.getAmount());
                     list.add(order1);
                     klinePrice=order1.getPrice();
                     break;
@@ -173,16 +212,15 @@ public class HotcoinRep2Ok extends HotCoinParentService {
                     DeepVo deepBuy = okDepp.get("deepBuyList").get(i);
                     Order order = new Order();
                     order.setType(1);
-                    order.setPrice(deepBuy.getPrice().multiply(point).setScale(Integer.parseInt(exchange.get("pricePrecision")),RoundingMode.HALF_UP));
+                    order.setPrice(deepBuy.getPrice().multiply(point));
                     if (klinePrice!=null&&order.getPrice().compareTo(klinePrice)==0){
                         continue;
                     }
-
                     order.setAmount(orderAmount);
                     if (i==0){
                         order.setFirst(2);
                     }
-                    logger.info("买--对标-ok价格：" + deepBuy.getPrice() + "---对标价格" + order.getPrice()  + "数量：" + order.getAmount());
+                    logger.info("买--对标-ok价格：" + deepBuy.getPrice() + "---对标价格" + order.getPrice().setScale(Integer.parseInt(exchange.get("pricePrecision")),RoundingMode.HALF_UP) + "---实际数量：" + order.getAmount());
 
                     j++;
                     list.add(order);
@@ -193,16 +231,16 @@ public class HotcoinRep2Ok extends HotCoinParentService {
                     DeepVo deepBuy = okDepp.get("deepSellList").get(i);
                     Order order = new Order();
                     order.setType(2);
-                    order.setPrice(deepBuy.getPrice().multiply(point).setScale(Integer.parseInt(exchange.get("pricePrecision")),RoundingMode.HALF_UP));
+                    order.setPrice(deepBuy.getPrice().multiply(point));
                     if (klinePrice!=null&&order.getPrice().compareTo(klinePrice)==0){
                         continue;
                     }
+
                     order.setAmount(orderAmount);
                     if (i==0){
                         order.setFirst(2);
-
                     }
-                    logger.info("卖--对标-ok价格：" + deepBuy.getPrice() + "---对标价格" + order.getPrice() );
+                    logger.info("卖--对标-ok价格：" + deepBuy.getPrice() + "---对标价格" + order.getPrice().setScale(Integer.parseInt(exchange.get("pricePrecision")),RoundingMode.HALF_UP)  + "---数量：" + order.getAmount());
                     j++;
                     list.add(order);
                 }
@@ -216,15 +254,9 @@ public class HotcoinRep2Ok extends HotCoinParentService {
                 //开始挂单
                 for (Order order2 : list) {
                     Thread.sleep(1000);
-                    String resultJson =null;
-                    if (!StringUtils.isEmpty(exchange.get("test"))){
-                        resultJson="{\"code\":200,\"msg\":\"委托成功\",\"time\":1763558284055,\"data\":{\"ID\":2511024846264825}}";
-                    }else {
-                        resultJson = submitOrder(order2.getType(), order2.getPrice(), order2.getAmount());
-                    }
-
+                    String resultJson = submitOrder(order2.getType(), order2.getPrice(), order2.getAmount());
                     JSONObject jsonObject1 = judgeRes(resultJson, "code", "submitTrade");
-                    if (jsonObject1 != null && "200".equals(jsonObject1.getString("code"))) {
+                    if (jsonObject1 != null && jsonObject1.getInt("code") == 200) {
                         String orderId = jsonObject1.getJSONObject("data").getString("ID");
                         nowOrderList.add(orderId);
                     }
@@ -246,7 +278,7 @@ public class HotcoinRep2Ok extends HotCoinParentService {
             lastOrderList= JSONArray.parseArray(JSON.toJSONString(nowOrderList), String.class);
 
             nowOrderList.clear();
-            double time = Double.valueOf(exchange.get("time"));
+            double time = Double.parseDouble(exchange.get("time"));
             try {
                 Thread.sleep(getRandom(time,null).intValue()* 1000L);
             } catch (InterruptedException e) {
