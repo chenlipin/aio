@@ -2,6 +2,7 @@ package top.suilian.aio.service.gate.newKline;
 
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.math.RandomUtils;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
@@ -60,6 +61,8 @@ public class NewGateKline extends GateParentService {
     private int maxEatOrder = 0;
     private int timeSlot = 1;
     private BigDecimal tradeRatio = new BigDecimal(5);
+    long ordersleeptime = System.currentTimeMillis();
+    private int eatOrderPd = 0;//吃单数量 没盘口吃单
 
     public void init() throws UnsupportedEncodingException {
 
@@ -80,6 +83,7 @@ public class NewGateKline extends GateParentService {
                 }
                 timeSlot = Integer.parseInt(exchange.get("timeSlot"));
             }
+            setBalanceRedis();
 
             maxEatOrder = Integer.parseInt(exchange.get("maxEatOrder"));//吃单成交上限数
             start = false;
@@ -224,6 +228,7 @@ public class NewGateKline extends GateParentService {
                     JSONObject jsonObject1 = judgeRes(resultJson1, "code", "submitTrade");
 
                     if (jsonObject1 != null && jsonObject1.getInt("code") == 0) {
+                        ordersleeptime = System.currentTimeMillis();
                         orderIdTwo = jsonObject1.getString("orderNumber");
                         removeSmsRedis(Constant.KEY_SMS_INSUFFICIENT);
 
@@ -317,6 +322,27 @@ public class NewGateKline extends GateParentService {
             BigDecimal buyPri = new BigDecimal(String.valueOf(buyPrices.get(0).get(0)));
             BigDecimal sellPri =new BigDecimal(String.valueOf(sellPrices.get(sellPrices.size()-1).get(0)));
 
+
+            long l = 1000 * 60 + (RandomUtils.nextInt(10) * 1000L);
+            logger.info("当前时间:" + System.currentTimeMillis() + "--ordersleeptime:" + ordersleeptime + "--差值：" + l);
+            if (System.currentTimeMillis() - ordersleeptime > l ) {
+
+
+                if (eatOrderPd<20) {
+                    logger.info("开始补单子");
+                    boolean type = RandomUtils.nextBoolean();
+                    String resultJson = submitOrder(type ? 1 : -1, type ? sellPri : buyPri, new BigDecimal(exchange.get("minTradeLimit")));
+                    JSONObject jsonObject1 = judgeRes(resultJson, "code", "submitTrade");
+
+                    if (jsonObject1 != null && jsonObject1.getInt("code") == 0) {
+                        eatOrderPd++;
+                        ordersleeptime = System.currentTimeMillis();
+                        logger.info("长时间没挂单 补单方向" + (type ? "buy" : "sell") + "：数量" + exchange.get("minTradeLimit") + "价格：" + (type ? sellPri : buyPri));
+                    }
+                }else {
+                    setWarmLog(id,2,"吃盘口单数达到上限(" + eatOrderPd + ")=吃单成交上限数(" + eatOrderPd + "),吃单上限，停止吃单","");
+                }
+            }
 
             BigDecimal intervalPrice = sellPri.subtract(buyPri);
 

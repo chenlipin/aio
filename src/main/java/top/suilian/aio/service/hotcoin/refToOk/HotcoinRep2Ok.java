@@ -78,7 +78,7 @@ public class HotcoinRep2Ok extends HotCoinParentService {
         int i1 = RandomUtils.nextInt(5);
         if(2==i1){
             try {
-//                setBalanceRedis();
+                setBalanceRedis();
             } catch (Exception e) {
                 e.printStackTrace();
             }

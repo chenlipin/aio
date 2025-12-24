@@ -3,6 +3,7 @@ package top.suilian.aio.service.gate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
+import top.suilian.aio.service.gate.RandomDepth.RunGateDeep;
 import top.suilian.aio.service.gate.newKline.RunGateKline;
 import top.suilian.aio.service.gate.refToHot.GateRep2Hot;
 import top.suilian.aio.service.gate.refToHot.RunGateRep2Hot;
@@ -18,6 +19,9 @@ public class GateService {
     @Autowired
     RunGateRep2Hot gateRep2Hot;
 
+    @Autowired
+    RunGateDeep runGateDeep;
+
 
     /**
      * 开启机器人
@@ -32,6 +36,9 @@ public class GateService {
                 break;
             case Constant.KEY_STRATEGY_REPLENISH:
                 replenish.init(id);
+                break;
+            case Constant.KEY_RANDOM_DEPTH:
+                runGateDeep.init(id);
                 break;
             case Constant.KEY_STRA_9:
                 gateRep2Hot.init(id);
@@ -50,6 +57,9 @@ public class GateService {
             case Constant.KEY_STRA_9:
                 gateRep2Hot.stopWork(id);
                 break;
+            case Constant.KEY_RANDOM_DEPTH:
+                runGateDeep.stopWork(id);
+                break;
         }
     }
 
@@ -63,6 +73,9 @@ public class GateService {
                 break;
             case Constant.KEY_STRA_9:
                 gateRep2Hot.killWork(id);
+                break;
+            case Constant.KEY_RANDOM_DEPTH:
+                runGateDeep.killWork(id);
                 break;
         }
     }
