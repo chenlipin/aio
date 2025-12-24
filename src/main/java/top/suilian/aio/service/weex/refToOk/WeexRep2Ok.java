@@ -2,6 +2,7 @@ package top.suilian.aio.service.weex.refToOk;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import lombok.Data;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.math.RandomUtils;
@@ -9,6 +10,7 @@ import top.suilian.aio.Util.HttpUtil;
 import top.suilian.aio.redis.RedisHelper;
 import top.suilian.aio.refer.BianUtils;
 import top.suilian.aio.refer.DeepVo;
+import top.suilian.aio.refer.HotcoinUtils;
 import top.suilian.aio.service.*;
 import top.suilian.aio.service.weex.WeexParentService;
 
@@ -129,13 +131,13 @@ public class WeexRep2Ok extends WeexParentService {
                 //1分钟的开盘价
                 BigDecimal minPrice = new BigDecimal(JSONObject.fromObject(kline).getJSONArray("data").getJSONArray(0).getString(1));
                 logger.info("1分钟的开盘价：" +minPrice);
-                List<DeepVo> history = BianUtils.getHistory(relishMark);
-                Map<String, List<DeepVo>> okDepp = BianUtils.getdeep(relishMark);
+                List<DeepVo> history = HotcoinUtils.getHistory(relishMark);
+                Map<String, List<DeepVo>> okDepp = HotcoinUtils.getdeep(relishMark);
                 BigDecimal okDeepSellPrice = okDepp.get("deepSellList").get(0).getPrice();
 
                 //计算价格比例
                 if (point == null || System.currentTimeMillis()-times>1000*60*30) {
-                    point = sellPri.divide(okDeepSellPrice, 12, BigDecimal.ROUND_HALF_UP);
+                    point = new BigDecimal("1");
                     times=System.currentTimeMillis();
                 }
                 logger.info("weex-价格：" + sellPri + "--OK价格：" + okDeepSellPrice + "--比例：" + point);

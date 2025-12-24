@@ -62,7 +62,7 @@ public class BianUtils extends BaseHttp {
         List<DeepVo> deepVos = new ArrayList<>();
         String trades = get(uri + "/api/v3/trades?limit=30&symbol=" + symbol.toUpperCase());
         JSONArray jsonArray = JSONArray.fromObject(trades);
-        for (int i = 0; i < jsonArray.size(); i+=3) {
+        for (int i = 0; i < jsonArray.size(); i+=2) {
             DeepVo deepVo = new DeepVo();
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             BigDecimal price = new BigDecimal(jsonObject.getString("price")).setScale(9, RoundingMode.HALF_UP);

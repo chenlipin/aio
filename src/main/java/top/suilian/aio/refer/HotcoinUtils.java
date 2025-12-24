@@ -48,7 +48,7 @@ public class HotcoinUtils extends BaseHttp {
             JSONArray dataJson = tickJson.getJSONArray("trades");
 
 
-            for (int i = 0; i < dataJson.size(); i += 3) {
+            for (int i = 0; i < dataJson.size(); i += 2) {
                 DeepVo deepVo = new DeepVo();
                 JSONObject jsonObject = dataJson.getJSONObject(i);
                 BigDecimal price = new BigDecimal(jsonObject.getString("price")).setScale(12, RoundingMode.HALF_UP).stripTrailingZeros();
