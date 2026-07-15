@@ -26,7 +26,7 @@ import java.util.*;
 @Service
 @DependsOn("beanContext")
 public class BitbabyParentService extends BaseService implements RobotAction {
-    public String baseUrl ="https://api.bitbaby.com/";
+//    public String baseUrl ="https://openapi.bitbaby.com/";
     public String host = "";
     private static final DateTimeFormatter DT_FORMAT = DateTimeFormatter
             .ofPattern("uuuu-MM-dd'T'HH:mm:ss");
@@ -127,7 +127,7 @@ public class BitbabyParentService extends BaseService implements RobotAction {
 
         String trade = null;
         try {
-            trade = HttpUtil.postByPackcoin(baseUrl + "/spot/open/sapi/v1/order",  reqparam,header);
+            trade = HttpUtil.postByPackcoin(exchange.get("baseUrl") + "/spot/open/sapi/v1/order",  reqparam,header);
             JSONObject jsonObject = JSONObject.fromObject(trade);
             setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
         } catch (UnsupportedEncodingException e) {
@@ -161,8 +161,9 @@ public class BitbabyParentService extends BaseService implements RobotAction {
 
         String trade = null;
         try {
-            trade = HttpUtil.postByPackcoin(baseUrl + "/spot/open/sapi/v1/self_trade",  reqparam,header);
+            trade = HttpUtil.postByPackcoin(exchange.get("baseUrl") + "/spot/open/sapi/v1/self_trade",  reqparam,header);
             System.out.println(JSON.toJSONString(reqparam));
+            System.out.println(JSON.toJSONString(header));
             System.out.println(trade);
             JSONObject jsonObject = JSONObject.fromObject(trade);
             setTradeLog(id, "挂" + (type == 1 ? "买" : "卖") + "单[价格：" + price1 + ": 数量" + num + "]=>" + trade, 0, type == 1 ? "05cbc8" : "ff6224");
@@ -212,7 +213,7 @@ public class BitbabyParentService extends BaseService implements RobotAction {
         header.put("X-CH-SIGN", sign);
         String trade = null;
         try {
-            trade = HttpUtil.getAddHead(baseUrl + "/spot/open/sapi/v1/account", header);
+            trade = HttpUtil.getAddHead(exchange.get("baseUrl") + "/spot/open/sapi/v1/account", header);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -243,7 +244,7 @@ public class BitbabyParentService extends BaseService implements RobotAction {
         header.put("X-CH-SIGN", sign);
         String trade = null;
         try {
-            trade = HttpUtil.getAddHead(baseUrl + "/spot/open/sapi/v1/order?symbol="+ exchange.get("market") +"&orderId="+orderId,header);
+            trade = HttpUtil.getAddHead(exchange.get("baseUrl") + "/spot/open/sapi/v1/order?symbol="+ exchange.get("market") +"&orderId="+orderId,header);
             setTradeLog(id, "查询订单[orderId：" + orderId + "]=>" + trade, 0);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -281,7 +282,7 @@ public class BitbabyParentService extends BaseService implements RobotAction {
         params.put("X-CH-SIGN", sign);
         String trade = null;
         try {
-            trade = HttpUtil.postByPackcoin(baseUrl + "/spot/open/sapi/v1/cancel", reqparam,params);
+            trade = HttpUtil.postByPackcoin(exchange.get("baseUrl") + "/spot/open/sapi/v1/cancel", reqparam,params);
            logger.info("撤销订单::"+orderId+",cancelTrade返回参数：" + trade);
 
         } catch (Exception e) {
@@ -299,7 +300,7 @@ public class BitbabyParentService extends BaseService implements RobotAction {
     public String getTrade() {
 
         long timeMillis = System.currentTimeMillis();
-        String strSign =timeMillis+ "GET" +"/sapi/v1/openOrders?symbol="+ exchange.get("market")+"&limit=1000";
+        String strSign =timeMillis+ "GET" +"/sapi/v1/openOrders?symbol="+ exchange.get("market")+"&limit=100";
 
         strSign=strSign;
         String sign = HMAC.sha256_HMAC(strSign, exchange.get("tpass"));
@@ -310,7 +311,7 @@ public class BitbabyParentService extends BaseService implements RobotAction {
         params.put("X-CH-SIGN", sign);
         String trade = null;
         try {
-            trade = HttpUtil.getAddHead(baseUrl + "/spot/open/sapi/v1/openOrders?symbol="+ exchange.get("market")+"&limit=1000",params);
+            trade = HttpUtil.getAddHead(exchange.get("baseUrl") + "spot/open/sapi/v1/openOrders?symbol="+ exchange.get("market")+"&limit=100",params);
             logger.info("获取未成交列表返回参数：" + trade);
         } catch (Exception e) {
             throw new RuntimeException(e);

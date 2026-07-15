@@ -88,6 +88,18 @@ public class NewBitbabyKline extends BitbabyParentService {
                 logger.info("设置机器人交易规则开始");
                 setBalanceRedis();
 
+//                for (int i=0;i<=80;i++) {
+//                    List<getAllOrderPonse> getAllOrderPonses = selectOrder();
+//                    getAllOrderPonses.parallelStream().forEach(response -> {
+//                        try {
+//                            cancelTrade(response.getOrderId());
+//                            logger.info("撤單-》"+response.getOrderId());
+//                        } catch (Exception e) {
+//                            throw new RuntimeException(e);
+//                        }
+//                    });
+//                }
+
                 //判断走K线的方式
                 if ("1".equals(exchange.get("sheetForm"))) {
                     //新版本
@@ -111,7 +123,7 @@ public class NewBitbabyKline extends BitbabyParentService {
             logger.info("当前时间段单量百分比：" + transactionRatio);
 
             if (runTime < timeSlot) {
-                String trades = HttpUtil.get(baseUrl +"/spot/open/sapi/v1/depth?symbol="+exchange.get("market")+"&limit=10");
+                String trades = HttpUtil.get(exchange.get("baseUrl") +"/spot/open/sapi/v1/depth?symbol="+exchange.get("market")+"&limit=10");
 
 
                 //获取深度 判断平台撮合是否成功
@@ -297,7 +309,7 @@ public class NewBitbabyKline extends BitbabyParentService {
         public BigDecimal getRandomPrice() throws UnsupportedEncodingException {
             BigDecimal price = null;
 
-            String trades = HttpUtil.get(baseUrl +"/spot/open/sapi/v1/depth?symbol="+exchange.get("market")+"&limit=10");
+            String trades = HttpUtil.get(exchange.get("baseUrl") +"/spot/open/sapi/v1/depth?symbol="+exchange.get("market")+"&limit=10");
 
 
             //获取深度 判断平台撮合是否成功

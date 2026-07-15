@@ -81,7 +81,7 @@ public class BitbabyReplenish extends BitbabyParentService {
         BigDecimal buyPri=null;
         BigDecimal sellPri=null;
 
-        String trades = HttpUtil.get(baseUrl +"/spot/open/sapi/v1/depth?symbol="+exchange.get("market")+"&limit=10");
+        String trades = HttpUtil.get(exchange.get("baseUrl") +"/spot/open/sapi/v1/depth?symbol="+exchange.get("market")+"&limit=10");
 
 
         //获取深度 判断平台撮合是否成功

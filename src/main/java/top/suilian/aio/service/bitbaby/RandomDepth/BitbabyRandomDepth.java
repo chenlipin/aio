@@ -144,21 +144,11 @@ public class BitbabyRandomDepth extends BitbabyParentService {
             String str = selectOrder(tradeId);
             JSONObject jsonObject = judgeRes(str, "code", "selectOrder");
             if (jsonObject != null ) {
-
-                String status = jsonObject.getString("status")==null?"CANCELED": jsonObject.getString("status");
-                if (status.contains("FILLED")) {
-                    setTradeLog(id, "深度订单id：" + tradeId + "完全成交", 0, "000000");
-                    depthCancelOrderNum++;
-                } else if (status.contains("CANCELED")) {
-                    setTradeLog(id, "深度订单id：" + tradeId + "已撤单", 0, "000000");
-                } else {
                     String res = cancelTrade(tradeId);
-                    JSONObject cancelRes = judgeRes(res, "code", "cancelTrade");
-                    setCancelOrder(cancelRes, res, tradeId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
-                    setTradeLog(id, "深度订单撤单[" + tradeId + "]=>" + cancelRes, 0, "000000");
+                    setTradeLog(id, "深度订单撤单[" + tradeId + "]=>" + res, 0, "000000");
                 }
             }
-        }
+
     }
 
 
@@ -166,7 +156,7 @@ public class BitbabyRandomDepth extends BitbabyParentService {
 
         List<BigDecimal> price = new ArrayList<BigDecimal>();
 
-        String depth = HttpUtil.get(baseUrl +"/spot/open/sapi/v1/depth?symbol="+exchange.get("market")+"&limit=10");
+        String depth = HttpUtil.get(exchange.get("baseUrl") +"/spot/open/sapi/v1/depth?symbol="+exchange.get("market")+"&limit=10");
 
         //获取深度 判断平台撮合是否成功
         JSONObject tradesObj = judgeRes(depth, "bids", "getRandomPrice");

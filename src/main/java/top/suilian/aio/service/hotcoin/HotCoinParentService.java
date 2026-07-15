@@ -315,7 +315,7 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         params.put("Signature", Signature);
         String httpParams = splicing(params);
 
-
+        System.out.println("cancel"+orderId);
         HttpUtil httpUtil = new HttpUtil();
         String res = httpUtil.get("https://" + host + uri + "?" + httpParams);
         JSONObject jsonObject = JSONObject.fromObject(res);
