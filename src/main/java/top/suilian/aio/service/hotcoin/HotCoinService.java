@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.suilian.aio.Util.Constant;
 import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinDeep;
-import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
 import top.suilian.aio.service.hotcoin.klineReferToZg.RunKlineHotcoinReferToZg;
 import top.suilian.aio.service.hotcoin.refToOk.RunhotcoinRep2Ok;
 import top.suilian.aio.service.hotcoin.replenish.RunhotcoinReplenish;
@@ -22,8 +21,6 @@ public class HotCoinService {
     RunDepthHotcoinReferToZg runDepthHotcoinReferToZg;
     @Autowired
     RunNewHotcoinKline runNewHotcoinKline;
-    @Autowired
-    RunHotcoinRandomDepth runHotcoinRandomDepth;
     @Autowired
     RunHotcoinDeep runHotcoinDeep;
     @Autowired

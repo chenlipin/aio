@@ -47,7 +47,6 @@ public class WhitebitService {
         switch (type) {
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewWhitebitKline.killWork(id);
-//                runHotcoinRandomDepth.killWork(id+1);
                 break;
             case 8:
                 runWhitebitReplenish.killWork(id);

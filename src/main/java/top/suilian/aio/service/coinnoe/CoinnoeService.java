@@ -10,7 +10,6 @@ public class CoinnoeService {
     @Autowired
     RunNewCoinnoeKline runNewCoinnoeKline;
 //    @Autowired
-//    RunHotcoinRandomDepth runHotcoinRandomDepth;
 
     /**
      * 开启机器人
@@ -39,7 +38,6 @@ public class CoinnoeService {
         switch (type) {
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewCoinnoeKline.killWork(id);
-//                runHotcoinRandomDepth.killWork(id+1);
                 break;
         }
     }

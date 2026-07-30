@@ -12,7 +12,6 @@ import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
-import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
 import top.suilian.aio.vo.getAllOrderPonse;
 
 import javax.crypto.Mac;
@@ -39,7 +38,6 @@ public class ZbgParentService extends BaseService implements RobotAction {
         return null;
     }
 
-    public RunHotcoinRandomDepth runHotcoinRandomDepth = BeanContext.getBean(RunHotcoinRandomDepth.class);
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;

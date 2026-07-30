@@ -13,7 +13,6 @@ import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
 import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinDeep;
-import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
 import top.suilian.aio.vo.getAllOrderPonse;
 
 import javax.crypto.Mac;
@@ -34,7 +33,6 @@ public class HotCoinParentService extends BaseService implements RobotAction {
 
     public String baseUrl = "https://api.hotcoinfin.com";
     public String host = "api.hotcoinfin.com";
-    public RunHotcoinRandomDepth runHotcoinRandomDepth = BeanContext.getBean(RunHotcoinRandomDepth.class);
     public RunHotcoinDeep runHotcoinDeep = BeanContext.getBean(RunHotcoinDeep.class);
 
     public Map<String, Object> precision = new HashMap<String, Object>();
@@ -329,7 +327,10 @@ public class HotCoinParentService extends BaseService implements RobotAction {
      * @return
      */
     public String getTrade() {
+        return getTrade(1, 100);
+    }
 
+    public String getTrade(int page, int count) {
         String uri = "/v1/order/entrust";
         String httpMethod = "GET";
         Map<String, Object> params = new TreeMap<>();
@@ -339,8 +340,8 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         params.put("Timestamp", new Date().getTime());
         params.put("symbol", exchange.get("market"));
         params.put("type", 1);
-        params.put("page", 1);
-        params.put("count", 100);
+        params.put("page", page);
+        params.put("count", count);
         String Signature = getSignature(exchange.get("tpass"), host, uri, httpMethod, params);
         params.put("Signature", Signature);
         String httpParams = null;
@@ -527,18 +528,37 @@ public class HotCoinParentService extends BaseService implements RobotAction {
     @Override
     public List<getAllOrderPonse> selectOrder() {
         ArrayList<getAllOrderPonse> getAllOrderPonses = new ArrayList<>();
-        String trade = getTrade();
-        JSONObject jsonObject = JSONObject.fromObject(trade);
-        JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("entrutsCur");
-        for (int i = 0; i < jsonArray.size(); i++) {
-            getAllOrderPonse getAllOrderPonse = new getAllOrderPonse();
-            JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-            getAllOrderPonse.setOrderId(jsonObject1.getString("id"));
-            getAllOrderPonse.setCreatedAt(jsonObject1.getString("time"));
-            getAllOrderPonse.setPrice(jsonObject1.getString("types")+"-"+jsonObject1.getString("price"));
-            getAllOrderPonse.setStatus(0);
-            getAllOrderPonse.setAmount(jsonObject1.getString("count"));
-            getAllOrderPonses.add(getAllOrderPonse);
+        int page = 1;
+        int pageSize = 100;
+        int maxPage = 50;
+        while (page <= maxPage) {
+            String trade = getTrade(page, pageSize);
+            JSONObject jsonObject = JSONObject.fromObject(trade);
+            if (jsonObject == null || !jsonObject.has("data") || jsonObject.get("data") == null) {
+                break;
+            }
+            JSONObject data = jsonObject.getJSONObject("data");
+            if (!data.has("entrutsCur") || data.get("entrutsCur") == null) {
+                break;
+            }
+            JSONArray jsonArray = data.getJSONArray("entrutsCur");
+            if (jsonArray == null || jsonArray.size() == 0) {
+                break;
+            }
+            for (int i = 0; i < jsonArray.size(); i++) {
+                getAllOrderPonse getAllOrderPonse = new getAllOrderPonse();
+                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                getAllOrderPonse.setOrderId(jsonObject1.getString("id"));
+                getAllOrderPonse.setCreatedAt(jsonObject1.getString("time"));
+                getAllOrderPonse.setPrice(jsonObject1.getString("types")+"-"+jsonObject1.getString("price"));
+                getAllOrderPonse.setStatus(0);
+                getAllOrderPonse.setAmount(jsonObject1.getString("count"));
+                getAllOrderPonses.add(getAllOrderPonse);
+            }
+            if (jsonArray.size() < pageSize) {
+                break;
+            }
+            page++;
         }
         return getAllOrderPonses;
     }

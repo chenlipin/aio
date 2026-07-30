@@ -10,7 +10,6 @@ public class ZbgService {
     @Autowired
     RunNewZbgKline runNewZbgKline;
 //    @Autowired
-//    RunHotcoinRandomDepth runHotcoinRandomDepth;
 
     /**
      * 开启机器人
@@ -39,7 +38,6 @@ public class ZbgService {
         switch (type) {
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewZbgKline.killWork(id);
-//                runHotcoinRandomDepth.killWork(id+1);
                 break;
         }
     }

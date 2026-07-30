@@ -10,7 +10,6 @@ public class BkexService {
     @Autowired
     RunNewBkexKline runNewBkexKline;
 //    @Autowired
-//    RunHotcoinRandomDepth runHotcoinRandomDepth;
 
     /**
      * 开启机器人
@@ -39,7 +38,6 @@ public class BkexService {
         switch (type) {
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewBkexKline.killWork(id);
-//                runHotcoinRandomDepth.killWork(id+1);
                 break;
         }
     }

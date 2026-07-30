@@ -10,7 +10,6 @@ public class BithumbService {
     @Autowired
     RunNewBithumbKline runNewBithumbKline;
 //    @Autowired
-//    RunHotcoinRandomDepth runHotcoinRandomDepth;
 
     /**
      * 开启机器人
@@ -39,7 +38,6 @@ public class BithumbService {
         switch (type) {
             case Constant.KEY_STRATEGY_NEW_KLINE:
                 runNewBithumbKline.killWork(id);
-//                runHotcoinRandomDepth.killWork(id+1);
                 break;
         }
     }

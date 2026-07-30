@@ -86,7 +86,6 @@ public class NewKucoinKline extends KucoinParentService {
              */
             if ("1".equals(exchange.get("isdeepRobot"))) {
                 logger.info("深度机器人交易开始");
-//                runHotcoinRandomDepth.init(id + 1);
             }
 
             //判断走K线的方式

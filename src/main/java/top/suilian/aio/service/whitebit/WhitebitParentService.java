@@ -12,7 +12,6 @@ import top.suilian.aio.model.RobotArgs;
 import top.suilian.aio.model.TradeEnum;
 import top.suilian.aio.service.BaseService;
 import top.suilian.aio.service.RobotAction;
-import top.suilian.aio.service.hotcoin.RandomDepth.RunHotcoinRandomDepth;
 import top.suilian.aio.vo.getAllOrderPonse;
 
 import javax.crypto.Mac;
@@ -30,7 +29,6 @@ import java.util.*;
 public class WhitebitParentService extends BaseService implements RobotAction {
     public String baseUrl = "https://whitebit.com";
     public String host = "";
-    public RunHotcoinRandomDepth runHotcoinRandomDepth = BeanContext.getBean(RunHotcoinRandomDepth.class);
 
     public Map<String, Object> precision = new HashMap<String, Object>();
     public int cnt = 0;
