@@ -206,7 +206,7 @@ public class HotcoinReplenish extends HotCoinParentService {
                                 random=Double.parseDouble(oneRange.toString());
                             }
                             logger.info("一个区间的价格：" + oneRange + "---随机的价格" + random);
-                            BigDecimal orderPrice = basePrice.add(oneRange.multiply(new BigDecimal(i))).add(new BigDecimal(random.toString()));
+                            BigDecimal orderPrice = basePrice.add(oneRange.multiply(new BigDecimal(i))).add(new BigDecimal(random.toString())).setScale(pricePrecision.intValue(), RoundingMode.HALF_DOWN);
                             BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, amountPrecision);
                             order.setPrice(orderPrice);
                             order.setAmount(orderAmount);
@@ -224,22 +224,13 @@ public class HotcoinReplenish extends HotCoinParentService {
                                 random=Double.parseDouble(oneRange.toString());
                             }
                             logger.info("一个区间的价格：" + oneRange + "---随机的价格" + random);
-                            BigDecimal orderPrice = basePrice.subtract(oneRange.multiply(new BigDecimal(i))).subtract(new BigDecimal(random.toString()));
+                            BigDecimal orderPrice = basePrice.subtract(oneRange.multiply(new BigDecimal(i))).subtract(new BigDecimal(random.toString())).setScale(pricePrecision.intValue(), RoundingMode.HALF_DOWN);
                             BigDecimal orderAmount = getOrderAmount(relishMin, relishMax, amountPrecision);
                             order.setPrice(orderPrice);
                             order.setAmount(orderAmount);
                             order.setType(2);
                             orderList.add(order);
                         }
-                    }
-                    logger.info(JSON.toJSONString(orderList));
-                    logger.info("-----------------开始补单-------------------");
-                    replenish(orderList);
-                    logger.info("-----------------补单结束-------------------");
-                    try {
-                        Thread.sleep(300000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
                 } else {
                     logger.info("-----买卖单都补-------");
@@ -271,10 +262,10 @@ public class HotcoinReplenish extends HotCoinParentService {
                 }
                 logger.info(JSON.toJSONString(orderList));
                 logger.info("-----------------开始补单-------------------");
-                replenish(orderList);
+                replenish(orderList, buyPri, sellPri);
                 logger.info("-----------------补单结束-------------------");
                 try {
-                    Thread.sleep(30000);
+                    Thread.sleep(20000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -310,7 +301,7 @@ public class HotcoinReplenish extends HotCoinParentService {
         private BigDecimal amount;
     }
 
-    void replenish(List<Order> orderList) {
+    void replenish(List<Order> orderList, BigDecimal buyPri, BigDecimal sellPri) {
         String[] split = exchange.get("market").split("_");
         BigDecimal maxLeftQty = new BigDecimal(exchange.get("maxLeftQty"));
         BigDecimal maxRightQty = new BigDecimal(exchange.get("maxRightQty"));
@@ -333,6 +324,20 @@ public class HotcoinReplenish extends HotCoinParentService {
                     break;
                 }
             }
+            int pricePrecision = Integer.parseInt(exchange.get("pricePrecision"));
+            BigDecimal priceStep = BigDecimal.ONE.divide(new BigDecimal(Math.pow(10, pricePrecision) + ""), pricePrecision, RoundingMode.HALF_DOWN);
+            BigDecimal orderPrice = order.getPrice().setScale(pricePrecision, RoundingMode.HALF_DOWN);
+            BigDecimal safeMaxBuyPrice = sellPri.subtract(priceStep);
+            BigDecimal safeMinSellPrice = buyPri.add(priceStep);
+            if (order.getType() == 1 && orderPrice.compareTo(safeMaxBuyPrice) > 0) {
+                setTradeLog(id, "补单跳过买单，价格可能吃盘口，price=" + order.getPrice() + ", safeMaxBuyPrice=" + safeMaxBuyPrice + ", buyPri=" + buyPri + ", sellPri=" + sellPri, 0, "FF111A");
+                continue;
+            }
+            if (order.getType() != 1 && orderPrice.compareTo(safeMinSellPrice) < 0) {
+                setTradeLog(id, "补单跳过卖单，价格可能吃盘口，price=" + order.getPrice() + ", safeMinSellPrice=" + safeMinSellPrice + ", buyPri=" + buyPri + ", sellPri=" + sellPri, 0, "FF111A");
+                continue;
+            }
+            order.setPrice(orderPrice);
             String trade = submitOrder(order.getType(), order.getPrice(), order.getAmount());
             setTradeLog(id, "补单=》挂" + (order.getType() == 1 ? "买" : "卖") + "单[价格：" + order.getPrice() + ": 数量" + order.getAmount() + "]=>" + trade, 0, order.getType() == 1 ? "05cbc8" : "ff6224");
             JSONObject jsonObject = JSONObject.fromObject(trade);
