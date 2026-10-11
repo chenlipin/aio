@@ -95,6 +95,17 @@ public class HotcoinDeep extends HotCoinParentService {
         sleep(randomDelay());
     }
 
+    /**
+     * Cancel orders left by this strategy before the worker is discarded.
+     */
+    public void cancelActiveOrders() {
+        List<Order> orders = new ArrayList<>(activeOrders);
+        for (Order order : orders) {
+            cancel(order);
+        }
+        activeOrders.clear();
+    }
+
     private void replace(Order oldOrder, Depth depth) {
         boolean filled = isFilled(oldOrder);
         if (filled) {

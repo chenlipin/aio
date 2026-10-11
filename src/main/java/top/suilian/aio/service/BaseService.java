@@ -38,6 +38,8 @@ public class BaseService {
     public RobotLogService robotLogService = BeanContext.getBean(RobotLogService.class);
     public RobotService robotService = BeanContext.getBean(RobotService.class);
     public TradeLogService tradeLogService = BeanContext.getBean(TradeLogService.class);
+    /** Telegram通知服务，供各交易所服务在告警场景下复用 */
+    public TelegramNotifyService telegramNotifyService = BeanContext.getBean(TelegramNotifyService.class);
     //endregion org.apache.log4j.Logger
 
     //region    Utils

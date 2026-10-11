@@ -12,6 +12,8 @@
     <result column="start_date" jdbcType="DATE" property="startDate" />
     <result column="end_date" jdbcType="DATE" property="endDate" />
     <result column="name" jdbcType="VARCHAR" property="name" />
+    <!-- 读取现有typename字段，供Telegram通知解析群绑定；不改变机器人写入逻辑。 -->
+    <result column="typename" jdbcType="VARCHAR" property="typename" />
     <result column="is_update" jdbcType="BIT" property="isUpdate" />
     <result column="status" jdbcType="BIT" property="status" />
     <result column="operation_status" jdbcType="BIT" property="operationStatus" />
@@ -63,14 +65,14 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select robot_id, member_id, strategy_id, service_ip, service_port, new_ip, new_port, 
     start_date, end_date, name, is_update, status, operation_status, active, deleted, 
-    created_at, updated_at, type
+    created_at, updated_at, type, typename
     from robot
     where robot_id = #{robotId,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select robot_id, member_id, strategy_id, service_ip, service_port, new_ip, new_port, 
     start_date, end_date, name, is_update, status, operation_status, active, deleted, 
-    created_at, updated_at, type
+    created_at, updated_at, type, typename
     from robot
   </select>
 
@@ -78,7 +80,16 @@
   <select id="findByMemberId" resultMap="BaseResultMap">
     select robot_id, member_id, strategy_id, service_ip, service_port, new_ip, new_port,
     start_date, end_date, name, is_update, status, operation_status, active, deleted,
-    created_at, updated_at, type
+    created_at, updated_at, type, typename
     from robot where member_id = #{memberId}
+  </select>
+  <!-- 群指令仅查询本群绑定的typename，排除已删除记录。 -->
+  <select id="selectByTypename" resultMap="BaseResultMap">
+    select robot_id, member_id, strategy_id, service_ip, service_port, new_ip, new_port,
+           start_date, end_date, name, typename, is_update, status, operation_status,
+           active, deleted, created_at, updated_at, type
+    from robot
+    where typename = #{typename,jdbcType=VARCHAR} and deleted = 0
+    order by robot_id
   </select>
 </mapper>

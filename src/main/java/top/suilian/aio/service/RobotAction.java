@@ -55,4 +55,6 @@ public interface RobotAction {
 
 
     public Map<String, String> getParam();
+
+    public void setBalanceRedis() throws Exception;
 }

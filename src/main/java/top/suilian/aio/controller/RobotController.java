@@ -155,6 +155,14 @@ public class RobotController {
 
     }
 
+    @RequestMapping(value = "/refreshBalance")
+    @ResponseBody
+    public ResponseEntity refreshBalance(@Valid @RequestBody CancalAllOrder req) throws Exception {
+        log.info("刷新余额"+ JSONObject.toJSONString(req));
+        List<java.util.Map<String, String>> assets = tradeRobotService.refreshBalance(req);
+        return ResponseEntity.success(assets);
+    }
+
     @RequestMapping(value = "/replenishCl")
     @ResponseBody
     public ResponseEntity clean(@Valid @RequestBody CancalAllOrder req) {

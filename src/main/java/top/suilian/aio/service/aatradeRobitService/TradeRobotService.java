@@ -499,6 +499,29 @@ public class TradeRobotService {
         return maxLeftQty + "_" + maxRightQty;
     }
 
+    public List<Map<String, String>> refreshBalance(CancalAllOrder req) throws Exception {
+        RobotAction robotAction = getRobotAction(req.getRobotId());
+        redisHelper.remove(Constant.KEY_ROBOT_BALANCE + req.getRobotId());
+        robotAction.setBalanceRedis();
+
+        String balance = redisHelper.getBalanceParam(Constant.KEY_ROBOT_BALANCE + req.getRobotId());
+        if (StringUtils.isEmpty(balance)) {
+            return Collections.emptyList();
+        }
+        JSONObject balanceJson = JSONObject.parseObject(balance);
+        List<Map<String, String>> assets = new ArrayList<>();
+        for (String coinName : balanceJson.keySet()) {
+            String value = balanceJson.getString(coinName);
+            String[] values = StringUtils.isEmpty(value) ? new String[0] : value.split("_", 2);
+            Map<String, String> asset = new HashMap<>();
+            asset.put("coinName", coinName);
+            asset.put("total", values.length > 0 ? values[0] : "");
+            asset.put("freeze", values.length > 1 ? values[1] : "0");
+            assets.add(asset);
+        }
+        return assets;
+    }
+
     public void clean(CancalAllOrder req) {
         Member user = redisHelper.getUser(req.getToken());
         if (user == null || !user.getMemberId().equals(req.getUserId())) {

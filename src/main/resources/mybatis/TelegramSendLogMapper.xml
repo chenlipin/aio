@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.suilian.aio.dao.TelegramSendLogMapper">
+    <!-- 同时记录typename和实际robot_id，便于按逻辑机器人或具体记录排查发送结果。 -->
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="top.suilian.aio.model.TelegramSendLog" useGeneratedKeys="true">
+        insert into telegram_send_log
+        (robot_id, typename, channel_id, notice_type, message, success, response, created_at)
+        values
+        (#{robotId,jdbcType=INTEGER}, #{typename,jdbcType=VARCHAR}, #{channelId,jdbcType=INTEGER}, #{noticeType,jdbcType=VARCHAR},
+         #{message,jdbcType=LONGVARCHAR}, #{success,jdbcType=INTEGER}, #{response,jdbcType=LONGVARCHAR}, sysdate())
+    </insert>
+</mapper>

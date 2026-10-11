@@ -24,6 +24,9 @@ public class Robot implements Serializable {
 
     private String name;
 
+    /** 逻辑机器人标识，相同typename的记录共用Telegram群绑定 */
+    private String typename;
+
     private int isUpdate;
 
     private int status;
@@ -118,6 +121,16 @@ public class Robot implements Serializable {
 
     public void setName(String name) {
         this.name = name == null ? null : name.trim();
+    }
+
+    /** 获取群绑定使用的逻辑机器人标识。 */
+    public String getTypename() {
+        return typename;
+    }
+
+    /** 设置逻辑机器人标识。 */
+    public void setTypename(String typename) {
+        this.typename = typename == null ? null : typename.trim();
     }
 
     public int getIsUpdate() {

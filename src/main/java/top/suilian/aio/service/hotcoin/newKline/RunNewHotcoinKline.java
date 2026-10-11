@@ -73,6 +73,7 @@ public class RunNewHotcoinKline {
             if (work.getName() == id) {
                 robotService.setRobotStatus(id, Constant.KEY_ROBOT_STATUS_STOP);
                 work.stop();
+                work.kline.cancelActiveOrders();
                 works.remove(work);
                 robotService.stopRobot(id);
                 redisHelper.removeParent(String.valueOf(id));
@@ -94,11 +95,13 @@ public class RunNewHotcoinKline {
             if (work.getName() == id) {
                 Thread thread = commonUtil.getThreadByName(Constant.KEY_THREAD_KLINE + id);
                 if (thread == null) {
+                    work.kline.cancelActiveOrders();
                     return true;
                 } else {
                     //杀掉线程
                     thread.stop();
                     work.setStatus(StopableTask.Status.stoped);
+                    work.kline.cancelActiveOrders();
                     robotService.stopRobot(id);
                     redisHelper.removeParent(String.valueOf(id));
                     redisHelper.remove(Constant.KEY_ROBOT + id);

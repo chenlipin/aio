@@ -36,6 +36,24 @@ public class HotCoinParentService extends BaseService implements RobotAction {
     public RunHotcoinDeep runHotcoinDeep = BeanContext.getBean(RunHotcoinDeep.class);
 
     public Map<String, Object> precision = new HashMap<String, Object>();
+    /** 官方规则仅覆盖运行时参数，另存原始配置用于查询失败后的回退。 */
+    private final Map<String, String> configuredRules = new HashMap<>();
+
+    /** 重载数据库参数时清除旧规则，下一次使用重新查询官方接口。 */
+    @Override
+    public void setParam() {
+        super.setParam();
+        configuredRules.clear();
+        precision.clear();
+    }
+
+    /** 指定机器人加载参数也采用同样的精度重置规则。 */
+    @Override
+    public void setParam(Integer robotId) {
+        super.setParam(robotId);
+        configuredRules.clear();
+        precision.clear();
+    }
     public int cnt = 0;
     public boolean isTest = true;
     public boolean submitCnt = true;
@@ -91,6 +109,7 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         String trade = null;
 
 
+        ensurePrecision();
         BigDecimal price1 = nN(price, Integer.parseInt(precision.get("pricePrecision").toString()));
         BigDecimal num = nN(amount, Integer.parseInt(precision.get("amountPrecision").toString()));
 
@@ -193,8 +212,9 @@ public class HotCoinParentService extends BaseService implements RobotAction {
 
         // 输出字符串
         String trade = null;
-        BigDecimal price1 = nN(price, Integer.parseInt(exchange.get("pricePrecision")));
-        BigDecimal num = nN(amount, Integer.parseInt(exchange.get("amountPrecision").toString()));
+        ensurePrecision();
+        BigDecimal price1 = nN(price, Integer.parseInt(precision.get("pricePrecision").toString()));
+        BigDecimal num = nN(amount, Integer.parseInt(precision.get("amountPrecision").toString()));
         String uri = "/v1/order/place";
         String httpMethod = "GET";
         Map<String, Object> params = new TreeMap<>();
@@ -414,6 +434,11 @@ public class HotCoinParentService extends BaseService implements RobotAction {
                     lastBalancefrozen=jsonObject.getString("frozen");
                     if(Double.parseDouble(lastBalance)<10){
                         setWarmLog(id,0,"余额不足",coinArr.get(1).toUpperCase()+"余额为:"+lastBalance);
+                        // Hotcoin计价币余额不足时，同时推送Telegram余额通知。
+                        telegramNotifyService.sendHotcoinBalanceNotice(id, exchange.get("market"), coinArr.get(1).toUpperCase(), lastBalance);
+                    }else{
+                        // 余额恢复后清除冷却Key，下次再次不足可以立即推送。
+                        telegramNotifyService.clearHotcoinBalanceNoticeCooldown(id, coinArr.get(1).toUpperCase());
                     }
                 }
             }
@@ -446,12 +471,100 @@ public class HotCoinParentService extends BaseService implements RobotAction {
      * 交易规则获取
      */
     public void setPrecision() {
-
-        precision.put("amountPrecision", exchange.get("amountPrecision"));
-        precision.put("pricePrecision", exchange.get("pricePrecision"));
-        precision.put("minTradeLimit", exchange.get("minTradeLimit"));
+        // 首次解析前保存配置，避免exchange被官方值覆盖后失去回退依据。
+        for (String key : Arrays.asList("amountPrecision", "pricePrecision", "minOrderAmount")) {
+            if (!configuredRules.containsKey(key)) {
+                configuredRules.put(key, exchange.get(key));
+            }
+        }
+        JSONObject symbolRule = getHotcoinSymbolRule();
+        // 各字段独立回退，一个字段缺失不能丢弃其他有效官方规则。
+        Map<String, Object> resolved = new HashMap<>();
+        resolved.put("amountPrecision", getHotcoinRuleValue(symbolRule, "amountPrecision", "amountPrecision"));
+        resolved.put("pricePrecision", getHotcoinRuleValue(symbolRule, "pricePrecision", "pricePrecision"));
+        // 数据库参数名为minOrderAmount，单位仍是币数量；minTradeLimit保留为策略内部别名。
+        resolved.put("minTradeLimit", getHotcoinRuleValue(symbolRule, "minOrderCount", "minOrderAmount"));
+        precision.putAll(resolved);
+        exchange.put("amountPrecision", precision.get("amountPrecision").toString());
+        exchange.put("pricePrecision", precision.get("pricePrecision").toString());
+        exchange.put("minTradeLimit", precision.get("minTradeLimit").toString());
     }
 
+    private void ensurePrecision() {
+        if (!precision.containsKey("amountPrecision") || !precision.containsKey("pricePrecision") || !precision.containsKey("minTradeLimit")) {
+            setPrecision();
+        }
+    }
+
+    private String getHotcoinRuleValue(JSONObject symbolRule, String apiKey, String configKey) {
+        String value = normalizeHotcoinRule(symbolRule == null ? null : symbolRule.opt(apiKey), apiKey);
+        if (value != null) {
+            return value;
+        }
+        logger.info("Hotcoin交易规则字段不可用，使用配置：market=" + exchange.get("market") + ", field=" + apiKey);
+        value = normalizeHotcoinRule(configuredRules.get(configKey), apiKey);
+        if (value == null) {
+            // 两边都无有效值时禁止继续下单，不猜测精度或将未知值当作0。
+            throw new IllegalStateException("Hotcoin官方规则和配置均无有效值：" + configKey);
+        }
+        return value;
+    }
+
+    /** 精度必须为非负整数，最小数量可为非负小数；0小数位也是有效值。 */
+    private String normalizeHotcoinRule(Object raw, String apiKey) {
+        if (raw == null) {
+            return null;
+        }
+        try {
+            BigDecimal value = new BigDecimal(raw.toString().trim());
+            if (value.signum() < 0) {
+                return null;
+            }
+            if ("pricePrecision".equals(apiKey) || "amountPrecision".equals(apiKey)) {
+                return Integer.toString(value.intValueExact());
+            }
+            return value.stripTrailingZeros().toPlainString();
+        } catch (NumberFormatException | ArithmeticException e) {
+            return null;
+        }
+    }
+
+    private JSONObject getHotcoinSymbolRule() {
+        try {
+            String market = exchange.get("market");
+            if (StringUtils.isBlank(market)) {
+                return null;
+            }
+            market = market.trim();
+            String res = requestHotcoinSymbols();
+            JSONObject jsonObject = JSONObject.fromObject(res);
+            if (jsonObject == null || !"200".equals(jsonObject.getString("code")) || !jsonObject.has("data")) {
+                logger.info("Hotcoin交易规则查询失败，使用配置精度：market=" + market);
+                return null;
+            }
+            JSONArray data = jsonObject.getJSONArray("data");
+            for (int i = 0; i < data.size(); i++) {
+                if (!(data.get(i) instanceof JSONObject)) {
+                    continue;
+                }
+                JSONObject item = data.getJSONObject(i);
+                if (market.equalsIgnoreCase(item.optString("symbol"))) {
+                    logger.info("Hotcoin交易规则查询成功：market=" + market);
+                    return item;
+                }
+            }
+            logger.info("Hotcoin交易规则未匹配到交易对：" + exchange.get("market"));
+        } catch (Exception e) {
+            logger.info("Hotcoin交易规则查询异常，使用配置精度：" + e.getMessage());
+        }
+        return null;
+    }
+
+
+    /** 公共规则不需要账户签名；单独入口便于测试替换，避免访问真实交易所。 */
+    protected String requestHotcoinSymbols() {
+        return HttpUtil.get(baseUrl + "/v1/common/symbols");
+    }
 
     public static String getSignature(String apiSecret, String host, String uri, String httpMethod, Map<String, Object> params) {
         StringBuilder sb = new StringBuilder(1024);

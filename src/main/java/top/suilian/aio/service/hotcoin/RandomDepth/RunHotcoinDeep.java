@@ -73,6 +73,7 @@ public class RunHotcoinDeep {
             if (work.getName() == id) {
                 robotService.setRobotStatus(id, Constant.KEY_ROBOT_STATUS_STOP);
                 work.stop();
+                work.randomDepth.cancelActiveOrders();
                 works.remove(work);
                 robotService.stopRobot(id);
                 redisHelper.removeParent(String.valueOf(id));
@@ -94,11 +95,13 @@ public class RunHotcoinDeep {
             if (work.getName() == id) {
                 Thread thread = commonUtil.getThreadByName(Constant.KEY_THREAD_KLINE + id);
                 if (thread == null) {
+                    work.randomDepth.cancelActiveOrders();
                     return true;
                 } else {
                     //杀掉线程
                     thread.stop();
                     work.setStatus(StopableTask.Status.stoped);
+                    work.randomDepth.cancelActiveOrders();
                     robotService.stopRobot(id);
                     redisHelper.removeParent(String.valueOf(id));
                     redisHelper.remove(Constant.KEY_ROBOT + id);

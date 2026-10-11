@@ -39,6 +39,33 @@ public class RedisHelper {
         redisStringExecutor.set(key, value);
     }
 
+    /** 保存重启清理所需的锁持有者信息，写入失败时停止本轮接收。 */
+    public void setRequired(String key, String value) {
+        redisStringExecutor.setRequired(key, value);
+    }
+
+    /**
+     * 设置普通字符串缓存，并指定过期秒数。
+     */
+    public void setSt(String key, String value, Long timeout) {
+        redisStringExecutor.set(key, value, timeout);
+    }
+
+    /** 原子设置带过期时间的冷却Key，只有首次占用成功的通知可以发送。 */
+    public boolean setIfAbsent(String key, String value, long timeout) {
+        return redisStringExecutor.setIfAbsent(key, value, timeout);
+    }
+
+    /** 续期当前实例持有的Telegram轮询锁。 */
+    public boolean renewOwnedLock(String key, String owner, long timeout) {
+        return redisStringExecutor.renewOwnedLock(key, owner, timeout);
+    }
+
+    /** 仅释放当前实例持有的轮询锁或消息处理锁。 */
+    public void releaseOwnedLock(String key, String owner) {
+        redisStringExecutor.releaseOwnedLock(key, owner);
+    }
+
 
     /**
      * 获得机器人

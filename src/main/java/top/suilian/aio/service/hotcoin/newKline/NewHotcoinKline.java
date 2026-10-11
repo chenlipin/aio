@@ -334,6 +334,39 @@ public class NewHotcoinKline extends HotCoinParentService {
      *
      * @return
      */
+    /**
+     * Cancel all orders still owned by this strategy before the worker stops.
+     */
+    public void cancelActiveOrders() {
+        Set<String> orderIds = new LinkedHashSet<>();
+        addActiveOrder(orderIds, orderIdOne);
+        addActiveOrder(orderIds, orderIdTwo);
+        addActiveOrder(orderIds, buyOrderId);
+        addActiveOrder(orderIds, sellOrderId);
+
+        for (String orderId : orderIds) {
+            try {
+                String result = cancelTrade(orderId);
+                JSONObject cancelRes = judgeRes(result, "code", "cancelTrade");
+                setCancelOrder(cancelRes, result, orderId, Constant.KEY_CANCEL_ORDER_TYPE_QUANTIFICATION);
+                setTradeLog(id, "停止机器人撤单[" + orderId + "]=>" + result, 0, "#67c23a");
+            } catch (Exception e) {
+                logger.info("停止机器人撤单失败：" + orderId + ", " + e.getMessage());
+            }
+        }
+
+        orderIdOne = "0";
+        orderIdTwo = "0";
+        buyOrderId = "0";
+        sellOrderId = "0";
+    }
+
+    private void addActiveOrder(Set<String> orderIds, String orderId) {
+        if (orderId != null && !orderId.isEmpty() && !"0".equals(orderId)) {
+            orderIds.add(orderId);
+        }
+    }
+
     public BigDecimal getRandomPrice() throws UnsupportedEncodingException {
         BigDecimal price = null;
 

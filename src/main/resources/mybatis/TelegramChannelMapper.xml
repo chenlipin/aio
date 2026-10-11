@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.suilian.aio.dao.TelegramChannelMapper">
+    <!-- 与创建页面相同的事务锁；不依赖chat_id字段已有唯一索引。 -->
+    <select id="lockGroupDiscovery" resultType="int">
+        select member_id from member order by member_id limit 1 for update
+    </select>
+    <!-- 自动发现不启用群、不绑定交易所，也不读取账户信息。 -->
+    <insert id="insertDiscoveredGroup">
+        insert into telegram_channel(name, chat_id, enabled, created_at, updated_at)
+        select #{name}, #{chatId}, 0, NOW(), NOW()
+        where not exists (select 1 from telegram_channel where chat_id = #{chatId})
+    </insert>
+    <!-- 已绑定群的展示名称可能由管理员自定义，不能被群消息覆盖。 -->
+    <update id="updateDiscoveredGroupName">
+        update telegram_channel set name = #{name}, updated_at = NOW()
+        where chat_id = #{chatId} and name != #{name}
+          and not exists (select 1 from robot_telegram_channel where channel_id = telegram_channel.id)
+    </update>
+    <resultMap id="BaseResultMap" type="top.suilian.aio.model.TelegramChannel">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="chat_id" property="chatId" jdbcType="VARCHAR"/>
+        <result column="enabled" property="enabled" jdbcType="INTEGER"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+        <result column="notice_types" property="noticeTypes" jdbcType="VARCHAR"/>
+        <result column="typename" property="typename" jdbcType="VARCHAR"/>
+        <result column="notice_enabled" property="noticeEnabled" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!-- 按typename查询群绑定；notice_types为空表示接收全部通知类型。 -->
+    <select id="selectEnabledByTypenameAndNoticeType" resultMap="BaseResultMap">
+        select
+            c.id,
+            c.name,
+            c.chat_id,
+            c.enabled,
+            c.created_at,
+            c.updated_at,
+            r.notice_types
+        from telegram_channel c
+        inner join robot_telegram_channel r on r.channel_id = c.id
+        where r.typename = #{typename,jdbcType=VARCHAR}
+          and c.enabled = 1
+          and r.enabled = 1
+          <!-- 主动通知独立开关；关闭后仍可执行群查询指令。 -->
+          and r.notice_enabled = 1
+          and (
+              <!-- 未配置通知类型时，默认该目标接收该机器人的全部通知。 -->
+              r.notice_types is null
+              or r.notice_types = ''
+              or find_in_set(#{noticeType}, r.notice_types) > 0
+          )
+    </select>
+
+    <!-- 查询当前群的启用绑定，指令查询权限独立于notice_types通知订阅。 -->
+    <select id="selectEnabledBindingByChatId" resultMap="BaseResultMap">
+        select c.id, c.name, c.chat_id, c.enabled, c.created_at, c.updated_at,
+               r.typename, r.notice_types, r.notice_enabled
+        from telegram_channel c
+        inner join robot_telegram_channel r on r.channel_id = c.id
+        where c.chat_id = #{chatId,jdbcType=VARCHAR}
+          and c.enabled = 1 and r.enabled = 1
+    </select>
+
+    <!-- 按当前群ID和typename限定更新，避免跨群或修改已失效的绑定。 -->
+    <update id="updateNoticeEnabled">
+        update robot_telegram_channel r
+        inner join telegram_channel c on c.id = r.channel_id
+        set r.notice_enabled = #{noticeEnabled,jdbcType=INTEGER}, r.updated_at = NOW()
+        where r.channel_id = #{channelId,jdbcType=INTEGER}
+          and r.typename = #{typename,jdbcType=VARCHAR}
+          and r.enabled = 1 and c.enabled = 1
+    </update>
+</mapper>

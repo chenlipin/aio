@@ -16,5 +16,8 @@ public interface RobotMapper {
 
     List<Robot> selectAll();
 
+    /** 查询群绑定typename下未删除的记录，用于只读余额和状态指令。 */
+    List<Robot> selectByTypename(@org.apache.ibatis.annotations.Param("typename") String typename);
+
     int updateByPrimaryKey(Robot record);
 }

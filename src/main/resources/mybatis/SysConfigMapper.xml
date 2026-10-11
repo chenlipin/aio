@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.suilian.aio.dao.SysConfigMapper">
+    <resultMap id="BaseResultMap" type="top.suilian.aio.model.SysConfig">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="config_key" property="configKey" jdbcType="VARCHAR"/>
+        <result column="config_value" property="configValue" jdbcType="LONGVARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="enabled" property="enabled" jdbcType="INTEGER"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 查询启用状态的系统配置，Telegram Bot Token会从这里读取。 -->
+    <select id="selectByConfigKey" resultMap="BaseResultMap">
+        select id, config_key, config_value, remark, enabled, created_at, updated_at
+        from sys_config
+        where config_key = #{configKey}
+          and enabled = 1
+        limit 1
+    </select>
+</mapper>
