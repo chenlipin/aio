@@ -217,7 +217,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                 }
             }
 
-            setTradeLog(id, "撤单数为" + orderNum, 0, "000000");
+            setTradeLog(id, " " + orderNum, 0, "000000");
 
             if (Integer.valueOf(exchange.get("orderSumSwitch")) == 1) {    //防褥羊毛开关
                 setTradeLog(id, "停止量化撤单数设置为：" + exchange.get("orderSum"), 0, "000000");
@@ -684,6 +684,7 @@ public class NewHotcoinKline extends HotCoinParentService {
 
                 JSONObject data = jsonObject.getJSONObject("data");
                 int status = data.getInt("statusCode");
+                boolean collisionCounted = false;
                 if (status == 3) {
                     setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                 } else if (status == 5) {
@@ -695,10 +696,22 @@ public class NewHotcoinKline extends HotCoinParentService {
                     setTradeLog(id, "撤单[" + orderId + "]=>" + res, 0, "#67c23a");
                     if (Integer.valueOf(exchange.get("orderSumSwitch")) == 1 && type == 1) {    //防褥羊毛开关
                         orderNum++;
+                        collisionCounted = true;
                         setWarmLog(id,2,"订单{"+orderId+"}撤单,撞单数为"+orderNum,"");
                     }
                 }
 
+                if (type == 1) {
+                    String message = getExternalOrderTradeMessage(orderId);
+                    if (message != null) {
+                        if (!collisionCounted && "1".equals(exchange.get("orderSumSwitch"))) {
+                            orderNum++;
+                        }
+                        message += "，撞单数为" + orderNum;
+                        setTradeLog(id, message, 0, "#FF111A");
+                        setWarmLog(id, 2, message, "");
+                    }
+                }
 
             }
         } catch (UnsupportedEncodingException e) {

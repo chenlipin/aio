@@ -311,6 +311,46 @@ public class HotCoinParentService extends BaseService implements RobotAction {
         return trades;
     }
 
+    /** 查询成交对手，供新旧K线核对对敲订单是否成交给外部订单。 */
+    public String selectOrderCounterparties(String orderId) throws UnsupportedEncodingException {
+        String uri = "/v1/order/counterpartiesById";
+        Map<String, Object> params = new TreeMap<>();
+        params.put("AccessKeyId", exchange.get("apikey"));
+        params.put("SignatureVersion", 2);
+        params.put("SignatureMethod", "HmacSHA256");
+        params.put("Timestamp", new Date().getTime());
+        params.put("id", orderId);
+        params.put("Signature", getSignature(exchange.get("tpass"), host, uri, "GET", params));
+        return httpUtil.get("https://" + host + uri + "?" + splicing(params));
+    }
+
+    /** 返回外部成交明细；查询失败单独告警，不当作已确认的正常对敲。 */
+    protected String getExternalOrderTradeMessage(String orderId) throws UnsupportedEncodingException {
+        try {
+            JSONObject response = JSONObject.fromObject(selectOrderCounterparties(orderId));
+            if (response.getInt("code") != 200) {
+                throw new IllegalStateException("成交对手接口返回失败");
+            }
+            JSONArray trades = response.getJSONObject("data").getJSONArray("entrusts");
+            JSONArray externalTrades = new JSONArray();
+            for (int i = 0; i < trades.size(); i++) {
+                JSONObject trade = trades.getJSONObject(i);
+                int isSelfTrade = trade.getInt("isSelfTrade");
+                if (isSelfTrade == 0) {
+                    externalTrades.add(trade);
+                } else if (isSelfTrade != 1) {
+                    throw new IllegalStateException("成交对手标记异常");
+                }
+            }
+            if (!externalTrades.isEmpty()) {
+                return "订单{" + orderId + "}外部成交撞单，成交明细：" + externalTrades;
+            }
+        } catch (RuntimeException e) {
+            setWarmLog(id, 3, "订单{" + orderId + "}成交对手查询失败，未完成撞单检查", "");
+        }
+        return null;
+    }
+
 
     /**
      * 撤单
