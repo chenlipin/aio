@@ -685,6 +685,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                 JSONObject data = jsonObject.getJSONObject("data");
                 int status = data.getInt("statusCode");
                 boolean collisionCounted = false;
+                String collisionMessage = null;
                 if (status == 3) {
                     setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "#67c23a");
                 } else if (status == 5) {
@@ -698,6 +699,7 @@ public class NewHotcoinKline extends HotCoinParentService {
                         orderNum++;
                         collisionCounted = true;
                         setWarmLog(id,2,"订单{"+orderId+"}撤单,撞单数为"+orderNum,"");
+                        collisionMessage = "订单{" + orderId + "}撤单,撞单数为" + orderNum;
                     }
                 }
 
@@ -710,7 +712,11 @@ public class NewHotcoinKline extends HotCoinParentService {
                         message += "，撞单数为" + orderNum;
                         setTradeLog(id, message, 0, "#FF111A");
                         setWarmLog(id, 2, message, "");
+                        collisionMessage = message;
                     }
+                }
+                if (collisionMessage != null) {
+                    telegramNotifyService.sendHotcoinCollisionNotice(id, exchange.get("market"), collisionMessage);
                 }
 
             }

@@ -583,6 +583,7 @@ public class HotCoinKline extends HotCoinParentService {
                 int status = data.getInt("statusCode");
 
                 boolean collisionCounted = false;
+                String collisionMessage = null;
                 if (status == 3) {
                     setTradeLog(id, "订单id：" + orderId + "完全成交", 0, "000000");
                 } else if (status == 5) {
@@ -595,6 +596,7 @@ public class HotCoinKline extends HotCoinParentService {
                     if (Integer.valueOf(exchange.get("orderSumSwitch")) == 1 && type == 1) {    //防褥羊毛开关
                         orderNum++;
                         collisionCounted = true;
+                        collisionMessage = "订单{" + orderId + "}撤单,撞单数为" + orderNum;
                     }
                 }
 
@@ -607,7 +609,11 @@ public class HotCoinKline extends HotCoinParentService {
                         message += "，撞单数为" + orderNum;
                         setTradeLog(id, message, 0, "#FF111A");
                         setWarmLog(id, 2, message, "");
+                        collisionMessage = message;
                     }
+                }
+                if (collisionMessage != null) {
+                    telegramNotifyService.sendHotcoinCollisionNotice(id, exchange.get("market"), collisionMessage);
                 }
 
             }

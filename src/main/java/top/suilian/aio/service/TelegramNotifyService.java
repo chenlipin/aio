@@ -40,6 +40,8 @@ public class TelegramNotifyService {
     private static final long BALANCE_LOW_DEFAULT_COOLDOWN_SECONDS = 1800L;
     /** 余额不足通知类型，和robot_telegram_channel.notice_types保持一致 */
     private static final String NOTICE_TYPE_BALANCE_LOW = "balance_low";
+    /** 撞单按事件通知，不使用冷却。 */
+    private static final String NOTICE_TYPE_ORDER_COLLISION = "order_collision";
 
     /** 系统配置读取，用来获取Bot Token */
     @Autowired
@@ -67,6 +69,14 @@ public class TelegramNotifyService {
                 + "币种：" + emptyToDash(coinName) + "\n"
                 + "当前余额：" + emptyToDash(balance);
         sendRobotNotice(robotId, NOTICE_TYPE_BALANCE_LOW, coinName, message);
+    }
+
+    public void sendHotcoinCollisionNotice(Integer robotId, String market, String detail) {
+        String message = "Hotcoin撞单预警\n"
+                + "机器人ID：" + robotId + "\n"
+                + "交易对：" + emptyToDash(market) + "\n"
+                + "撞单详情：" + emptyToDash(detail);
+        sendRobotNotice(robotId, NOTICE_TYPE_ORDER_COLLISION, message);
     }
 
     /**
@@ -205,6 +215,9 @@ public class TelegramNotifyService {
      * 获取通知类型的冷却秒数，配置不存在时使用代码默认值。
      */
     private long getCooldownSeconds(String noticeType) {
+        if (NOTICE_TYPE_ORDER_COLLISION.equals(noticeType)) {
+            return 0L;
+        }
         Long typeCooldown = getLongConfig(TYPE_COOLDOWN_KEY_PREFIX + noticeType);
         if (typeCooldown != null) {
             return typeCooldown;

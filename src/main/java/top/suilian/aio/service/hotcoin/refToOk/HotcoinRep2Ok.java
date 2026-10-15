@@ -72,22 +72,13 @@ public class HotcoinRep2Ok extends HotCoinParentService {
             logger.info("对标策略设置机器人参数结束");
             logger.info("对标策略设置机器人交易规则开始");
             setPrecision();
-            try {
-                setBalanceRedis();
-            } catch (Exception e) {
-               logger.info("获取余额失败");
-            }
             logger.info("补单策略设置机器人交易规则结束");
             start = false;
         }
-        int i1 = RandomUtils.nextInt(4);
-        if(2==i1){
-            try {
-                setBalanceRedis();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            setBalanceRedis(true);
+        } catch (Exception e) {
+            logger.error("获取余额失败", e);
         }
 
 
@@ -280,7 +271,7 @@ public class HotcoinRep2Ok extends HotCoinParentService {
             nowOrderList.clear();
             double time = Double.parseDouble(exchange.get("time"));
             try {
-                Thread.sleep(getRandom(time,null).intValue()* 1000L);
+                Thread.sleep((long) (getRandom(time, null) * 1000L));
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -298,13 +289,10 @@ public class HotcoinRep2Ok extends HotCoinParentService {
         private Integer first=8;
     }
     public static Double getRandom(double num, Integer precision) {
-        precision=8;
-        double randomNum = Math.floor(Math.random() * Math.pow(10, precision)) / Math.pow(10, precision);
-
-        while (randomNum >= num) {
-            randomNum = Math.floor(Math.random() * Math.pow(10, precision)) / Math.pow(10, precision);
+        if (!Double.isFinite(num) || num < 0) {
+            throw new IllegalArgumentException("等待时间必须是非负有限数值");
         }
-        return randomNum;
+        return Math.random() * num;
     }
 
     BigDecimal getOrderAmount(String min, String max, double pression) {

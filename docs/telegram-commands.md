@@ -4,6 +4,10 @@
 
 另支持管理员指令 `/notify_on`（打开通知）、`/notify_off`（关闭通知），只控制当前群绑定的主动推送，不控制交易策略，查询回复不受影响。
 
+热币新旧K线支持 `order_collision` 撞单主动预警，每次检测到外部成交，或按现有防撞单逻辑计入的撤单，推送一次。同一笔订单在一次检查中既撤单又有外部成交时，只推送一次，并展示外部成交明细。完全成交且全部为自成交、主动吃盘口不触发撞单推送。撞单通知不使用冷却，忽略全局和类型冷却配置，仍受群启用状态、订阅类型和 `/notify_off` 开关控制。
+
+部署前，已有 `notice_types='balance_low'` 等余额订阅的群执行一次 [撞单订阅SQL](sql/telegram-order-collision-notice.sql)，追加 `order_collision`；空订阅已接收全部通知，无需修改。SQL不会打开已关闭的通知。通知发送失败保留发送日志，不自动补发。
+
 ## 主动通知开关升级
 
 部署新代码前，执行一次 [通知开关SQL](sql/telegram-notice-switch.sql)：
@@ -42,7 +46,7 @@ WHERE NOT EXISTS (
 
 -- 一个群只绑定一个typename；已有绑定则更新typename和启用状态。
 INSERT INTO robot_telegram_channel(typename, channel_id, notice_types, enabled, created_at, updated_at)
-SELECT @robot_typename, id, 'balance_low', 1, NOW(), NOW()
+SELECT @robot_typename, id, 'balance_low,order_collision', 1, NOW(), NOW()
 FROM telegram_channel WHERE chat_id = @telegram_chat_id
 ON DUPLICATE KEY UPDATE typename = VALUES(typename), enabled = 1, updated_at = NOW();
 

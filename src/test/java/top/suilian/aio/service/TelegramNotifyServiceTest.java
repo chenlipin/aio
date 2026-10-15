@@ -9,9 +9,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import top.suilian.aio.dao.RobotMapper;
 import top.suilian.aio.dao.SysConfigMapper;
 import top.suilian.aio.dao.TelegramChannelMapper;
+import top.suilian.aio.dao.TelegramSendLogMapper;
 import top.suilian.aio.model.Robot;
 import top.suilian.aio.model.SysConfig;
 import top.suilian.aio.model.TelegramChannel;
+import top.suilian.aio.model.TelegramSendLog;
 import top.suilian.aio.redis.RedisHelper;
 
 import java.util.Collections;
@@ -100,6 +102,46 @@ public class TelegramNotifyServiceTest {
                 .thenReturn(Collections.emptyList());
         service.sendHotcoinBalanceNotice(1, "gnr_usdt", "USDT", "5");
         verify(redis, never()).setIfAbsent(anyString(), anyString(), anyLong());
+    }
+
+    /** 撞单忽略全局和类型冷却，每个事件均尝试推送并保存发送日志。 */
+    @Test
+    public void collisionNoticesBypassAllCooldowns() {
+        bindRobot(1, "hotcoin-a");
+        SysConfig cooldown = new SysConfig();
+        cooldown.setConfigValue("600");
+        when(configs.selectByConfigKey("telegram.notice.cooldown.default")).thenReturn(cooldown);
+        when(configs.selectByConfigKey("telegram.notice.cooldown.order_collision")).thenReturn(cooldown);
+        TelegramSendLogMapper logs = mock(TelegramSendLogMapper.class);
+        ReflectionTestUtils.setField(service, "telegramSendLogMapper", logs);
+        // 在构造HTTP参数时模拟目标读取失败，验证真实发送分支但不访问网络。
+        TelegramChannel channel = mock(TelegramChannel.class);
+        when(channel.getId()).thenReturn(7);
+        when(channel.getChatId()).thenThrow(new IllegalStateException("test channel failure"));
+        when(channels.selectEnabledByTypenameAndNoticeType("hotcoin-a", "order_collision"))
+                .thenReturn(Collections.singletonList(channel));
+
+        service.sendHotcoinCollisionNotice(1, "gnr_usdt", "订单{a}外部成交撞单");
+        service.sendHotcoinCollisionNotice(1, "gnr_usdt", "订单{b}外部成交撞单");
+
+        verify(redis, never()).setIfAbsent(anyString(), anyString(), anyLong());
+        ArgumentCaptor<TelegramSendLog> attempts = ArgumentCaptor.forClass(TelegramSendLog.class);
+        verify(logs, times(2)).insert(attempts.capture());
+        assertEquals("order_collision", attempts.getAllValues().get(0).getNoticeType());
+        assertTrue(attempts.getAllValues().get(0).getMessage().contains("订单{a}"));
+        assertTrue(attempts.getAllValues().get(1).getMessage().contains("订单{b}"));
+        assertTrue(attempts.getAllValues().get(0).getMessage().contains("交易对：gnr_usdt"));
+    }
+
+    @Test
+    public void disabledCollisionTargetsSkipSending() {
+        bindRobot(1, "hotcoin-a");
+        when(channels.selectEnabledByTypenameAndNoticeType("hotcoin-a", "order_collision"))
+                .thenReturn(Collections.emptyList());
+        TelegramSendLogMapper logs = mock(TelegramSendLogMapper.class);
+        ReflectionTestUtils.setField(service, "telegramSendLogMapper", logs);
+        service.sendHotcoinCollisionNotice(1, "gnr_usdt", "订单{a}外部成交撞单");
+        verifyZeroInteractions(logs, redis);
     }
 
     /** 查询异常应被隔离，不能中断余额查询和交易流程。 */

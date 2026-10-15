@@ -422,13 +422,17 @@ public class HotCoinParentService extends BaseService implements RobotAction {
      */
 
     public void setBalanceRedis() throws UnsupportedEncodingException {
+        setBalanceRedis(false);
+    }
+
+    public void setBalanceRedis(boolean forceRefresh) throws UnsupportedEncodingException {
         String coins = redisHelper.getBalanceParam(Constant.KEY_ROBOT_COINS + id);
         if (coins == null) {
             RobotArgs robotArgs = robotArgsService.findOne(id, "market");
             coins = robotArgs.getRemark();
             redisHelper.setBalanceParam(Constant.KEY_ROBOT_COINS + id, robotArgs.getRemark());
         }
-        String balance = redisHelper.getBalanceParam(Constant.KEY_ROBOT_BALANCE + id);
+        String balance = forceRefresh ? null : redisHelper.getBalanceParam(Constant.KEY_ROBOT_BALANCE + id);
         boolean overdue = false;
         if (balance != null) {
             long lastTime = redisHelper.getLastTime(Constant.KEY_ROBOT_BALANCE + id);
